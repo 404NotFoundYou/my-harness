@@ -6,7 +6,8 @@
 - [架构概览](architecture/overview.md)
 - [数据库设计](architecture/database.md)
 - [ADR](architecture/decisions/)
-- [安装与工作流](guides/usage.md)
+- [用户使用指南](guides/getting-started.md)
+- [完整安装与工作流](guides/usage.md)
 
 ## 版本
 

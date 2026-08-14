@@ -5,7 +5,8 @@
 - 当前版本：`1.0.0`
 - 运行要求：Node.js 20+、Git
 - 依赖：仅 Node.js 标准库，不修改目标项目依赖清单
-- 详细用法：[docs/guides/usage.md](docs/guides/usage.md)
+- 用户使用指南：[docs/guides/getting-started.md](docs/guides/getting-started.md)
+- 完整 CLI 工作流：[docs/guides/usage.md](docs/guides/usage.md)
 - 设计与版本记录：[docs/README.md](docs/README.md)
 
 ## 安装到目标项目
@@ -13,7 +14,7 @@
 实际接入只需一条 `install` 命令；`--dry-run` 是可选的只读预检：
 
 ```powershell
-$HarnessRepo = "D:\Projects\aiproject"
+$HarnessRepo = "D:\Tools\my-harness"
 $TargetProject = "D:\Projects\your-project"
 
 node "$HarnessRepo\.ai-harness\bin\harness.mjs" install --target $TargetProject --dry-run --json

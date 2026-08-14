@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "DOC-GUIDE-001",
+  "mode": "single",
+  "rationale": "三份文档导航与正文连续依赖，单任务可最小闭环",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "编写并接入快速使用指南",
+      "module": "documentation",
+      "status": "COMPLETED",
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        "docs/guides/getting-started.md",
+        "README.md",
+        "docs/README.md"
+      ],
+      "verification": [
+        "Markdown 本地链接检查",
+        "尾随空白检查"
+      ],
+      "docsImpact": [
+        "docs/guides/getting-started.md",
+        "README.md",
+        "docs/README.md"
+      ],
+      "reviewBatch": "R1",
+      "risk": "low",
+      "owner": "primary-ai",
+      "verificationStatus": "pass",
+      "reviewStatus": "pass",
+      "evidence": [
+        "55ae78d2-ec71-4d1d-acc9-6b4507165495",
+        "f188bb1d-f555-4527-be03-a14d8d5d8b44"
+      ],
+      "deferralApproval": null
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "使用指南文档",
+      "risk": "low",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": false
+    }
+  ],
+  "createdAt": "2026-08-14T09:14:23.571Z",
+  "updatedAt": "2026-08-14T09:16:44.333Z"
+}

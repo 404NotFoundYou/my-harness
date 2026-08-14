@@ -1,0 +1,170 @@
+{
+  "schemaVersion": 1,
+  "id": "DOC-GUIDE-001",
+  "type": "ITERATION",
+  "title": "新增首次使用指南",
+  "status": "DONE",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/iteration.md",
+    ".ai-harness/policies/database.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户明确要求编写使用指南"
+  },
+  "input": {
+    "references": [
+      "用户要求：帮我也写一个使用指南"
+    ],
+    "acceptance": [
+      "提供从 GitHub 获取、安装、初始化、日常使用、升级和常见错误的中文指南"
+    ],
+    "nonGoals": [
+      "不修改 Runtime 行为或 CLI 契约"
+    ],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": null,
+  "baseline": {
+    "status": "complete",
+    "document": "docs/guides/usage.md",
+    "evidence": [
+      "main@6c20431，工作树干净；README、文档索引和完整 CLI 手册已读取"
+    ],
+    "completedAt": "2026-08-14T09:14:22.154Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "6c20431f442ce07dbee8a08056def86d8370be9f",
+      "dirty": true,
+      "changedFiles": [
+        ".ai-harness/work-items/DOC-GUIDE-001/events.jsonl",
+        ".ai-harness/work-items/DOC-GUIDE-001/state.json"
+      ],
+      "fingerprints": {
+        ".ai-harness/work-items/DOC-GUIDE-001/events.jsonl": "e5895826b795148db690d5e600df3440d3e6bc960a82062a18673cf2588d7551",
+        ".ai-harness/work-items/DOC-GUIDE-001/state.json": "b1812dd16e62b44dbddc678785844c355bca5f1495c1d6c42754ddb292f279dd"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": "docs/guides/usage.md",
+    "evidence": [
+      "新增 getting-started.md 作为首次使用入口，现有 usage.md 保持完整 CLI 手册职责"
+    ],
+    "completedAt": "2026-08-14T09:14:22.864Z"
+  },
+  "database": {
+    "impact": "none",
+    "status": "not-applicable",
+    "document": null,
+    "evidence": [
+      "仅新增和更新 Markdown 导航，不涉及持久化、Schema 或查询路径"
+    ],
+    "completedAt": "2026-08-14T09:14:23.213Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/DOC-GUIDE-001/plan.json",
+    "approved": true,
+    "approvalRef": "用户明确要求编写使用指南"
+  },
+  "verification": {
+    "status": "pass",
+    "evidence": [
+      "94146381-e674-4bf3-b7e0-e3d3ea5e481e"
+    ]
+  },
+  "review": {
+    "status": "pass",
+    "evidence": [
+      "1a448247-e8a1-4b1b-810d-f139570bde10"
+    ],
+    "independent": false
+  },
+  "acceptance": {
+    "status": "pass",
+    "evidence": [
+      "89ccb163-4171-45ed-871a-e7bd78d0a049"
+    ]
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "pass",
+    "evidence": [
+      "6a9c162d-349f-469b-8efc-404c39186e3d"
+    ]
+  },
+  "blocked": null,
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-08-14T09:14:21.241Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-08-14T09:14:21.614Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-08-14T09:14:22.500Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-08-14T09:14:24.993Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-08-14T09:14:25.346Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "VERIFYING",
+      "at": "2026-08-14T09:16:44.683Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "VERIFYING",
+      "to": "CODE_REVIEW",
+      "at": "2026-08-14T09:16:45.713Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "CODE_REVIEW",
+      "to": "READY_FOR_ACCEPTANCE",
+      "at": "2026-08-14T09:18:08.536Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "READY_FOR_ACCEPTANCE",
+      "to": "DONE",
+      "at": "2026-08-14T09:18:09.269Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-08-14T09:14:21.241Z",
+  "updatedAt": "2026-08-14T09:18:09.269Z"
+}
