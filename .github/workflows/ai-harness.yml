@@ -1,0 +1,24 @@
+name: AI Harness
+
+on:
+  pull_request:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Runtime tests
+        run: node .ai-harness/tests/run.mjs
+      - name: Runtime health
+        run: node .ai-harness/bin/harness.mjs doctor --json
+      - name: Workflow gates
+        run: node .ai-harness/bin/harness.mjs check --ci --json

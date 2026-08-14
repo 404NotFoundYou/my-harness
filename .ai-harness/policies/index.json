@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "always": [
+    "core.md",
+    "security.md",
+    "documentation.md"
+  ],
+  "byType": {
+    "NEW_PROJECT": ["new-project.md", "database.md"],
+    "ITERATION": ["iteration.md", "database.md"],
+    "BUGFIX": ["bugfix.md"],
+    "ANALYSIS": ["analysis.md"]
+  },
+  "byFlag": {
+    "database": ["database.md"],
+    "frontend": ["frontend.md"],
+    "mobile": ["mobile.md"],
+    "api": ["api.md"],
+    "multi-agent": ["multi-agent.md"]
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local.ai-harness/schemas/evidence.schema.json",
+  "title": "AI Harness evidence event",
+  "type": "object",
+  "required": ["schemaVersion", "id", "workItemId", "kind", "timestamp"],
+  "properties": {
+    "schemaVersion": {"const": 1},
+    "id": {"type": "string"},
+    "workItemId": {"type": "string"},
+    "taskId": {"type": ["string", "null"]},
+    "kind": {"enum": ["command", "verification", "review", "acceptance", "analysis", "documentation", "checkpoint"]},
+    "status": {"type": ["string", "null"]},
+    "summary": {"type": ["string", "null"]},
+    "timestamp": {"type": "string", "format": "date-time"},
+    "command": {"type": ["object", "null"]},
+    "independent": {"type": "boolean"}
+  },
+  "additionalProperties": true
+}

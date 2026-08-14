@@ -1,0 +1,8 @@
+{
+  "name": "ai-harness-runtime",
+  "version": "1.0.0",
+  "schemaVersion": 1,
+  "minimumNodeVersion": "20.0.0",
+  "entrypoint": "bin/harness.mjs",
+  "policyIndex": "policies/index.json"
+}

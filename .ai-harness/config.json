@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "workItemsDirectory": ".ai-harness/work-items",
+  "projectFile": ".ai-harness/project.json",
+  "requireGit": true,
+  "rootInstructionsMaxBytes": 32768,
+  "commandTimeoutMs": 120000,
+  "maxCapturedOutputBytes": 16384,
+  "additionalAllowExecutables": [],
+  "additionalAskExecutables": [],
+  "additionalDenyExecutables": []
+}
