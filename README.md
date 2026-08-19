@@ -26,6 +26,21 @@ Set-Location $TargetProject
 
 其他 Runtime/CI 文件内容不同时仍默认失败，并保证预检阶段不写入。`--force` 只用于修复结构完整但内容被修改的托管块，或在明确授权后替换普通冲突文件；它不会覆盖托管块外的项目规则。标记损坏、重复或合并后 `AGENTS.md` 超过大小上限时，即使使用 `--force` 也会失败。
 
+## 安全卸载
+
+卸载前先预览，正式执行必须显式确认：
+
+```powershell
+node "$HarnessRepo\.ai-harness\bin\harness.mjs" uninstall --target $TargetProject --dry-run --json
+node "$HarnessRepo\.ai-harness\bin\harness.mjs" uninstall --target $TargetProject --confirm --json
+```
+
+命令必须从独立 Harness 源仓库执行，不能使用目标项目内的 Runtime 自卸载；卸载源版本必须与目标版本一致。
+
+安装会生成 `.ai-harness/install-receipt.json`，记录实际 payload 路径、哈希和托管规则边界。卸载只按该收据逐项核验和移除，并在备份后、每次变更前复核目标快照；源或目标漂移时停止。
+
+卸载会先备份再移除 Runtime、标准 CI、安装收据、初始化元数据和有效的 Harness 托管块。项目规则、业务文件、项目文档、`.ai-harness/work-items/` 与已有 `.ai-harness/backups/` 保留；目标内容冲突或托管块被修改时，在删除任何文件前失败。旧安装缺少收据时，先从可信源重新执行安装，再运行卸载。
+
 ## 初始化
 
 新项目会创建可迭代的 `v1.0` 文档模板：

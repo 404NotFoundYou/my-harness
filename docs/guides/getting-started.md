@@ -232,12 +232,50 @@ node .ai-harness/bin/harness.mjs doctor --json
 
 升级时不要再次运行 `init`。重复安装不会重复追加托管块，目标项目自己的规则也不会传播到其他项目。
 
-## 10. 冲突、备份和恢复
+## 10. 卸载 Harness
+
+推荐从 Harness 源仓库执行。先运行只读预检，再显式确认正式卸载：
+
+```powershell
+$HarnessRepo = "D:\Tools\my-harness"
+$TargetProject = "D:\Projects\your-project"
+
+node "$HarnessRepo\.ai-harness\bin\harness.mjs" uninstall `
+  --target $TargetProject --dry-run --json
+
+node "$HarnessRepo\.ai-harness\bin\harness.mjs" uninstall `
+  --target $TargetProject --confirm --json
+```
+
+不能使用目标项目内的 Runtime 自卸载，因为同一份文件无法提供可信内容对比；命令会返回 `UNINSTALL_SOURCE_EQUALS_TARGET`。卸载源版本必须与目标一致。
+
+卸载行为：
+
+- 安装时写入 `.ai-harness/install-receipt.json`，记录实际 Runtime/CI payload 哈希与托管规则边界；卸载不根据当前源目录猜测删除清单。
+- 移除收据记录且源/目标内容都匹配的 Runtime 文件、标准 GitHub Actions 入口、安装收据、`.ai-harness/project.json` 和结构/哈希/边界有效的托管规则块。
+- 保留托管块外的项目规则、业务代码、项目文档、`.ai-harness/work-items/` 和已有备份。
+- 先把所有待变更文件复制到结果中的 `.ai-harness/backups/<ID>/`，备份后和每项变更前复核目标快照；执行失败会回滚。
+- Runtime/CI 内容冲突、版本不一致、托管块篡改或路径类型异常时，正式卸载在写入前失败。
+
+因此卸载后 `.ai-harness/` 可能仍存在，只包含保留的工作项和备份。这不是卸载失败。要恢复 Runtime，重新执行 `install`；需要继续运行 Harness 时再执行 `init` 重建 `project.json`。
+
+## 11. 冲突、备份和恢复
 
 | 错误码 | 处理方式 |
 | --- | --- |
 | `INSTALL_CONFLICT` | 查看 `--dry-run` 报告；确认普通 Runtime 文件为何不同，不要直接覆盖未知修改 |
+| `UNINSTALL_CONFIRMATION_REQUIRED` | 正式卸载缺少 `--confirm`；先运行 `--dry-run` 审查删除计划 |
+| `UNINSTALL_CONFLICT` | Runtime 或 CI 文件与卸载源不一致；先审查目标修改，并使用内容匹配的独立 Harness 源仓库 |
+| `UNINSTALL_VERSION_MISMATCH` | 卸载源与目标版本不同；改用与目标版本一致的独立 Harness 源仓库 |
+| `UNINSTALL_SOURCE_EQUALS_TARGET` | 正在用目标项目自身 Runtime 卸载；改从独立 Harness 源仓库执行 |
+| `UNINSTALL_RECEIPT_REQUIRED` | 旧安装缺少安装收据；先从可信且内容匹配的源重新执行安装 |
+| `UNINSTALL_RECEIPT_INVALID` | 安装收据结构或自校验哈希无效；停止卸载并审查收据来源 |
+| `UNINSTALL_SOURCE_MISMATCH` | 独立源缺少收据文件或内容哈希不同；切换到安装时对应的源版本 |
+| `UNINSTALL_TARGET_CHANGED` | 目标在预检、备份或应用前发生变化；审查并重新运行预检 |
+| `UNINSTALL_ROLLED_BACK` | 应用失败且已完整恢复；根据错误原因修复后重新预检 |
+| `UNINSTALL_ROLLBACK_FAILED` | 应用失败且回滚不完整；按错误详情中的备份路径人工恢复 |
 | `MANAGED_BLOCK_MODIFIED` | 托管块内容被手工修改；确认块外规则已保留后，可用 `--force` 修复块 |
+| `MANAGED_BLOCK_BOUNDARY_MODIFIED` | 托管块相邻边界与安装收据不一致；停止卸载并审查非托管内容 |
 | `MANAGED_BLOCK_MALFORMED` | 标记缺失、重复或不独占一行；从 Git 或安装备份恢复，`--force` 不会猜测边界 |
 | `ROOT_INSTRUCTIONS_TOO_LARGE` | 精简根规则，将模块专属规则下沉到对应目录，之后重新安装 |
 | `PROJECT_INITIALIZED` | 项目已经初始化；升级只运行 `install`，不要重复运行 `init` |
@@ -245,9 +283,7 @@ node .ai-harness/bin/harness.mjs doctor --json
 
 修改已有文件时，安装结果的 `backup` 字段会返回备份目录，例如 `.ai-harness/backups/<ID>/`。恢复前先对比目标文件和备份，避免覆盖安装后的其他修改。
 
-Runtime 不提供自动卸载命令，因为无法安全猜测哪些规则或文件已经被项目继续修改。推荐在安装前建立 Git 基线，并把安装作为独立提交；需要撤销时使用可审查的 `git revert <安装提交>`。
-
-## 11. CI 门禁
+## 12. CI 门禁
 
 安装器会复制 `.github/workflows/ai-harness.yml`。GitHub Actions 将执行：
 
@@ -259,7 +295,7 @@ node .ai-harness/bin/harness.mjs check --ci --json
 
 其他 CI 平台调用相同命令即可。CI 不能替代 AI 客户端自身的权限和沙箱配置。
 
-## 12. 下一步
+## 13. 下一步
 
 - 查看[完整 CLI 工作流](usage.md)，了解状态推进、计划、任务、验证和 Review 命令。
 - 查看[架构概览](../architecture/overview.md)，了解 Runtime 边界和无损接入设计。

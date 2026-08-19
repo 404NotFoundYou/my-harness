@@ -5,6 +5,7 @@ import {
   managedBodyHash,
   mergeManagedFile,
   normalizeManagedBody,
+  removeManagedBlock,
   renderManagedBlock,
 } from "../src/managed-block.mjs";
 
@@ -77,4 +78,37 @@ test("partial, duplicate and inline markers are rejected as malformed", () => {
   ]) {
     assert.throws(() => inspectManagedBlock(malformed, relative), { code: "MANAGED_BLOCK_MALFORMED" });
   }
+});
+
+test("removal preserves project bytes and rejects modified managed content", () => {
+  const existing = "\uFEFF# Project rules\r\n\r\n- Preserve this exact text.";
+  const merged = mergeManagedFile({ existing, relative, version: "1.0.0", body });
+  const removed = removeManagedBlock(merged.content, relative);
+
+  assert.equal(removed.action, "remove-managed");
+  assert.ok(removed.content.startsWith(existing));
+  assert.equal(inspectManagedBlock(removed.content, relative).present, false);
+
+  const managedOnly = `${renderManagedBlock({ relative, version: "1.0.0", body })}\n`;
+  assert.equal(
+    removeManagedBlock(managedOnly, relative, { created: true, suffix: "\n" }).action,
+    "delete-managed-only",
+  );
+
+  const originalWhitespace = "\uFEFF \r\n";
+  const whitespaceMerge = mergeManagedFile({ existing: originalWhitespace, relative, version: "1.0.0", body });
+  const whitespaceInspection = inspectManagedBlock(whitespaceMerge.content, relative);
+  const whitespaceRemoved = removeManagedBlock(whitespaceMerge.content, relative, {
+    created: false,
+    prefix: whitespaceMerge.content.slice(originalWhitespace.length, whitespaceInspection.start),
+    suffix: whitespaceMerge.content.slice(whitespaceInspection.end),
+  });
+  assert.equal(whitespaceRemoved.action, "remove-managed");
+  assert.equal(whitespaceRemoved.content, originalWhitespace);
+
+  const tampered = managedOnly.replace("checked-out", "modified");
+  assert.throws(
+    () => removeManagedBlock(tampered, relative, { created: true, suffix: "\n" }),
+    { code: "MANAGED_BLOCK_MODIFIED" },
+  );
 });

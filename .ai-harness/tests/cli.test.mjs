@@ -1,10 +1,11 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { mkdtemp, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { cleanup, git, sourceRoot } from "./helpers.mjs";
+import { exists } from "../src/filesystem.mjs";
 
 const sourceEntrypoint = path.join(sourceRoot, ".ai-harness", "bin", "harness.mjs");
 
@@ -32,6 +33,46 @@ test("CLI guard uses stable allow, ask and deny exit codes", () => {
   assert.equal(runCli(sourceEntrypoint, sourceRoot, ["guard", "--", "node", "--version"], 0).status, 0);
   assert.equal(runCli(sourceEntrypoint, sourceRoot, ["guard", "--", "npm", "install", "left-pad"], 2).status, 2);
   assert.equal(runCli(sourceEntrypoint, sourceRoot, ["guard", "--", "git", "reset", "--hard"], 3).status, 3);
+});
+
+test("CLI requires confirmation and uninstalls only from an independent source", async () => {
+  const target = await mkdtemp(path.join(tmpdir(), "ai-harness-cli-uninstall-"));
+  try {
+    runCli(sourceEntrypoint, sourceRoot, ["install", "--target", target, "--json"]);
+    const entrypoint = path.join(target, ".ai-harness", "bin", "harness.mjs");
+    await mkdir(path.join(target, ".ai-harness", "work-items", "AUDIT-1"), { recursive: true });
+    await writeFile(path.join(target, ".ai-harness", "work-items", "AUDIT-1", "state.json"), "{}\n", "utf8");
+
+    const missingConfirmation = jsonOutput(runCli(sourceEntrypoint, sourceRoot, [
+      "uninstall", "--target", target, "--json",
+    ], 1), "stderr");
+    assert.equal(missingConfirmation.code, "UNINSTALL_CONFIRMATION_REQUIRED");
+    assert.equal(await exists(entrypoint), true);
+
+    const selfUninstall = jsonOutput(runCli(entrypoint, target, [
+      "uninstall", "--target", target, "--dry-run", "--json",
+    ], 1), "stderr");
+    assert.equal(selfUninstall.code, "UNINSTALL_SOURCE_EQUALS_TARGET");
+
+    const preview = jsonOutput(runCli(sourceEntrypoint, sourceRoot, [
+      "uninstall", "--target", target, "--dry-run", "--json",
+    ]));
+    assert.equal(preview.dryRun, true);
+    assert.equal(await exists(entrypoint), true);
+
+    const removed = jsonOutput(runCli(sourceEntrypoint, sourceRoot, [
+      "uninstall", "--target", target, "--confirm", "--json",
+    ]));
+    assert.ok(removed.backup);
+    assert.equal(await exists(entrypoint), false);
+    assert.equal(await exists(path.join(target, ".ai-harness", "work-items", "AUDIT-1", "state.json")), true);
+    assert.equal(await exists(path.join(target, removed.backup, ".ai-harness", "manifest.json")), true);
+
+    runCli(sourceEntrypoint, sourceRoot, ["install", "--target", target, "--json"]);
+    assert.equal(await exists(entrypoint), true);
+  } finally {
+    await cleanup(target);
+  }
 });
 
 test("installed CLI completes an iteration and passes its CI gate", async () => {

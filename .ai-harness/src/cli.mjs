@@ -5,7 +5,7 @@ import { checkProject, doctorProject } from "./checker.mjs";
 import { HarnessError, invariant } from "./errors.mjs";
 import { runRecordedCommand } from "./evidence.mjs";
 import { findProjectRoot, readJson } from "./filesystem.mjs";
-import { installRuntime, initializeProject } from "./installer.mjs";
+import { installRuntime, initializeProject, uninstallRuntime } from "./installer.mjs";
 import { classifyCommand } from "./policy.mjs";
 import {
   addAnalysisConclusion,
@@ -99,6 +99,7 @@ function helpText() {
 
 项目：
   install       安装到 --target（已有规则无损合并，普通冲突默认失败）
+  uninstall     从 --target 安全卸载（预检用 --dry-run，正式执行需 --confirm）
   init          初始化项目元数据：--mode new|existing --docs default|existing
   doctor        检查 runtime、适配器、Git 和项目初始化
   check         校验全部工作项、门禁和 Git 写入范围（CI 使用 --ci）
@@ -158,6 +159,15 @@ export async function runCli(argv, io = { stdout: console.log, stderr: console.e
     const result = await installRuntime(sourceRoot, resolve(target), {
       dryRun: flag(parsed, "dry-run"),
       force: flag(parsed, "force"),
+    });
+    emit(io, parsed, result);
+    return 0;
+  }
+  if (command === "uninstall") {
+    const target = one(parsed, "target", { required: true });
+    const result = await uninstallRuntime(sourceRoot, resolve(target), {
+      dryRun: flag(parsed, "dry-run"),
+      confirm: flag(parsed, "confirm"),
     });
     emit(io, parsed, result);
     return 0;

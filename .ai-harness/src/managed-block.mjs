@@ -159,3 +159,40 @@ export function mergeManagedFile({
     compatibleExisting: false,
   };
 }
+
+export function removeManagedBlock(
+  content,
+  relative,
+  { created = false, prefix = "", suffix = "", replacementBase64 = null } = {},
+) {
+  const value = String(content);
+  const inspection = inspectManagedBlock(value, relative);
+  if (!inspection.present) {
+    return { action: "skip", content: value, managed: false };
+  }
+  if (!inspection.hashValid) {
+    throw new HarnessError("MANAGED_BLOCK_MODIFIED", `${relative} 的 Harness 托管内容已被修改；默认拒绝删除。`, {
+      declaredHash: inspection.declaredHash,
+      actualHash: inspection.actualHash,
+    });
+  }
+
+  const removalStart = inspection.start - prefix.length;
+  const removalEnd = inspection.end + suffix.length;
+  if (
+    removalStart < 0
+    || value.slice(removalStart, inspection.start) !== prefix
+    || value.slice(inspection.end, removalEnd) !== suffix
+  ) {
+    throw new HarnessError("MANAGED_BLOCK_BOUNDARY_MODIFIED", `${relative} 的 Harness 托管边界已被修改；默认拒绝删除。`);
+  }
+  const replacement = replacementBase64 === null
+    ? ""
+    : Buffer.from(replacementBase64, "base64").toString("utf8");
+  const remaining = `${value.slice(0, removalStart)}${replacement}${value.slice(removalEnd)}`;
+  return {
+    action: created && remaining.length === 0 ? "delete-managed-only" : "remove-managed",
+    content: remaining,
+    managed: true,
+  };
+}

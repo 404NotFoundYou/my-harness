@@ -1,0 +1,171 @@
+{
+  "schemaVersion": 1,
+  "id": "HARNESS-UNINSTALL-001",
+  "type": "ITERATION",
+  "title": "新增安全可恢复卸载命令",
+  "status": "DONE",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/iteration.md",
+    ".ai-harness/policies/database.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "当前用户明确要求创建卸载命令并验证"
+  },
+  "input": {
+    "references": [
+      "用户要求为现有 Harness 安装命令增加卸载命令并完成验证"
+    ],
+    "acceptance": [
+      "uninstall 支持 dry-run 零写入；正式执行移除已安装 Runtime、托管块、project.json 和标准 CI 文件；保留项目规则、文档、work-items 与 backups；移除前生成备份；冲突或篡改时零写入失败；卸载后可以重新安装"
+    ],
+    "nonGoals": [
+      "不提供删除 work-items、backups 或项目文档的 purge 模式",
+      "不静默删除内容不同的目标文件或篡改的托管块"
+    ],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": null,
+  "baseline": {
+    "status": "complete",
+    "document": "docs/architecture/overview.md",
+    "evidence": [
+      "main@ef2fe353d390d5660b0678acb2fc6581ddbf4252，除工作项控制面外工作树干净；现有 installRuntime 提供预检、路径校验、备份和回滚；managed-block 提供结构与哈希校验；测试入口 node .ai-harness/tests/run.mjs；现有文档明确尚无卸载命令"
+    ],
+    "completedAt": "2026-08-19T02:10:49.884Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "ef2fe353d390d5660b0678acb2fc6581ddbf4252",
+      "dirty": true,
+      "changedFiles": [
+        ".ai-harness/work-items/HARNESS-UNINSTALL-001/events.jsonl",
+        ".ai-harness/work-items/HARNESS-UNINSTALL-001/state.json"
+      ],
+      "fingerprints": {
+        ".ai-harness/work-items/HARNESS-UNINSTALL-001/events.jsonl": "a7903834e5ddde80bb2a74af7040cb01c5038e793caf27b2eea6536612b8873e",
+        ".ai-harness/work-items/HARNESS-UNINSTALL-001/state.json": "6dbf91f866c68817fe4173cb3790443916e8f06ff89beefd66445201bb0dde9e"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": "docs/architecture/decisions/0003-safe-uninstall.md",
+    "evidence": [
+      "在 installer 层复用确定性路径与事务能力；CLI 正式卸载需 --confirm；卸载前校验版本、哈希、内容与类型；先全量备份后应用，失败回滚；只清理空目录；work-items/backups/项目文档始终保留"
+    ],
+    "completedAt": "2026-08-19T02:12:18.190Z"
+  },
+  "database": {
+    "impact": "none",
+    "status": "not-applicable",
+    "document": null,
+    "evidence": [
+      "卸载只操作仓库文件和托管文本，不涉及数据库、Schema、查询、事务或迁移"
+    ],
+    "completedAt": "2026-08-19T02:12:18.559Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/HARNESS-UNINSTALL-001/plan.json",
+    "approved": true,
+    "approvalRef": "用户已明确授权新增和验证卸载命令；删除范围受 ADR-0003、--confirm、备份与零写入失败门禁约束"
+  },
+  "verification": {
+    "status": "pass",
+    "evidence": [
+      "03c4a8d3-0f5e-46c3-aeed-41028e102913"
+    ]
+  },
+  "review": {
+    "status": "pass",
+    "evidence": [
+      "85507976-49ab-4874-a51b-d5db5ac507a7"
+    ],
+    "independent": true
+  },
+  "acceptance": {
+    "status": "pass",
+    "evidence": [
+      "7371273b-00e0-4578-a4a2-69c8540d7e80"
+    ]
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "pass",
+    "evidence": [
+      "624a2751-f37e-4a19-8479-5aeccb691814"
+    ]
+  },
+  "blocked": null,
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-08-19T02:09:53.768Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-08-19T02:10:49.338Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-08-19T02:11:52.843Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-08-19T02:12:49.139Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-08-19T02:12:49.546Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "VERIFYING",
+      "at": "2026-08-19T02:50:34.613Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "VERIFYING",
+      "to": "CODE_REVIEW",
+      "at": "2026-08-19T02:50:50.348Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "CODE_REVIEW",
+      "to": "READY_FOR_ACCEPTANCE",
+      "at": "2026-08-19T02:50:51.075Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "READY_FOR_ACCEPTANCE",
+      "to": "DONE",
+      "at": "2026-08-19T02:50:51.784Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-08-19T02:09:53.768Z",
+  "updatedAt": "2026-08-19T02:50:51.784Z"
+}

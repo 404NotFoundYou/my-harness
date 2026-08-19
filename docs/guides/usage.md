@@ -30,6 +30,21 @@ node <HARNESS_REPO>/.ai-harness/bin/harness.mjs install --target <TARGET> --json
 
 安装报告中的 `preservedExisting: true` 表示原文已保留；`conflictReviewRequired: true` 表示仍需在后续任务中显式处理项目规则与 Harness 规则的语义冲突，不代表需要手工拼接文件。合并后的 `AGENTS.md` 超过 `config.json` 的 `rootInstructionsMaxBytes` 时，安装在写入前失败。
 
+### 安全卸载
+
+```text
+node <HARNESS_REPO>/.ai-harness/bin/harness.mjs uninstall --target <TARGET> --dry-run --json
+node <HARNESS_REPO>/.ai-harness/bin/harness.mjs uninstall --target <TARGET> --confirm --json
+```
+
+- `--dry-run` 不写入，返回托管块、安装收据、Runtime、CI 和 `project.json` 的完整操作计划。
+- 命令必须从独立 Harness 源仓库执行；目标项目不能使用自身 Runtime 自卸载。
+- 卸载清单来自安装时生成的 `.ai-harness/install-receipt.json`；独立源和目标文件都必须与收据哈希一致，当前源中的额外文件不会进入删除清单。
+- 正式卸载必须提供 `--confirm`；所有待变更文件会先备份到结果中的 `.ai-harness/backups/<ID>/`。
+- 备份后和每项变更前都会复核目标快照；内容漂移、冲突、版本不一致、篡改或路径异常会显式失败。
+- 项目规则的非托管内容、业务文件、项目文档、`.ai-harness/work-items/` 和已有备份不会删除。
+- 卸载后可重新运行 `install`；需要继续运行状态机时再执行 `init` 重建 `project.json`。
+
 ## 2. 工作类型与参数
 
 运行任何 Runtime 命令前先判断规模：

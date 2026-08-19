@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "HARNESS-UNINSTALL-001",
+  "mode": "single",
+  "rationale": "卸载规划、托管块移除、事务执行和 CLI 契约共享同一文件归属模型，串行实现可避免删除清单与测试漂移",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "实现并验证安全可恢复卸载",
+      "module": "installer",
+      "status": "COMPLETED",
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        ".ai-harness/src/managed-block.mjs",
+        ".ai-harness/src/installer.mjs",
+        ".ai-harness/src/cli.mjs",
+        ".ai-harness/tests/managed-block.test.mjs",
+        ".ai-harness/tests/installer.test.mjs",
+        ".ai-harness/tests/cli.test.mjs",
+        "README.md",
+        "docs/guides/getting-started.md",
+        "docs/guides/usage.md",
+        "docs/architecture/overview.md",
+        "docs/architecture/decisions/0003-safe-uninstall.md"
+      ],
+      "verification": [
+        "node --test .ai-harness/tests/managed-block.test.mjs .ai-harness/tests/installer.test.mjs .ai-harness/tests/cli.test.mjs",
+        "node .ai-harness/tests/run.mjs",
+        "git diff --check"
+      ],
+      "docsImpact": [
+        "README.md",
+        "docs/guides/getting-started.md",
+        "docs/guides/usage.md",
+        "docs/architecture/overview.md",
+        "docs/architecture/decisions/0003-safe-uninstall.md"
+      ],
+      "reviewBatch": "R1",
+      "risk": "high",
+      "owner": "primary-ai",
+      "verificationStatus": "pass",
+      "reviewStatus": "pass",
+      "evidence": [
+        "5daf1741-adee-4882-866a-b0140c15ad36",
+        "718ecd46-0a30-4dcc-8ed2-9175328e5665"
+      ],
+      "deferralApproval": null
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "安全卸载事务",
+      "risk": "high",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": true
+    }
+  ],
+  "createdAt": "2026-08-19T02:12:47.422Z",
+  "updatedAt": "2026-08-19T02:50:06.317Z"
+}

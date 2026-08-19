@@ -1,10 +1,10 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { cp, mkdir, mkdtemp, readFile, symlink, writeFile } from "node:fs/promises";
+import { cp, mkdir, mkdtemp, readFile, rm, symlink, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { cleanup, git, sourceRoot } from "./helpers.mjs";
-import { installationFiles, installRuntime, initializeProject } from "../src/installer.mjs";
+import { installationFiles, installRuntime, initializeProject, uninstallRuntime } from "../src/installer.mjs";
 import { exists } from "../src/filesystem.mjs";
 import { inspectManagedBlock } from "../src/managed-block.mjs";
 
@@ -114,6 +114,251 @@ test("installed contract keeps trivial work outside the state machine without we
   }
 });
 
+test("uninstall is previewable, recoverable and preserves project data across reinstall", async () => {
+  const target = await temporaryTarget("ai-harness-uninstall-");
+  const localRules = "# Product rules\n\n- Preserve application behavior.\n";
+  try {
+    await writeFile(path.join(target, "AGENTS.md"), localRules, "utf8");
+    await installRuntime(sourceRoot, target);
+    git(target, ["init"]);
+    await initializeProject(target, { mode: "existing", docsMode: "existing" });
+    await mkdir(path.join(target, ".ai-harness", "work-items", "AUDIT-1"), { recursive: true });
+    await writeFile(path.join(target, ".ai-harness", "work-items", "AUDIT-1", "state.json"), "{}\n", "utf8");
+    await writeFile(path.join(target, "project-notes.md"), "project owned\n", "utf8");
+    const installedAgents = await readFile(path.join(target, "AGENTS.md"), "utf8");
+
+    const preview = await uninstallRuntime(sourceRoot, target, { dryRun: true });
+    assert.equal(preview.dryRun, true);
+    assert.ok(preview.operations.some((operation) => operation.relative === ".ai-harness/manifest.json" && operation.action === "remove-runtime"));
+    assert.equal(await readFile(path.join(target, "AGENTS.md"), "utf8"), installedAgents);
+    assert.equal(await exists(path.join(target, ".ai-harness", "manifest.json")), true);
+
+    const removed = await uninstallRuntime(sourceRoot, target, { confirm: true });
+    assert.ok(removed.backup);
+    const remainingAgents = await readFile(path.join(target, "AGENTS.md"), "utf8");
+    assert.equal(remainingAgents, localRules);
+    assert.equal(inspectManagedBlock(remainingAgents, "AGENTS.md").present, false);
+    assert.equal(await exists(path.join(target, ".ai-harness", "manifest.json")), false);
+    assert.equal(await exists(path.join(target, ".ai-harness", "install-receipt.json")), false);
+    assert.equal(await exists(path.join(target, ".ai-harness", "project.json")), false);
+    assert.equal(await exists(path.join(target, ".github", "workflows", "ai-harness.yml")), false);
+    assert.equal(await exists(path.join(target, ".ai-harness", "work-items", "AUDIT-1", "state.json")), true);
+    assert.equal(await exists(path.join(target, "project-notes.md")), true);
+    assert.equal(
+      await readFile(path.join(target, removed.backup, "AGENTS.md"), "utf8"),
+      installedAgents,
+    );
+    assert.equal(await exists(path.join(target, removed.backup, ".ai-harness", "manifest.json")), true);
+    assert.equal(await exists(path.join(target, removed.backup, ".ai-harness", "install-receipt.json")), true);
+
+    await installRuntime(sourceRoot, target);
+    assert.equal(await exists(path.join(target, ".ai-harness", "manifest.json")), true);
+    assert.equal(inspectManagedBlock(await readFile(path.join(target, "AGENTS.md"), "utf8"), "AGENTS.md").present, true);
+    assert.equal(await exists(path.join(target, ".ai-harness", "work-items", "AUDIT-1", "state.json")), true);
+    assert.equal(await exists(path.join(target, "project-notes.md")), true);
+  } finally {
+    await cleanup(target);
+  }
+});
+
+test("uninstall conflicts and managed-block tampering fail before any deletion", async () => {
+  const conflictTarget = await temporaryTarget("ai-harness-uninstall-conflict-");
+  try {
+    await installRuntime(sourceRoot, conflictTarget);
+    const configPath = path.join(conflictTarget, ".ai-harness", "config.json");
+    await writeFile(configPath, "{\"locallyModified\":true}\n", "utf8");
+    const agents = await readFile(path.join(conflictTarget, "AGENTS.md"), "utf8");
+
+    const preview = await uninstallRuntime(sourceRoot, conflictTarget, { dryRun: true });
+    assert.ok(preview.operations.some((operation) => operation.relative === ".ai-harness/config.json" && operation.action === "conflict"));
+    await assert.rejects(
+      () => uninstallRuntime(sourceRoot, conflictTarget, { confirm: true }),
+      { code: "UNINSTALL_CONFLICT" },
+    );
+    assert.equal(await readFile(path.join(conflictTarget, "AGENTS.md"), "utf8"), agents);
+    assert.equal(await readFile(configPath, "utf8"), "{\"locallyModified\":true}\n");
+    assert.equal(await exists(path.join(conflictTarget, ".ai-harness", "manifest.json")), true);
+    assert.equal(await exists(path.join(conflictTarget, ".ai-harness", "backups")), false);
+  } finally {
+    await cleanup(conflictTarget);
+  }
+
+  const tamperedTarget = await temporaryTarget("ai-harness-uninstall-tampered-");
+  try {
+    await installRuntime(sourceRoot, tamperedTarget);
+    const agentsPath = path.join(tamperedTarget, "AGENTS.md");
+    const tampered = (await readFile(agentsPath, "utf8")).replace("## 启动协议", "## modified");
+    await writeFile(agentsPath, tampered, "utf8");
+
+    await assert.rejects(
+      () => uninstallRuntime(sourceRoot, tamperedTarget, { confirm: true }),
+      { code: "MANAGED_BLOCK_MODIFIED" },
+    );
+    assert.equal(await readFile(agentsPath, "utf8"), tampered);
+    assert.equal(await exists(path.join(tamperedTarget, ".ai-harness", "manifest.json")), true);
+    assert.equal(await exists(path.join(tamperedTarget, ".ai-harness", "backups")), false);
+  } finally {
+    await cleanup(tamperedTarget);
+  }
+});
+
+test("uninstall version mismatch fails closed without recommending self-uninstall", async () => {
+  const target = await temporaryTarget("ai-harness-uninstall-version-");
+  try {
+    await installRuntime(sourceRoot, target);
+    const manifestPath = path.join(target, ".ai-harness", "manifest.json");
+    const manifest = JSON.parse(await readFile(manifestPath, "utf8"));
+    manifest.version = "0.0.0-test-mismatch";
+    const mismatched = `${JSON.stringify(manifest, null, 2)}\n`;
+    await writeFile(manifestPath, mismatched, "utf8");
+
+    await assert.rejects(
+      () => uninstallRuntime(sourceRoot, target, { confirm: true }),
+      (error) => {
+        assert.equal(error.code, "UNINSTALL_VERSION_MISMATCH");
+        assert.match(error.message, /独立 Harness 源仓库/);
+        return true;
+      },
+    );
+    assert.equal(await readFile(manifestPath, "utf8"), mismatched);
+    assert.equal(await exists(path.join(target, ".ai-harness", "backups")), false);
+  } finally {
+    await cleanup(target);
+  }
+});
+
+test("uninstall restores pre-existing whitespace bytes instead of deleting the rules file", async () => {
+  const target = await temporaryTarget("ai-harness-uninstall-whitespace-");
+  const original = "\uFEFF \r\n";
+  try {
+    await writeFile(path.join(target, "AGENTS.md"), original, "utf8");
+    await installRuntime(sourceRoot, target);
+    await uninstallRuntime(sourceRoot, target, { confirm: true });
+
+    assert.equal(await readFile(path.join(target, "AGENTS.md"), "utf8"), original);
+  } finally {
+    await cleanup(target);
+  }
+});
+
+test("uninstall uses the install receipt instead of a dirty source directory listing", async () => {
+  const source = await temporaryTarget("ai-harness-uninstall-source-");
+  const target = await temporaryTarget("ai-harness-uninstall-receipt-");
+  const policyRelative = ".ai-harness/src/policy.mjs";
+  const extraRelative = ".ai-harness/local-extra.txt";
+  try {
+    await cp(path.join(sourceRoot, ".ai-harness"), path.join(source, ".ai-harness"), { recursive: true });
+    await mkdir(path.join(source, ".github", "workflows"), { recursive: true });
+    await cp(
+      path.join(sourceRoot, ".github", "workflows", "ai-harness.yml"),
+      path.join(source, ".github", "workflows", "ai-harness.yml"),
+    );
+    await installRuntime(source, target);
+    await writeFile(path.join(source, extraRelative), "source-local\n", "utf8");
+    await writeFile(path.join(target, extraRelative), "source-local\n", "utf8");
+    await rm(path.join(source, policyRelative));
+
+    await assert.rejects(
+      () => uninstallRuntime(source, target, { confirm: true }),
+      { code: "UNINSTALL_SOURCE_MISMATCH" },
+    );
+    assert.equal(await exists(path.join(target, ".ai-harness", "manifest.json")), true);
+    assert.equal(await readFile(path.join(target, extraRelative), "utf8"), "source-local\n");
+
+    await cp(path.join(sourceRoot, policyRelative), path.join(source, policyRelative));
+    await uninstallRuntime(source, target, { confirm: true });
+    assert.equal(await exists(path.join(target, ".ai-harness", "manifest.json")), false);
+    assert.equal(await readFile(path.join(target, extraRelative), "utf8"), "source-local\n");
+  } finally {
+    await cleanup(source);
+    await cleanup(target);
+  }
+});
+
+test("uninstall revalidates target snapshots after backup before deleting", async () => {
+  const target = await temporaryTarget("ai-harness-uninstall-drift-");
+  try {
+    await installRuntime(sourceRoot, target);
+    const agentsPath = path.join(target, "AGENTS.md");
+    const concurrentContent = `${await readFile(agentsPath, "utf8")}\n# Concurrent project save\n`;
+
+    await assert.rejects(
+      () => uninstallRuntime(sourceRoot, target, {
+        confirm: true,
+        hooks: {
+          afterBackup: async () => writeFile(agentsPath, concurrentContent, "utf8"),
+        },
+      }),
+      { code: "UNINSTALL_TARGET_CHANGED" },
+    );
+    assert.equal(await readFile(agentsPath, "utf8"), concurrentContent);
+    assert.equal(await exists(path.join(target, ".ai-harness", "manifest.json")), true);
+    assert.equal(await exists(path.join(target, ".ai-harness", "backups")), false);
+  } finally {
+    await cleanup(target);
+  }
+});
+
+test("uninstall rolls back partial application and retains backup if rollback fails", async () => {
+  const rollbackTarget = await temporaryTarget("ai-harness-uninstall-rollback-");
+  try {
+    await installRuntime(sourceRoot, rollbackTarget);
+    const before = await readInstructions(rollbackTarget);
+    const configBefore = await readFile(path.join(rollbackTarget, ".ai-harness", "config.json"), "utf8");
+    await assert.rejects(
+      () => uninstallRuntime(sourceRoot, rollbackTarget, {
+        confirm: true,
+        hooks: {
+          beforeApply: ({ operation }) => {
+            if (operation.relative === ".ai-harness/src/policy.mjs") throw new Error("injected apply failure");
+          },
+        },
+      }),
+      { code: "UNINSTALL_ROLLED_BACK" },
+    );
+    assert.deepEqual(await readInstructions(rollbackTarget), before);
+    assert.equal(await readFile(path.join(rollbackTarget, ".ai-harness", "config.json"), "utf8"), configBefore);
+    assert.equal(await exists(path.join(rollbackTarget, ".ai-harness", "manifest.json")), true);
+    assert.equal(await exists(path.join(rollbackTarget, ".ai-harness", "install-receipt.json")), true);
+    assert.equal(await exists(path.join(rollbackTarget, ".ai-harness", "backups")), false);
+  } finally {
+    await cleanup(rollbackTarget);
+  }
+
+  const failedRollbackTarget = await temporaryTarget("ai-harness-uninstall-rollback-failed-");
+  try {
+    await installRuntime(sourceRoot, failedRollbackTarget);
+    const concurrentContent = "# Concurrent content after uninstall started\n";
+    let failure;
+    try {
+      await uninstallRuntime(sourceRoot, failedRollbackTarget, {
+        confirm: true,
+        hooks: {
+          beforeApply: ({ operation }) => {
+            if (operation.relative === ".ai-harness/src/policy.mjs") throw new Error("injected apply failure");
+          },
+          beforeRollback: async ({ operation }) => {
+            if (operation.relative === "AGENTS.md") {
+              await writeFile(path.join(failedRollbackTarget, "AGENTS.md"), concurrentContent, "utf8");
+            }
+          },
+        },
+      });
+    } catch (error) {
+      failure = error;
+    }
+    assert.equal(failure?.code, "UNINSTALL_ROLLBACK_FAILED");
+    assert.ok(failure?.details?.backup);
+    assert.equal(await readFile(path.join(failedRollbackTarget, "AGENTS.md"), "utf8"), concurrentContent);
+    assert.equal(
+      await exists(path.join(failedRollbackTarget, failure.details.backup, "AGENTS.md")),
+      true,
+    );
+  } finally {
+    await cleanup(failedRollbackTarget);
+  }
+});
+
 test("modified managed content fails closed and force repairs only the managed block", async () => {
   const target = await temporaryTarget("ai-harness-managed-repair-");
   const localRules = "# Local rules\n\n- Never rename the public package.\n";
@@ -198,6 +443,25 @@ test("installer rejects a source workflow reached through a symlink or junction"
     await cleanup(source);
     await cleanup(target);
     await cleanup(outside);
+  }
+});
+
+test("installer rejects a symlinked or junction-backed runtime root", async (context) => {
+  const source = await temporaryTarget("ai-harness-symlink-runtime-source-");
+  const target = await temporaryTarget("ai-harness-symlink-runtime-target-");
+  try {
+    try {
+      await symlink(path.join(sourceRoot, ".ai-harness"), path.join(source, ".ai-harness"), "junction");
+    } catch (error) {
+      context.skip(`当前平台无法创建测试链接：${error.code}`);
+      return;
+    }
+
+    await assert.rejects(() => installRuntime(source, target), { code: "SOURCE_SYMLINK" });
+    assert.equal(await exists(path.join(target, "AGENTS.md")), false);
+  } finally {
+    await cleanup(source);
+    await cleanup(target);
   }
 });
 
