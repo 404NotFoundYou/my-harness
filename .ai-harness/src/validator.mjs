@@ -3,9 +3,12 @@ import {
   BASE_TRANSITIONS,
   CONCLUSION_STATUSES,
   POLICY_FLAGS,
+  requiredVerificationStages,
   RESULT_STATUSES,
   TASK_STATUSES,
   TERMINAL_STATUSES,
+  usesVerificationPipeline,
+  VERIFICATION_STAGES,
   WORK_ID_PATTERN,
   WORK_STATUSES,
   WORK_TYPES,
@@ -87,6 +90,25 @@ export function collectWorkItemShapeErrors(item) {
     if (!validResult(result)) errors.push(`${name} 结构无效。`);
   }
   if (typeof item.review?.independent !== "boolean") errors.push("review.independent 必须是布尔值。");
+  if (item.verification?.stages !== undefined) {
+    if (!Array.isArray(item.verification.stages)) errors.push("verification.stages 必须是数组。");
+    else {
+      for (const stage of item.verification.stages) {
+        if (!isObject(stage) || !VERIFICATION_STAGES.some((known) => known.stage === stage.stage)) {
+          errors.push("verification.stages 包含未知子阶段。");
+        } else if (!RESULT_STATUSES.includes(stage.status)) {
+          errors.push(`验证子阶段 ${stage.stage} 状态无效。`);
+        } else if (!Array.isArray(stage.evidence)) {
+          errors.push(`验证子阶段 ${stage.stage} evidence 必须是数组。`);
+        } else if (stage.command !== undefined && stage.command !== null && typeof stage.command !== "string") {
+          errors.push(`验证子阶段 ${stage.stage} command 必须是字符串或 null。`);
+        }
+      }
+      if (new Set(item.verification.stages.map((stage) => stage.stage)).size !== item.verification.stages.length) {
+        errors.push("verification.stages 子阶段不得重复。");
+      }
+    }
+  }
   if (!Array.isArray(item.analysis?.conclusions) || !Array.isArray(item.analysis?.unknowns)) {
     errors.push("analysis conclusions/unknowns 必须是数组。");
   }
@@ -355,6 +377,12 @@ export async function assertTransitionGates(root, item, plan, target) {
     return;
   }
   if (target === "CODE_REVIEW") {
+    if (usesVerificationPipeline(item)) {
+      const required = requiredVerificationStages(item);
+      const statusByStage = new Map((item.verification.stages || []).map((stage) => [stage.stage, stage.status]));
+      const missing = required.filter((name) => statusByStage.get(name) !== "pass");
+      invariant(missing.length === 0, "VERIFICATION_PIPELINE_INCOMPLETE", `验证流水线未完成，缺少通过阶段：${missing.join(", ")}`, { missing });
+    }
     invariant(item.verification.status === "pass" && nonEmptyStrings(item.verification.evidence), "FINAL_VERIFICATION_REQUIRED", "工作项验证尚未通过。" );
     invariant(["pass", "not-applicable"].includes(item.documentation.status) && nonEmptyStrings(item.documentation.evidence), "DOCUMENTATION_REQUIRED", "文档同步尚未确认。" );
     return;

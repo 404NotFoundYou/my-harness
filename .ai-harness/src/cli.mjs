@@ -116,7 +116,7 @@ function helpText() {
   task-add      增加任务
   plan-approve  批准计划
   task-update   推进任务状态
-  record        记录验证、审查、验收、文档或分析结果
+  record        记录验证、审查、验收、文档或分析结果（流水线用 --stage；reproduction/regression 用 --command 引用 run 证据）
   analysis-add  增加带状态的分析结论
   transition    推进工作项状态
 
@@ -332,6 +332,8 @@ export async function runCli(argv, io = { stdout: console.log, stderr: console.e
       summary: one(parsed, "evidence", { required: true }),
       taskId: one(parsed, "task"),
       independent: flag(parsed, "independent"),
+      stage: one(parsed, "stage"),
+      commandRef: one(parsed, "command"),
     });
     emit(io, parsed, result);
     return 0;

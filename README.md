@@ -80,6 +80,36 @@ node .ai-harness/bin/harness.mjs start `
 
 后续通过 CLI 推进基线、技术设计、数据库决策、计划、任务、验证、Code Review 和验收。完整命令见[使用指南](docs/guides/usage.md)。
 
+## AI 代码生成验证流水线
+
+声明 `codegen` 标志的工作项，`VERIFYING` 必须逐段通过有序验证流水线，Runtime 才允许进入 `CODE_REVIEW`：
+
+```powershell
+node .ai-harness/bin/harness.mjs record --id ITER-001 --kind verification --stage static   --status pass --evidence "node --check 通过；静态安全扫描 0 项"
+node .ai-harness/bin/harness.mjs record --id ITER-001 --kind verification --stage sandbox  --status pass --evidence "隔离环境编译+执行，退出码 0"
+node .ai-harness/bin/harness.mjs record --id ITER-001 --kind verification --stage contract --status pass --evidence "功能与接口契约断言全通过"
+node .ai-harness/bin/harness.mjs record --id ITER-001 --kind verification --stage eval     --status pass --evidence "LLM Judge 语义与回归判定通过（附理由/引用）"
+node .ai-harness/bin/harness.mjs record --id ITER-001 --kind verification --stage browser  --status pass --evidence "浏览器实体探针跑通核心用户流"
+```
+
+子阶段固定有序 `static → sandbox → contract → eval → browser`；乱序、缺段或聚合状态与证据不一致都会被确定性拒绝。`browser` 在工作项同时带 `frontend` 标志时必需（app 可打成 H5，UI 必须在真实浏览器探针下跑通）。Runtime 只编排、强制顺序并校验回传证据；SAST、隔离沙箱、浏览器探针与 LLM Judge 的实际执行由外部工具/CI 完成——Runtime 本身不构成沙箱。详见 `.ai-harness/policies/verification.md` 与 `docs/architecture/decisions/0004-verification-pipeline.md`。
+
+## BUG 修复复现流水线
+
+所有 `BUGFIX` 工作项的 `VERIFYING` 必须逐段通过 `static → sandbox → reproduction → regression`（`browser` 在带 `frontend` 时必需）。其中 `reproduction`（同一复现路径转绿）与 `regression`（既有测试全绿）**必须由一次真实的 `harness run` 命令证据支撑**：
+
+```powershell
+# 真跑复现测试，得到命令证据 ID
+node .ai-harness/bin/harness.mjs run --id BUG-001 -- node --test tests/repro-bug-001.test.mjs
+# 用 --command 引用该通过证据登记子阶段
+node .ai-harness/bin/harness.mjs record --id BUG-001 --kind verification --stage reproduction --status pass --evidence "复现路径已转绿" --command <上一步证据ID>
+# 回归同理：真跑全量测试后引用
+node .ai-harness/bin/harness.mjs run --id BUG-001 -- npm test
+node .ai-harness/bin/harness.mjs record --id BUG-001 --kind verification --stage regression --status pass --evidence "既有测试全绿" --command <证据ID>
+```
+
+阶段记为 `pass` 时被引用命令必须真实通过（退出码 0），否则确定性拒绝——比代码生成流水线的「只留证」更强。建议在 `IMPLEMENTING` 先用 `harness run` 记录一次失败复现（红）再实施修复。详见 `.ai-harness/policies/bugfix.md` 与 `docs/architecture/decisions/0005-bugfix-verification-pipeline.md`。
+
 ## 强制边界
 
 Runtime 能确定性拒绝非法状态跳跃、未完成数据库设计、无批准计划、任务依赖/写入冲突、错误阶段证据、伪造证据引用、非终态 CI、危险命令和安装覆盖冲突。
