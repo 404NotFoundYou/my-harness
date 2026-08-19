@@ -12,11 +12,16 @@ import {
 import { getGitBaseline } from "./git.mjs";
 import { HarnessError, invariant } from "./errors.mjs";
 import {
+  aggregateVerificationStatus,
   EVIDENCE_KINDS,
   isDevelopmentType,
+  isRunBackedStage,
   nowIso,
   POLICY_FLAGS,
+  requiredVerificationStages,
   RESULT_STATUSES,
+  usesVerificationPipeline,
+  VERIFICATION_STAGES,
   WORK_ID_PATTERN,
   WORK_TYPES,
 } from "./constants.mjs";
@@ -340,7 +345,7 @@ export async function updateTaskStatus(root, id, taskId, target, { reason = null
   });
 }
 
-function createEvidenceEvent({ id, taskId = null, kind, status, summary, command = null, independent = false }) {
+function createEvidenceEvent({ id, taskId = null, kind, status, summary, command = null, independent = false, stage = null }) {
   return {
     schemaVersion: 1,
     id: randomUUID(),
@@ -352,6 +357,7 @@ function createEvidenceEvent({ id, taskId = null, kind, status, summary, command
     timestamp: nowIso(),
     command,
     independent,
+    stage,
   };
 }
 
@@ -366,10 +372,38 @@ function assertResultStage(item, kind) {
   invariant(!requiredStage || item.status === requiredStage, "WRONG_STAGE", `${kind} 结果只能在 ${requiredStage} 阶段记录。`);
 }
 
-export async function recordResult(root, id, { kind, status, summary, taskId = null, independent = false }) {
+async function findEvidenceById(paths, evidenceId) {
+  let raw = "";
+  try {
+    raw = await readFile(paths.evidence, "utf8");
+  } catch (error) {
+    if (error.code !== "ENOENT") throw error;
+    return null;
+  }
+  for (const line of raw.split(/\r?\n/)) {
+    if (!line.trim()) continue;
+    const event = JSON.parse(line);
+    if (event.id === evidenceId) return event;
+  }
+  return null;
+}
+
+export async function recordResult(root, id, { kind, status, summary, taskId = null, independent = false, stage = null, commandRef = null }) {
   invariant(EVIDENCE_KINDS.filter((value) => value !== "command").includes(kind), "INVALID_EVIDENCE_KIND", `不支持的证据类型：${kind}`);
   invariant(RESULT_STATUSES.includes(status), "INVALID_RESULT_STATUS", `无效结果状态：${status}`);
   invariant(summary?.trim(), "EVIDENCE_REQUIRED", "证据摘要不能为空。" );
+  if (stage !== null) {
+    invariant(kind === "verification", "STAGE_KIND_MISMATCH", "只有 verification 证据支持 --stage。" );
+    invariant(taskId === null, "STAGE_TASK_CONFLICT", "验证子阶段是工作项级证据，不能绑定任务。" );
+    invariant(VERIFICATION_STAGES.some((entry) => entry.stage === stage), "INVALID_VERIFICATION_STAGE", `未知验证子阶段：${stage}`);
+    if (isRunBackedStage(stage)) {
+      invariant(typeof commandRef === "string" && commandRef.trim(), "STAGE_RUN_REQUIRED", `${stage} 子阶段必须引用一次 harness run 的通过命令证据（--command <id>）。`);
+    } else {
+      invariant(commandRef === null, "STAGE_COMMAND_NOT_ALLOWED", `${stage} 子阶段不接受 --command。`);
+    }
+  } else {
+    invariant(commandRef === null, "STAGE_COMMAND_NOT_ALLOWED", "--command 只能与验证子阶段一起使用。" );
+  }
   const paths = await workItemPaths(root, id);
   return withFileLock(paths.lock, async () => {
     const item = await readJson(paths.state);
@@ -389,7 +423,31 @@ export async function recordResult(root, id, { kind, status, summary, taskId = n
       assertResultStage(item, kind);
     }
 
-    const event = createEvidenceEvent({ id, taskId, kind, status, summary, independent });
+    // codegen 工作项或 BUGFIX 类型的工作项级 verification 必须走子阶段流水线，禁止裸记录绕过。
+    if (kind === "verification" && !taskId && usesVerificationPipeline(item)) {
+      invariant(stage !== null, "VERIFICATION_STAGE_REQUIRED", "该工作项必须用 --stage 记录验证子阶段。" );
+    }
+
+    // 顺序守卫：把某阶段记为 pass 前，其之前的所有“必需”阶段必须已 pass。
+    if (stage !== null && status === "pass") {
+      const requiredNames = requiredVerificationStages(item);
+      const order = VERIFICATION_STAGES.map((entry) => entry.stage);
+      const priorRequired = order.slice(0, order.indexOf(stage)).filter((name) => requiredNames.includes(name));
+      const statusByStage = new Map((item.verification.stages || []).map((entry) => [entry.stage, entry.status]));
+      const missing = priorRequired.filter((name) => statusByStage.get(name) !== "pass");
+      invariant(missing.length === 0, "VERIFICATION_STAGE_ORDER", `子阶段 ${stage} 之前的必需阶段尚未通过：${missing.join(", ")}`, { missing });
+    }
+
+    // run-backed 阶段（reproduction/regression）必须引用一条真实通过的命令证据。
+    if (stage !== null && isRunBackedStage(stage)) {
+      const commandEvent = await findEvidenceById(paths, commandRef);
+      invariant(commandEvent && commandEvent.kind === "command" && commandEvent.workItemId === id, "STAGE_RUN_EVIDENCE_INVALID", `--command 未指向本工作项的命令证据：${commandRef}`);
+      if (status === "pass") {
+        invariant(commandEvent.status === "pass", "STAGE_RUN_EVIDENCE_NOT_PASSING", `${stage} 记为 pass 需引用通过的命令证据，但 ${commandRef} 未通过。`);
+      }
+    }
+
+    const event = createEvidenceEvent({ id, taskId, kind, status, summary, independent, stage });
     await appendJsonLine(paths.evidence, event);
 
     if (task) {
@@ -399,6 +457,21 @@ export async function recordResult(root, id, { kind, status, summary, taskId = n
       plan.updatedAt = nowIso();
       assertValidPlan(plan, id, { requireContent: true });
       await atomicWriteJson(paths.plan, plan);
+    } else if (stage !== null) {
+      const stages = item.verification.stages || (item.verification.stages = []);
+      let entry = stages.find((candidate) => candidate.stage === stage);
+      if (!entry) {
+        entry = { stage, status, evidence: [], command: null };
+        stages.push(entry);
+      } else {
+        entry.status = status;
+      }
+      entry.evidence.push(event.id);
+      // 命令证据 id 只存 stage.command，不混入 evidence[]（保持 evidence[] 全为 verification-kind）。
+      if (isRunBackedStage(stage)) entry.command = commandRef;
+      // 顶层同时收录，使既有门禁的 nonEmptyStrings(verification.evidence) 与引用校验成立。
+      item.verification.evidence.push(event.id);
+      item.verification.status = aggregateVerificationStatus(stages, requiredVerificationStages(item));
     } else if (kind !== "checkpoint") {
       item[kind].status = status;
       item[kind].evidence.push(event.id);

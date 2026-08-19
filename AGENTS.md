@@ -68,7 +68,7 @@ node .ai-harness/bin/harness.mjs
 仅 `NON_TRIVIAL` 任务开始前必须：
 
 1. 运行 `node .ai-harness/bin/harness.mjs doctor --json`。失败时先修复 runtime/初始化问题；禁止静默退回纯提示词流程。
-2. 判定工作类型和适用标志：`database`、`frontend`、`mobile`、`api`、`multi-agent`。
+2. 判定工作类型和适用标志：`database`、`frontend`、`mobile`、`api`、`multi-agent`、`codegen`。
 3. 运行 `node .ai-harness/bin/harness.mjs policies --type <TYPE> [--flag <FLAG>] --json`，完整读取返回的专项策略。
 4. 创建工作项并记录权威输入、验收、非目标和授权来源。
 5. 所有状态、计划、任务、证据和 Review 必须通过 CLI 更新；禁止直接编辑 `.ai-harness/work-items/**/state.json`、`plan.json`、`events.jsonl` 或 `evidence.jsonl`。
@@ -171,6 +171,8 @@ node .ai-harness/bin/harness.mjs run --id <WORK-ID> [--task <TASK-ID>] -- <COMMA
 - 前端/Figma 规则见 `.ai-harness/policies/frontend.md`；业务正确性与 UI 还原分别验证。
 - 非原生跨平台规则见 `.ai-harness/policies/mobile.md`；任一目标平台无法保持业务语义时阻塞并询问，不得单端伪完成。
 - API 契约见 `.ai-harness/policies/api.md`；数据库规则见 `.ai-harness/policies/database.md`。
+- 声明 `codegen` 标志的 AI 代码生成工作项，`VERIFYING` 必须逐段通过有序验证流水线（static→sandbox→contract→eval→browser，`browser` 在 `frontend` 时必需），规则见 `.ai-harness/policies/verification.md`；Runtime 只编排与留证，实际执行由外部工具/CI 完成。
+- 所有 `BUGFIX` 工作项的 `VERIFYING` 必须逐段通过 static→sandbox→reproduction→regression（`browser` 在 `frontend` 时必需）；`reproduction`/`regression` 必须由一次 `harness run` 的通过命令证据支撑（`record --stage <stage> --command <证据ID>`），规则见 `.ai-harness/policies/bugfix.md`。
 
 ## 8. 检查点与最终声明
 

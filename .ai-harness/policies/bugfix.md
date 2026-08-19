@@ -18,3 +18,11 @@
 - 修复后用同一复现路径确认恢复预期，再验证调用方、边界、平台和已有测试。
 - 每次 BUG 修改或 Review 返工后必须重新运行受影响验证并立即 Code Review；批次大小固定为 1。
 - 记录根因、修复、影响、命令结果、审查、未验证项和文档影响；无文档影响写 `N/A: 理由`。
+
+## 验证流水线（强制）
+
+- 所有 BUGFIX 工作项的 `VERIFYING` 必须逐段通过有序验证流水线，Runtime 才允许进入 `CODE_REVIEW`：`static`（语法安全）→ `sandbox`（隔离编译执行）→ `reproduction`（同一复现路径转绿）→ `regression`（既有测试全绿，无回归），`browser`（浏览器实体探针）在同时带 `frontend` 时必需。
+- 每段用 `record --kind verification --stage <stage>` 逐段留证；禁止用不带 `--stage` 的裸 verification 记录绕过。乱序或缺段必须被拒绝。
+- `reproduction` 与 `regression` 必须由一次 `harness run` 的**真实通过命令证据**支撑，记录时用 `--command <证据ID>` 引用；记为 `pass` 时被引用命令必须真实通过（退出码 0）。禁止用「改后不报错」「未运行」冒充绿。
+- 应当在 `IMPLEMENTING` 阶段先用 `harness run` 记录一次**失败的复现**（红）再实施修复；无法建立失败复现时记录原因与等价证据。
+- 通用流水线规则见 `.ai-harness/policies/verification.md`；Runtime 只编排、强制顺序与完整性、校验回传证据，不构成隔离沙箱。

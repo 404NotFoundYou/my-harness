@@ -8,7 +8,7 @@
   "byType": {
     "NEW_PROJECT": ["new-project.md", "database.md"],
     "ITERATION": ["iteration.md", "database.md"],
-    "BUGFIX": ["bugfix.md"],
+    "BUGFIX": ["bugfix.md", "verification.md"],
     "ANALYSIS": ["analysis.md"]
   },
   "byFlag": {
@@ -16,6 +16,7 @@
     "frontend": ["frontend.md"],
     "mobile": ["mobile.md"],
     "api": ["api.md"],
-    "multi-agent": ["multi-agent.md"]
+    "multi-agent": ["multi-agent.md"],
+    "codegen": ["verification.md"]
   }
 }

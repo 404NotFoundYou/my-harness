@@ -1,6 +1,12 @@
 import { readdir, readFile, stat } from "node:fs/promises";
 import path from "node:path";
-import { EVIDENCE_KINDS, RESULT_STATUSES, TERMINAL_STATUSES } from "./constants.mjs";
+import {
+  aggregateVerificationStatus,
+  EVIDENCE_KINDS,
+  requiredVerificationStages,
+  RESULT_STATUSES,
+  TERMINAL_STATUSES,
+} from "./constants.mjs";
 import { changedFilesSince, fileFingerprint, getGitBaseline } from "./git.mjs";
 import { exists, readJson } from "./filesystem.mjs";
 import { inspectManagedBlock, normalizeManagedBody } from "./managed-block.mjs";
@@ -254,6 +260,30 @@ async function collectEvidenceErrors(root, item, plan) {
   for (const kind of ["verification", "review", "acceptance", "analysis", "documentation"]) {
     const result = item[kind];
     assertReferences(result.evidence, { kind, label: `工作项 ${kind}` });
+    if (kind === "verification" && Array.isArray(result.stages) && result.stages.length > 0) {
+      // 分阶段流水线：逐子阶段比对状态，并核对聚合状态。
+      for (const stage of result.stages) {
+        const latestStage = events.findLast(
+          (event) => event.kind === "verification" && (event.taskId ?? null) === null && event.stage === stage.stage,
+        );
+        if (!latestStage || latestStage.status !== stage.status) {
+          errors.push(`验证子阶段 ${stage.stage} 状态与最新证据不一致。`);
+        }
+        if (stage.command !== undefined && stage.command !== null) {
+          const commandEvent = byId.get(stage.command);
+          if (!commandEvent || commandEvent.kind !== "command") {
+            errors.push(`验证子阶段 ${stage.stage} 的命令证据不存在或类型错误：${stage.command}`);
+          } else if (stage.status === "pass" && commandEvent.status !== "pass") {
+            errors.push(`验证子阶段 ${stage.stage} 记为 pass 但其命令证据未通过。`);
+          }
+        }
+      }
+      const expected = aggregateVerificationStatus(result.stages, requiredVerificationStages(item));
+      if (result.status !== expected) {
+        errors.push(`verification 聚合状态与子阶段不一致，应为 ${expected}。`);
+      }
+      continue;
+    }
     const latest = events.findLast((event) => event.kind === kind && (event.taskId ?? null) === null);
     if (result.status !== "pending" && (!latest || latest.status !== result.status)) {
       errors.push(`工作项 ${kind} 状态与最新证据不一致。`);

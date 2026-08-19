@@ -14,7 +14,8 @@
     "summary": {"type": ["string", "null"]},
     "timestamp": {"type": "string", "format": "date-time"},
     "command": {"type": ["object", "null"]},
-    "independent": {"type": "boolean"}
+    "independent": {"type": "boolean"},
+    "stage": {"type": ["string", "null"], "enum": ["static", "sandbox", "contract", "eval", "reproduction", "regression", "browser", null]}
   },
   "additionalProperties": true
 }
