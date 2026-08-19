@@ -32,7 +32,17 @@ node <HARNESS_REPO>/.ai-harness/bin/harness.mjs install --target <TARGET> --json
 
 ## 2. 工作类型与参数
 
-先运行策略路由并完整读取返回文件：
+运行任何 Runtime 命令前先判断规模：
+
+| 规模 | 边界 | 执行方式 |
+| --- | --- | --- |
+| `TRIVIAL_READONLY` | 单一事实，可由直接读取或少量无副作用确定性命令回答 | 直接检查并报告；不运行 Runtime 命令，不创建工作项 |
+| `TRIVIAL_EDIT` | 单文件机械修改，且不改变行为、API、Schema、依赖、配置、安全或发布 | 读取上下文、修改、运行一个最窄验证并报告；不运行 Runtime 命令 |
+| `NON_TRIVIAL` | 其他工作，以及所有 BUG | 执行后续完整工作项流程 |
+
+分类不确定时使用 `NON_TRIVIAL`。禁止将同一目标拆成多个轻量任务规避门禁。删除、覆盖、Git 历史修改、部署、发布、生产数据、费用、外部消息和凭据变更的授权要求不因规模分类而改变。
+
+仅 `NON_TRIVIAL` 先运行策略路由并完整读取返回文件：
 
 ```text
 node .ai-harness/bin/harness.mjs policies --type <TYPE> [--flag <FLAG>] --json
@@ -153,7 +163,7 @@ node .ai-harness/bin/harness.mjs transition --id <ID> --to DONE --json
 node .ai-harness/bin/harness.mjs check --ci --json
 ```
 
-无文档影响时使用 `documentation --status not-applicable`，但仍需给出理由。`check --ci` 拒绝所有非 `DONE`/`ANSWERED` 工作项。
+无文档影响时使用 `documentation --status not-applicable`，但仍需给出理由。`check --ci` 拒绝所有非 `DONE`/`ANSWERED` 工作项；该命令是非琐碎工作项和合并前门禁，不用于轻量任务的局部结果报告。
 
 ## 4. 分析型状态流
 

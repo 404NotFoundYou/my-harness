@@ -50,7 +50,9 @@ node .ai-harness/bin/harness.mjs doctor --json
 
 ## 开始工作
 
-每个非琐碎任务先解析策略，再创建唯一工作项：
+先判断任务规模。单一事实或无副作用确定性查询直接执行；不改变行为、API、Schema、依赖、配置、安全或发布的单文件机械修改，直接修改并运行一个最窄验证。这两类轻量任务不运行 Runtime 命令、不创建工作项。
+
+其他任务以及所有 BUG 都属于非琐碎工作，先解析策略，再创建唯一工作项：
 
 ```powershell
 node .ai-harness/bin/harness.mjs policies --type ITERATION --flag api --json

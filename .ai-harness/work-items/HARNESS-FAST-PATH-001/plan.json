@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "HARNESS-FAST-PATH-001",
+  "mode": "single",
+  "rationale": "规则、模板、指南和契约测试共享同一条轻量路径语义，串行修改可避免来源漂移",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "明确并验证 trivial 快速路径",
+      "module": "runtime-contract",
+      "status": "COMPLETED",
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        "AGENTS.md",
+        ".ai-harness/templates/instructions/AGENTS.md",
+        ".ai-harness/policies/core.md",
+        ".ai-harness/policies/security.md",
+        ".ai-harness/tests/installer.test.mjs",
+        "README.md",
+        "docs/guides/getting-started.md",
+        "docs/guides/usage.md",
+        "docs/architecture/overview.md",
+        "docs/architecture/decisions/0002-trivial-task-fast-path.md"
+      ],
+      "verification": [
+        "node .ai-harness/tests/run.mjs",
+        "git diff --check"
+      ],
+      "docsImpact": [
+        "README.md",
+        "docs/guides/getting-started.md",
+        "docs/guides/usage.md",
+        "docs/architecture/overview.md",
+        "docs/architecture/decisions/0002-trivial-task-fast-path.md"
+      ],
+      "reviewBatch": "R1",
+      "risk": "medium",
+      "owner": "primary-ai",
+      "verificationStatus": "pass",
+      "reviewStatus": "pass",
+      "evidence": [
+        "9fd4b237-2127-4ed2-beb3-e82c4ae3f829",
+        "51370701-5891-4a7a-90e4-4596a074f571",
+        "330c8e19-5912-4938-9cd6-ac5087affe93",
+        "4cb3c2df-a9a7-49b9-a2a7-354708568289"
+      ],
+      "deferralApproval": null
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "轻量任务快速路径",
+      "risk": "medium",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": false
+    }
+  ],
+  "createdAt": "2026-08-19T01:51:14.508Z",
+  "updatedAt": "2026-08-19T01:56:18.623Z"
+}

@@ -46,12 +46,14 @@ Codex 原生读取本文件；Claude Code 由 `CLAUDE.md` 的 `@AGENTS.md` 导�
 - `BUGFIX`：恢复偏离既定预期的现有行为，不新增功能。
 - `ANALYSIS`：基于当前项目证据回答业务实现、能力或技术方案，不修改产品文件。
 
-规模判定：
+执行任何 Runtime 命令前先做一次规模判定，并选择且只选择一条路径：
 
-- `TRIVIAL_READONLY`：单一事实查询或无副作用确定性命令，可以不创建工作项。
-- `TRIVIAL_EDIT`：单文件机械修改，且不改变业务行为、API、Schema、依赖、配置、安全或发布；仍需最窄验证。
-- 其他均为 `NON_TRIVIAL`，必须使用 runtime 工作项。
-- 所有 BUG 均使用 `BUGFIX`；简单 BUG 只能减轻计划文档，不能跳过复现、验证和 Code Review。
+- `TRIVIAL_READONLY`：可通过直接读取或少量无副作用确定性命令回答的单一事实。直接执行必要检查并简洁报告；禁止运行 `doctor`、`policies`、`start`、状态命令或 `check --ci`，不创建工作项。
+- `TRIVIAL_EDIT`：单文件机械修改，且不改变业务行为、API、Schema、依赖、配置、安全或发布。读取目标上下文后直接修改，只运行一个与改动直接相关的最窄验证并报告；禁止启动 Runtime 工作项或运行仓库级 `check --ci`。
+- `NON_TRIVIAL`：其他工作，必须使用 Runtime 工作项和完整门禁。
+- 所有 BUG 均为 `NON_TRIVIAL` 并使用 `BUGFIX`；简单 BUG 只能减轻计划文档，不能跳过复现、验证和 Code Review。
+
+分类不确定时选择 `NON_TRIVIAL`。禁止把同一非琐碎目标拆成多个轻量任务规避门禁；轻量任务在写入前发现越界时，停止快速路径并升级为工作项。
 
 用户只询问“当前如何实现/是否支持/技术方案”时选择 `ANALYSIS`。用户后续要求实施时另建开发型工作项，不能直接把分析状态改成开发状态。
 
@@ -63,7 +65,7 @@ CLI 入口：
 node .ai-harness/bin/harness.mjs
 ```
 
-任何非琐碎任务开始前必须：
+仅 `NON_TRIVIAL` 任务开始前必须：
 
 1. 运行 `node .ai-harness/bin/harness.mjs doctor --json`。失败时先修复 runtime/初始化问题；禁止静默退回纯提示词流程。
 2. 判定工作类型和适用标志：`database`、`frontend`、`mobile`、`api`、`multi-agent`。
@@ -172,7 +174,7 @@ node .ai-harness/bin/harness.mjs run --id <WORK-ID> [--task <TASK-ID>] -- <COMMA
 
 ## 8. 检查点与最终声明
 
-阶段和重要任务后报告：
+仅 `NON_TRIVIAL` 工作在阶段和重要任务后报告：
 
 ```text
 已完成：
@@ -184,13 +186,13 @@ node .ai-harness/bin/harness.mjs run --id <WORK-ID> [--task <TASK-ID>] -- <COMMA
 
 上下文恢复后必须从 runtime state、权威输入和当前 Git 状态重建，不能只凭对话摘要继续修改。
 
-最终声明前必须运行：
+`NON_TRIVIAL` 工作项最终声明前必须运行：
 
 ```text
 node .ai-harness/bin/harness.mjs check --ci --json
 ```
 
-`check --ci` 拒绝所有非 `DONE`/`ANSWERED` 工作项。只有退出码为 0 且相应门禁证据齐全时，才能宣称 `ANSWERED`、`DONE`、测试通过或可发布。最终输出必须列出实际命令、未验证项、阻塞/延期、交付文件/提交和剩余风险。
+`check --ci` 拒绝所有非 `DONE`/`ANSWERED` 工作项。只有退出码为 0 且相应门禁证据齐全时，才能宣称 `ANSWERED`、`DONE` 或可发布。轻量任务不使用这些状态词，只报告请求结果、实际命令或文件，以及最窄验证；不得把局部验证表述为全量测试通过。非琐碎工作的最终输出必须列出实际命令、未验证项、阻塞/延期、交付文件/提交和剩余风险。
 
 ## 9. 执行边界
 

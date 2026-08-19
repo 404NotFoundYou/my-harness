@@ -134,7 +134,15 @@ git commit -m "chore: initialize project with AI harness"
 
 ## 6. 日常怎样使用
 
-正常情况下，你不需要手工逐条执行状态命令。打开目标项目，让 AI 读取仓库规则，然后直接给出完整任务和授权边界。AI 应自动创建工作项、完成设计、数据库判断、计划、编码、验证和 Code Review。
+正常情况下，你不需要手工逐条执行状态命令。打开目标项目，让 AI 读取仓库规则，然后直接给出任务和授权边界。AI 会先判断任务规模：
+
+| 路径 | 典型请求 | 实际流程 |
+| --- | --- | --- |
+| `TRIVIAL_READONLY` | “当前分支是什么”“读取这个版本号” | 直接运行必要的只读检查并回答，不调用 Runtime |
+| `TRIVIAL_EDIT` | “修正 README 中这一处错别字” | 读取目标文件、机械修改、运行一个最窄验证，不调用 Runtime |
+| `NON_TRIVIAL` | 功能开发、BUG、技术分析、多文件修改或任何高风险变化 | 自动创建工作项并完成适用的设计、计划、实施、验证和 Review |
+
+如果一个任务涉及业务行为、API、Schema、依赖、配置、安全、发布、外部副作用，或需要持续调查和方案裁量，它就不是轻量任务。分类不确定时走完整流程；不能把一个目标拆成多次单文件修改来规避门禁。
 
 ### 新项目示例
 
@@ -203,7 +211,7 @@ node .ai-harness/bin/harness.mjs show --id <WORK_ITEM_ID> --json
 node .ai-harness/bin/harness.mjs check --ci --json
 ```
 
-只有工作项达到 `DONE` 或 `ANSWERED`，且 `check --ci` 返回 `ok: true`，才能声明完成。
+只有非琐碎工作项达到 `DONE` 或 `ANSWERED`，且 `check --ci` 返回 `ok: true`，才能声明完整工作项完成。轻量任务不创建工作项，也不为一次局部操作运行仓库级 CI 门禁。
 
 ## 9. 升级 Harness
 

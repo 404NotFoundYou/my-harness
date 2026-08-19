@@ -57,6 +57,8 @@ CLAUDE.md / GEMINI.md        # 已有客户端规则/导入 + 可选托管块
 
 ## 状态设计
 
+状态机只服务于 `NON_TRIVIAL` 工作。`TRIVIAL_READONLY` 直接检查并回答，`TRIVIAL_EDIT` 直接完成单文件机械修改和一个最窄验证，两者都不产生控制面状态。边界与升级条件见 [ADR-0002](decisions/0002-trivial-task-fast-path.md)。
+
 开发型工作在数据库设计前增加 `SOLUTION_DESIGN`，用于梳理业务流程、领域边界、接口和查询/写入草案；`PLANNED` 专指数据库决策后的任务执行计划。
 
 ```text

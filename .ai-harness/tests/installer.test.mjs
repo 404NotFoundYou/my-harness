@@ -95,6 +95,25 @@ test("compatible Claude and Gemini imports remain byte-identical", async () => {
   }
 });
 
+test("installed contract keeps trivial work outside the state machine without weakening side-effect approval", async () => {
+  const target = await temporaryTarget("ai-harness-trivial-contract-");
+  try {
+    await installRuntime(sourceRoot, target);
+    const agents = await readFile(path.join(target, "AGENTS.md"), "utf8");
+    const block = inspectManagedBlock(agents, "AGENTS.md");
+
+    assert.ok(block.body.includes("`TRIVIAL_READONLY`"));
+    assert.ok(block.body.includes("`TRIVIAL_EDIT`"));
+    assert.ok(block.body.includes("不运行 Runtime 命令、不创建工作项"));
+    assert.ok(block.body.includes("分类不确定时也选择此类"));
+    assert.ok(block.body.includes("部署、发布、生产数据"));
+    assert.ok(block.body.includes("始终需要明确授权"));
+    assert.ok(block.body.includes("轻量分类不能授予权限"));
+  } finally {
+    await cleanup(target);
+  }
+});
+
 test("modified managed content fails closed and force repairs only the managed block", async () => {
   const target = await temporaryTarget("ai-harness-managed-repair-");
   const localRules = "# Local rules\n\n- Never rename the public package.\n";

@@ -1,0 +1,171 @@
+{
+  "schemaVersion": 1,
+  "id": "HARNESS-FAST-PATH-001",
+  "type": "ITERATION",
+  "title": "精简轻量任务执行路径",
+  "status": "DONE",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/iteration.md",
+    ".ai-harness/policies/database.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "当前用户请求：继续优化 Harness，减少简单命令过度执行"
+  },
+  "input": {
+    "references": [
+      "用户在实际项目开发中反馈 Harness 流程臃肿，简单命令被过度执行"
+    ],
+    "acceptance": [
+      "TRIVIAL_READONLY 和 TRIVIAL_EDIT 有明确、可测试的快速路径，不触发非琐碎工作项门禁；NON_TRIVIAL 与高风险操作的既有安全和验证门禁保持不变"
+    ],
+    "nonGoals": [
+      "不降低 BUGFIX、数据库、安全、部署、发布、破坏性操作的门禁",
+      "不新增多 Agent、数据库、前端或移动端能力"
+    ],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": null,
+  "baseline": {
+    "status": "complete",
+    "document": "docs/versions/v1.0/STATE.md",
+    "evidence": [
+      "main@0d007baf94671e9e22f3155219ab504fbd403baa，工作树干净；当前规则已定义 trivial 类型，但 guides 未给快速路径，最终 check --ci 豁免边界不明确；测试入口为 node .ai-harness/tests/run.mjs"
+    ],
+    "completedAt": "2026-08-19T01:48:19.686Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "0d007baf94671e9e22f3155219ab504fbd403baa",
+      "dirty": true,
+      "changedFiles": [
+        ".ai-harness/work-items/HARNESS-FAST-PATH-001/events.jsonl",
+        ".ai-harness/work-items/HARNESS-FAST-PATH-001/state.json"
+      ],
+      "fingerprints": {
+        ".ai-harness/work-items/HARNESS-FAST-PATH-001/events.jsonl": "191c8e05a5c4770514add119304aedcab1aafa6706607ab5eb581b1264d6063c",
+        ".ai-harness/work-items/HARNESS-FAST-PATH-001/state.json": "c72d72b63b4d13ebfc9b5c7caeb15106450bb0fa55b80aaa57049440f5ee0400"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": "docs/architecture/decisions/0002-trivial-task-fast-path.md",
+    "evidence": [
+      "采用三分支启动：只读快速路径、单文件机械编辑快速路径、完整工作项；不新增 CLI；风险操作权限与工作规模解耦"
+    ],
+    "completedAt": "2026-08-19T01:50:43.995Z"
+  },
+  "database": {
+    "impact": "none",
+    "status": "not-applicable",
+    "document": null,
+    "evidence": [
+      "仅调整仓库内 AI 指令、策略、指南和契约测试，不涉及持久化、Schema、查询或迁移"
+    ],
+    "completedAt": "2026-08-19T01:50:44.384Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/HARNESS-FAST-PATH-001/plan.json",
+    "approved": true,
+    "approvalRef": "用户已授权继续优化 Harness；方案只精简 trivial 路径且保留高风险门禁"
+  },
+  "verification": {
+    "status": "pass",
+    "evidence": [
+      "1461160f-bdae-458e-b04f-1dfdcecc5db7"
+    ]
+  },
+  "review": {
+    "status": "pass",
+    "evidence": [
+      "7073f876-a663-4d22-b556-db267d0915e9"
+    ],
+    "independent": false
+  },
+  "acceptance": {
+    "status": "pass",
+    "evidence": [
+      "de20c48c-ce56-4111-8972-b285d7078c99"
+    ]
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "pass",
+    "evidence": [
+      "fb71d79c-9a6b-496f-ad80-bd8b5699d4c4"
+    ]
+  },
+  "blocked": null,
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-08-19T01:47:21.935Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-08-19T01:48:19.114Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-08-19T01:50:10.792Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-08-19T01:51:15.941Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-08-19T01:51:16.355Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "VERIFYING",
+      "at": "2026-08-19T01:56:19.016Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "VERIFYING",
+      "to": "CODE_REVIEW",
+      "at": "2026-08-19T01:56:43.268Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "CODE_REVIEW",
+      "to": "READY_FOR_ACCEPTANCE",
+      "at": "2026-08-19T01:57:04.780Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "READY_FOR_ACCEPTANCE",
+      "to": "DONE",
+      "at": "2026-08-19T01:57:05.488Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-08-19T01:47:21.935Z",
+  "updatedAt": "2026-08-19T01:57:05.488Z"
+}
