@@ -2,6 +2,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
 import { readdir, readFile } from "node:fs/promises";
 import { checkProject, doctorProject } from "./checker.mjs";
+import { beginWorkItem, finishWorkItem } from "./compact.mjs";
 import { HarnessError, invariant } from "./errors.mjs";
 import { runRecordedCommand } from "./evidence.mjs";
 import { findProjectRoot, readJson } from "./filesystem.mjs";
@@ -106,6 +107,8 @@ function helpText() {
   policies      解析适用策略：--type TYPE [--flag frontend ...]
 
 工作项：
+  begin         普通任务：一次建立基线、简短方案和单任务计划并开始实施
+  finish        普通任务：引用成功命令和实际审查/验收结论完成工作项
   start         创建工作项
   show          显示 state 和 plan
   baseline      记录 Git/文档基线
@@ -124,7 +127,17 @@ function helpText() {
   guard -- <command...>          只判定 allow/ask/deny
   run --id ID [--task T] -- ...  仅执行 allow 命令并记录证据
 
-常用重复参数：--input、--acceptance、--non-goal、--evidence、--blocked-by、--writes、--verify、--docs。`;
+普通任务：
+  begin --id ID --type ITERATION|BUGFIX --title TITLE --input SOURCE --acceptance CONDITION
+        --authorization-source SOURCE --risk low|medium --approach TEXT --database-evidence TEXT
+        --writes PATH --verify COMMAND --docs PATH_OR_NA [--flag frontend]
+  run --id ID --task T1 -- <COMMAND> [ARGS...]
+  finish --id ID --command EVIDENCE_ID --verification TEXT --review TEXT --documentation TEXT --acceptance TEXT
+  check --ci --json
+  begin 默认为 autonomous；授权来源必须真实。BUGFIX 另需 --actual、--expected、--reproduction。
+  复杂/高风险或需要逐步批准的工作仍使用 start 及细粒度命令。
+
+常用重复参数：--input、--acceptance、--non-goal、--evidence、--blocked-by、--writes、--verify、--docs、--command。`;
 }
 
 async function projectRoot() {
@@ -209,8 +222,8 @@ export async function runCli(argv, io = { stdout: console.log, stderr: console.e
     emit(io, parsed, [...policyNames].map((name) => `.ai-harness/policies/${name}`));
     return 0;
   }
-  if (command === "start") {
-    const item = await createWorkItemState(root, {
+  if (command === "start" || command === "begin") {
+    const options = {
       id: one(parsed, "id", { required: true }),
       type: one(parsed, "type", { required: true }).toUpperCase(),
       title: one(parsed, "title", { required: true }),
@@ -218,7 +231,7 @@ export async function runCli(argv, io = { stdout: console.log, stderr: console.e
       acceptance: many(parsed, "acceptance"),
       nonGoals: many(parsed, "non-goal"),
       version: one(parsed, "version"),
-      authorizationMode: one(parsed, "authorization", { defaultValue: "approval-required" }),
+      authorizationMode: one(parsed, "authorization", { defaultValue: command === "begin" ? "autonomous" : "approval-required" }),
       authorizationSource: one(parsed, "authorization-source", { required: true }),
       flags: many(parsed, "flag"),
       architectureSource: one(parsed, "architecture-source"),
@@ -230,8 +243,30 @@ export async function runCli(argv, io = { stdout: console.log, stderr: console.e
             reproduction: one(parsed, "reproduction", { required: true }),
           }
         : null,
-    });
+    };
+    const item = command === "begin"
+      ? await beginWorkItem(root, {
+          ...options,
+          risk: one(parsed, "risk", { required: true }),
+          approach: one(parsed, "approach", { required: true }),
+          databaseEvidence: one(parsed, "database-evidence", { required: true }),
+          writeScopes: many(parsed, "writes"),
+          verification: many(parsed, "verify"),
+          docsImpact: many(parsed, "docs"),
+        })
+      : await createWorkItemState(root, options);
     emit(io, parsed, item);
+    return 0;
+  }
+  if (command === "finish") {
+    const result = await finishWorkItem(root, one(parsed, "id", { required: true }), {
+      commandIds: many(parsed, "command"),
+      verification: one(parsed, "verification", { required: true }),
+      review: one(parsed, "review", { required: true }),
+      documentation: one(parsed, "documentation", { required: true }),
+      acceptance: one(parsed, "acceptance", { required: true }),
+    });
+    emit(io, parsed, result);
     return 0;
   }
   if (command === "show") {

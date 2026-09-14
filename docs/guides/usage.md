@@ -53,9 +53,9 @@ node <HARNESS_REPO>/.ai-harness/bin/harness.mjs uninstall --target <TARGET> --co
 | --- | --- | --- |
 | `TRIVIAL_READONLY` | 单一事实，可由直接读取或少量无副作用确定性命令回答 | 直接检查并报告；不运行 Runtime 命令，不创建工作项 |
 | `TRIVIAL_EDIT` | 单文件机械修改，且不改变行为、API、Schema、依赖、配置、安全或发布 | 读取上下文、修改、运行一个最窄验证并报告；不运行 Runtime 命令 |
-| `NON_TRIVIAL` | 其他工作，以及所有 BUG | 执行后续完整工作项流程 |
+| `NON_TRIVIAL` | 其他工作，以及所有 BUG | 普通 ITERATION/BUGFIX 默认使用下述精简入口；复杂/高风险和其他类型使用完整流程 |
 
-分类不确定时使用 `NON_TRIVIAL`。禁止将同一目标拆成多个轻量任务规避门禁。删除、覆盖、Git 历史修改、部署、发布、生产数据、费用、外部消息和凭据变更的授权要求不因规模分类而改变。
+先读相关代码判断风险；影响仍不清楚时使用完整流程。禁止将同一目标拆成多个轻量任务规避门禁。删除、覆盖、Git 历史修改、部署、发布、生产数据、费用、外部消息和凭据变更的授权要求不因规模分类而改变。
 
 仅 `NON_TRIVIAL` 先运行策略路由并完整读取返回文件：
 
@@ -64,6 +64,40 @@ node .ai-harness/bin/harness.mjs policies --type <TYPE> [--flag <FLAG>] --json
 ```
 
 标志可重复：`database`、`frontend`、`mobile`、`api`、`multi-agent`。
+
+### 普通任务默认路径
+
+边界明确、单 AI、单纵向任务、low/medium 风险且无数据库影响的迭代或 BUG，使用 `begin`。不按文件数限制任务；已有自主授权可用于整个目标，普通实现选择无需重复确认。`begin` 内置 `doctor`，无需再单独调用。以下为 PowerShell 示例，替换路径与命令后使用：
+
+```powershell
+node .ai-harness/bin/harness.mjs begin `
+  --id ITER-001 --type ITERATION --title "完善本地输入校验" `
+  --input "用户本次实现请求" --acceptance "有效输入保持兼容，错误输入有明确反馈" `
+  --authorization-source "用户授权完成本地实现和验证" --risk low `
+  --approach "沿用现有校验函数，补充目标边界处理与回归测试" `
+  --database-evidence "只修改内存输入校验，不涉及持久化或查询" `
+  --writes "src/validation/**" --writes "tests/validation.test.mjs" `
+  --verify "node --test tests/validation.test.mjs" --docs "N/A: 原有约定不变" --json
+
+# 完成范围内代码修改，执行实际验证并读取结果
+node .ai-harness/bin/harness.mjs run --id ITER-001 --task T1 --json -- node --test tests/validation.test.mjs
+
+# 审查完整差异后，引用上一步返回的证据 id；结论必须如实填写
+node .ai-harness/bin/harness.mjs finish --id ITER-001 `
+  --command "<成功命令证据ID>" --verification "目标回归和兼容输入验证通过" `
+  --review "已检查根因、调用方与完整差异，未发现需要返工的问题" `
+  --documentation "N/A: 原有约定仍正确" --acceptance "用户请求的验收条件均已验证" --json
+
+node .ai-harness/bin/harness.mjs check --ci --json
+```
+
+`begin` 默认为 `autonomous`，必须有真实授权来源。`start` 的默认值仍为 `approval-required`，其参数和行为兼容旧版。BUGFIX 额外提供 `--actual`、`--expected`、`--reproduction`；精简入口可带局部 UI 的 `--flag frontend`，其余业务标志要求完整流程。
+
+方案保存在 `.ai-harness/work-items/<ID>/solution.md`，任务固定为 T1、审查批次 R1。`--verify` 描述计划执行的验证，不执行命令。`finish --command` 可以重复，引用本任务最新成功的命令结果；不能使用其他任务的结果，不能用无关成功命令掩盖另一个仍失败的命令，返工后必须重新验证。审查、文档、验收都是执行者提交的实际结论，Runtime 不从退出码推断业务正确或自动代做审查。验证后若修改相关代码，必须重新验证。
+
+新项目、数据库、公共 API、跨端、多 AI、高风险或需要逐步批准的任务使用下述完整流程。安全/权限、支付、并发、全局 UI/路由和破坏性影响也必须升级，不能以缺少业务标志为由归为低风险。
+
+精简命令依次调用原有门禁，不是跨多个文件的原子事务。运行中断时保留真实阶段；用 `show --id <ID> --json` 检查后，通过细粒度命令补齐后续步骤，不重复 `begin` / `finish`，不手改状态文件。失败退出码为 1，最终仍必须通过 CI。若实施前发现范围或风险变化，在原工作项记录原因并进入 BLOCKED，使用新工作项完成重新设计；旧项的后续处理需要明确记录，不能假装通过以消除 CI 阻塞。
 
 ### 新项目
 
@@ -93,7 +127,7 @@ node .ai-harness/bin/harness.mjs start --id BUG-001 --type BUGFIX --title "修�
   --authorization autonomous --authorization-source "修复授权" --json
 ```
 
-BUG 每个任务的批次大小应为 1；每次修改或返工后重新验证并 Code Review。
+一个根因修复可包含多个直接关联文件，作为一个任务；完成修复或审查返工后重新验证并 Code Review，不为每次保存文件重复运行全量检查。
 
 ### 项目分析
 

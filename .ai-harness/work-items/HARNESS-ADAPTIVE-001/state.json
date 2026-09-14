@@ -1,0 +1,172 @@
+{
+  "schemaVersion": 1,
+  "id": "HARNESS-ADAPTIVE-001",
+  "type": "ITERATION",
+  "title": "按风险精简 AI 执行流程",
+  "status": "DONE",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/iteration.md",
+    ".ai-harness/policies/database.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "本任务用户优化请求及风险分级选项确认"
+  },
+  "input": {
+    "references": [
+      "用户要求继续优化项目，减少限制模型发挥的流程，并确认默认自主推进、按风险增加流程"
+    ],
+    "acceptance": [
+      "普通迭代和 BUG 可通过精简入口启动与收尾，保留真实命令证据、审查和全部状态门禁",
+      "高风险、数据库和需审批任务不能通过精简入口自动完成",
+      "压缩根指令并同步安装模板和使用指南；新旧流程测试通过"
+    ],
+    "nonGoals": [
+      "不更换模型、不新增模型调度、不修改命令权限策略、不部署或推送"
+    ],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": null,
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "D:/Projects/aiproject; main; 7e5832fbf37baf214a16bac0c288a8a585368891; 初始工作树干净; 已阅读 CLI、workflow、validator、checker、evidence、安装模板与相关测试; Node 内置测试入口 .ai-harness/tests/run.mjs; 无部署目标"
+    ],
+    "completedAt": "2026-09-14T01:30:44.047Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "7e5832fbf37baf214a16bac0c288a8a585368891",
+      "dirty": true,
+      "changedFiles": [
+        ".ai-harness/work-items/HARNESS-ADAPTIVE-001/events.jsonl",
+        ".ai-harness/work-items/HARNESS-ADAPTIVE-001/state.json"
+      ],
+      "fingerprints": {
+        ".ai-harness/work-items/HARNESS-ADAPTIVE-001/events.jsonl": "2dd4ff07becd824ce7deb02a14b1aa21bd4c7245647f2fb60697c6c91429097d",
+        ".ai-harness/work-items/HARNESS-ADAPTIVE-001/state.json": "468bc78a2f1e5801f43bbaf85881337da6c2b9f6ad448a50bd5ebbcf7c2a7fbb"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": "docs/architecture/decisions/0004-adaptive-execution.md",
+    "evidence": [
+      "新增 begin/finish 薄编排；复用 v1 门禁，范围与失败恢复见 ADR-0004"
+    ],
+    "completedAt": "2026-09-14T01:31:51.815Z"
+  },
+  "database": {
+    "impact": "none",
+    "status": "not-applicable",
+    "document": null,
+    "evidence": [
+      "只编排现有 JSON/JSONL 工作项接口；不变更持久化结构或数据库查询写入路径"
+    ],
+    "completedAt": "2026-09-14T01:31:52.161Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/HARNESS-ADAPTIVE-001/plan.json",
+    "approved": true,
+    "approvalRef": "用户已确认默认自主推进并授权项目优化，具体方案见 ADR-0004"
+  },
+  "verification": {
+    "status": "pass",
+    "evidence": [
+      "4acffa3b-8b28-4f12-9256-ff3b4d8c57a0"
+    ]
+  },
+  "review": {
+    "status": "pass",
+    "evidence": [
+      "2f4f9f0b-879f-4c12-b186-cc2df2d1b66a"
+    ],
+    "independent": false
+  },
+  "acceptance": {
+    "status": "pass",
+    "evidence": [
+      "d4b35b9a-5d5e-4c55-b63f-2aa33003cd25"
+    ]
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "pass",
+    "evidence": [
+      "751927ff-17e3-441b-93e5-1e3558c58a2b"
+    ]
+  },
+  "blocked": null,
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-09-14T01:30:18.043Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-09-14T01:30:43.449Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-09-14T01:30:44.419Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-09-14T01:31:54.038Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-09-14T01:31:54.400Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "VERIFYING",
+      "at": "2026-09-14T01:46:08.991Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "VERIFYING",
+      "to": "CODE_REVIEW",
+      "at": "2026-09-14T01:46:10.152Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "CODE_REVIEW",
+      "to": "READY_FOR_ACCEPTANCE",
+      "at": "2026-09-14T01:46:10.928Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "READY_FOR_ACCEPTANCE",
+      "to": "DONE",
+      "at": "2026-09-14T01:46:11.679Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-09-14T01:30:18.043Z",
+  "updatedAt": "2026-09-14T01:49:40.609Z"
+}

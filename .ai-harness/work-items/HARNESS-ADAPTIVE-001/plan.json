@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "HARNESS-ADAPTIVE-001",
+  "mode": "single",
+  "rationale": "编排、CLI、规则和测试连续依赖；单 AI 完成中风险兼容性迭代",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "实现并验证普通任务自主编排",
+      "module": "runtime",
+      "status": "COMPLETED",
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        ".ai-harness/src/compact.mjs",
+        ".ai-harness/src/cli.mjs",
+        ".ai-harness/tests/compact.test.mjs",
+        ".ai-harness/tests/cli.test.mjs",
+        ".ai-harness/tests/checker.test.mjs",
+        "AGENTS.md",
+        ".ai-harness/templates/instructions/AGENTS.md",
+        ".ai-harness/policies/core.md",
+        ".ai-harness/policies/iteration.md",
+        ".ai-harness/policies/documentation.md",
+        ".ai-harness/policies/bugfix.md",
+        ".ai-harness/policies/security.md"
+      ],
+      "verification": [
+        "node .ai-harness/tests/run.mjs"
+      ],
+      "docsImpact": [
+        "README.md",
+        "docs/guides/getting-started.md",
+        "docs/guides/usage.md",
+        "docs/architecture/overview.md",
+        "docs/architecture/decisions/0004-adaptive-execution.md"
+      ],
+      "reviewBatch": "R1",
+      "risk": "medium",
+      "owner": "primary-ai",
+      "verificationStatus": "pass",
+      "reviewStatus": "pass",
+      "evidence": [
+        "585743ad-0587-4a04-9749-84e42c41406d",
+        "3b5ec1f4-aa0e-461d-9f59-13697dca2fb9"
+      ],
+      "deferralApproval": null
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "精简执行入口与规则一致性",
+      "risk": "medium",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": false
+    }
+  ],
+  "createdAt": "2026-09-14T01:31:52.530Z",
+  "updatedAt": "2026-09-14T01:46:08.605Z"
+}

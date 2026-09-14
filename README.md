@@ -1,6 +1,6 @@
 # AI Harness Runtime
 
-可复制到新项目或已有项目的仓库内 AI 开发治理 Runtime。它将 `AGENTS.md` 的关键规则落实为结构化工作项、确定性状态门禁、任务依赖、命令策略、证据记录和 CI 拒绝条件。
+可复制到新项目或已有项目的仓库内 AI 开发 Runtime。普通任务默认自主推进，流程随风险增加：模型负责方案判断，Runtime 负责状态、权限和验证证据。
 
 - 当前版本：`1.0.0`
 - 运行要求：Node.js 20+、Git
@@ -67,7 +67,9 @@ node .ai-harness/bin/harness.mjs doctor --json
 
 先判断任务规模。单一事实或无副作用确定性查询直接执行；不改变行为、API、Schema、依赖、配置、安全或发布的单文件机械修改，直接修改并运行一个最窄验证。这两类轻量任务不运行 Runtime 命令、不创建工作项。
 
-其他任务以及所有 BUG 都属于非琐碎工作，先解析策略，再创建唯一工作项：
+其他任务使用工作项。普通迭代和 BUG 默认通过 `begin → run → finish → check --ci` 执行：一次记录目标、方案和范围，验证后一次提交审查与验收结论，Runtime 自动维护原有状态门禁。多文件修改不自动升级为复杂任务，已授权的普通实现选择不重复询问。
+
+新项目、复杂依赖、重要架构、数据库、公共 API、安全/权限、支付、并发、全局 UI/路由、跨端和高风险变更使用完整流程。分析使用 ANALYSIS 工作项。先解析适用策略，完整流程创建示例：
 
 ```powershell
 node .ai-harness/bin/harness.mjs policies --type ITERATION --flag api --json
@@ -78,7 +80,7 @@ node .ai-harness/bin/harness.mjs start `
   --flag api --json
 ```
 
-后续通过 CLI 推进基线、技术设计、数据库决策、计划、任务、验证、Code Review 和验收。完整命令见[使用指南](docs/guides/usage.md)。
+普通任务的可复制命令及完整流程见[使用指南](docs/guides/usage.md#普通任务默认路径)。`begin` 内置环境检查；`finish` 必须引用真实成功命令，且缺少审查、文档或验收结论时拒绝完成。旧命令与工作项格式继续兼容。
 
 ## 强制边界
 
