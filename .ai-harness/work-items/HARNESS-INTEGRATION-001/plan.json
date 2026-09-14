@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "HARNESS-INTEGRATION-001",
+  "mode": "single",
+  "rationale": "合并兼容改动涉及同一调用链，单 AI 串行验证",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "解决规则冲突并保留双方验证流程",
+      "module": "runtime",
+      "status": "COMPLETED",
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        ".ai-harness/src/compact.mjs",
+        ".ai-harness/src/cli.mjs",
+        ".ai-harness/tests/compact.test.mjs",
+        ".ai-harness/tests/cli.test.mjs",
+        "AGENTS.md",
+        ".ai-harness/templates/instructions/AGENTS.md"
+      ],
+      "verification": [
+        "node .ai-harness/tests/run.mjs"
+      ],
+      "docsImpact": [
+        "README.md",
+        "docs/guides/usage.md",
+        "docs/architecture/decisions/0006-compact-pipeline-integration.md"
+      ],
+      "reviewBatch": "R1",
+      "risk": "medium",
+      "owner": "primary-ai",
+      "verificationStatus": "pass",
+      "reviewStatus": "pass",
+      "evidence": [
+        "38ac0616-d3d9-48b5-93d9-679a790d4fe6",
+        "a07ac206-c40c-4b7e-b845-e5815a8b45df"
+      ],
+      "deferralApproval": null
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "精简入口与上游流水线兼容",
+      "risk": "medium",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": false
+    }
+  ],
+  "createdAt": "2026-09-14T01:51:56.066Z",
+  "updatedAt": "2026-09-14T01:58:02.787Z"
+}

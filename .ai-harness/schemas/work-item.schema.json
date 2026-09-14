@@ -113,7 +113,30 @@
       },
       "additionalProperties": false
     },
-    "verification": {"$ref": "#/$defs/result"},
+    "verification": {
+      "allOf": [
+        {"$ref": "#/$defs/result"},
+        {
+          "type": "object",
+          "properties": {
+            "stages": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["stage", "status", "evidence"],
+                "properties": {
+                  "stage": {"enum": ["static", "sandbox", "contract", "eval", "reproduction", "regression", "browser"]},
+                  "status": {"enum": ["pending", "pass", "fail", "blocked", "not-applicable"]},
+                  "evidence": {"type": "array", "items": {"type": "string", "minLength": 1}},
+                  "command": {"type": ["string", "null"]}
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        }
+      ]
+    },
     "review": {
       "allOf": [
         {"$ref": "#/$defs/result"},

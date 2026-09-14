@@ -30,35 +30,43 @@ function jsonOutput(result, stream = "stdout") {
   return JSON.parse(result[stream]);
 }
 
-test("installed CLI supports a compact task and preserves its normal CI gate", async () => {
-  const root = await createInstalledProject();
-  try {
-    const entrypoint = path.join(root, ".ai-harness/bin/harness.mjs");
-    const started = jsonOutput(runCli(entrypoint, root, [
-      "begin", "--id", "COMPACT-CLI", "--type", "ITERATION", "--title", "local change",
-      "--input", "user request", "--acceptance", "regression passes",
-      "--authorization-source", "user authorized local implementation", "--risk", "low",
-      "--approach", "Update the bounded behavior and verify it.", "--database-evidence", "no persistence changes",
-      "--writes", "feature.test.mjs", "--verify", "node --test feature.test.mjs",
-      "--docs", "N/A: existing behavior documented", "--json",
-    ]));
-    assert.equal(started.status, "IMPLEMENTING");
-    assert.equal(started.taskId, "T1");
-    await writeFile(path.join(root, "feature.test.mjs"), 'import assert from "node:assert/strict";\nassert.equal(2 + 2, 4);\n');
-    const command = jsonOutput(runCli(entrypoint, root, [
-      "run", "--id", started.id, "--task", started.taskId, "--json", "--", process.execPath, "--test", "feature.test.mjs",
-    ]));
-    const done = jsonOutput(runCli(entrypoint, root, [
-      "finish", "--id", started.id, "--command", command.id,
-      "--verification", "local regression passes", "--review", "reviewed the complete diff and affected callers",
-      "--documentation", "N/A: existing behavior documented", "--acceptance", "requested regression passes", "--json",
-    ]));
-    assert.equal(done.status, "DONE");
-    assert.deepEqual(jsonOutput(runCli(entrypoint, root, ["check", "--ci", "--json"])).errors, []);
-  } finally {
-    await cleanup(root);
-  }
-});
+for (const type of ["ITERATION", "BUGFIX"]) {
+  test(`installed CLI supports compact ${type} and preserves its CI gate`, async () => {
+    const root = await createInstalledProject();
+    try {
+      const entrypoint = path.join(root, ".ai-harness/bin/harness.mjs");
+      const started = jsonOutput(runCli(entrypoint, root, [
+        "begin", "--id", "COMPACT-CLI", "--type", type, "--title", "local change",
+        "--input", "user request", "--acceptance", "regression passes",
+        "--authorization-source", "user authorized local implementation", "--risk", "low",
+        "--approach", "Update the bounded behavior and verify it.", "--database-evidence", "no persistence changes",
+        "--writes", "feature.test.mjs", "--verify", "node --test feature.test.mjs",
+        "--docs", "N/A: existing behavior documented", "--json",
+        ...(type === "BUGFIX" ? ["--actual", "wrong result", "--expected", "documented result", "--reproduction", "run local regression"] : []),
+      ]));
+      assert.equal(started.status, "IMPLEMENTING");
+      assert.equal(started.taskId, "T1");
+      await writeFile(path.join(root, "feature.test.mjs"), 'import assert from "node:assert/strict";\nassert.equal(2 + 2, 4);\n');
+      const command = jsonOutput(runCli(entrypoint, root, [
+        "run", "--id", started.id, "--task", started.taskId, "--json", "--", process.execPath, "--test", "feature.test.mjs",
+      ]));
+      const done = jsonOutput(runCli(entrypoint, root, [
+        "finish", "--id", started.id, "--command", command.id,
+        "--verification", "local regression passes", "--review", "reviewed the complete diff and affected callers",
+        "--documentation", "N/A: existing behavior documented", "--acceptance", "requested regression passes", "--json",
+        ...(type === "BUGFIX" ? [
+          "--stage-evidence", "static=static-check fixture", "--stage-evidence", "sandbox=isolated-execution fixture",
+          "--stage-evidence", "reproduction=local regression executed", "--stage-evidence", "regression=local suite executed",
+          "--stage-command", `reproduction=${command.id}`, "--stage-command", `regression=${command.id}`,
+        ] : []),
+      ]));
+      assert.equal(done.status, "DONE");
+      assert.deepEqual(jsonOutput(runCli(entrypoint, root, ["check", "--ci", "--json"])).errors, []);
+    } finally {
+      await cleanup(root);
+    }
+  });
+}
 
 test("CLI guard uses stable allow, ask and deny exit codes", () => {
   assert.equal(runCli(sourceEntrypoint, sourceRoot, ["guard", "--", "node", "--version"], 0).status, 0);

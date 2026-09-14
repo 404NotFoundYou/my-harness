@@ -64,6 +64,7 @@ node .ai-harness/bin/harness.mjs policies --type <TYPE> [--flag <FLAG>] --json
 ```
 
 标志可重复：`database`、`frontend`、`mobile`、`api`、`multi-agent`。
+需要完整代码生成验证流水线时另加 `codegen`，使用完整工作流。
 
 ### 普通任务默认路径
 
@@ -92,6 +93,19 @@ node .ai-harness/bin/harness.mjs check --ci --json
 ```
 
 `begin` 默认为 `autonomous`，必须有真实授权来源。`start` 的默认值仍为 `approval-required`，其参数和行为兼容旧版。BUGFIX 额外提供 `--actual`、`--expected`、`--reproduction`；精简入口可带局部 UI 的 `--flag frontend`，其余业务标志要求完整流程。
+
+BUGFIX 保留远端引入的完整验证流水线。完成实际验证后，在上述 `finish` 命令中一次补充各阶段证据：
+
+```text
+--stage-evidence "static=实际静态检查结果"
+--stage-evidence "sandbox=实际隔离编译执行环境与结果"
+--stage-evidence "reproduction=原复现路径已转绿"
+--stage-evidence "regression=受影响回归测试通过"
+--stage-command "reproduction=<本任务成功的复现命令ID>"
+--stage-command "regression=<本任务成功的回归命令ID>"
+```
+
+这是参数清单，追加到同一条 `finish` 命令；PowerShell 换行时仍需反引号。带 `frontend` 时还需 `--stage-evidence "browser=实际浏览器探针结果"`。Runtime 先检查全部必需阶段和命令引用，再按原流水线顺序登记；缺失时在更新结果前拒绝，不把普通测试推断为隔离或浏览器验证。同一个命令确实覆盖复现和回归时可复用其 ID。
 
 方案保存在 `.ai-harness/work-items/<ID>/solution.md`，任务固定为 T1、审查批次 R1。`--verify` 描述计划执行的验证，不执行命令。`finish --command` 可以重复，引用本任务最新成功的命令结果；不能使用其他任务的结果，不能用无关成功命令掩盖另一个仍失败的命令，返工后必须重新验证。审查、文档、验收都是执行者提交的实际结论，Runtime 不从退出码推断业务正确或自动代做审查。验证后若修改相关代码，必须重新验证。
 
@@ -213,6 +227,8 @@ node .ai-harness/bin/harness.mjs check --ci --json
 ```
 
 无文档影响时使用 `documentation --status not-applicable`，但仍需给出理由。`check --ci` 拒绝所有非 `DONE`/`ANSWERED` 工作项；该命令是非琐碎工作项和合并前门禁，不用于轻量任务的局部结果报告。
+
+上述工作项 verification 单条记录适用于普通 ITERATION。BUGFIX 或带 codegen 标志时，应改为按 `.ai-harness/policies/verification.md` 及 `bugfix.md` 的适用阶段逐段 `record --kind verification --stage <stage>`；复现/回归还需 `--command <ID>`。精简 BUGFIX 的 finish 会完成同样的顺序登记。
 
 ## 4. 分析型状态流
 

@@ -1,0 +1,208 @@
+{
+  "schemaVersion": 1,
+  "id": "HARNESS-INTEGRATION-001",
+  "type": "ITERATION",
+  "title": "合并远端验证流水线并适配精简入口",
+  "status": "DONE",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/iteration.md",
+    ".ai-harness/policies/database.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户本轮提交并推送授权及上一轮按风险自主执行要求；必要合并兼容调整"
+  },
+  "input": {
+    "references": [
+      "用户要求提交并推送；fetch 得到 origin/main 232f862，新验证流水线与本地精简 BUGFIX 完成流程冲突"
+    ],
+    "acceptance": [
+      "保留远端 codegen/BUGFIX 流水线；精简 BUGFIX 一次提交真实阶段证据后正常完成；缺段不得部分完成",
+      "合并全部测试和 check --ci 通过，普通 push 后本地远端 SHA 一致"
+    ],
+    "nonGoals": [
+      "不改写远端历史、不删除已有流水线、不伪造隔离或浏览器验证"
+    ],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": null,
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "本地提交 0d10b59；远端 232f862；merge --no-commit 在 AGENTS.md 内容冲突，其他文件已自动合并；已读上游 constants/workflow/validator/checker 的新增流水线接口、专项策略与测试。基线记录合并中的上游文件指纹。"
+    ],
+    "completedAt": "2026-09-14T01:50:45.974Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "0d10b59697d22cc6fbe845427bf058ebab1d629c",
+      "dirty": true,
+      "changedFiles": [
+        ".ai-harness/policies/bugfix.md",
+        ".ai-harness/policies/index.json",
+        ".ai-harness/policies/verification.md",
+        ".ai-harness/schemas/evidence.schema.json",
+        ".ai-harness/schemas/work-item.schema.json",
+        ".ai-harness/src/checker.mjs",
+        ".ai-harness/src/cli.mjs",
+        ".ai-harness/src/constants.mjs",
+        ".ai-harness/src/model.mjs",
+        ".ai-harness/src/validator.mjs",
+        ".ai-harness/src/workflow.mjs",
+        ".ai-harness/tests/bugfix-pipeline.test.mjs",
+        ".ai-harness/tests/verification-pipeline.test.mjs",
+        ".ai-harness/work-items/HARNESS-INTEGRATION-001/events.jsonl",
+        ".ai-harness/work-items/HARNESS-INTEGRATION-001/state.json",
+        "AGENTS.md",
+        "CLAUDE.md",
+        "README.md",
+        "docs/architecture/decisions/0004-verification-pipeline.md",
+        "docs/architecture/decisions/0005-bugfix-verification-pipeline.md"
+      ],
+      "fingerprints": {
+        "AGENTS.md": "8414dc017a1e2a2f994be88b332606023ff1fdc4b8ed381d1c86b642d08af360",
+        ".ai-harness/policies/bugfix.md": "32a435d5e56a65722c47ec573e9b3e8ed9998c815ad7b9f06b1fb428b582c36b",
+        ".ai-harness/policies/index.json": "bf17c819929a845a190ce255980361e88bf456ec53f5298d8b586440e7b39b53",
+        ".ai-harness/policies/verification.md": "60c4247008d2c2b5fd86edd865ce94d2c6e82da93932849837241c913c5a3609",
+        ".ai-harness/schemas/evidence.schema.json": "ff54b95d1cb2e1851dcced6ce7a12fae94c2f3509a2bd64c2ce032d003489212",
+        ".ai-harness/schemas/work-item.schema.json": "0050af83b5b803240f84869b401d55a3ee17be36c8d6905b8be312f5d619565d",
+        ".ai-harness/src/checker.mjs": "66f9f6b4efd91aeb31fc4d7d242aed4129ed54ba13431b6c384146116996e86d",
+        ".ai-harness/src/cli.mjs": "8d243be0445450facc456d1a8f23f62b82f5df23a5bb1be584a272adbc3f60af",
+        ".ai-harness/src/constants.mjs": "badc4c0d7b85519f1931e1a5ce3530337d2d2864ce0e57494558c02d1ee9e009",
+        ".ai-harness/src/model.mjs": "8744b4110cb1abb8a28924e1c64828e467709fe319d0c7350fcb6fe5de9512df",
+        ".ai-harness/src/validator.mjs": "315dd57dc78cace0e75227d4e61e4b73b1efb60dd42584eeb7a03cfc5020a5c2",
+        ".ai-harness/src/workflow.mjs": "dd263164c5bea5e58720aff357e3d0da9158d06d38a12d93966f716a69d29850",
+        ".ai-harness/tests/bugfix-pipeline.test.mjs": "dabf8f1a3433e7d11ba57231a6989920c0193d11f04bb37dfbaf07d35951abdb",
+        ".ai-harness/tests/verification-pipeline.test.mjs": "7ee7f49cb070fc77a37e35f595d65350afc21495dd6c8372bfbff039ebd16cae",
+        "CLAUDE.md": "c817f9df3ec662d857e32ddf87237e1d1c76995637125d35d44604a79f58547c",
+        "README.md": "e1d5d8ea8730f89444c2e7fc3f71e4229d12ae6dbef5db42b20825b8e5ffc636",
+        "docs/architecture/decisions/0004-verification-pipeline.md": "af241c94578fb5a3fb9995f8ce73d8a129ea6d8c6697a275257cd2a590739ca9",
+        "docs/architecture/decisions/0005-bugfix-verification-pipeline.md": "b4d468aa1e4e78663f6b9f6d0b7ad1e720fee34e256c2cb319b3af51da7b18e5",
+        ".ai-harness/work-items/HARNESS-INTEGRATION-001/events.jsonl": "52d3aa08843bb82a800be6f2d4eab16f78a62b0a689c33831622d8124a510eb2",
+        ".ai-harness/work-items/HARNESS-INTEGRATION-001/state.json": "cfef9781a87119674b51d6d9459e3f2e78c35cc238d139d8a29ebf04fc2b4bc8"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": "docs/architecture/decisions/0006-compact-pipeline-integration.md",
+    "evidence": [
+      "保留上游强制流水线，为 compact 增加一次性阶段证据输入与前置校验；普通 ITERATION 不变"
+    ],
+    "completedAt": "2026-09-14T01:51:55.299Z"
+  },
+  "database": {
+    "impact": "none",
+    "status": "not-applicable",
+    "document": null,
+    "evidence": [
+      "使用合并后现有 recordResult(stage, commandRef) 接口，不变更 Schema 或持久化格式"
+    ],
+    "completedAt": "2026-09-14T01:51:55.681Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/HARNESS-INTEGRATION-001/plan.json",
+    "approved": true,
+    "approvalRef": "用户授权提交并推送，必要兼容合并与测试属于交付范围"
+  },
+  "verification": {
+    "status": "pass",
+    "evidence": [
+      "cde4594b-513e-41ac-b922-cfcea8bef4e8"
+    ],
+    "stages": []
+  },
+  "review": {
+    "status": "pass",
+    "evidence": [
+      "20a0ee41-dfdd-4f4d-9a36-3443f345473d"
+    ],
+    "independent": false
+  },
+  "acceptance": {
+    "status": "pass",
+    "evidence": [
+      "e259e1eb-963b-4551-99a2-fcd2d1d41efe"
+    ]
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "pass",
+    "evidence": [
+      "c1f5ff60-b06b-4561-a631-db930af40d80"
+    ]
+  },
+  "blocked": null,
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-09-14T01:50:44.986Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-09-14T01:50:45.381Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-09-14T01:50:46.325Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-09-14T01:51:57.488Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-09-14T01:51:57.854Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "VERIFYING",
+      "at": "2026-09-14T01:58:03.130Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "VERIFYING",
+      "to": "CODE_REVIEW",
+      "at": "2026-09-14T01:58:04.261Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "CODE_REVIEW",
+      "to": "READY_FOR_ACCEPTANCE",
+      "at": "2026-09-14T01:58:04.971Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "READY_FOR_ACCEPTANCE",
+      "to": "DONE",
+      "at": "2026-09-14T01:58:05.655Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-09-14T01:50:44.986Z",
+  "updatedAt": "2026-09-14T01:58:06.010Z"
+}

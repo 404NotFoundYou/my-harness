@@ -1,6 +1,7 @@
 import path from "node:path";
 import { readFile, writeFile } from "node:fs/promises";
 import { checkProject, doctorProject } from "./checker.mjs";
+import { isRunBackedStage, requiredVerificationStages } from "./constants.mjs";
 import { invariant } from "./errors.mjs";
 import { exists, resolveProjectPath } from "./filesystem.mjs";
 import { createPlan, createReviewBatch, createTask, createWorkItem } from "./model.mjs";
@@ -16,6 +17,20 @@ function assertCompactEligible(type, flags, authorizationMode, risk) {
   invariant(["low", "medium"].includes(risk), "FULL_WORKFLOW_REQUIRED", "精简入口必须明确 low 或 medium 风险；高风险使用完整流程。" );
   invariant((flags || []).every((flag) => flag === "frontend"), "FULL_WORKFLOW_REQUIRED", "数据库、API、跨端或多 AI 工作使用完整流程。" );
   invariant(authorizationMode === "autonomous", "AUTONOMOUS_AUTHORIZATION_REQUIRED", "精简入口需要任务范围内的自主执行授权；需逐步批准时使用完整流程。" );
+}
+
+function parseStageInput(entries, allowed, option) {
+  invariant(Array.isArray(entries), "STAGE_INPUT_INVALID", `${option} 必须是 stage=value 数组。`);
+  const values = new Map();
+  for (const entry of entries) {
+    const separator = typeof entry === "string" ? entry.indexOf("=") : -1;
+    invariant(separator > 0, "STAGE_INPUT_INVALID", `${option} 格式必须为 stage=value。`);
+    const stage = entry.slice(0, separator).trim();
+    const value = entry.slice(separator + 1).trim();
+    invariant(allowed.includes(stage) && value && !values.has(stage), "STAGE_INPUT_INVALID", `${option} 包含不适用、重复或空的阶段：${stage}`);
+    values.set(stage, value);
+  }
+  return values;
 }
 
 export async function beginWorkItem(root, options) {
@@ -59,7 +74,7 @@ export async function beginWorkItem(root, options) {
   return { id: item.id, status: item.status, taskId: task.id, policyFiles: item.policyFiles, document };
 }
 
-export async function finishWorkItem(root, id, { commandIds, verification, review, documentation, acceptance }) {
+export async function finishWorkItem(root, id, { commandIds, verification, review, documentation, acceptance, stageEvidence = [], stageCommands = [] }) {
   for (const [name, value] of Object.entries({ verification, review, documentation, acceptance })) {
     invariant(value?.trim(), "RESULT_REQUIRED", `finish 必须提供 ${name} 的实际结论。`);
   }
@@ -75,6 +90,14 @@ export async function finishWorkItem(root, id, { commandIds, verification, revie
   invariant(item.database.impact === "none", "FULL_WORKFLOW_REQUIRED", "涉及数据库的工作使用完整流程。" );
   invariant(task.status === "IN_PROGRESS", "WRONG_TASK_STAGE", "finish 需要 IN_PROGRESS 任务。" );
 
+  const requiredStages = requiredVerificationStages(item);
+  const runStages = requiredStages.filter(isRunBackedStage);
+  const stageSummaries = parseStageInput(stageEvidence, requiredStages, "--stage-evidence");
+  const stageReferences = parseStageInput(stageCommands, runStages, "--stage-command");
+  invariant(requiredStages.every((stage) => stageSummaries.has(stage)), "VERIFICATION_STAGE_REQUIRED", `finish 需要各阶段实际证据：${requiredStages.join(", ")}。`);
+  invariant(runStages.every((stage) => stageReferences.has(stage)), "STAGE_RUN_REQUIRED", "复现与回归阶段必须通过 --stage-command 引用实际成功命令。" );
+  const references = [...new Set([...commandIds, ...stageReferences.values()])];
+
   const checked = await checkProject(root);
   invariant(checked.ok, "CHECK_FAILED", "工作项或写入范围检查失败，未记录完成结果。", { errors: checked.errors });
   const paths = await workItemPaths(root, id);
@@ -87,25 +110,34 @@ export async function finishWorkItem(root, id, { commandIds, verification, revie
   }
   const passed = (event) => event.status === "pass" && event.command?.exitCode === 0 && event.command.policy?.decision === "allow" && !event.command.timedOut && !event.command.spawnError && !event.command.signal;
   invariant([...latest.values()].every(passed), "VERIFICATION_FAILED", "存在最新一次执行仍失败的命令，必须修复并重新验证。" );
-  const selected = commandIds.map((reference) => commands.find((event) => event.id === reference));
+  const selected = references.map((reference) => commands.find((event) => event.id === reference));
   invariant(selected.every((event) => event && passed(event) && [...latest.values()].includes(event)), "COMMAND_EVIDENCE_INVALID", "命令证据必须属于当前任务、执行成功且是该命令最新一次结果。" );
   const history = (await readFile(paths.events, "utf8")).split(/\r?\n/).filter((line) => line.trim()).map((line) => JSON.parse(line));
   const started = history.findLast((event) => event.action === "task-transition" && event.taskId === task.id && event.to === "IN_PROGRESS");
   invariant(started && selected.every((event) => event.timestamp >= started.timestamp), "COMMAND_EVIDENCE_STALE", "返工后必须重新运行验证，不能复用前一次实现的命令。" );
 
-  const verificationSummary = `${verification}\n命令证据：${[...new Set(commandIds)].join(", ")}`;
+  const verificationSummary = `${verification}\n命令证据：${references.join(", ")}`;
   await recordResult(root, id, { taskId: task.id, kind: "verification", status: "pass", summary: verificationSummary });
   await updateTaskStatus(root, id, task.id, "IMPLEMENTED");
   await updateTaskStatus(root, id, task.id, "IN_REVIEW");
   await recordResult(root, id, { taskId: task.id, kind: "review", status: "pass", summary: review });
   await updateTaskStatus(root, id, task.id, "COMPLETED");
   await transitionWorkItem(root, id, "VERIFYING");
-  await recordResult(root, id, { kind: "verification", status: "pass", summary: verificationSummary });
+  if (requiredStages.length > 0) {
+    for (const stage of requiredStages) {
+      await recordResult(root, id, {
+        kind: "verification", status: "pass", stage, summary: stageSummaries.get(stage),
+        commandRef: stageReferences.get(stage) ?? null,
+      });
+    }
+  } else {
+    await recordResult(root, id, { kind: "verification", status: "pass", summary: verificationSummary });
+  }
   await recordResult(root, id, { kind: "documentation", status: /^N\/A\s*:/i.test(documentation) ? "not-applicable" : "pass", summary: documentation });
   await transitionWorkItem(root, id, "CODE_REVIEW");
   await recordResult(root, id, { kind: "review", status: "pass", summary: review });
   await transitionWorkItem(root, id, "READY_FOR_ACCEPTANCE");
   await recordResult(root, id, { kind: "acceptance", status: "pass", summary: `${acceptance}\n授权来源：${item.authorization.source}` });
   const done = await transitionWorkItem(root, id, "DONE");
-  return { id: done.id, status: done.status, taskId: task.id, verificationCommands: [...new Set(commandIds)] };
+  return { id: done.id, status: done.status, taskId: task.id, verificationCommands: references };
 }

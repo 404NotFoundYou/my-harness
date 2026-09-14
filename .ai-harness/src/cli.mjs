@@ -119,7 +119,7 @@ function helpText() {
   task-add      增加任务
   plan-approve  批准计划
   task-update   推进任务状态
-  record        记录验证、审查、验收、文档或分析结果
+  record        记录验证、审查、验收、文档或分析结果（流水线用 --stage；reproduction/regression 用 --command 引用 run 证据）
   analysis-add  增加带状态的分析结论
   transition    推进工作项状态
 
@@ -133,8 +133,10 @@ function helpText() {
         --writes PATH --verify COMMAND --docs PATH_OR_NA [--flag frontend]
   run --id ID --task T1 -- <COMMAND> [ARGS...]
   finish --id ID --command EVIDENCE_ID --verification TEXT --review TEXT --documentation TEXT --acceptance TEXT
+         [--stage-evidence stage=TEXT] [--stage-command stage=EVIDENCE_ID]
   check --ci --json
   begin 默认为 autonomous；授权来源必须真实。BUGFIX 另需 --actual、--expected、--reproduction。
+  BUGFIX 的 finish 另需必需阶段的 --stage-evidence，复现/回归另需 --stage-command；按原流水线顺序登记。
   复杂/高风险或需要逐步批准的工作仍使用 start 及细粒度命令。
 
 常用重复参数：--input、--acceptance、--non-goal、--evidence、--blocked-by、--writes、--verify、--docs、--command。`;
@@ -265,6 +267,8 @@ export async function runCli(argv, io = { stdout: console.log, stderr: console.e
       review: one(parsed, "review", { required: true }),
       documentation: one(parsed, "documentation", { required: true }),
       acceptance: one(parsed, "acceptance", { required: true }),
+      stageEvidence: many(parsed, "stage-evidence"),
+      stageCommands: many(parsed, "stage-command"),
     });
     emit(io, parsed, result);
     return 0;
@@ -367,6 +371,8 @@ export async function runCli(argv, io = { stdout: console.log, stderr: console.e
       summary: one(parsed, "evidence", { required: true }),
       taskId: one(parsed, "task"),
       independent: flag(parsed, "independent"),
+      stage: one(parsed, "stage"),
+      commandRef: one(parsed, "command"),
     });
     emit(io, parsed, result);
     return 0;

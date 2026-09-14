@@ -35,6 +35,8 @@
 - `run --id <ID> --task T1 -- <COMMAND>` 记录实际命令结果。审查后用 `finish` 引用成功命令 ID，提交真实验证、文档及验收结论；它登记证据，不代做检查。
 - 状态、计划和证据仅通过 CLI 维护。中断保留真实进度，先 `show` 再用细粒度命令继续，禁止手改控制面 JSON/JSONL。
 
+- BUGFIX 的验证保留 static/sandbox/reproduction/regression 阶段，frontend 另需 browser；finish 一次接收真实阶段证据并按顺序登记，复现及回归必须引用成功命令。codegen 标志继续使用完整验证流水线，详见 .ai-harness/policies/verification.md。
+
 ## 开发门禁
 
 行为修改用回归测试或等价证据验证，并审查完整差异；机械修改不强制新增测试。同一目标可复用一次有效审查；没有新改动、失败或未解疑点时不重复测试。文档只同步受影响的当前事实。

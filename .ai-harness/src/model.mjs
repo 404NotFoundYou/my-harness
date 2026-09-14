@@ -66,7 +66,7 @@ export function createWorkItem({
       approved: false,
       approvalRef: null,
     },
-    verification: pendingResult(),
+    verification: pendingResult({ stages: [] }),
     review: pendingResult({ independent: false }),
     acceptance: pendingResult(),
     analysis: pendingResult({ conclusions: [], unknowns: [] }),

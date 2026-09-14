@@ -30,6 +30,13 @@ function results(commandIds, overrides = {}) {
   };
 }
 
+function bugStages(commandId) {
+  return {
+    stageEvidence: ["static=static-check fixture", "sandbox=isolated-execution fixture", "reproduction=local regression executed", "regression=local suite executed"],
+    stageCommands: [`reproduction=${commandId}`, `regression=${commandId}`],
+  };
+}
+
 async function run(root, id = "COMPACT-1", args = ["--version"]) {
   // Child verification must really execute, not inherit the parent's test-runner marker.
   const testContext = process.env.NODE_TEST_CONTEXT;
@@ -54,10 +61,14 @@ for (const type of ["ITERATION", "BUGFIX"]) {
       await writeFile(path.join(root, "feature.test.mjs"), 'import assert from "node:assert/strict";\nassert.equal(2 + 2, 4);\n');
       const command = await run(root, started.id, ["--test", "feature.test.mjs"]);
       assert.equal(command.status, "pass");
-      assert.equal((await finishWorkItem(root, started.id, results([command.id]))).status, "DONE");
+      assert.equal((await finishWorkItem(root, started.id, results([command.id], type === "BUGFIX" ? bugStages(command.id) : {}))).status, "DONE");
       const item = await loadWorkItem(root, started.id);
       assert.equal(item.review.independent, false);
       assert.equal(item.documentation.status, "not-applicable");
+      if (type === "BUGFIX") {
+        assert.deepEqual(item.verification.stages.map((stage) => stage.stage), ["static", "sandbox", "reproduction", "regression"]);
+        assert.equal(item.verification.stages.find((stage) => stage.stage === "regression").command, command.id);
+      }
       assert.deepEqual(item.history.map((entry) => entry.to), [
         "INTAKE", "BASELINING", "SOLUTION_DESIGN", "PLANNED", "IMPLEMENTING",
         "VERIFYING", "CODE_REVIEW", "READY_FOR_ACCEPTANCE", "DONE",
@@ -74,7 +85,7 @@ test("compact startup rejects ineligible or incomplete work before leaving state
   try {
     for (const overrides of [
       { risk: "high" }, { risk: "unknown" }, { type: "NEW_PROJECT" }, { type: "ANALYSIS" },
-      ...["database", "api", "mobile", "multi-agent"].map((flag) => ({ flags: [flag] })),
+      ...["database", "api", "mobile", "multi-agent", "codegen"].map((flag) => ({ flags: [flag] })),
       { authorizationMode: "approval-required" }, { authorizationSource: "" },
       { type: "BUGFIX", bug: null }, { approach: "" }, { databaseEvidence: "" },
       { writeScopes: ["**"] }, { verification: [] }, { docsImpact: [] },
@@ -181,6 +192,32 @@ test("compact finish cannot take over work requiring independent review", async 
     await writeFile(paths.plan, JSON.stringify(plan));
     await assert.rejects(() => finishWorkItem(root, "COMPACT-1", results([command.id])), { code: "FULL_WORKFLOW_REQUIRED" });
     assert.equal((await loadWorkItem(root, "COMPACT-1")).status, "IMPLEMENTING");
+  } finally {
+    await cleanup(root);
+  }
+});
+
+test("compact frontend bug requires all pipeline evidence before changing any result", async () => {
+  const root = await createInstalledProject();
+  try {
+    await beginWorkItem(root, options({
+      type: "BUGFIX", flags: ["frontend"],
+      bug: { actual: "wrong display", expected: "documented display", reproduction: "open the affected view" },
+    }));
+    const command = await run(root);
+    const stages = bugStages(command.id);
+    await assert.rejects(() => finishWorkItem(root, "COMPACT-1", results([command.id])), { code: "VERIFICATION_STAGE_REQUIRED" });
+    await assert.rejects(() => finishWorkItem(root, "COMPACT-1", results([command.id], stages)), { code: "VERIFICATION_STAGE_REQUIRED" });
+    stages.stageEvidence.push("browser=external browser-probe fixture");
+    await assert.rejects(() => finishWorkItem(root, "COMPACT-1", results([command.id], { ...stages, stageCommands: [] })), { code: "STAGE_RUN_REQUIRED" });
+    await assert.rejects(() => finishWorkItem(root, "COMPACT-1", results([command.id], { ...stages, stageCommands: ["reproduction=missing", `regression=${command.id}`] })), { code: "COMMAND_EVIDENCE_INVALID" });
+    for (const extra of ["unknown=invalid", "static=duplicate", "=empty-stage"]) {
+      await assert.rejects(() => finishWorkItem(root, "COMPACT-1", results([command.id], { ...stages, stageEvidence: [...stages.stageEvidence, extra] })), { code: "STAGE_INPUT_INVALID" });
+    }
+    assert.equal((await loadWorkItem(root, "COMPACT-1")).status, "IMPLEMENTING");
+    assert.equal((await loadPlan(root, "COMPACT-1")).tasks[0].verificationStatus, "pending");
+    assert.equal((await finishWorkItem(root, "COMPACT-1", results([command.id], stages))).status, "DONE");
+    assert.deepEqual((await checkProject(root, { ci: true })).errors, []);
   } finally {
     await cleanup(root);
   }
