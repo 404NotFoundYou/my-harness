@@ -1,0 +1,144 @@
+{
+  "schemaVersion": 1,
+  "integrityVersion": 1,
+  "revision": 1,
+  "id": "allocation-iteration",
+  "type": "ITERATION",
+  "title": "实现精确权重分配",
+  "status": "IMPLEMENTING",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/iteration.md",
+    ".ai-harness/policies/database.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "TASK.md 与用户当前请求"
+  },
+  "input": {
+    "references": [
+      "TASK.md：实现 src/allocate.mjs 的 allocate，支持安全整数校验、精确最大余数法和大整数中间值，并保持 caller 兼容"
+    ],
+    "acceptance": [
+      "公共测试通过；新增测试覆盖非法输入、零权重、最大余数排序、总和精确和大整数中间值；只修改 src/allocate.mjs 和新增 test/extra.test.mjs"
+    ],
+    "nonGoals": [],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": null,
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "TASK.md：实现 src/allocate.mjs 的 allocate，支持安全整数校验、精确最大余数法和大整数中间值，并保持 caller 兼容"
+    ],
+    "completedAt": "2026-09-14T06:58:13.084Z",
+    "repository": {
+      "isGit": true,
+      "branch": "master",
+      "commit": "38cf30a68fb3972620fd0911513bc9b744c54ad4",
+      "dirty": true,
+      "changedFiles": [
+        ".ai-harness/work-items/allocation-iteration/events.jsonl",
+        ".ai-harness/work-items/allocation-iteration/state.json"
+      ],
+      "fingerprints": {
+        ".ai-harness/work-items/allocation-iteration/events.jsonl": "8f0c052043d6a2bd31b688f4455767acdf272372227c6fe4bd493a887a36cfb4",
+        ".ai-harness/work-items/allocation-iteration/state.json": "aec1a08694ced436c2f9d9a5d63bd1831d7f55b6694238f66da70e8b370a43c9"
+      },
+      "source": {
+        "digest": "1b3d0bd30ee85dbb6ff5ec07fc8a34dea41d4f84e92f60f46c3d5663dd1f7339",
+        "document": ".ai-harness/work-items/allocation-iteration/snapshots/1b3d0bd30ee85dbb6ff5ec07fc8a34dea41d4f84e92f60f46c3d5663dd1f7339.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": ".ai-harness/work-items/allocation-iteration/solution.md",
+    "evidence": [
+      "使用 BigInt 做精确分子、商和余数比较，先分配下整数再按余数及原索引补余数；入口先验证 total、weights 稠密性及元素安全整数，避免修改输入。"
+    ],
+    "completedAt": "2026-09-14T06:58:13.275Z"
+  },
+  "database": {
+    "impact": "none",
+    "status": "not-applicable",
+    "document": null,
+    "evidence": [
+      "N/A：纯内存确定性函数，无数据库、网络或外部服务影响。"
+    ],
+    "completedAt": "2026-09-14T06:58:13.277Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/allocation-iteration/plan.json",
+    "approved": true,
+    "approvalRef": "TASK.md 与用户当前请求"
+  },
+  "verification": {
+    "status": "pending",
+    "evidence": [],
+    "stages": []
+  },
+  "review": {
+    "status": "pending",
+    "evidence": [],
+    "independent": false
+  },
+  "acceptance": {
+    "status": "pending",
+    "evidence": []
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "pending",
+    "evidence": []
+  },
+  "blocked": null,
+  "delivery": null,
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-09-14T06:58:12.835Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-09-14T06:58:12.842Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-09-14T06:58:13.271Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-09-14T06:58:13.295Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-09-14T06:58:13.297Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-09-14T06:58:12.835Z",
+  "updatedAt": "2026-09-14T06:58:13.301Z"
+}

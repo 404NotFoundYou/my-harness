@@ -1,0 +1,144 @@
+{
+  "schemaVersion": 1,
+  "integrityVersion": 1,
+  "revision": 1,
+  "id": "events-reconcile",
+  "type": "ITERATION",
+  "title": "实现事件版本协调与墓碑保留",
+  "status": "IMPLEMENTING",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/iteration.md",
+    ".ai-harness/policies/database.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户本轮明确授权完成TASK.md迭代并限定可写文件"
+  },
+  "input": {
+    "references": [
+      "TASK.md"
+    ],
+    "acceptance": [
+      "reconcile验证稠密输入及全部字段，按id返回规范化记录并执行严格版本更新、同版本先到胜出和墓碑保留；公共调用兼容且重复事件幂等"
+    ],
+    "nonGoals": [],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": null,
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "TASK.md"
+    ],
+    "completedAt": "2026-09-14T07:11:26.514Z",
+    "repository": {
+      "isGit": true,
+      "branch": "master",
+      "commit": "4cd3922347c79f81f391cbf58e48426e47823bb6",
+      "dirty": true,
+      "changedFiles": [
+        ".ai-harness/work-items/events-reconcile/events.jsonl",
+        ".ai-harness/work-items/events-reconcile/state.json"
+      ],
+      "fingerprints": {
+        ".ai-harness/work-items/events-reconcile/events.jsonl": "2bcf5f10900e6b8fed0b15704799755e139f7ec6e712372454724436956bb2dd",
+        ".ai-harness/work-items/events-reconcile/state.json": "eceacabece7e7e1507482367ceb92658974aca7c4124a7ea499057bad93d7bc5"
+      },
+      "source": {
+        "digest": "75dfdc68cdde195dc94cd612ffedfd31b440fc40ab1e5aca677d366a244a542d",
+        "document": ".ai-harness/work-items/events-reconcile/snapshots/75dfdc68cdde195dc94cd612ffedfd31b440fc40ab1e5aca677d366a244a542d.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": ".ai-harness/work-items/events-reconcile/solution.md",
+    "evidence": [
+      "在reconcile中先完整验证参数与记录，再以Map复制当前状态并按到达顺序只接受更高版本事件，最后按字符串id排序并只投影契约字段；新增意图覆盖测试。"
+    ],
+    "completedAt": "2026-09-14T07:11:26.696Z"
+  },
+  "database": {
+    "impact": "none",
+    "status": "not-applicable",
+    "document": null,
+    "evidence": [
+      "仅本地纯函数数据协调，无数据库访问、schema或持久化影响。"
+    ],
+    "completedAt": "2026-09-14T07:11:26.698Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/events-reconcile/plan.json",
+    "approved": true,
+    "approvalRef": "用户本轮明确授权完成TASK.md迭代并限定可写文件"
+  },
+  "verification": {
+    "status": "pending",
+    "evidence": [],
+    "stages": []
+  },
+  "review": {
+    "status": "pending",
+    "evidence": [],
+    "independent": false
+  },
+  "acceptance": {
+    "status": "pending",
+    "evidence": []
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "pending",
+    "evidence": []
+  },
+  "blocked": null,
+  "delivery": null,
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-09-14T07:11:26.289Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-09-14T07:11:26.295Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-09-14T07:11:26.692Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-09-14T07:11:26.716Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-09-14T07:11:26.719Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-09-14T07:11:26.289Z",
+  "updatedAt": "2026-09-14T07:11:26.723Z"
+}

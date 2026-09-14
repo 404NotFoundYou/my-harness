@@ -1,0 +1,113 @@
+{
+  "schemaVersion": 1,
+  "mode": "real",
+  "taskId": "events",
+  "split": "holdout",
+  "group": "weak-harness",
+  "model": "gpt-5.6-luna",
+  "taskDigest": "e8a7130efc1592e2fdb89853fd6ba482da6b67285b7887b074da97ae289d4b2d",
+  "judgeDigest": "653600052c1e1ab18c5601412a2c49b1d6f0106747aca300db788e819dc765ae",
+  "candidateDigest": "033e356666be01c5f7f5f885bb91b2bd51768db10dfbc17f86be1dbffc0a4c0f",
+  "budget": {
+    "timeoutMs": 180000,
+    "maxToolCalls": 80,
+    "reasoning": "medium"
+  },
+  "run": {
+    "mode": "real",
+    "startedAt": "2026-09-14T06:28:06.991Z",
+    "durationMs": 180344,
+    "exitCode": 1,
+    "timedOut": true,
+    "toolLimit": false,
+    "toolCalls": 3,
+    "turnCompleted": false,
+    "usage": null,
+    "error": null,
+    "errors": [],
+    "final": null,
+    "completed": false
+  },
+  "scope": {
+    "ok": true,
+    "changes": [],
+    "violations": []
+  },
+  "workflow": {
+    "ok": false,
+    "errors": [],
+    "workItems": []
+  },
+  "grade": {
+    "complete": true,
+    "ok": false,
+    "cases": [
+      {
+        "id": "stale",
+        "pass": false,
+        "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:\n+ actual - expected\n\n  [\n    {\n      deleted: false,\n      id: 'a',\n+     value: 2,\n+     version: 2\n-     value: 3,\n-     version: 3\n    }\n  ]\n\n    at Object.run (file:///C:/Users/jhon/AppData/Local/Temp/ai-harness-grade-NecE78/judge.mjs:3:42)\n    at file:///C:/Users/jhon/AppData/Local/Temp/ai-harness-grade-NecE78/judge.mjs:4:50\n    at ModuleJob.run (node:internal/modules/esm/module_job:345:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:665:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)"
+      },
+      {
+        "id": "tombstone",
+        "pass": false,
+        "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:\n+ actual - expected\n\n  [\n    {\n+     deleted: false,\n-     deleted: true,\n      id: 'a',\n+     value: 2,\n+     version: 2\n-     version: 4\n    }\n  ]\n\n    at Object.run (file:///C:/Users/jhon/AppData/Local/Temp/ai-harness-grade-NecE78/judge.mjs:3:220)\n    at file:///C:/Users/jhon/AppData/Local/Temp/ai-harness-grade-NecE78/judge.mjs:4:50\n    at ModuleJob.run (node:internal/modules/esm/module_job:345:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:665:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)"
+      },
+      {
+        "id": "same-version",
+        "pass": false,
+        "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:\n+ actual - expected\n\n+ []\n- [\n-   {\n-     deleted: false,\n-     id: 'a',\n-     value: 1,\n-     version: 1\n-   }\n- ]\n\n    at Object.run (file:///C:/Users/jhon/AppData/Local/Temp/ai-harness-grade-NecE78/judge.mjs:3:385)\n    at file:///C:/Users/jhon/AppData/Local/Temp/ai-harness-grade-NecE78/judge.mjs:4:50\n    at ModuleJob.run (node:internal/modules/esm/module_job:345:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:665:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)"
+      },
+      {
+        "id": "resurrection",
+        "pass": true
+      },
+      {
+        "id": "idempotent",
+        "pass": true
+      },
+      {
+        "id": "sorted",
+        "pass": false,
+        "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:\n+ actual - expected\n\n  [\n+   'z',\n    'a',\n-   'z'\n  ]\n\n    at Object.run (file:///C:/Users/jhon/AppData/Local/Temp/ai-harness-grade-NecE78/judge.mjs:3:893)\n    at file:///C:/Users/jhon/AppData/Local/Temp/ai-harness-grade-NecE78/judge.mjs:4:50"
+      },
+      {
+        "id": "ordinary-string-ids",
+        "pass": false,
+        "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:\n+ actual - expected\n\n+ []\n- [\n-   '__proto__',\n-   'constructor'\n- ]\n\n    at Object.run (file:///C:/Users/jhon/AppData/Local/Temp/ai-harness-grade-NecE78/judge.mjs:3:1044)\n    at file:///C:/Users/jhon/AppData/Local/Temp/ai-harness-grade-NecE78/judge.mjs:4:50"
+      },
+      {
+        "id": "immutable",
+        "pass": false,
+        "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:\n+ actual - expected\n\n+ []\n- [\n-   {\n-     deleted: true,\n-     id: 'a',\n-     version: 2\n-   }\n- ]\n\n    at Object.run (file:///C:/Users/jhon/AppData/Local/Temp/ai-harness-grade-NecE78/judge.mjs:3:1385)\n    at file:///C:/Users/jhon/AppData/Local/Temp/ai-harness-grade-NecE78/judge.mjs:4:50"
+      },
+      {
+        "id": "invalid-shape",
+        "pass": false,
+        "error": "AssertionError [ERR_ASSERTION]: Missing expected exception (TypeError).\n    at Object.run (file:///C:/Users/jhon/AppData/Local/Temp/ai-harness-grade-NecE78/judge.mjs:3:1575)\n    at file:///C:/Users/jhon/AppData/Local/Temp/ai-harness-grade-NecE78/judge.mjs:4:50"
+      },
+      {
+        "id": "invalid-version",
+        "pass": false,
+        "error": "AssertionError [ERR_ASSERTION]: Missing expected exception (TypeError).\n    at Object.run (file:///C:/Users/jhon/AppData/Local/Temp/ai-harness-grade-NecE78/judge.mjs:3:1712)\n    at file:///C:/Users/jhon/AppData/Local/Temp/ai-harness-grade-NecE78/judge.mjs:4:50"
+      },
+      {
+        "id": "duplicate-current",
+        "pass": false,
+        "error": "AssertionError [ERR_ASSERTION]: Missing expected exception (TypeError).\n    at Object.run (file:///C:/Users/jhon/AppData/Local/Temp/ai-harness-grade-NecE78/judge.mjs:3:1816)\n    at file:///C:/Users/jhon/AppData/Local/Temp/ai-harness-grade-NecE78/judge.mjs:4:50"
+      },
+      {
+        "id": "clean-fields",
+        "pass": false,
+        "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:\n+ actual - expected\n\n  [\n    {\n      deleted: true,\n+     extra: true,\n      id: 'a',\n+     value: 1,\n      version: 0\n    }\n  ]\n\n    at Object.run (file:///C:/Users/jhon/AppData/Local/Temp/ai-harness-grade-NecE78/judge.mjs:3:1948)\n    at file:///C:/Users/jhon/AppData/Local/Temp/ai-harness-grade-NecE78/judge.mjs:4:50"
+      }
+    ],
+    "expectedCases": 12,
+    "exitCode": 1,
+    "timedOut": false,
+    "stderr": "",
+    "error": null
+  },
+  "success": false,
+  "falseCompletion": false,
+  "falseFunctionalCompletion": false
+}

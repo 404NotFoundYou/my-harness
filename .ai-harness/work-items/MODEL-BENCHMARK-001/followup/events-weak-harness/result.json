@@ -1,0 +1,153 @@
+{
+  "schemaVersion": 1,
+  "mode": "real",
+  "taskId": "events",
+  "split": "holdout",
+  "group": "weak-harness",
+  "model": "gpt-5.6-luna",
+  "taskDigest": "e8a7130efc1592e2fdb89853fd6ba482da6b67285b7887b074da97ae289d4b2d",
+  "judgeDigest": "653600052c1e1ab18c5601412a2c49b1d6f0106747aca300db788e819dc765ae",
+  "candidateDigest": "6a5e886b4b19c3688e3034f1e7f5a5fd35fc10f23887b8895d4344b6d6c0e970",
+  "budget": {
+    "timeoutMs": 180000,
+    "maxToolCalls": 80,
+    "reasoning": "medium"
+  },
+  "run": {
+    "mode": "real",
+    "startedAt": "2026-09-14T07:10:39.915Z",
+    "durationMs": 180390,
+    "exitCode": 1,
+    "timedOut": true,
+    "toolLimit": false,
+    "toolCalls": 11,
+    "turnCompleted": false,
+    "usage": null,
+    "error": null,
+    "errors": [],
+    "final": null,
+    "completed": false
+  },
+  "scope": {
+    "ok": true,
+    "changes": [
+      {
+        "path": "src/reconcile.mjs",
+        "before": "033e356666be01c5f7f5f885bb91b2bd51768db10dfbc17f86be1dbffc0a4c0f",
+        "after": "6a5e886b4b19c3688e3034f1e7f5a5fd35fc10f23887b8895d4344b6d6c0e970"
+      },
+      {
+        "path": ".ai-harness/work-items/events-reconcile/events.jsonl",
+        "before": null,
+        "after": "2bce86da06a5364fffbd071aa1f2b77dd67e64f3abe9004329de641a7fc2e177"
+      },
+      {
+        "path": ".ai-harness/work-items/events-reconcile/evidence.jsonl",
+        "before": null,
+        "after": "2927437f64cf39375ad52f07db1a506122350f3dc665f896ed2521f1aaffc3f3"
+      },
+      {
+        "path": ".ai-harness/work-items/events-reconcile/plan.json",
+        "before": null,
+        "after": "7633734c80f8b6f97cefa397f29b274813bc0623e36b729c19405d749bc2c0ff"
+      },
+      {
+        "path": ".ai-harness/work-items/events-reconcile/snapshots/75dfdc68cdde195dc94cd612ffedfd31b440fc40ab1e5aca677d366a244a542d.json",
+        "before": null,
+        "after": "e927657500925631657582d20a872ee1cedd4bc0f291f9775eb65b52531b7b53"
+      },
+      {
+        "path": ".ai-harness/work-items/events-reconcile/snapshots/bb0b8c0cc25e42aef83929e7d0bf17871ba9631246bee995704c5f1ae6ca68bd.json",
+        "before": null,
+        "after": "c98304a212068182efed69a02a0f1707c191c0d8c8b073e118afa97d36b78902"
+      },
+      {
+        "path": ".ai-harness/work-items/events-reconcile/solution.md",
+        "before": null,
+        "after": "cae8c67bbd708cef2105547d863fe3ea7945c3eedb7a0516a7cc85338c2389b1"
+      },
+      {
+        "path": ".ai-harness/work-items/events-reconcile/state.json",
+        "before": null,
+        "after": "543f4ad5c4c966760584fae91c84e2aa84fc3db7e001ec5fce7efe1113b2ceb7"
+      },
+      {
+        "path": "test/extra.test.mjs",
+        "before": null,
+        "after": "57346089eb37db7f56c3f1892621a95f70a277bcbc258bff3ed7d86058212bf5"
+      }
+    ],
+    "violations": []
+  },
+  "workflow": {
+    "ok": false,
+    "errors": [
+      "CI 不接受未完成工作项：events-reconcile:IMPLEMENTING"
+    ],
+    "workItems": [
+      "events-reconcile"
+    ]
+  },
+  "grade": {
+    "complete": true,
+    "ok": true,
+    "cases": [
+      {
+        "id": "stale",
+        "pass": true
+      },
+      {
+        "id": "tombstone",
+        "pass": true
+      },
+      {
+        "id": "same-version",
+        "pass": true
+      },
+      {
+        "id": "resurrection",
+        "pass": true
+      },
+      {
+        "id": "idempotent",
+        "pass": true
+      },
+      {
+        "id": "sorted",
+        "pass": true
+      },
+      {
+        "id": "ordinary-string-ids",
+        "pass": true
+      },
+      {
+        "id": "immutable",
+        "pass": true
+      },
+      {
+        "id": "invalid-shape",
+        "pass": true
+      },
+      {
+        "id": "invalid-version",
+        "pass": true
+      },
+      {
+        "id": "duplicate-current",
+        "pass": true
+      },
+      {
+        "id": "clean-fields",
+        "pass": true
+      }
+    ],
+    "expectedCases": 12,
+    "exitCode": 0,
+    "timedOut": false,
+    "stderr": "",
+    "error": null
+  },
+  "success": false,
+  "falseCompletion": false,
+  "falseFunctionalCompletion": false
+}

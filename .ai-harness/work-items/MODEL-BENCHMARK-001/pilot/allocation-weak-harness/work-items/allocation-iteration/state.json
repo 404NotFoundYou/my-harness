@@ -1,0 +1,213 @@
+{
+  "schemaVersion": 1,
+  "integrityVersion": 1,
+  "revision": 1,
+  "id": "allocation-iteration",
+  "type": "ITERATION",
+  "title": "实现精确最大余数分配",
+  "status": "DONE",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/iteration.md",
+    ".ai-harness/policies/database.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户消息与项目 AGENTS.md：完成 TASK.md 已授权普通迭代"
+  },
+  "input": {
+    "references": [
+      "TASK.md 规格；src/allocate.mjs 当前实现；src/caller.mjs 调用契约；test/public.test.mjs 公共测试"
+    ],
+    "acceptance": [
+      "allocate 对合法输入返回按精确最大余数法分配且总和精确等于 total；非法输入均抛 RangeError；零权重为0；不修改输入；caller 继续兼容"
+    ],
+    "nonGoals": [],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": null,
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "TASK.md 规格；src/allocate.mjs 当前实现；src/caller.mjs 调用契约；test/public.test.mjs 公共测试"
+    ],
+    "completedAt": "2026-09-14T06:15:46.433Z",
+    "repository": {
+      "isGit": true,
+      "branch": "master",
+      "commit": "e5cc869d91e2d5bbdfcd0954b8efd55a22f87360",
+      "dirty": true,
+      "changedFiles": [
+        ".ai-harness/work-items/allocation-iteration/events.jsonl",
+        ".ai-harness/work-items/allocation-iteration/state.json"
+      ],
+      "fingerprints": {
+        ".ai-harness/work-items/allocation-iteration/events.jsonl": "d2d8425ad732c0f2883f6c96767b0b1f53c889a56961bb15745f2d1f76894a09",
+        ".ai-harness/work-items/allocation-iteration/state.json": "ab1a85a1a02ad789cb841b06229781e8890b94efbc85e4ef2bf381980979de7b"
+      },
+      "source": {
+        "digest": "fd5d9dd51e9f320aff41991a3dbaa366962b98c8258a812b89b4cbc10a45271a",
+        "document": ".ai-harness/work-items/allocation-iteration/snapshots/fd5d9dd51e9f320aff41991a3dbaa366962b98c8258a812b89b4cbc10a45271a.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": ".ai-harness/work-items/allocation-iteration/solution.md",
+    "evidence": [
+      "在单文件中增加严格输入校验，使用 BigInt 计算商和余数以覆盖安全整数范围，按余数及原索引稳定补余，并新增边界自测"
+    ],
+    "completedAt": "2026-09-14T06:15:46.622Z"
+  },
+  "database": {
+    "impact": "none",
+    "status": "not-applicable",
+    "document": null,
+    "evidence": [
+      "无数据库、外部服务或持久化影响；仅纯函数内存计算"
+    ],
+    "completedAt": "2026-09-14T06:15:46.625Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/allocation-iteration/plan.json",
+    "approved": true,
+    "approvalRef": "用户消息与项目 AGENTS.md：完成 TASK.md 已授权普通迭代"
+  },
+  "verification": {
+    "status": "pass",
+    "evidence": [
+      "6c244d61-4530-41e3-a25d-03d4452c5f9e"
+    ],
+    "stages": [],
+    "source": {
+      "digest": "071d07a530a4753feaa632c396e9788bf9dd3be24906d223cfec94bae1fb0d74",
+      "document": ".ai-harness/work-items/allocation-iteration/snapshots/071d07a530a4753feaa632c396e9788bf9dd3be24906d223cfec94bae1fb0d74.json"
+    }
+  },
+  "review": {
+    "status": "pass",
+    "evidence": [
+      "2d09466a-d913-4bb4-9d09-88a4ba162fe8"
+    ],
+    "independent": false,
+    "source": {
+      "digest": "071d07a530a4753feaa632c396e9788bf9dd3be24906d223cfec94bae1fb0d74",
+      "document": ".ai-harness/work-items/allocation-iteration/snapshots/071d07a530a4753feaa632c396e9788bf9dd3be24906d223cfec94bae1fb0d74.json"
+    }
+  },
+  "acceptance": {
+    "status": "pass",
+    "evidence": [
+      "f15d00c1-7a94-4679-87e9-6fc6175ca11e"
+    ],
+    "source": {
+      "digest": "071d07a530a4753feaa632c396e9788bf9dd3be24906d223cfec94bae1fb0d74",
+      "document": ".ai-harness/work-items/allocation-iteration/snapshots/071d07a530a4753feaa632c396e9788bf9dd3be24906d223cfec94bae1fb0d74.json"
+    }
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "not-applicable",
+    "evidence": [
+      "40d8802f-9109-4864-b14e-73a1a54820ec"
+    ]
+  },
+  "blocked": null,
+  "delivery": {
+    "source": {
+      "digest": "071d07a530a4753feaa632c396e9788bf9dd3be24906d223cfec94bae1fb0d74",
+      "document": ".ai-harness/work-items/allocation-iteration/snapshots/071d07a530a4753feaa632c396e9788bf9dd3be24906d223cfec94bae1fb0d74.json"
+    },
+    "baseline": {
+      "digest": "fd5d9dd51e9f320aff41991a3dbaa366962b98c8258a812b89b4cbc10a45271a",
+      "document": ".ai-harness/work-items/allocation-iteration/snapshots/fd5d9dd51e9f320aff41991a3dbaa366962b98c8258a812b89b4cbc10a45271a.json"
+    },
+    "baselineAt": "2026-09-14T06:15:46.433Z",
+    "ownedChanges": [
+      {
+        "path": "src/allocate.mjs",
+        "before": "100644:4fbc85fe7906491da3cc550bc89e0121c64b7e09",
+        "after": "100644:cd0feb03a048f806cd76e891660747173424ed0c"
+      },
+      {
+        "path": "test/extra.test.mjs",
+        "before": null,
+        "after": "100644:33623abb5bd911d3b244637bbfe81cb301f55cf3"
+      }
+    ],
+    "planDigest": "e009cf5a47ad5c949170627ff9aae035e88adb60400e27c79b879f4a7ef252cc",
+    "at": "2026-09-14T06:17:11.161Z",
+    "head": "e5cc869d91e2d5bbdfcd0954b8efd55a22f87360"
+  },
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-09-14T06:15:46.197Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-09-14T06:15:46.202Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-09-14T06:15:46.618Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-09-14T06:15:46.642Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-09-14T06:15:46.645Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "VERIFYING",
+      "at": "2026-09-14T06:17:07.176Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "VERIFYING",
+      "to": "CODE_REVIEW",
+      "at": "2026-09-14T06:17:08.129Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "CODE_REVIEW",
+      "to": "READY_FOR_ACCEPTANCE",
+      "at": "2026-09-14T06:17:09.204Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "READY_FOR_ACCEPTANCE",
+      "to": "DONE",
+      "at": "2026-09-14T06:17:11.480Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-09-14T06:15:46.197Z",
+  "updatedAt": "2026-09-14T06:17:11.480Z"
+}

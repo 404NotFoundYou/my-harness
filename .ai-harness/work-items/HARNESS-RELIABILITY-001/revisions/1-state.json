@@ -1,0 +1,168 @@
+{
+  "schemaVersion": 1,
+  "id": "HARNESS-RELIABILITY-001",
+  "type": "BUGFIX",
+  "title": "修复验收、范围、返工和命令执行缺陷",
+  "status": "IMPLEMENTING",
+  "flags": [
+    "database"
+  ],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/bugfix.md",
+    ".ai-harness/policies/verification.md",
+    ".ai-harness/policies/database.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户活动目标明确授权修复上述实现缺陷"
+  },
+  "input": {
+    "references": [
+      ".ai-harness/work-items/ANALYSIS-HARNESS-ASSESS-001/assessment.md",
+      "用户活动目标：先修实现缺陷，再建立真实三组模型固定任务对照并按失败补工具"
+    ],
+    "acceptance": [
+      "所有评估反例被阻止错误通过或得到正常恢复；分析控制面不再误报",
+      "计划命令、验证代码指纹和交付范围可追溯；新失败和代码变化使旧证据不可用于完成",
+      "支持有版本的 reopen/replan；Windows npm/pnpm 启动走明确入口；旧已完成记录按真实提交归档",
+      "针对性回归、完整测试及独立高风险审查通过，保留真实未验证边界"
+    ],
+    "nonGoals": [
+      "不修改用户已有分析结论，不伪造历史验证，不删除工作项，不推送发布"
+    ],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": {
+    "actual": "旧代码证据和无关命令可完成验收；新失败未使旧 pass 失效；删除漏检、历史范围滥用、分析误报；最终审查不能返工；version 参数绕过审批；Windows npm 无法运行",
+    "expected": "验证绑定计划命令和实际代码，范围仅认可适用变更，失败可有审计地返回修改与重测，命令审批及 Windows 启动正确",
+    "reproduction": "评估 probes.mjs 与 probe-results.json 已记录 7 个隔离场景和 1 个分类反例；本轮先保留为失败回归"
+  },
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "main/a40af12；产品文件未修改；保留未提交 ANALYSIS-HARNESS-ASSESS-001 目录。已读完整评估、源模块接口、策略和相关测试；schema 为仓库 JSON/JSONL，无外部数据库。"
+    ],
+    "completedAt": "2026-09-14T03:21:16.138Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "a40af12c7f7a7d03bee37173f4bfcd83a24a6da0",
+      "dirty": true,
+      "changedFiles": [
+        ".ai-harness/work-items/ANALYSIS-HARNESS-ASSESS-001/assessment.md",
+        ".ai-harness/work-items/ANALYSIS-HARNESS-ASSESS-001/events.jsonl",
+        ".ai-harness/work-items/ANALYSIS-HARNESS-ASSESS-001/evidence.jsonl",
+        ".ai-harness/work-items/ANALYSIS-HARNESS-ASSESS-001/probe-results.json",
+        ".ai-harness/work-items/ANALYSIS-HARNESS-ASSESS-001/probes.mjs",
+        ".ai-harness/work-items/ANALYSIS-HARNESS-ASSESS-001/state.json",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/events.jsonl",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/state.json"
+      ],
+      "fingerprints": {
+        ".ai-harness/work-items/ANALYSIS-HARNESS-ASSESS-001/assessment.md": "41c9ada03c2da637e57d68a21aa7dfd92b0a756d72a651368ecc6f21962ec6a4",
+        ".ai-harness/work-items/ANALYSIS-HARNESS-ASSESS-001/events.jsonl": "a0e57d68d8f2c759eef3c125fc3f7956d9a2d005d97d45f7550419e2b2a9c0e0",
+        ".ai-harness/work-items/ANALYSIS-HARNESS-ASSESS-001/evidence.jsonl": "e6fdd7ab72a8575d70ad068143a2d98bf85fec93620985cc50dd4b474d49ad85",
+        ".ai-harness/work-items/ANALYSIS-HARNESS-ASSESS-001/probe-results.json": "b1acd7af800255bbca16d5ea6929dee9a6831d400e518b1535cbf957e9123da2",
+        ".ai-harness/work-items/ANALYSIS-HARNESS-ASSESS-001/probes.mjs": "a4a31f2bec189d9178165d5ec5d7cdd5e37f068bfe7f1fbca14aa451514c3b6e",
+        ".ai-harness/work-items/ANALYSIS-HARNESS-ASSESS-001/state.json": "048e46d4dd0418c52dcf2959dcbbbee16eaee2334adeaf4596b3a98f106fa241",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/events.jsonl": "cdcc46891ac42762d36044450e72905aeba5649fdd14d7e888429903f6f93b95",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/state.json": "ee221cb85205dd8158ff4e27da7da53ff67af0e068e915a06b9dcc8d9c345768"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": "docs/architecture/decisions/0007-verification-integrity-and-recovery.md",
+    "evidence": [
+      "目标、接口、验证匹配、源快照、交付范围、恢复与 Windows 执行的设计已明确"
+    ],
+    "completedAt": "2026-09-14T03:21:16.990Z"
+  },
+  "database": {
+    "impact": "required",
+    "status": "complete",
+    "document": "docs/architecture/decisions/0007-verification-integrity-and-recovery.md",
+    "evidence": [
+      "仅仓库文件持久化；记录字段、哈希引用、原子写、旧记录归档和在途迁移，保留旧证据"
+    ],
+    "completedAt": "2026-09-14T03:21:18.140Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/HARNESS-RELIABILITY-001/plan.json",
+    "approved": true,
+    "approvalRef": "用户活动目标授权按评估建议修复，设计与持久化策略见 ADR-0007"
+  },
+  "verification": {
+    "status": "pending",
+    "evidence": [],
+    "stages": []
+  },
+  "review": {
+    "status": "pending",
+    "evidence": [],
+    "independent": false
+  },
+  "acceptance": {
+    "status": "pending",
+    "evidence": []
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "pending",
+    "evidence": []
+  },
+  "blocked": null,
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-09-14T03:21:15.112Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-09-14T03:21:15.497Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-09-14T03:21:16.538Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "DATABASE_DESIGN",
+      "at": "2026-09-14T03:21:17.762Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "DATABASE_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-09-14T03:22:24.964Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-09-14T03:22:25.343Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-09-14T03:21:15.112Z",
+  "updatedAt": "2026-09-14T03:22:25.754Z"
+}

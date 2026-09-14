@@ -1,0 +1,4 @@
+请在当前临时项目完成TASK.md中的迭代，先读规格、实现、src/caller.mjs和公共测试，然后实现并验证。
+只有src/allocate.mjs和新增test/extra.test.mjs可写（Harness组另可通过CLI维护工作项控制面）。不要修改原有测试或规格，不安装依赖、不访问网络、不提交Git。无需询问已授权的实现选择。
+预算180秒、80次工具调用；到期如实报告未完成。最终按结构化格式报告completed、summary和实际运行的tests。
+本组已安装并初始化Harness，请按AGENTS使用普通ITERATION路径；help查看参数，guide可恢复上下文。finish接收真实检查与自查结论，最终check --ci。

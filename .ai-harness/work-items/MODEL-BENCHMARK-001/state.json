@@ -1,0 +1,476 @@
+{
+  "schemaVersion": 1,
+  "integrityVersion": 1,
+  "revision": 1,
+  "id": "MODEL-BENCHMARK-001",
+  "type": "ITERATION",
+  "title": "固定三组模型对照并按真实失败改进辅助",
+  "status": "DONE",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/iteration.md",
+    ".ai-harness/policies/database.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户已授权复用现有CLI登录，选可用较弱/较强模型小规模试跑"
+  },
+  "input": {
+    "references": [
+      "用户目标：修实现缺陷后建立弱模型原流程/弱模型加Harness/强模型参考对照，依据失败补上下文和验证工具",
+      ".ai-harness/work-items/HARNESS-RELIABILITY-001/benchmark-design.md"
+    ],
+    "acceptance": [
+      "固定任务和判定器隔离，三组输入与预算可比较，保留全部真实结果与失败",
+      "完成小规模真实CLI试跑，按开发集失败补辅助并在固定任务及留出题上复验，诚实报告无改善或退化"
+    ],
+    "nonGoals": [
+      "不改全局登录配置，不对小样本作泛化能力或费用结论，不提交推送"
+    ],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": null,
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "main/a40af12，已完成可靠性工作项冻结source60a828c3，117项和CI通过，当前修改未提交；Codex Luna/Sol可用性已真实验证，Claude未登录。读取installer、CLI、guide与验证接口。"
+    ],
+    "completedAt": "2026-09-14T05:57:33.803Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "a40af12c7f7a7d03bee37173f4bfcd83a24a6da0",
+      "dirty": true,
+      "changedFiles": [
+        ".ai-harness/manifest.json",
+        ".ai-harness/policies/bugfix.md",
+        ".ai-harness/policies/core.md",
+        ".ai-harness/policies/security.md",
+        ".ai-harness/policies/verification.md",
+        ".ai-harness/schemas/evidence.schema.json",
+        ".ai-harness/schemas/plan.schema.json",
+        ".ai-harness/schemas/source-snapshot.schema.json",
+        ".ai-harness/schemas/work-item.schema.json",
+        ".ai-harness/src/checker.mjs",
+        ".ai-harness/src/cli.mjs",
+        ".ai-harness/src/commands.mjs",
+        ".ai-harness/src/compact.mjs",
+        ".ai-harness/src/evidence.mjs",
+        ".ai-harness/src/git.mjs",
+        ".ai-harness/src/guide.mjs",
+        ".ai-harness/src/model.mjs",
+        ".ai-harness/src/policy.mjs",
+        ".ai-harness/src/scope.mjs",
+        ".ai-harness/src/snapshot.mjs",
+        ".ai-harness/src/validator.mjs",
+        ".ai-harness/src/verification.mjs",
+        ".ai-harness/src/workflow.mjs",
+        ".ai-harness/templates/instructions/AGENTS.md",
+        ".ai-harness/tests/bugfix-pipeline.test.mjs",
+        ".ai-harness/tests/command-execution.test.mjs",
+        ".ai-harness/tests/compact.test.mjs",
+        ".ai-harness/tests/guide.test.mjs",
+        ".ai-harness/tests/installer.test.mjs",
+        ".ai-harness/tests/reliability.test.mjs",
+        ".ai-harness/tests/snapshot.test.mjs",
+        ".ai-harness/tests/verification-pipeline.test.mjs",
+        ".ai-harness/work-items/ANALYSIS-HARNESS-ASSESS-001/assessment.md",
+        ".ai-harness/work-items/ANALYSIS-HARNESS-ASSESS-001/events.jsonl",
+        ".ai-harness/work-items/ANALYSIS-HARNESS-ASSESS-001/evidence.jsonl",
+        ".ai-harness/work-items/ANALYSIS-HARNESS-ASSESS-001/probe-results.json",
+        ".ai-harness/work-items/ANALYSIS-HARNESS-ASSESS-001/probes.mjs",
+        ".ai-harness/work-items/ANALYSIS-HARNESS-ASSESS-001/state.json",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/benchmark-design.md",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/confinement-check.mjs",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/confinement-result.json",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/confinement-worker.mjs",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/events.jsonl",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/evidence.jsonl",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/independent-review-2-events.jsonl",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/independent-review-2-run.json",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/independent-review-2.json",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/independent-review-3-events.jsonl",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/independent-review-3-run.json",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/independent-review-3.json",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/independent-review-4-events.jsonl",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/independent-review-4-run.json",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/independent-review-4.json",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/independent-review-5-events.jsonl",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/independent-review-5-run.json",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/independent-review-5.json",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/independent-review-events.jsonl",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/independent-review-run.json",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/model-catalog.json",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/model-catalog.mjs",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/model-smoke.json",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/model-smoke.mjs",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/outputs/11709fa9-4588-4422-8fce-3af5e6d85c1f-stdout.txt",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/outputs/45170b0f-52c4-4707-9d8b-36252c31fff2-stdout.txt",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/outputs/505e1fc9-7087-4046-bd5e-35929f4aa967-stdout.txt",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/outputs/663711cf-b201-446e-ba23-0dd28a07c33c-stdout.txt",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/outputs/756b3a21-0cb1-4d91-8f85-9fe4fa199d7a-stdout.txt",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/outputs/77bb9143-d456-436a-8398-e7f547bac97b-stdout.txt",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/outputs/86e31977-7d34-461f-96cf-0316f7dc723e-stdout.txt",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/plan.json",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/review-prompt.txt",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/review-schema.json",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/revisions/1-plan.json",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/revisions/1-state.json",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/run-review.mjs",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/snapshots/1f1d799eaa0244beca5993ddddd4d18bc4cc16b37031c3e8b3638e834ac8ae91.json",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/snapshots/2147b5ccf51b1f99862c720f08a6d5db5e5ec7aa54b2feec9f582d07e28d23bc.json",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/snapshots/2be9d8e1c769ec01efd49e4cb38561e9918d08129c1615ead2050d1fd02f3c29.json",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/snapshots/45d73f0ffa48ad148e57091b08b12e56b590a8cbbcebd011778d33d9fc5334d2.json",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/snapshots/4acb44045742b381f847b48ac08d70603e19418c721af5d2caa662180d0ecf43.json",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/snapshots/60a828c35abc7597a63f74e38ecaca2554482a71e7bde3a48f78e30dc5935dab.json",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/snapshots/6ed255f9ebbf397d0d1d2fd95266605540d9f16b0a0ce5eb19d3ef91e4baa792.json",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/snapshots/bdf8fe5aedc189e17a777e7746c6407d62eae1e1f937327815b111982ee8b104.json",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/snapshots/da90402620b0391541454f4b6ef5978c9dc52cf39cda47163a8a2f1c6988b8cb.json",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/snapshots/e546d0f751a26cadfa362ad14e83a27f8eb061fa981a7e0a07606ac9da175984.json",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/snapshots/f43891dd7c40075f462159265f390942d0e46ed8849e9ef710cf0ce93a639673.json",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/snapshots/fc7afc1abfed180da7393182126985a0ad3fcb5423beab31ae55b71589b13b7d.json",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/state.json",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/static-checks.mjs",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/static-result.json",
+        ".ai-harness/work-items/MODEL-BENCHMARK-001/events.jsonl",
+        ".ai-harness/work-items/MODEL-BENCHMARK-001/state.json",
+        ".github/workflows/ai-harness.yml",
+        "AGENTS.md",
+        "README.md",
+        "docs/architecture/decisions/0007-verification-integrity-and-recovery.md",
+        "docs/architecture/overview.md",
+        "docs/guides/model-guidance.md",
+        "docs/guides/usage.md"
+      ],
+      "fingerprints": {
+        ".ai-harness/manifest.json": "aaf7b8cba21ba6f272938b3539fb0201a80f91e46cb23b55bdcca1c63e5edcc2",
+        ".ai-harness/policies/bugfix.md": "d6530a39b9c28fc99c4e86ddf3eb7d8a24ede1600095b29c0fd293c2e6399462",
+        ".ai-harness/policies/core.md": "edbb991e0c093f2da2fae585865f274ecf89a4a00205012c73eef56546b7b1f7",
+        ".ai-harness/policies/security.md": "60eb1f2cc592e569a4bc8eeca6b0b0bf968aae5c8d464d95529786984766730e",
+        ".ai-harness/policies/verification.md": "fe4b7071d958fd915a84a17cf4cdd80ae0448c8f2ddee20391b28b91b8718e10",
+        ".ai-harness/schemas/evidence.schema.json": "0e46d01033c41de4c09ef50e5954d2cbc6ad94504f1f85448663650a9e196b9d",
+        ".ai-harness/schemas/plan.schema.json": "062fdce5d7140cb984b2c77cd8b69e420d28bbb30bbec2b33c67630833104aea",
+        ".ai-harness/schemas/work-item.schema.json": "5b586f88901c2399cd586952d280a81ee6ca6b2adc68372119165dbe21498671",
+        ".ai-harness/src/checker.mjs": "972ad2820c9a7bc72cdd414135df34496745ba4618c46f40df3bb51224ffd8db",
+        ".ai-harness/src/cli.mjs": "e9fe4fe2120f8f23c2e2336b66030d5ce9915e20758dcd8ada5b36eaea2e225d",
+        ".ai-harness/src/compact.mjs": "e0a3bf8d31da72f767c2ec3a521d9b7245ce3bc3fdd2ffd5a57ea5f4b4b19814",
+        ".ai-harness/src/evidence.mjs": "7bf0ea5977b033f4c4bea1ded47e088bdbd4b62c53ab4dbc21d13c7e2e684768",
+        ".ai-harness/src/git.mjs": "6d629a2267e12bc112c667ee12919bd98ecdeff89901966e2109095ded6cb3b3",
+        ".ai-harness/src/guide.mjs": "e99c56ed5bdf7d144473ea822d0e6c9cd06110683b92b208c978de4ba603a48d",
+        ".ai-harness/src/model.mjs": "18e2d31ba032cfead546f75de2ffe3879f8970bc3d5d3c9b948cdbf53fc27f4d",
+        ".ai-harness/src/policy.mjs": "1a4ea1fd49948cbcbfd6974bad38b643cde9e200267eb6ce60bcef43bd5ca214",
+        ".ai-harness/src/validator.mjs": "21858e2d238c8200861f2bfeba797594cb56fb46be0584eeb339709256d0bb34",
+        ".ai-harness/src/workflow.mjs": "5c6fb55774cc2e587baecbfea6aa03baac149fe41675e8f091b0846f56037cc9",
+        ".ai-harness/templates/instructions/AGENTS.md": "ef9e81ae95e0a7e42f2856b8d16621edfbfb198deb9d67a4cd23fc200f3a0c14",
+        ".ai-harness/tests/bugfix-pipeline.test.mjs": "6c17f04746377782b18b4ccc311bc4cd3c2b8443ec488fb3eb3b7821734bfec4",
+        ".ai-harness/tests/compact.test.mjs": "c710bc4b942706f157f28d88bc794d83acd997242041ba46f2c647a05a5f8351",
+        ".ai-harness/tests/guide.test.mjs": "e0e4d97550c4220d3ed6d208905b0987b2892f30e375d0bb2185cb822ba0a2ef",
+        ".ai-harness/tests/installer.test.mjs": "d8b087ee2409a7de7b42d694d4230df8607153bc9edadae17c9d73352e522651",
+        ".ai-harness/tests/verification-pipeline.test.mjs": "5036f42fdc6354aa2a15c06ffc3da34dae947c7a2a4d9c079b7d8ba2c30b18f4",
+        ".github/workflows/ai-harness.yml": "ad43737cd7d3144f7273a321bf88fa77ec385fe3e78fde26aa4e35bcfdc278f7",
+        "AGENTS.md": "ef9e81ae95e0a7e42f2856b8d16621edfbfb198deb9d67a4cd23fc200f3a0c14",
+        "README.md": "d9e8f1e3c109562ee11075889c0aa564d28d00e8453aea4dda0ead3d65fd800e",
+        "docs/architecture/overview.md": "afd01b87592ff4759ab8b24ef2bc986c9302fe7b5a1949ce40e1637c5cca6d4e",
+        "docs/guides/model-guidance.md": "6265916e61a4fa2c02a25d2178868d97e3cfbfe27876104981e93a820e2c01c9",
+        "docs/guides/usage.md": "b965ef2cf061334d1b1f086aac2c2d709192ae9d65fa940f90709346bd3bba98",
+        ".ai-harness/schemas/source-snapshot.schema.json": "13d15ed433eebe2be894c9dbf22b9b131fdf3530fcaa5a9bb80d70774607a23d",
+        ".ai-harness/src/commands.mjs": "c7a0205df8964c7781149b7c2ba14832f8f357b2927097f0026b511e0b7ba7ec",
+        ".ai-harness/src/scope.mjs": "c18e93f698ede6b8b344d57154528c2a353a26b22e81471fd48e7c9eeb8c63fd",
+        ".ai-harness/src/snapshot.mjs": "8fad5e96f44de8068ded1ec31396e63dc53b0ba0c19acede51821569f0617094",
+        ".ai-harness/src/verification.mjs": "6732246d53615ed6a79161c459b7f282e458c9b059f8f159d041026404142810",
+        ".ai-harness/tests/command-execution.test.mjs": "22c4d3b25c0165f03a828e1619a49a9808963ebb9f05c137b4db1f45135a25fc",
+        ".ai-harness/tests/reliability.test.mjs": "6052bd110192fbaa8fb13dce728000fc7d06e6613e690835b1eed9f3ad49524d",
+        ".ai-harness/tests/snapshot.test.mjs": "07f3368c9eb4444f76585da6f59484de76f91633468328ca97f941edbc6dfdb2",
+        ".ai-harness/work-items/ANALYSIS-HARNESS-ASSESS-001/assessment.md": "41c9ada03c2da637e57d68a21aa7dfd92b0a756d72a651368ecc6f21962ec6a4",
+        ".ai-harness/work-items/ANALYSIS-HARNESS-ASSESS-001/events.jsonl": "a0e57d68d8f2c759eef3c125fc3f7956d9a2d005d97d45f7550419e2b2a9c0e0",
+        ".ai-harness/work-items/ANALYSIS-HARNESS-ASSESS-001/evidence.jsonl": "e6fdd7ab72a8575d70ad068143a2d98bf85fec93620985cc50dd4b474d49ad85",
+        ".ai-harness/work-items/ANALYSIS-HARNESS-ASSESS-001/probe-results.json": "b1acd7af800255bbca16d5ea6929dee9a6831d400e518b1535cbf957e9123da2",
+        ".ai-harness/work-items/ANALYSIS-HARNESS-ASSESS-001/probes.mjs": "a4a31f2bec189d9178165d5ec5d7cdd5e37f068bfe7f1fbca14aa451514c3b6e",
+        ".ai-harness/work-items/ANALYSIS-HARNESS-ASSESS-001/state.json": "048e46d4dd0418c52dcf2959dcbbbee16eaee2334adeaf4596b3a98f106fa241",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/benchmark-design.md": "3e4cd1eb2fcfd69ac8e60aeb629df05e72f2e27c579eeefe4eae06daaa90d085",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/confinement-check.mjs": "1a56c658e9cb3b134638ae543cb2b9723c8017ece95c9760b66a7117ed117c63",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/confinement-result.json": "e608316b0180b034e0f7454246d30c3ddf030be1ded23f0e93518714dfb1e6f1",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/confinement-worker.mjs": "38016da8168d630c030b3982078e36c4e7f089f3c85050f36a08a715acdb0406",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/events.jsonl": "cec8e7bbd173c84a1002350e6f4a73cb61538cdf315b1fcc2afceb9d0f21a5e6",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/evidence.jsonl": "8c13d8989dd282136e7b136d21ea32bd7b31ec4425475601697b44530b3f3a31",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/independent-review-2-events.jsonl": "4cd6911ac8f316cafbe3a5cef4f083fb1a025935a2f2a71aa47d5cf9aba95733",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/independent-review-2-run.json": "179ccc3fd334c12f1022af8df93b8c59807a6ce758d1edc4aa15ecc580a24c86",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/independent-review-2.json": "daa4bcf741d319a25f99d7f382989cd88cba065eb6a8ac3f1d7c1eaa3fa85edf",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/independent-review-3-events.jsonl": "87ab5003aefd15548a9ccc9efe3d0b0caf3276f532f643a1b0ca4dbd10db9d69",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/independent-review-3-run.json": "a9998b7e73637dc93cc337348edd6e9859e28a409fb494ddfdae7e3c22dd859f",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/independent-review-3.json": "7ae8a921782bcae878fced06fe22adc6684c98313c5d89a5ff54f81e85764b06",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/independent-review-4-events.jsonl": "4290aa318d58af5eb31dc830e6bd249a474c4e2452f78834793ea2c37cb07684",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/independent-review-4-run.json": "ae6fce31dbdf1bac89bfca9d234bbfa8aece1a8054b223fbeba12e31e0308ed1",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/independent-review-4.json": "5767068b4775e949874abf809fd7978491cd900a508200930d453d5b65d0ce42",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/independent-review-5-events.jsonl": "17bf2ebbd4b57bc130d869b6b778531342ca830f45a34d52354baddde807f17d",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/independent-review-5-run.json": "30438bf01f9df6f802918dfcd9650a4572adb921f5f11d259cdb2826e3fdaf4b",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/independent-review-5.json": "974a9c2e1011b0b1d8c1c39d59b85b9db5c3d1188e5c56bd811494662fcf4c5b",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/independent-review-events.jsonl": "4be73119ce3ef30a887b6e87d6a642b0118b7eee7c888c369bd342d7f04421da",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/independent-review-run.json": "f0ea830718bb974870385e037becd5097bfef700a765ce4d8ee4654bdc0f3c05",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/model-catalog.json": "f366dca6985537629e407e63d75562e30246bab7063250c28ad1d3f4f0c4a1d4",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/model-catalog.mjs": "b27d61f63fe8cff7f28901f07b401560e2a63fc2b02ee84de56509853ffe0ac8",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/model-smoke.json": "6d6d87d8440444f91fc288e7fceb006c3f0ecfaf3c1a73ff2820e8bb80c829ea",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/model-smoke.mjs": "3c22a909b75fa4e1687345568ee41283b95951c7befbb88ada348750b367f56f",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/outputs/11709fa9-4588-4422-8fce-3af5e6d85c1f-stdout.txt": "243914761d5db2a1e0333134060eaaf7c1ff0faf8aea4fa2eb2eac18b95aeb57",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/outputs/45170b0f-52c4-4707-9d8b-36252c31fff2-stdout.txt": "76834ab5ee8e12ac1eb6a03e4b915a2555b949e93c1896ccd9ea53b5fdac9f70",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/outputs/505e1fc9-7087-4046-bd5e-35929f4aa967-stdout.txt": "78431b006cf2a6b29be972fe9a88d1a680752670fd52505f0e276afec1dee974",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/outputs/663711cf-b201-446e-ba23-0dd28a07c33c-stdout.txt": "5c604c532e2d1ab4313a52621d8886c935e5b8be610a2d0abb0bff0d4acf7a48",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/outputs/756b3a21-0cb1-4d91-8f85-9fe4fa199d7a-stdout.txt": "623e24ef3cb1412c0be2dd83a9b7be2e240818918857443fb0a935c626f58329",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/outputs/77bb9143-d456-436a-8398-e7f547bac97b-stdout.txt": "39b64263a208c9335eb04d44136a93f4c7662877eba67e4559f44a2060d13352",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/outputs/86e31977-7d34-461f-96cf-0316f7dc723e-stdout.txt": "9d23bb3fd673dfd8798d3fa4eb5eee622f36c761f5dde707332ab3679c0435d9",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/plan.json": "14a20544f342b8a09b567ae8e9baf623afe8365bbe708fa636a0375576af83f7",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/review-prompt.txt": "8b9533ce1c4c29f0e2f76f4f67bac8e3da49435a47e3495d1456f276b0837bb7",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/review-schema.json": "8f5af633b6b4e31216521949cdc714fc3009c15845debc3d0db7d9a0e51eef2d",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/revisions/1-plan.json": "dbdbf1f0aaa053e2fd5f09c7698663b9a240542f6a8cf59fe0af0fa104963c06",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/revisions/1-state.json": "bd75ed86bcb0ad1e6f22aacea4b6fa9a2b5a4818595836bb9cee6d304c880104",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/run-review.mjs": "208f4dad651b8cb692d92570cd593c7d736504e9d076f62fe8edbad96c481753",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/snapshots/1f1d799eaa0244beca5993ddddd4d18bc4cc16b37031c3e8b3638e834ac8ae91.json": "a7c923b2ef08a6d3741062de7726bcefbc58334f3c718adb58432d5cd018e15a",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/snapshots/2147b5ccf51b1f99862c720f08a6d5db5e5ec7aa54b2feec9f582d07e28d23bc.json": "52bbcdbaffad15c3d65a1b72b0e4eac3b1e17e369046fed2018a57a064ae3a38",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/snapshots/2be9d8e1c769ec01efd49e4cb38561e9918d08129c1615ead2050d1fd02f3c29.json": "6896a9f97369fc5894300bca194eeffd30f246aa073a5281fba9b449f9a58b4c",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/snapshots/45d73f0ffa48ad148e57091b08b12e56b590a8cbbcebd011778d33d9fc5334d2.json": "5ce978adbc94cae4a9e1c0a460a7d9219513ed56323ddbb1aad3c030c4837ef5",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/snapshots/4acb44045742b381f847b48ac08d70603e19418c721af5d2caa662180d0ecf43.json": "dfeef116b4376606695d6c6018c042b02d0d93adc7c021ed02a2d9cffe919286",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/snapshots/60a828c35abc7597a63f74e38ecaca2554482a71e7bde3a48f78e30dc5935dab.json": "380c3d4b7bcf5d62ba02efc3a8b783c1355b22d7c47425766b6d5ba8ae70ba2a",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/snapshots/6ed255f9ebbf397d0d1d2fd95266605540d9f16b0a0ce5eb19d3ef91e4baa792.json": "c1e240a42123d43157ec785f6e393586d43586c24630aa1b7a1ee04788393008",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/snapshots/bdf8fe5aedc189e17a777e7746c6407d62eae1e1f937327815b111982ee8b104.json": "05676469fc3f31776cf036cc056a9f4bb6a602acb5b22e90137a4183d7c79464",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/snapshots/da90402620b0391541454f4b6ef5978c9dc52cf39cda47163a8a2f1c6988b8cb.json": "6a7415f2e6176d89559fb42cdaf2c388fa3045da5742ea35769a89c12cfcdcf6",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/snapshots/e546d0f751a26cadfa362ad14e83a27f8eb061fa981a7e0a07606ac9da175984.json": "536e16adc4834315ea4c3d8efc6f078954b2d2d8c04a6dbeb557948bb353309f",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/snapshots/f43891dd7c40075f462159265f390942d0e46ed8849e9ef710cf0ce93a639673.json": "b4de4057118415d33ca7c06c9ab37233bbaf44a5cda5d14cddaa67286006f6d7",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/snapshots/fc7afc1abfed180da7393182126985a0ad3fcb5423beab31ae55b71589b13b7d.json": "ce3c0a99b18caaa971883358cd6f6de4e5d1afecd1084b1b7186c4035cf9dacf",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/state.json": "3a864e94252288da9481c562673925442ecfacb4f1001ff87b76054077d07f5e",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/static-checks.mjs": "ae927d0122189c3942b04c00842b29260a0e75ff661a83fe93888528a3df011c",
+        ".ai-harness/work-items/HARNESS-RELIABILITY-001/static-result.json": "f7499e7dfe266c848ecbd3f629b9cc1ecd5e1464fca4f42d872e2aa9bd58da84",
+        ".ai-harness/work-items/MODEL-BENCHMARK-001/events.jsonl": "84be93ef879b171b758ae0d72b4a226a926b7e43c6f110c82e169a6c74c64441",
+        ".ai-harness/work-items/MODEL-BENCHMARK-001/state.json": "e77174b416e2e481277367d31cde29232da631f1d811651b7de810e479ebeb50",
+        "docs/architecture/decisions/0007-verification-integrity-and-recovery.md": "d916f54c448a9ef130657f6dd996a3043c0be16f6b36520d34f8942dbc46d75b"
+      },
+      "source": {
+        "digest": "60a828c35abc7597a63f74e38ecaca2554482a71e7bde3a48f78e30dc5935dab",
+        "document": ".ai-harness/work-items/MODEL-BENCHMARK-001/snapshots/60a828c35abc7597a63f74e38ecaca2554482a71e7bde3a48f78e30dc5935dab.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": ".ai-harness/work-items/MODEL-BENCHMARK-001/solution.md",
+    "evidence": [
+      "已确定任务、参与者隔离、真实CLI驱动、独立判定和失败驱动辅助边界。"
+    ],
+    "completedAt": "2026-09-14T05:58:29.517Z"
+  },
+  "database": {
+    "impact": "none",
+    "status": "not-applicable",
+    "document": null,
+    "evidence": [
+      "仅生成实验产物；不修改Runtime持久状态或Schema、不接入应用数据库，无迁移或业务读写影响。"
+    ],
+    "completedAt": "2026-09-14T05:58:29.942Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/MODEL-BENCHMARK-001/plan.json",
+    "approved": true,
+    "approvalRef": "用户已授权固定任务真实三组小规模运行及按失败优化，采用独立临时项目与受限预算。"
+  },
+  "verification": {
+    "status": "pass",
+    "evidence": [
+      "985a0532-a7a3-4fd5-975a-c5e957cdbb1d"
+    ],
+    "stages": [],
+    "source": {
+      "digest": "625f0fa8e0458c72e42a1a2b5ff17653a5c67aef5558e50683adb13dd18d82fe",
+      "document": ".ai-harness/work-items/MODEL-BENCHMARK-001/snapshots/625f0fa8e0458c72e42a1a2b5ff17653a5c67aef5558e50683adb13dd18d82fe.json"
+    }
+  },
+  "review": {
+    "status": "pass",
+    "evidence": [
+      "c182418d-7b09-4949-b9a0-3a8e9c388413"
+    ],
+    "independent": false,
+    "source": {
+      "digest": "625f0fa8e0458c72e42a1a2b5ff17653a5c67aef5558e50683adb13dd18d82fe",
+      "document": ".ai-harness/work-items/MODEL-BENCHMARK-001/snapshots/625f0fa8e0458c72e42a1a2b5ff17653a5c67aef5558e50683adb13dd18d82fe.json"
+    }
+  },
+  "acceptance": {
+    "status": "pass",
+    "evidence": [
+      "d9d8d82d-39ea-47a0-80f7-2530dd6ffe8a"
+    ],
+    "source": {
+      "digest": "625f0fa8e0458c72e42a1a2b5ff17653a5c67aef5558e50683adb13dd18d82fe",
+      "document": ".ai-harness/work-items/MODEL-BENCHMARK-001/snapshots/625f0fa8e0458c72e42a1a2b5ff17653a5c67aef5558e50683adb13dd18d82fe.json"
+    }
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "pass",
+    "evidence": [
+      "5a7c987b-84fa-4e29-9e2f-10e7bb278ce4"
+    ]
+  },
+  "blocked": null,
+  "delivery": {
+    "source": {
+      "digest": "625f0fa8e0458c72e42a1a2b5ff17653a5c67aef5558e50683adb13dd18d82fe",
+      "document": ".ai-harness/work-items/MODEL-BENCHMARK-001/snapshots/625f0fa8e0458c72e42a1a2b5ff17653a5c67aef5558e50683adb13dd18d82fe.json"
+    },
+    "baseline": {
+      "digest": "60a828c35abc7597a63f74e38ecaca2554482a71e7bde3a48f78e30dc5935dab",
+      "document": ".ai-harness/work-items/MODEL-BENCHMARK-001/snapshots/60a828c35abc7597a63f74e38ecaca2554482a71e7bde3a48f78e30dc5935dab.json"
+    },
+    "baselineAt": "2026-09-14T05:57:33.803Z",
+    "ownedChanges": [
+      {
+        "path": ".ai-harness/src/cli.mjs",
+        "before": "100644:4a527cf30a2f290244dac851c2d61fab56c47ec9",
+        "after": "100644:0cf9c9a9707e00c9983f7343454a86f717ee2a02"
+      },
+      {
+        "path": ".ai-harness/src/context.mjs",
+        "before": null,
+        "after": "100644:e74cc8987436db02b823319e085cc27c238483b0"
+      },
+      {
+        "path": ".ai-harness/src/guide.mjs",
+        "before": "100644:dc6cb1771b99afb043ca9ac4599bb7357da46947",
+        "after": "100644:5810daffd9cfb5d8d7f7b60a7c55a26b29c638a4"
+      },
+      {
+        "path": ".ai-harness/tests/guidance-tools.test.mjs",
+        "before": null,
+        "after": "100644:3c9187b10e85bf134d109f8c0065be7297366bf0"
+      },
+      {
+        "path": "README.md",
+        "before": "100644:b988b69798cc7fc9df0aeed076c27c4188b51746",
+        "after": "100644:15efb3b9887dc90b9294be392195ec4aa3316bc9"
+      },
+      {
+        "path": "benchmarks/README.md",
+        "before": null,
+        "after": "100644:ca57f39d53fd9c9aa29e8a01a92222193324f2db"
+      },
+      {
+        "path": "benchmarks/audit.mjs",
+        "before": null,
+        "after": "100644:1afd9385ee9a4eed7dc85e7487694009e7d4d7d5"
+      },
+      {
+        "path": "benchmarks/codex-driver.mjs",
+        "before": null,
+        "after": "100644:d74ea241a42d3c24dba4b1b14ac9fdb38b91f15e"
+      },
+      {
+        "path": "benchmarks/run.mjs",
+        "before": null,
+        "after": "100644:3c89433be4ed1cc3dd32ac644ad5de3d82945e9f"
+      },
+      {
+        "path": "benchmarks/runner.mjs",
+        "before": null,
+        "after": "100644:e1122fdcba307539221b12fa2cebf20c46e68667"
+      },
+      {
+        "path": "benchmarks/tasks.mjs",
+        "before": null,
+        "after": "100644:f9eeea6f1c1441ca261e78b00f71ab1c7ccc0b34"
+      },
+      {
+        "path": "benchmarks/tests/runner.test.mjs",
+        "before": null,
+        "after": "100644:88fe85bee5a0f8a4f5ecfe34a93060248f73e45f"
+      },
+      {
+        "path": "docs/guides/model-guidance.md",
+        "before": "100644:78a94c27bc4fdd47d287afc59a7cb3d0ee2e10e4",
+        "after": "100644:36e37157f7dd6e3b64e03bfaa5b5fba7d228872e"
+      },
+      {
+        "path": "docs/guides/usage.md",
+        "before": "100644:63de106bc66b1f958d47b0f245ea540951b7a348",
+        "after": "100644:35bdd5139cfd63ddb2be8bc0e94567f8cf43de68"
+      },
+      {
+        "path": "docs/reports/model-comparison.md",
+        "before": null,
+        "after": "100644:4cf2c5998dae8664fddec053ea2ac98bc9aab608"
+      }
+    ],
+    "planDigest": "62a164e540d9a26f8762e1744ec50105f11a9ecd1dc946b04b014e5759176b22",
+    "at": "2026-09-14T07:21:20.138Z",
+    "head": "a40af12c7f7a7d03bee37173f4bfcd83a24a6da0"
+  },
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-09-14T05:57:32.723Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-09-14T05:57:33.165Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-09-14T05:57:34.477Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-09-14T05:58:32.049Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-09-14T05:58:32.476Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "VERIFYING",
+      "at": "2026-09-14T07:21:13.393Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "VERIFYING",
+      "to": "CODE_REVIEW",
+      "at": "2026-09-14T07:21:15.373Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "CODE_REVIEW",
+      "to": "READY_FOR_ACCEPTANCE",
+      "at": "2026-09-14T07:21:16.936Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "READY_FOR_ACCEPTANCE",
+      "to": "DONE",
+      "at": "2026-09-14T07:21:20.404Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-09-14T05:57:32.723Z",
+  "updatedAt": "2026-09-14T07:28:38.344Z"
+}

@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "events-reconcile",
+  "mode": "single",
+  "rationale": "在reconcile中先完整验证参数与记录，再以Map复制当前状态并按到达顺序只接受更高版本事件，最后按字符串id排序并只投影契约字段；新增意图覆盖测试。",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "实现事件版本协调与墓碑保留",
+      "module": "compact",
+      "status": "IN_PROGRESS",
+      "attempt": 1,
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        "src/reconcile.mjs",
+        "test/extra.test.mjs"
+      ],
+      "verification": [
+        "node --test test/public.test.mjs",
+        "node --test test/extra.test.mjs"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            "--test",
+            "test/public.test.mjs"
+          ]
+        },
+        {
+          "id": "V2",
+          "command": "node",
+          "args": [
+            "--test",
+            "test/extra.test.mjs"
+          ]
+        }
+      ],
+      "docsImpact": [
+        "N/A: 实现恢复TASK.md既定契约，无额外当前文档事实需要同步"
+      ],
+      "reviewBatch": "R1",
+      "risk": "low",
+      "owner": "primary-ai",
+      "verificationStatus": "pending",
+      "reviewStatus": "pending",
+      "evidence": [],
+      "deferralApproval": null
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "实现事件版本协调与墓碑保留",
+      "risk": "low",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": false
+    }
+  ],
+  "createdAt": "2026-09-14T07:11:26.701Z",
+  "updatedAt": "2026-09-14T07:11:26.722Z"
+}

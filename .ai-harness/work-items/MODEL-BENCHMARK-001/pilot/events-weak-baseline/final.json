@@ -1,0 +1,1 @@
+{"completed":true,"summary":"已完成 TASK.md：实现 reconcile 的完整输入校验、版本冲突处理、删除墓碑、按 id 排序、幂等及纯函数行为；新增 test/extra.test.mjs。仅修改了允许范围内的两个文件，未安装依赖、访问网络或提交 Git。","tests":["node --test test/public.test.mjs：1/1 通过","node --test test/extra.test.mjs：4/4 通过","caller.mjs 兼容性冒烟验证：通过","git diff --check：通过"]}

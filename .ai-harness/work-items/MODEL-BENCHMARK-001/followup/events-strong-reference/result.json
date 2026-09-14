@@ -1,0 +1,110 @@
+{
+  "schemaVersion": 1,
+  "mode": "real",
+  "taskId": "events",
+  "split": "holdout",
+  "group": "strong-reference",
+  "model": "gpt-5.6-sol",
+  "taskDigest": "e8a7130efc1592e2fdb89853fd6ba482da6b67285b7887b074da97ae289d4b2d",
+  "judgeDigest": "653600052c1e1ab18c5601412a2c49b1d6f0106747aca300db788e819dc765ae",
+  "candidateDigest": "85560d42fcef3c30083aa5d7deb14a3a2e01f26323fa98b4ffa4c5775ab59775",
+  "budget": {
+    "timeoutMs": 180000,
+    "maxToolCalls": 80,
+    "reasoning": "medium"
+  },
+  "run": {
+    "mode": "real",
+    "startedAt": "2026-09-14T07:04:43.042Z",
+    "durationMs": 180455,
+    "exitCode": 1,
+    "timedOut": true,
+    "toolLimit": false,
+    "toolCalls": 7,
+    "turnCompleted": false,
+    "usage": null,
+    "error": null,
+    "errors": [],
+    "final": null,
+    "completed": false
+  },
+  "scope": {
+    "ok": true,
+    "changes": [
+      {
+        "path": "src/reconcile.mjs",
+        "before": "033e356666be01c5f7f5f885bb91b2bd51768db10dfbc17f86be1dbffc0a4c0f",
+        "after": "85560d42fcef3c30083aa5d7deb14a3a2e01f26323fa98b4ffa4c5775ab59775"
+      },
+      {
+        "path": "test/extra.test.mjs",
+        "before": null,
+        "after": "27a08ca4893fec0725e5102709c472cda27c43a4816b2e2056a0d0bfc7e8fa80"
+      }
+    ],
+    "violations": []
+  },
+  "workflow": null,
+  "grade": {
+    "complete": true,
+    "ok": true,
+    "cases": [
+      {
+        "id": "stale",
+        "pass": true
+      },
+      {
+        "id": "tombstone",
+        "pass": true
+      },
+      {
+        "id": "same-version",
+        "pass": true
+      },
+      {
+        "id": "resurrection",
+        "pass": true
+      },
+      {
+        "id": "idempotent",
+        "pass": true
+      },
+      {
+        "id": "sorted",
+        "pass": true
+      },
+      {
+        "id": "ordinary-string-ids",
+        "pass": true
+      },
+      {
+        "id": "immutable",
+        "pass": true
+      },
+      {
+        "id": "invalid-shape",
+        "pass": true
+      },
+      {
+        "id": "invalid-version",
+        "pass": true
+      },
+      {
+        "id": "duplicate-current",
+        "pass": true
+      },
+      {
+        "id": "clean-fields",
+        "pass": true
+      }
+    ],
+    "expectedCases": 12,
+    "exitCode": 0,
+    "timedOut": false,
+    "stderr": "",
+    "error": null
+  },
+  "success": false,
+  "falseCompletion": false,
+  "falseFunctionalCompletion": false
+}

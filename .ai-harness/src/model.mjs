@@ -1,4 +1,5 @@
 import { SCHEMA_VERSION, nowIso } from "./constants.mjs";
+import { compileChecks } from "./commands.mjs";
 
 function pendingGate(extra = {}) {
   return {
@@ -37,6 +38,8 @@ export function createWorkItem({
   const timestamp = nowIso();
   return {
     schemaVersion: SCHEMA_VERSION,
+    integrityVersion: 1,
+    revision: 1,
     id,
     type,
     title,
@@ -72,6 +75,7 @@ export function createWorkItem({
     analysis: pendingResult({ conclusions: [], unknowns: [] }),
     documentation: pendingResult(),
     blocked: null,
+    delivery: null,
     history: [
       {
         from: null,
@@ -116,10 +120,12 @@ export function createTask({
     title,
     module,
     status: blockedBy.length === 0 ? "READY" : "PENDING",
+    attempt: 0,
     blockedBy: [...new Set(blockedBy)],
     blocks: [],
     writeScopes: [...new Set(writeScopes)],
     verification: [...new Set(verification)],
+    checks: compileChecks([...new Set(verification)]),
     docsImpact: [...new Set(docsImpact)],
     reviewBatch,
     risk,

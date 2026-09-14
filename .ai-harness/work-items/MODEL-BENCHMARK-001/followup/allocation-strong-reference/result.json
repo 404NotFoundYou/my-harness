@@ -1,0 +1,126 @@
+{
+  "schemaVersion": 1,
+  "mode": "real",
+  "taskId": "allocation",
+  "split": "development",
+  "group": "strong-reference",
+  "model": "gpt-5.6-sol",
+  "taskDigest": "ea01ac42353ca41a94b7cf06dff7697634920789f8e9c40c20b00a1af077da5a",
+  "judgeDigest": "a860e70ff0b427bfd6bd0173ea3c42abfe4d72b54a61b2af2d0bca0c9b79e74b",
+  "candidateDigest": "4c193384da316fa206cbbcf43077f56f9480f1c67d1c8d367b73e5237b6b6ec0",
+  "budget": {
+    "timeoutMs": 180000,
+    "maxToolCalls": 80,
+    "reasoning": "medium"
+  },
+  "run": {
+    "mode": "real",
+    "startedAt": "2026-09-14T07:00:13.659Z",
+    "durationMs": 163839,
+    "exitCode": 0,
+    "timedOut": false,
+    "toolLimit": false,
+    "toolCalls": 12,
+    "turnCompleted": true,
+    "usage": {
+      "input_tokens": 177654,
+      "cached_input_tokens": 147200,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 5281,
+      "reasoning_output_tokens": 822
+    },
+    "error": null,
+    "errors": [],
+    "final": {
+      "completed": true,
+      "summary": "已完成 allocate 迭代：使用 BigInt 实现精确最大余数法，支持完整安全整数范围；严格校验 total、非空稠密 weights、零权重总和；保证总额守恒、同余数按原索引优先、零权重分配为 0、输入不被修改，并保持 caller 兼容。仅修改 src/allocate.mjs，新增 test/extra.test.mjs；diff 检查通过。",
+      "tests": [
+        "node --test test/public.test.mjs：通过 1/1",
+        "node --test test/extra.test.mjs：通过 5/5",
+        "node --test：通过 6/6，无失败、跳过或取消",
+        "小范围穷举不变量检查（total 0..100、三项权重各 0..8）：通过",
+        "git diff --check：通过"
+      ]
+    },
+    "completed": true
+  },
+  "scope": {
+    "ok": true,
+    "changes": [
+      {
+        "path": "src/allocate.mjs",
+        "before": "60d9d7242829bbca87e702ca6d0488d81c7b702d7f5ded0f0c62620de580547b",
+        "after": "4c193384da316fa206cbbcf43077f56f9480f1c67d1c8d367b73e5237b6b6ec0"
+      },
+      {
+        "path": "test/extra.test.mjs",
+        "before": null,
+        "after": "5f062ea8bcd3d3549c01c55ca68c1dd4f4989cd9fa7e09f02fc7554d426e7163"
+      }
+    ],
+    "violations": []
+  },
+  "workflow": null,
+  "grade": {
+    "complete": true,
+    "ok": true,
+    "cases": [
+      {
+        "id": "conservation",
+        "pass": true
+      },
+      {
+        "id": "remainder-order",
+        "pass": true
+      },
+      {
+        "id": "zero-weight",
+        "pass": true
+      },
+      {
+        "id": "zero-total",
+        "pass": true
+      },
+      {
+        "id": "zero-sum",
+        "pass": true
+      },
+      {
+        "id": "invalid-total",
+        "pass": true
+      },
+      {
+        "id": "invalid-weights",
+        "pass": true
+      },
+      {
+        "id": "immutable",
+        "pass": true
+      },
+      {
+        "id": "large-total",
+        "pass": true
+      },
+      {
+        "id": "large-weights",
+        "pass": true
+      },
+      {
+        "id": "exact-order",
+        "pass": true
+      },
+      {
+        "id": "many-shares",
+        "pass": true
+      }
+    ],
+    "expectedCases": 12,
+    "exitCode": 0,
+    "timedOut": false,
+    "stderr": "",
+    "error": null
+  },
+  "success": true,
+  "falseCompletion": false,
+  "falseFunctionalCompletion": false
+}

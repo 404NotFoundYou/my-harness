@@ -1,0 +1,97 @@
+{
+  "mode": "real",
+  "complete": true,
+  "sourceBefore": "e9339a00d586e6ab68f068fb86798d5fb95bce2e42092cf4a91567ada63b7ef9",
+  "sourceAfter": "e9339a00d586e6ab68f068fb86798d5fb95bce2e42092cf4a91567ada63b7ef9",
+  "results": [
+    {
+      "taskId": "csv",
+      "group": "weak-baseline",
+      "success": true,
+      "functionalPassed": true
+    },
+    {
+      "taskId": "csv",
+      "group": "weak-harness",
+      "success": false,
+      "functionalPassed": true
+    },
+    {
+      "taskId": "csv",
+      "group": "strong-reference",
+      "success": false,
+      "functionalPassed": true
+    },
+    {
+      "taskId": "allocation",
+      "group": "weak-harness",
+      "success": true,
+      "functionalPassed": true
+    },
+    {
+      "taskId": "allocation",
+      "group": "strong-reference",
+      "success": false,
+      "functionalPassed": false
+    },
+    {
+      "taskId": "allocation",
+      "group": "weak-baseline",
+      "success": true,
+      "functionalPassed": true
+    },
+    {
+      "taskId": "events",
+      "group": "strong-reference",
+      "success": false,
+      "functionalPassed": true
+    },
+    {
+      "taskId": "events",
+      "group": "weak-baseline",
+      "success": true,
+      "functionalPassed": true
+    },
+    {
+      "taskId": "events",
+      "group": "weak-harness",
+      "success": false,
+      "functionalPassed": false
+    }
+  ],
+  "groups": [
+    {
+      "group": "weak-baseline",
+      "samples": 3,
+      "functionalPassed": 3,
+      "completed": 3,
+      "falseCompletion": 0,
+      "timeouts": 0,
+      "durationMs": 388074,
+      "inputTokens": 535232,
+      "outputTokens": 15249
+    },
+    {
+      "group": "weak-harness",
+      "samples": 3,
+      "functionalPassed": 2,
+      "completed": 1,
+      "falseCompletion": 0,
+      "timeouts": 2,
+      "durationMs": 497069,
+      "inputTokens": null,
+      "outputTokens": null
+    },
+    {
+      "group": "strong-reference",
+      "samples": 3,
+      "functionalPassed": 2,
+      "completed": 0,
+      "falseCompletion": 0,
+      "timeouts": 3,
+      "durationMs": 541015,
+      "inputTokens": null,
+      "outputTokens": null
+    }
+  ]
+}

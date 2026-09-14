@@ -1,0 +1,190 @@
+{
+  "schemaVersion": 1,
+  "integrityVersion": 1,
+  "revision": 2,
+  "id": "csv-parser",
+  "type": "ITERATION",
+  "title": "实现严格 CSV 解析",
+  "status": "READY_FOR_ACCEPTANCE",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/iteration.md",
+    ".ai-harness/policies/database.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户本轮指令及 TASK.md"
+  },
+  "input": {
+    "references": [
+      "TASK.md"
+    ],
+    "acceptance": [
+      "parseCsv 满足 TASK.md 的输入、BOM、字段、引号与换行规则；公共测试和新增自测通过"
+    ],
+    "nonGoals": [],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": null,
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "TASK.md"
+    ],
+    "completedAt": "2026-09-14T06:09:36.797Z",
+    "repository": {
+      "isGit": true,
+      "branch": "master",
+      "commit": "b4c03546ad27dec80e2e673b76ebd1c8bc51a2f2",
+      "dirty": true,
+      "changedFiles": [
+        ".ai-harness/work-items/csv-parser/events.jsonl",
+        ".ai-harness/work-items/csv-parser/state.json"
+      ],
+      "fingerprints": {
+        ".ai-harness/work-items/csv-parser/events.jsonl": "55a6553118a4099368ed411de667f6d2b1175cdb4bdbda22b1b35942af657d14",
+        ".ai-harness/work-items/csv-parser/state.json": "79ac377d650b546789a6dc1cb86a47aeb14bc0b465faba37757cff419c4b6edb"
+      },
+      "source": {
+        "digest": "065a705c972d5613543232ff9eef034be8f138e43f4200606c48446a163410f3",
+        "document": ".ai-harness/work-items/csv-parser/snapshots/065a705c972d5613543232ff9eef034be8f138e43f4200606c48446a163410f3.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": ".ai-harness/work-items/csv-parser/solution.md",
+    "evidence": [
+      "用单次扫描和显式字段/引号状态实现解析；在新增测试中覆盖规格边界，保持 caller API 不变。"
+    ],
+    "completedAt": "2026-09-14T06:09:36.984Z"
+  },
+  "database": {
+    "impact": "none",
+    "status": "not-applicable",
+    "document": null,
+    "evidence": [
+      "无数据库读写或迁移；仅修改本地解析器和新增测试。"
+    ],
+    "completedAt": "2026-09-14T06:09:36.987Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/csv-parser/plan.json",
+    "approved": true,
+    "approvalRef": "用户本轮指令及 TASK.md"
+  },
+  "verification": {
+    "status": "pass",
+    "evidence": [
+      "f0a5b816-4fd9-4648-a9e2-e7a2b36b4e4f"
+    ],
+    "stages": [],
+    "source": {
+      "digest": "9ec1c76cb9889bb269145996ccbba70b65182f50a7aff1964f0a59502b370ba4",
+      "document": ".ai-harness/work-items/csv-parser/snapshots/9ec1c76cb9889bb269145996ccbba70b65182f50a7aff1964f0a59502b370ba4.json"
+    }
+  },
+  "review": {
+    "status": "pass",
+    "evidence": [
+      "1028d396-b670-45e2-9113-9c7cfa821653"
+    ],
+    "independent": false,
+    "source": {
+      "digest": "9ec1c76cb9889bb269145996ccbba70b65182f50a7aff1964f0a59502b370ba4",
+      "document": ".ai-harness/work-items/csv-parser/snapshots/9ec1c76cb9889bb269145996ccbba70b65182f50a7aff1964f0a59502b370ba4.json"
+    }
+  },
+  "acceptance": {
+    "status": "pass",
+    "evidence": [
+      "c4639f6e-8a32-43d9-a70f-f2bc58fe34f6"
+    ],
+    "source": {
+      "digest": "9ec1c76cb9889bb269145996ccbba70b65182f50a7aff1964f0a59502b370ba4",
+      "document": ".ai-harness/work-items/csv-parser/snapshots/9ec1c76cb9889bb269145996ccbba70b65182f50a7aff1964f0a59502b370ba4.json"
+    }
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "not-applicable",
+    "evidence": [
+      "69b8d48b-2fd7-4cfc-9a03-658a005ef912"
+    ]
+  },
+  "blocked": null,
+  "delivery": null,
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-09-14T06:09:36.563Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-09-14T06:09:36.569Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-09-14T06:09:36.980Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-09-14T06:09:37.004Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-09-14T06:09:37.006Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "IMPLEMENTING",
+      "at": "2026-09-14T06:11:11.474Z",
+      "reason": "新增测试夹具闭合引号后误含空格；解析器按规格拒绝。已修正夹具，需在新代码快照重新验证。",
+      "action": "reopen",
+      "revision": 2
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "VERIFYING",
+      "at": "2026-09-14T06:12:04.542Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "VERIFYING",
+      "to": "CODE_REVIEW",
+      "at": "2026-09-14T06:12:05.288Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "CODE_REVIEW",
+      "to": "READY_FOR_ACCEPTANCE",
+      "at": "2026-09-14T06:12:06.042Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-09-14T06:09:36.563Z",
+  "updatedAt": "2026-09-14T06:12:06.553Z"
+}

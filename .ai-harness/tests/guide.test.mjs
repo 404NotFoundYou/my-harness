@@ -15,7 +15,7 @@ import { cleanup, createInstalledProject } from "./helpers.mjs";
 const id = "GUIDE-1";
 const taskOptions = {
   id: "T1", title: "protect local behavior", module: "local", owner: "primary-ai",
-  writeScopes: ["sample.mjs", "solution.md"], verification: ["node --check sample.mjs"],
+  writeScopes: ["sample.mjs", "solution.md"], verification: ["node --version"],
   docsImpact: ["N/A: current contract remains correct"], risk: "medium", reviewBatch: "R1",
 };
 
@@ -85,7 +85,8 @@ test("guide restores goals and scope without changing state or granting completi
     assert.equal(guide.resources.solution, "solution.md");
     assert.equal(guide.next.code, "implement-and-verify");
     assert.equal(guide.next.requiresJudgment, true);
-    assert.ok(guide.next.command.args.includes("<EXECUTABLE>"));
+    assert.ok(guide.next.command.args.includes("--check"));
+    assert.ok(guide.next.command.args.includes("V1"));
     assert.equal(guide.next.command.args.includes("--status"), false);
   } finally { await cleanup(root); }
 });
@@ -128,7 +129,11 @@ test("guide prioritizes real failures, redacts previews and marks truncation", a
     await writeFile(path.join(root, "sample.mjs"), `const broken = ${token}${"x".repeat(1800)} @\n`);
     const failed = await run(root, ["--check", "sample.mjs"]);
     assert.equal(failed.status, "fail");
-    for (let i = 0; i < 6; i += 1) await run(root, ["--version", `example-${i}`]);
+    for (let i = 0; i < 6; i += 1) {
+      const file = `example-${i}.mjs`;
+      await writeFile(path.join(root, file), "const valid = 1;\n");
+      await run(root, ["--check", file]);
+    }
     const guide = await getWorkGuide(root, id);
     assert.equal(guide.next.code, "implement-and-verify");
     assert.equal(guide.evidence.commands[0].id, failed.id);

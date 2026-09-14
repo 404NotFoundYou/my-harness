@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "csv-parser",
+  "mode": "single",
+  "rationale": "用单次扫描和显式字段/引号状态实现解析；在新增测试中覆盖规格边界，保持 caller API 不变。",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "实现严格 CSV 解析",
+      "module": "compact",
+      "status": "COMPLETED",
+      "attempt": 2,
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        "src/csv.mjs",
+        "test/extra.test.mjs"
+      ],
+      "verification": [
+        "node --test test/public.test.mjs",
+        "node --test test/extra.test.mjs"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            "--test",
+            "test/public.test.mjs"
+          ]
+        },
+        {
+          "id": "V2",
+          "command": "node",
+          "args": [
+            "--test",
+            "test/extra.test.mjs"
+          ]
+        }
+      ],
+      "docsImpact": [
+        "N/A: 本地 CSV 解析器迭代，不改变产品文档事实"
+      ],
+      "reviewBatch": "R1",
+      "risk": "low",
+      "owner": "primary-ai",
+      "verificationStatus": "pass",
+      "reviewStatus": "pass",
+      "evidence": [
+        "e54e34e3-8782-45eb-acdb-5a756d8fecc1",
+        "39183b40-2cf7-4edd-9b31-753dc989f692"
+      ],
+      "deferralApproval": null,
+      "verificationSource": {
+        "digest": "9ec1c76cb9889bb269145996ccbba70b65182f50a7aff1964f0a59502b370ba4",
+        "document": ".ai-harness/work-items/csv-parser/snapshots/9ec1c76cb9889bb269145996ccbba70b65182f50a7aff1964f0a59502b370ba4.json"
+      },
+      "reviewSource": {
+        "digest": "9ec1c76cb9889bb269145996ccbba70b65182f50a7aff1964f0a59502b370ba4",
+        "document": ".ai-harness/work-items/csv-parser/snapshots/9ec1c76cb9889bb269145996ccbba70b65182f50a7aff1964f0a59502b370ba4.json"
+      }
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "实现严格 CSV 解析",
+      "risk": "low",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": false
+    }
+  ],
+  "createdAt": "2026-09-14T06:09:36.989Z",
+  "updatedAt": "2026-09-14T06:12:04.538Z",
+  "revision": 2
+}

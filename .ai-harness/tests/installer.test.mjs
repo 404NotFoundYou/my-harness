@@ -31,6 +31,7 @@ test("existing instruction files are merged losslessly and reinstall is byte-ide
     "GEMINI.md": "# Gemini project context\n\nPreserve generated files.",
   };
   try {
+    const manifest = JSON.parse(await readFile(path.join(sourceRoot, ".ai-harness/manifest.json"), "utf8"));
     for (const [relative, content] of Object.entries(originals)) {
       await writeFile(path.join(target, relative), content, "utf8");
     }
@@ -59,7 +60,7 @@ test("existing instruction files are merged losslessly and reinstall is byte-ide
       const block = inspectManagedBlock(installed[relative], relative);
       assert.equal(block.present, true);
       assert.equal(block.hashValid, true);
-      assert.equal(block.version, "1.0.0");
+      assert.equal(block.version, manifest.version);
     }
 
     const second = await installRuntime(sourceRoot, target);

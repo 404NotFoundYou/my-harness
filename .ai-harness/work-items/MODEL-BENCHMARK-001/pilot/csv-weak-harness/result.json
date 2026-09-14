@@ -1,0 +1,173 @@
+{
+  "schemaVersion": 1,
+  "mode": "real",
+  "taskId": "csv",
+  "split": "development",
+  "group": "weak-harness",
+  "model": "gpt-5.6-luna",
+  "taskDigest": "c3cfc33cfb3f2ac504fd63705cd1d03d2dc7f497017362037152af0e251ca223",
+  "judgeDigest": "30194704e69ab805f27ffa7fefb9849b9313f355a3da6ff5145e05fafc458561",
+  "candidateDigest": "a476a8e06662bdcb54340bd76bee5c637c1652411deefbab67552faa8e368f9b",
+  "budget": {
+    "timeoutMs": 180000,
+    "maxToolCalls": 80,
+    "reasoning": "medium"
+  },
+  "run": {
+    "mode": "real",
+    "startedAt": "2026-09-14T06:09:07.084Z",
+    "durationMs": 180351,
+    "exitCode": 1,
+    "timedOut": true,
+    "toolLimit": false,
+    "toolCalls": 17,
+    "turnCompleted": false,
+    "usage": null,
+    "error": null,
+    "errors": [],
+    "final": null,
+    "completed": false
+  },
+  "scope": {
+    "ok": true,
+    "changes": [
+      {
+        "path": "src/csv.mjs",
+        "before": "dd51e6b8418a474ba38c772e6825c45edeeac7f628fdab3e83058a737955b3c2",
+        "after": "a476a8e06662bdcb54340bd76bee5c637c1652411deefbab67552faa8e368f9b"
+      },
+      {
+        "path": ".ai-harness/work-items/csv-parser/.lock",
+        "before": null,
+        "after": "5d2b367a7a34172a492db80a02b9036174c82590dd64b014e73e336e62e43652"
+      },
+      {
+        "path": ".ai-harness/work-items/csv-parser/events.jsonl",
+        "before": null,
+        "after": "c60468a4857e6ec1a3e5da2ca862083719d612f5d4bdc590e048c531a7e5050e"
+      },
+      {
+        "path": ".ai-harness/work-items/csv-parser/evidence.jsonl",
+        "before": null,
+        "after": "e755ac9de7664bca97c18227caaed51737f1bff2b07398b34ccbc47ac0f9335d"
+      },
+      {
+        "path": ".ai-harness/work-items/csv-parser/plan.json",
+        "before": null,
+        "after": "aeade1fec2bd10ba78f63cf088d20a66c3f54e0531016e7d35e6fda221ce79d6"
+      },
+      {
+        "path": ".ai-harness/work-items/csv-parser/revisions/1-plan.json",
+        "before": null,
+        "after": "fbd9d7f9c94ff4079c46f1d1f76e03426a678fea13f210f108480b4c4aa52550"
+      },
+      {
+        "path": ".ai-harness/work-items/csv-parser/revisions/1-state.json",
+        "before": null,
+        "after": "c59822869c5adb4b9941edc34d8cf1af029a38d356a9f14c458ee5a1c3563eb5"
+      },
+      {
+        "path": ".ai-harness/work-items/csv-parser/snapshots/065a705c972d5613543232ff9eef034be8f138e43f4200606c48446a163410f3.json",
+        "before": null,
+        "after": "e261152596458539c9cae2c868e462ddfc3fa849587c755eac047b66a4093047"
+      },
+      {
+        "path": ".ai-harness/work-items/csv-parser/snapshots/9ec1c76cb9889bb269145996ccbba70b65182f50a7aff1964f0a59502b370ba4.json",
+        "before": null,
+        "after": "09fe8c0c290847eef2acb48fb47e9d1204c4b5f30a38c2d4ff0ea807003d4266"
+      },
+      {
+        "path": ".ai-harness/work-items/csv-parser/snapshots/eba35d534013ab2584f02aef24bb1822cf19e7f1a7d030b8fb923266007d7e18.json",
+        "before": null,
+        "after": "58e2fafe8fd47c7100ae04c422f640df15774fce3b3ef1ec508730202c67d87a"
+      },
+      {
+        "path": ".ai-harness/work-items/csv-parser/solution.md",
+        "before": null,
+        "after": "3f2624651da17f0f8ae7bc1d8e5dcc031c199f7c782d86be0663e84cf99324cf"
+      },
+      {
+        "path": ".ai-harness/work-items/csv-parser/state.json",
+        "before": null,
+        "after": "6fa51de27f5c17392e4afc3ee02a669e21397d0efbf7e382243cce1fcf0ae866"
+      },
+      {
+        "path": "test/extra.test.mjs",
+        "before": null,
+        "after": "a4e31d1d915012400887d0f5eb7c3102c8a26b5405fd879e64086cad9450e399"
+      }
+    ],
+    "violations": []
+  },
+  "workflow": {
+    "ok": false,
+    "errors": [
+      "CI 不接受未完成工作项：csv-parser:READY_FOR_ACCEPTANCE"
+    ],
+    "workItems": [
+      "csv-parser"
+    ]
+  },
+  "grade": {
+    "complete": true,
+    "ok": true,
+    "cases": [
+      {
+        "id": "empty",
+        "pass": true
+      },
+      {
+        "id": "bom",
+        "pass": true
+      },
+      {
+        "id": "delimiters",
+        "pass": true
+      },
+      {
+        "id": "blank-rows",
+        "pass": true
+      },
+      {
+        "id": "quoted-fields",
+        "pass": true
+      },
+      {
+        "id": "escaped-quotes",
+        "pass": true
+      },
+      {
+        "id": "embedded-newline",
+        "pass": true
+      },
+      {
+        "id": "whitespace",
+        "pass": true
+      },
+      {
+        "id": "unterminated",
+        "pass": true
+      },
+      {
+        "id": "bare-quote",
+        "pass": true
+      },
+      {
+        "id": "after-quote",
+        "pass": true
+      },
+      {
+        "id": "input-type",
+        "pass": true
+      }
+    ],
+    "expectedCases": 12,
+    "exitCode": 0,
+    "timedOut": false,
+    "stderr": "",
+    "error": null
+  },
+  "success": false,
+  "falseCompletion": false,
+  "falseFunctionalCompletion": false
+}

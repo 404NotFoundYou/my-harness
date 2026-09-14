@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local.ai-harness/schemas/source-snapshot.schema.json",
+  "title": "AI Harness source snapshot",
+  "type": "object",
+  "required": ["version", "digest", "files"],
+  "properties": {
+    "version": {"const": 1},
+    "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "files": {
+      "type": "object",
+      "additionalProperties": {"type": "string", "pattern": "^[0-9]{6}:[0-9a-f]{40,64}$"}
+    }
+  },
+  "additionalProperties": false
+}

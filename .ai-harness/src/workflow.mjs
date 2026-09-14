@@ -26,6 +26,9 @@ import {
   WORK_TYPES,
 } from "./constants.mjs";
 import { createPlan, createReviewBatch, createTask, createWorkItem } from "./model.mjs";
+import { assertCommandEvidence, assertVerification, hasFailedReview, invalidateResults, planDigest, readEvidence } from "./verification.mjs";
+import { saveSnapshot, sourceSnapshot } from "./snapshot.mjs";
+import { prepareDelivery } from "./scope.mjs";
 import {
   assertTaskTransition,
   assertTransitionAllowed,
@@ -173,6 +176,7 @@ export async function completeBaseline(root, id, { evidence, document = null }) 
       completedAt: nowIso(),
       repository,
     };
+    item.baseline.repository.source = await saveSnapshot(root, paths.directory, await sourceSnapshot(root));
     await appendEvent(paths, id, "baseline-completed", { repository, evidence });
   });
 }
@@ -298,6 +302,14 @@ export async function transitionWorkItem(root, id, target, reason = null) {
     assertTransitionAllowed(item, target, reason);
     await assertTransitionGates(root, item, plan, target);
     const from = item.status;
+    if (target === "DONE") {
+      const current = await sourceSnapshot(root);
+      const delivery = await prepareDelivery(root, item, plan, current);
+      const baseline = await saveSnapshot(root, paths.directory, delivery.baseline);
+      item.integrityVersion = 1;
+      item.revision ||= 1;
+      item.delivery = { source: await saveSnapshot(root, paths.directory, current), baseline, baselineAt: delivery.baselineAt, ownedChanges: delivery.ownedChanges, planDigest: planDigest(item, plan), at: nowIso(), head: (await getGitBaseline(root)).commit };
+    }
     if (target === "BLOCKED") {
       item.blocked = { from, reason, at: nowIso() };
     } else if (from === "BLOCKED") {
@@ -328,10 +340,14 @@ export async function updateTaskStatus(root, id, taskId, target, { reason = null
     if (target === "BLOCKED") invariant(reason?.trim(), "BLOCK_REASON_REQUIRED", "阻塞任务必须提供原因。" );
     const from = task.status;
     task.status = target;
+    if (target === "IN_PROGRESS") task.attempt = (task.attempt || 0) + 1;
     if (target === "DEFERRED") task.deferralApproval = approvalRef;
     if (target === "REWORK") {
       task.verificationStatus = "pending";
       task.reviewStatus = "pending";
+      delete task.verificationSource;
+      delete task.reviewSource;
+      invalidateResults(item, plan);
     }
 
     if (["COMPLETED", "DEFERRED"].includes(target)) {
@@ -428,6 +444,18 @@ export async function recordResult(root, id, { kind, status, summary, taskId = n
       invariant(stage !== null, "VERIFICATION_STAGE_REQUIRED", "该工作项必须用 --stage 记录验证子阶段。" );
     }
 
+    if (kind === "review" && status === "pass") {
+      invariant(!hasFailedReview(await readEvidence(root, id), item, task), "REVIEW_REWORK_REQUIRED",
+        task ? "审查失败后必须先 REWORK，再开始新的任务尝试。" : "最终审查失败后必须先 reopen，建立新修订再验证和审查。");
+    }
+
+    let verificationSource = null;
+    if (status === "pass" && isDevelopmentType(item.type) && ["verification", "review", "acceptance"].includes(kind)) {
+      if (kind !== "verification" || stage === null) await assertVerification(root, item, plan, { taskId });
+      verificationSource = await saveSnapshot(root, paths.directory, await sourceSnapshot(root));
+      if (stage && item.verification.source && item.verification.source.digest !== verificationSource.digest) invalidateResults(item, plan);
+    }
+
     // 顺序守卫：把某阶段记为 pass 前，其之前的所有“必需”阶段必须已 pass。
     if (stage !== null && status === "pass") {
       const requiredNames = requiredVerificationStages(item);
@@ -444,15 +472,24 @@ export async function recordResult(root, id, { kind, status, summary, taskId = n
       invariant(commandEvent && commandEvent.kind === "command" && commandEvent.workItemId === id, "STAGE_RUN_EVIDENCE_INVALID", `--command 未指向本工作项的命令证据：${commandRef}`);
       if (status === "pass") {
         invariant(commandEvent.status === "pass", "STAGE_RUN_EVIDENCE_NOT_PASSING", `${stage} 记为 pass 需引用通过的命令证据，但 ${commandRef} 未通过。`);
+        await assertCommandEvidence(root, item, plan, commandRef);
       }
     }
 
     const event = createEvidenceEvent({ id, taskId, kind, status, summary, independent, stage });
+    event.revision = item.revision || 1;
+    event.taskAttempt = task ? task.attempt || 1 : null;
+    if (commandRef) event.commandRef = commandRef;
+    if (verificationSource) {
+      event.source = verificationSource;
+      event.planDigest = planDigest(item, plan);
+    }
     await appendJsonLine(paths.evidence, event);
 
     if (task) {
       if (kind === "verification") task.verificationStatus = status;
       if (kind === "review") task.reviewStatus = status;
+      if (verificationSource) task[`${kind}Source`] = verificationSource;
       task.evidence.push(event.id);
       plan.updatedAt = nowIso();
       assertValidPlan(plan, id, { requireContent: true });
@@ -467,15 +504,31 @@ export async function recordResult(root, id, { kind, status, summary, taskId = n
         entry.status = status;
       }
       entry.evidence.push(event.id);
+      entry.revision = event.revision;
+      if (verificationSource) {
+        entry.source = verificationSource;
+        entry.planDigest = event.planDigest;
+      }
       // 命令证据 id 只存 stage.command，不混入 evidence[]（保持 evidence[] 全为 verification-kind）。
       if (isRunBackedStage(stage)) entry.command = commandRef;
       // 顶层同时收录，使既有门禁的 nonEmptyStrings(verification.evidence) 与引用校验成立。
       item.verification.evidence.push(event.id);
       item.verification.status = aggregateVerificationStatus(stages, requiredVerificationStages(item));
+      if (verificationSource) item.verification.source = verificationSource;
     } else if (kind !== "checkpoint") {
       item[kind].status = status;
       item[kind].evidence.push(event.id);
       if (kind === "review") item.review.independent = Boolean(independent);
+      if (verificationSource) item[kind].source = verificationSource;
+    }
+    if (status === "fail" && kind === "verification") {
+      item.review = { status: "pending", evidence: [], independent: false };
+      item.acceptance = { status: "pending", evidence: [] };
+      item.delivery = null;
+    }
+    if (status === "fail" && kind === "review") {
+      item.acceptance = { status: "pending", evidence: [] };
+      item.delivery = null;
     }
     item.updatedAt = nowIso();
     assertValidWorkItem(item);
@@ -502,4 +555,72 @@ export async function validateWorkItem(root, id) {
   const item = await loadWorkItem(root, id);
   const plan = await loadPlan(root, id, { optional: true });
   return collectProgressErrors(root, item, plan);
+}
+
+export async function reopenWorkItem(root, id, { reason, replan = false, approvalRef = null }) {
+  invariant(reason?.trim(), "REOPEN_REASON_REQUIRED", "返工必须说明原因。" );
+  const paths = await workItemPaths(root, id);
+  return withFileLock(paths.lock, async () => {
+    const item = await readJson(paths.state);
+    const plan = await readJson(paths.plan);
+    assertValidWorkItem(item);
+    invariant(isDevelopmentType(item.type) && ["IMPLEMENTING", "VERIFYING", "CODE_REVIEW", "READY_FOR_ACCEPTANCE", "DONE"].includes(item.status), "WRONG_STAGE", "只能对已进入实施的开发工作返工。" );
+    invariant(item.authorization.mode === "autonomous" || approvalRef?.trim(), "REOPEN_APPROVAL_REQUIRED", "此工作项返工需要实际批准引用。" );
+    const revision = item.revision || 1;
+    await atomicWriteJson(path.join(paths.directory, "revisions", `${revision}-state.json`), item);
+    await atomicWriteJson(path.join(paths.directory, "revisions", `${revision}-plan.json`), plan);
+    const from = item.status;
+    if (from === "DONE" && item.delivery) {
+      item.baseline.repository.source = item.delivery.source;
+      item.baseline.completedAt = item.delivery.at;
+    }
+    item.revision = revision + 1;
+    item.integrityVersion = 1;
+    invalidateResults(item, plan);
+    item.documentation = { status: "pending", evidence: [] };
+    item.blocked = null;
+    item.status = replan ? "SOLUTION_DESIGN" : "IMPLEMENTING";
+    for (const task of plan.tasks) {
+      task.status = task.blockedBy.length ? "PENDING" : "READY";
+      task.verificationStatus = "pending";
+      task.reviewStatus = "pending";
+      task.evidence = [];
+      task.deferralApproval = null;
+      delete task.verificationSource;
+      delete task.reviewSource;
+    }
+    plan.revision = item.revision;
+    if (replan) {
+      item.plan.approved = false;
+      item.plan.approvalRef = null;
+    }
+    item.updatedAt = nowIso();
+    plan.updatedAt = item.updatedAt;
+    item.history.push({ from, to: item.status, at: item.updatedAt, reason, action: replan ? "replan" : "reopen", revision: item.revision });
+    assertValidWorkItem(item);
+    assertValidPlan(plan, id, { requireContent: !replan });
+    await atomicWriteJson(paths.plan, plan);
+    await atomicWriteJson(paths.state, item);
+    await appendEvent(paths, id, replan ? "work-item-replanned" : "work-item-reopened", { from, to: item.status, reason, revision: item.revision, approvalRef: approvalRef || item.authorization.source });
+    return item;
+  });
+}
+
+export async function editTask(root, id, taskId, changes) {
+  return mutatePlan(root, id, async (plan, item, paths) => {
+    invariant(!item.plan.approved && ["SOLUTION_DESIGN", "DATABASE_DESIGN"].includes(item.status), "PLAN_LOCKED", "先通过 replan 保存旧计划并解除批准，再修改任务。" );
+    const index = plan.tasks.findIndex((task) => task.id === taskId);
+    invariant(index >= 0, "TASK_NOT_FOUND", `任务不存在：${taskId}`);
+    const updated = createTask({ ...plan.tasks[index], ...changes, id: taskId });
+    plan.tasks[index] = updated;
+    for (const task of plan.tasks) task.blocks = [];
+    for (const task of plan.tasks) for (const parentId of task.blockedBy) {
+      const parent = plan.tasks.find((candidate) => candidate.id === parentId);
+      invariant(parent, "DEPENDENCY_NOT_FOUND", `依赖不存在：${parentId}`);
+      parent.blocks.push(task.id);
+    }
+    for (const batch of plan.reviewBatches) batch.taskIds = plan.tasks.filter((task) => task.reviewBatch === batch.id).map((task) => task.id);
+    await appendEvent(paths, id, "task-definition-updated", { taskId, revision: item.revision });
+    return updated;
+  });
 }

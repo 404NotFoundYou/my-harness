@@ -5,6 +5,7 @@ import path from "node:path";
 import { cleanup, createInstalledProject } from "./helpers.mjs";
 import { checkProject } from "../src/checker.mjs";
 import { parseArgs } from "../src/cli.mjs";
+import { runRecordedCommand } from "../src/evidence.mjs";
 import {
   addReviewBatch,
   addTask,
@@ -58,6 +59,7 @@ async function advanceToVerifying(root, id, flags) {
   await transitionWorkItem(root, id, "PLANNED");
   await transitionWorkItem(root, id, "IMPLEMENTING");
   await updateTaskStatus(root, id, "T1", "IN_PROGRESS");
+  await runRecordedCommand(root, { id, taskId: "T1", command: process.execPath, args: ["--version"] });
   await recordResult(root, id, { kind: "verification", status: "pass", summary: "task verified", taskId: "T1" });
   await updateTaskStatus(root, id, "T1", "IMPLEMENTED");
   await updateTaskStatus(root, id, "T1", "IN_REVIEW");

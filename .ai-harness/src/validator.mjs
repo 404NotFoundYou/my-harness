@@ -16,6 +16,9 @@ import {
 } from "./constants.mjs";
 import { HarnessError, invariant } from "./errors.mjs";
 import { resolveProjectPath } from "./filesystem.mjs";
+import { assertVerification, assertVerificationStages } from "./verification.mjs";
+import { loadSnapshot, sourceSnapshot } from "./snapshot.mjs";
+import { compileChecks } from "./commands.mjs";
 
 function isObject(value) {
   return value !== null && typeof value === "object" && !Array.isArray(value);
@@ -27,6 +30,10 @@ function nonEmptyStrings(value) {
 
 function validResult(result) {
   return isObject(result) && RESULT_STATUSES.includes(result.status) && Array.isArray(result.evidence);
+}
+
+function validSource(value) {
+  return isObject(value) && /^[0-9a-f]{64}$/.test(value.digest || "") && typeof value.document === "string" && value.document.trim();
 }
 
 function validGate(gate) {
@@ -43,6 +50,12 @@ export function collectWorkItemShapeErrors(item) {
   const errors = [];
   if (!isObject(item)) return ["工作项必须是 JSON 对象。"];
   if (item.schemaVersion !== 1) errors.push("工作项 schemaVersion 必须为 1。");
+  if (item.integrityVersion !== undefined && item.integrityVersion !== 1) errors.push("integrityVersion 无效。");
+  if (item.revision !== undefined && (!Number.isInteger(item.revision) || item.revision < 1)) errors.push("revision 必须是正整数。");
+  if (item.delivery !== undefined && item.delivery !== null && (!isObject(item.delivery) || !validSource(item.delivery.source) || !validSource(item.delivery.baseline) || !/^[0-9a-f]{64}$/.test(item.delivery.planDigest || "") || typeof item.delivery.at !== "string" || !/^[0-9a-f]{40,64}$/.test(item.delivery.head || ""))) errors.push("delivery 结构无效。");
+  if (item.delivery && (typeof item.delivery.baselineAt !== "string" || !Array.isArray(item.delivery.ownedChanges) || item.delivery.ownedChanges.some((change) =>
+    !isObject(change) || typeof change.path !== "string" || !scopeValid(change.path) ||
+    ![change.before, change.after].every((value) => value === null || /^\d{6}:[0-9a-f]{40,64}$/.test(value))))) errors.push("delivery.ownedChanges 结构无效。");
   if (!WORK_ID_PATTERN.test(item.id || "")) errors.push("工作项 ID 格式无效。");
   if (!WORK_TYPES.includes(item.type)) errors.push(`未知工作类型：${item.type}`);
   if (typeof item.title !== "string" || !item.title.trim()) errors.push("工作项标题不能为空。");
@@ -88,6 +101,7 @@ export function collectWorkItemShapeErrors(item) {
     documentation: item.documentation,
   })) {
     if (!validResult(result)) errors.push(`${name} 结构无效。`);
+    if (result?.source !== undefined && !validSource(result.source)) errors.push(`${name}.source 无效。`);
   }
   if (typeof item.review?.independent !== "boolean") errors.push("review.independent 必须是布尔值。");
   if (item.verification?.stages !== undefined) {
@@ -103,6 +117,9 @@ export function collectWorkItemShapeErrors(item) {
         } else if (stage.command !== undefined && stage.command !== null && typeof stage.command !== "string") {
           errors.push(`验证子阶段 ${stage.stage} command 必须是字符串或 null。`);
         }
+        if (stage.source !== undefined && !validSource(stage.source)) errors.push("验证子阶段 source 无效。");
+        if (stage.revision !== undefined && (!Number.isInteger(stage.revision) || stage.revision < 1)) errors.push("验证子阶段 revision 无效。");
+        if (stage.planDigest !== undefined && !/^[0-9a-f]{64}$/.test(stage.planDigest)) errors.push("验证子阶段 planDigest 无效。");
       }
       if (new Set(item.verification.stages.map((stage) => stage.stage)).size !== item.verification.stages.length) {
         errors.push("verification.stages 子阶段不得重复。");
@@ -151,6 +168,7 @@ export function collectPlanErrors(plan, workItemId = null, { requireComplete = t
   const errors = [];
   if (!isObject(plan)) return ["计划必须是 JSON 对象。"];
   if (plan.schemaVersion !== 1) errors.push("计划 schemaVersion 必须为 1。");
+  if (plan.revision !== undefined && (!Number.isInteger(plan.revision) || plan.revision < 1)) errors.push("计划 revision 无效。");
   if (!WORK_ID_PATTERN.test(plan.workItemId || "")) errors.push("计划 workItemId 无效。");
   if (workItemId && plan.workItemId !== workItemId) errors.push("计划与工作项 ID 不一致。");
   if (!['single', 'multi'].includes(plan.mode)) errors.push("计划 mode 必须为 single 或 multi。");
@@ -174,6 +192,13 @@ export function collectPlanErrors(plan, workItemId = null, { requireComplete = t
     if (!nonEmptyStrings(task.writeScopes)) errors.push(`${task.id} 至少需要一个写入范围。`);
     else if (task.writeScopes.some((scope) => !scopeValid(scope))) errors.push(`${task.id} 包含过宽或越界写入范围。`);
     if (!nonEmptyStrings(task.verification)) errors.push(`${task.id} 至少需要一个验证方式。`);
+    else if (task.checks !== undefined) {
+      try {
+        if (JSON.stringify(task.checks) !== JSON.stringify(compileChecks(task.verification))) errors.push(`${task.id} checks 与验证声明不一致。`);
+      } catch { errors.push(`${task.id} 验证声明无法编译为命令。`); }
+    }
+    if (task.attempt !== undefined && (!Number.isInteger(task.attempt) || task.attempt < 0)) errors.push(`${task.id} attempt 无效。`);
+    for (const name of ["verificationSource", "reviewSource"]) if (task[name] !== undefined && !validSource(task[name])) errors.push(`${task.id}.${name} 无效。`);
     if (!nonEmptyStrings(task.docsImpact)) errors.push(`${task.id} 必须记录文档影响或 N/A: 理由。`);
     if (!task.reviewBatch?.trim()) errors.push(`${task.id} 必须属于 Review Batch。`);
     if (!['low', 'medium', 'high'].includes(task.risk)) errors.push(`${task.id} 风险等级无效。`);
@@ -385,16 +410,32 @@ export async function assertTransitionGates(root, item, plan, target) {
     }
     invariant(item.verification.status === "pass" && nonEmptyStrings(item.verification.evidence), "FINAL_VERIFICATION_REQUIRED", "工作项验证尚未通过。" );
     invariant(["pass", "not-applicable"].includes(item.documentation.status) && nonEmptyStrings(item.documentation.evidence), "DOCUMENTATION_REQUIRED", "文档同步尚未确认。" );
+    if (!(item.status === "DONE" && !item.integrityVersion)) {
+      const snapshot = item.status === "DONE" ? await loadSnapshot(root, item.delivery?.source) : await sourceSnapshot(root);
+      await assertVerification(root, item, plan, { snapshot });
+      await assertVerificationStages(root, item, plan, snapshot);
+      invariant(item.verification.source?.digest === snapshot.digest, "STALE_VERIFICATION", "验证结论不对应当前待交付代码。" );
+    }
     return;
   }
   if (target === "READY_FOR_ACCEPTANCE") {
     invariant(item.review.status === "pass" && nonEmptyStrings(item.review.evidence), "FINAL_REVIEW_REQUIRED", "工作项最终 Code Review 尚未通过。" );
     const independentRequired = plan?.reviewBatches?.some((batch) => batch.independentRequired) || false;
     invariant(!independentRequired || item.review.independent, "INDEPENDENT_REVIEW_REQUIRED", "高风险批次需要独立复核证据。" );
+    if (!(item.status === "DONE" && !item.integrityVersion)) {
+      const snapshot = item.status === "DONE" ? await loadSnapshot(root, item.delivery?.source) : await sourceSnapshot(root);
+      await assertVerification(root, item, plan, { snapshot });
+      invariant(item.review.source?.digest === snapshot.digest, "STALE_REVIEW", "审查结论不对应当前待交付代码。" );
+    }
     return;
   }
   if (target === "DONE") {
     invariant(item.acceptance.status === "pass" && nonEmptyStrings(item.acceptance.evidence), "ACCEPTANCE_REQUIRED", "DONE 前缺少有权验收证据。" );
+    if (!(item.status === "DONE" && !item.integrityVersion)) {
+      const snapshot = item.status === "DONE" ? await loadSnapshot(root, item.delivery?.source) : await sourceSnapshot(root);
+      await assertVerification(root, item, plan, { snapshot });
+      invariant(item.review.source?.digest === snapshot.digest && item.acceptance.source?.digest === snapshot.digest, "STALE_ACCEPTANCE", "验收和审查必须对应同一待交付代码版本。" );
+    }
     return;
   }
   if (target === "ANSWERED") {
@@ -421,7 +462,10 @@ export function collectHistoryErrors(item) {
     if (!WORK_STATUSES.includes(entry.to)) errors.push(`history[${index}] 目标状态无效。`);
     if (entry.to !== "BLOCKED" && entry.from !== "BLOCKED" && entry.from !== null) {
       const allowed = BASE_TRANSITIONS[item.type]?.[entry.from] || [];
-      if (!allowed.includes(entry.to)) errors.push(`history[${index}] 包含非法转换 ${entry.from} -> ${entry.to}。`);
+      const recovery = ["reopen", "replan"].includes(entry.action) && entry.reason?.trim() && entry.revision > 1 &&
+        ["IMPLEMENTING", "VERIFYING", "CODE_REVIEW", "READY_FOR_ACCEPTANCE", "DONE"].includes(entry.from) &&
+        entry.to === (entry.action === "replan" ? "SOLUTION_DESIGN" : "IMPLEMENTING");
+      if (!allowed.includes(entry.to) && !recovery) errors.push(`history[${index}] 包含非法转换 ${entry.from} -> ${entry.to}。`);
     }
     if (entry.to === "BLOCKED" && !entry.reason?.trim()) errors.push(`history[${index}] 阻塞缺少原因。`);
     if (entry.from === "BLOCKED" && entry.to !== entry.unblockedTo) errors.push(`history[${index}] 解除阻塞目标记录无效。`);
@@ -431,13 +475,14 @@ export function collectHistoryErrors(item) {
   return errors;
 }
 
-export async function collectProgressErrors(root, item, plan) {
+export async function collectProgressErrors(root, item, plan, { allowStale = false } = {}) {
   const errors = [...collectWorkItemShapeErrors(item), ...collectHistoryErrors(item)];
   if (item.status === "BLOCKED") return [...new Set(errors)];
   const addGateError = async (target) => {
     try {
       await assertTransitionGates(root, item, plan, target);
     } catch (error) {
+      if (allowStale && ["VERIFICATION_NOT_CURRENT", "STALE_VERIFICATION", "STALE_VERIFICATION_STAGE", "STALE_REVIEW", "STALE_ACCEPTANCE"].includes(error.code)) return;
       errors.push(`${target}: ${error.message}`);
       if (error.details?.errors) errors.push(...error.details.errors.map((detail) => `${target}: ${detail}`));
     }

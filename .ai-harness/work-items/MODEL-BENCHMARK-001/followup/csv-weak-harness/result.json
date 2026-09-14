@@ -1,0 +1,166 @@
+{
+  "schemaVersion": 1,
+  "mode": "real",
+  "taskId": "csv",
+  "split": "development",
+  "group": "weak-harness",
+  "model": "gpt-5.6-luna",
+  "taskDigest": "c3cfc33cfb3f2ac504fd63705cd1d03d2dc7f497017362037152af0e251ca223",
+  "judgeDigest": "30194704e69ab805f27ffa7fefb9849b9313f355a3da6ff5145e05fafc458561",
+  "candidateDigest": "3bc6a09613c699912b1a23bce3fa2b4b55544f0b018ebaef860e808d307a854e",
+  "budget": {
+    "timeoutMs": 180000,
+    "maxToolCalls": 80,
+    "reasoning": "medium"
+  },
+  "run": {
+    "mode": "real",
+    "startedAt": "2026-09-14T06:51:50.369Z",
+    "durationMs": 167314,
+    "exitCode": 0,
+    "timedOut": false,
+    "toolLimit": false,
+    "toolCalls": 18,
+    "turnCompleted": true,
+    "usage": {
+      "input_tokens": 402145,
+      "cached_input_tokens": 347904,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 6271,
+      "reasoning_output_tokens": 2125
+    },
+    "error": null,
+    "errors": [],
+    "final": {
+      "completed": true,
+      "summary": "已完成 TASK.md：实现严格 CSV 解析并新增边界自测，保持 src/caller.mjs 兼容。未安装依赖、未访问网络、未提交 Git。Harness check --ci 通过。",
+      "tests": [
+        "node --test test/public.test.mjs：通过，1/1",
+        "node --test test/extra.test.mjs：通过，4/4",
+        "git diff --check：通过",
+        "node .ai-harness/bin/harness.mjs check --ci --json：通过"
+      ]
+    },
+    "completed": true
+  },
+  "scope": {
+    "ok": true,
+    "changes": [
+      {
+        "path": "src/csv.mjs",
+        "before": "dd51e6b8418a474ba38c772e6825c45edeeac7f628fdab3e83058a737955b3c2",
+        "after": "3bc6a09613c699912b1a23bce3fa2b4b55544f0b018ebaef860e808d307a854e"
+      },
+      {
+        "path": ".ai-harness/work-items/CSV-ITERATION-1/events.jsonl",
+        "before": null,
+        "after": "33aa0ee1c789cd5e6ce82cfc831a45b0738087d1ba3960ec470448fd3bbc1118"
+      },
+      {
+        "path": ".ai-harness/work-items/CSV-ITERATION-1/evidence.jsonl",
+        "before": null,
+        "after": "d6ebc5beb7237ca955788593d967009f0a6610b44323b87e3f70fe878ba85422"
+      },
+      {
+        "path": ".ai-harness/work-items/CSV-ITERATION-1/plan.json",
+        "before": null,
+        "after": "88dda83891f37439c3b1cdc45470675589bd68104e96681f0c43e334603e5b71"
+      },
+      {
+        "path": ".ai-harness/work-items/CSV-ITERATION-1/snapshots/9e33408e27b8825cd6013bd06d227de8ff624e1b9682a3f64001104efa16b495.json",
+        "before": null,
+        "after": "20db1d4c6c137f62307d14e52b09751cd76a7356640f333b84c2924c0c2520fb"
+      },
+      {
+        "path": ".ai-harness/work-items/CSV-ITERATION-1/snapshots/f32f6bde8a78c616dcf997277d23dce870c498dd7fc1f807e5502d0330c4eead.json",
+        "before": null,
+        "after": "99b687c5d9a21f0055918634deede5dbedd362e0d087d00c03008c303c760c38"
+      },
+      {
+        "path": ".ai-harness/work-items/CSV-ITERATION-1/solution.md",
+        "before": null,
+        "after": "65bf754b05bc5cf474ed70e61d61ed812d36b974f9050c723d07ad848e3487ee"
+      },
+      {
+        "path": ".ai-harness/work-items/CSV-ITERATION-1/state.json",
+        "before": null,
+        "after": "203d88b46abceefd377ab4a8ce6def452347228b4e8ecdcf62a3b3b844c454fe"
+      },
+      {
+        "path": "test/extra.test.mjs",
+        "before": null,
+        "after": "71ae1698e57120df1a35ee509ec2844e608925b15a6fb598f39d853fd015a927"
+      }
+    ],
+    "violations": []
+  },
+  "workflow": {
+    "ok": true,
+    "errors": [],
+    "workItems": [
+      "CSV-ITERATION-1"
+    ]
+  },
+  "grade": {
+    "complete": true,
+    "ok": true,
+    "cases": [
+      {
+        "id": "empty",
+        "pass": true
+      },
+      {
+        "id": "bom",
+        "pass": true
+      },
+      {
+        "id": "delimiters",
+        "pass": true
+      },
+      {
+        "id": "blank-rows",
+        "pass": true
+      },
+      {
+        "id": "quoted-fields",
+        "pass": true
+      },
+      {
+        "id": "escaped-quotes",
+        "pass": true
+      },
+      {
+        "id": "embedded-newline",
+        "pass": true
+      },
+      {
+        "id": "whitespace",
+        "pass": true
+      },
+      {
+        "id": "unterminated",
+        "pass": true
+      },
+      {
+        "id": "bare-quote",
+        "pass": true
+      },
+      {
+        "id": "after-quote",
+        "pass": true
+      },
+      {
+        "id": "input-type",
+        "pass": true
+      }
+    ],
+    "expectedCases": 12,
+    "exitCode": 0,
+    "timedOut": false,
+    "stderr": "",
+    "error": null
+  },
+  "success": true,
+  "falseCompletion": false,
+  "falseFunctionalCompletion": false
+}

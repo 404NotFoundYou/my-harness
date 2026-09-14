@@ -1,0 +1,1 @@
+export function reconcile(current, events) { const records = Object.fromEntries(current.map(row => [row.id,row])); for (const e of events) { if (e.type === "delete") delete records[e.id]; else records[e.id] = {id:e.id,version:e.version,deleted:false,value:e.value}; } return Object.values(records); }

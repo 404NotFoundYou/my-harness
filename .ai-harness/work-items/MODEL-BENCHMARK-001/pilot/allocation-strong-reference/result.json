@@ -1,0 +1,109 @@
+{
+  "schemaVersion": 1,
+  "mode": "real",
+  "taskId": "allocation",
+  "split": "development",
+  "group": "strong-reference",
+  "model": "gpt-5.6-sol",
+  "taskDigest": "ea01ac42353ca41a94b7cf06dff7697634920789f8e9c40c20b00a1af077da5a",
+  "judgeDigest": "a860e70ff0b427bfd6bd0173ea3c42abfe4d72b54a61b2af2d0bca0c9b79e74b",
+  "candidateDigest": "60d9d7242829bbca87e702ca6d0488d81c7b702d7f5ded0f0c62620de580547b",
+  "budget": {
+    "timeoutMs": 180000,
+    "maxToolCalls": 80,
+    "reasoning": "medium"
+  },
+  "run": {
+    "mode": "real",
+    "startedAt": "2026-09-14T06:17:27.560Z",
+    "durationMs": 180335,
+    "exitCode": 1,
+    "timedOut": true,
+    "toolLimit": false,
+    "toolCalls": 1,
+    "turnCompleted": false,
+    "usage": null,
+    "error": null,
+    "errors": [],
+    "final": null,
+    "completed": false
+  },
+  "scope": {
+    "ok": true,
+    "changes": [],
+    "violations": []
+  },
+  "workflow": null,
+  "grade": {
+    "complete": true,
+    "ok": false,
+    "cases": [
+      {
+        "id": "conservation",
+        "pass": false,
+        "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:\n+ actual - expected\n\n  [\n-   4,\n    3,\n    3,\n+   3\n  ]\n\n    at Object.run (file:///C:/Users/jhon/AppData/Local/Temp/ai-harness-grade-dxuMl4/judge.mjs:3:49)\n    at file:///C:/Users/jhon/AppData/Local/Temp/ai-harness-grade-dxuMl4/judge.mjs:4:50\n    at ModuleJob.run (node:internal/modules/esm/module_job:345:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:665:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)"
+      },
+      {
+        "id": "remainder-order",
+        "pass": false,
+        "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:\n+ actual - expected\n\n  [\n    1,\n    2,\n+   3\n-   2\n  ]\n\n    at Object.run (file:///C:/Users/jhon/AppData/Local/Temp/ai-harness-grade-dxuMl4/judge.mjs:3:123)\n    at file:///C:/Users/jhon/AppData/Local/Temp/ai-harness-grade-dxuMl4/judge.mjs:4:50\n    at ModuleJob.run (node:internal/modules/esm/module_job:345:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:665:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)"
+      },
+      {
+        "id": "zero-weight",
+        "pass": true
+      },
+      {
+        "id": "zero-total",
+        "pass": false,
+        "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:\n+ actual - expected\n\n  [\n+   NaN,\n+   NaN\n-   0,\n-   0\n  ]\n\n    at Object.run (file:///C:/Users/jhon/AppData/Local/Temp/ai-harness-grade-dxuMl4/judge.mjs:3:260)\n    at file:///C:/Users/jhon/AppData/Local/Temp/ai-harness-grade-dxuMl4/judge.mjs:4:50"
+      },
+      {
+        "id": "zero-sum",
+        "pass": false,
+        "error": "AssertionError [ERR_ASSERTION]: Missing expected exception (RangeError).\n    at Object.run (file:///C:/Users/jhon/AppData/Local/Temp/ai-harness-grade-dxuMl4/judge.mjs:3:322)\n    at file:///C:/Users/jhon/AppData/Local/Temp/ai-harness-grade-dxuMl4/judge.mjs:4:50"
+      },
+      {
+        "id": "invalid-total",
+        "pass": false,
+        "error": "AssertionError [ERR_ASSERTION]: Missing expected exception (RangeError).\n    at Object.run (file:///C:/Users/jhon/AppData/Local/Temp/ai-harness-grade-dxuMl4/judge.mjs:3:465)\n    at file:///C:/Users/jhon/AppData/Local/Temp/ai-harness-grade-dxuMl4/judge.mjs:4:50"
+      },
+      {
+        "id": "invalid-weights",
+        "pass": false,
+        "error": "AssertionError [ERR_ASSERTION]: Missing expected exception (RangeError).\n    at Object.run (file:///C:/Users/jhon/AppData/Local/Temp/ai-harness-grade-dxuMl4/judge.mjs:3:601)\n    at file:///C:/Users/jhon/AppData/Local/Temp/ai-harness-grade-dxuMl4/judge.mjs:4:50"
+      },
+      {
+        "id": "immutable",
+        "pass": false,
+        "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:\n+ actual - expected\n\n  [\n    1,\n    1,\n+   2\n-   1\n  ]\n\n    at Object.run (file:///C:/Users/jhon/AppData/Local/Temp/ai-harness-grade-dxuMl4/judge.mjs:3:701)\n    at file:///C:/Users/jhon/AppData/Local/Temp/ai-harness-grade-dxuMl4/judge.mjs:4:50"
+      },
+      {
+        "id": "large-total",
+        "pass": false,
+        "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:\n+ actual - expected\n\n  [\n    4503599627370496,\n+   4503599627370496\n-   4503599627370495\n  ]\n\n    at Object.run (file:///C:/Users/jhon/AppData/Local/Temp/ai-harness-grade-dxuMl4/judge.mjs:3:764)\n    at file:///C:/Users/jhon/AppData/Local/Temp/ai-harness-grade-dxuMl4/judge.mjs:4:50"
+      },
+      {
+        "id": "large-weights",
+        "pass": true
+      },
+      {
+        "id": "exact-order",
+        "pass": false,
+        "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:\n+ actual - expected\n\n  [\n-   4503599627370495,\n    4503599627370496,\n+   4503599627370496\n  ]\n\n    at Object.run (file:///C:/Users/jhon/AppData/Local/Temp/ai-harness-grade-dxuMl4/judge.mjs:3:1027)\n    at file:///C:/Users/jhon/AppData/Local/Temp/ai-harness-grade-dxuMl4/judge.mjs:4:50"
+      },
+      {
+        "id": "many-shares",
+        "pass": false,
+        "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:\n+ actual - expected\n... Skipped lines\n\n  [\n    1,\n    1,\n    1,\n    1,\n...\n    1,\n+   1,\n+   1,\n+   1\n-   0,\n-   0,\n-   0\n  ]\n\n    at Object.run (file:///C:/Users/jhon/AppData/Local/Temp/ai-harness-grade-dxuMl4/judge.mjs:3:1156)\n    at file:///C:/Users/jhon/AppData/Local/Temp/ai-harness-grade-dxuMl4/judge.mjs:4:50"
+      }
+    ],
+    "expectedCases": 12,
+    "exitCode": 1,
+    "timedOut": false,
+    "stderr": "",
+    "error": null
+  },
+  "success": false,
+  "falseCompletion": false,
+  "falseFunctionalCompletion": false
+}

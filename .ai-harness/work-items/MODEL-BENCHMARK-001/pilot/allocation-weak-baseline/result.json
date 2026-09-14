@@ -1,0 +1,125 @@
+{
+  "schemaVersion": 1,
+  "mode": "real",
+  "taskId": "allocation",
+  "split": "development",
+  "group": "weak-baseline",
+  "model": "gpt-5.6-luna",
+  "taskDigest": "ea01ac42353ca41a94b7cf06dff7697634920789f8e9c40c20b00a1af077da5a",
+  "judgeDigest": "a860e70ff0b427bfd6bd0173ea3c42abfe4d72b54a61b2af2d0bca0c9b79e74b",
+  "candidateDigest": "10e2f5acf1e08c186113520af261ecae6aeff4de2a684d402ad3dd2c5bf1ece5",
+  "budget": {
+    "timeoutMs": 180000,
+    "maxToolCalls": 80,
+    "reasoning": "medium"
+  },
+  "run": {
+    "mode": "real",
+    "startedAt": "2026-09-14T06:20:28.346Z",
+    "durationMs": 109260,
+    "exitCode": 0,
+    "timedOut": false,
+    "toolLimit": false,
+    "toolCalls": 14,
+    "turnCompleted": true,
+    "usage": {
+      "input_tokens": 186922,
+      "cached_input_tokens": 172032,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 4204,
+      "reasoning_output_tokens": 1333
+    },
+    "error": null,
+    "errors": [],
+    "final": {
+      "completed": true,
+      "summary": "已在授权范围内实现精确最大余数分配：校验输入、使用 BigInt 处理超出安全整数范围的中间计算，并按索引处理余数并列。新增测试覆盖边界、输入不变性及 invoice 调用方兼容性。",
+      "tests": [
+        "通过：node --test test/public.test.mjs（1/1）",
+        "通过：node --test test/extra.test.mjs（4/4）",
+        "通过：node --test test/public.test.mjs test/extra.test.mjs（5/5）",
+        "通过：git diff --check"
+      ]
+    },
+    "completed": true
+  },
+  "scope": {
+    "ok": true,
+    "changes": [
+      {
+        "path": "src/allocate.mjs",
+        "before": "60d9d7242829bbca87e702ca6d0488d81c7b702d7f5ded0f0c62620de580547b",
+        "after": "10e2f5acf1e08c186113520af261ecae6aeff4de2a684d402ad3dd2c5bf1ece5"
+      },
+      {
+        "path": "test/extra.test.mjs",
+        "before": null,
+        "after": "4b695b97ba2464ed8b91a29a8fa28407bfc5a442843f550ed610fbc6162aa0d0"
+      }
+    ],
+    "violations": []
+  },
+  "workflow": null,
+  "grade": {
+    "complete": true,
+    "ok": true,
+    "cases": [
+      {
+        "id": "conservation",
+        "pass": true
+      },
+      {
+        "id": "remainder-order",
+        "pass": true
+      },
+      {
+        "id": "zero-weight",
+        "pass": true
+      },
+      {
+        "id": "zero-total",
+        "pass": true
+      },
+      {
+        "id": "zero-sum",
+        "pass": true
+      },
+      {
+        "id": "invalid-total",
+        "pass": true
+      },
+      {
+        "id": "invalid-weights",
+        "pass": true
+      },
+      {
+        "id": "immutable",
+        "pass": true
+      },
+      {
+        "id": "large-total",
+        "pass": true
+      },
+      {
+        "id": "large-weights",
+        "pass": true
+      },
+      {
+        "id": "exact-order",
+        "pass": true
+      },
+      {
+        "id": "many-shares",
+        "pass": true
+      }
+    ],
+    "expectedCases": 12,
+    "exitCode": 0,
+    "timedOut": false,
+    "stderr": "",
+    "error": null
+  },
+  "success": true,
+  "falseCompletion": false,
+  "falseFunctionalCompletion": false
+}

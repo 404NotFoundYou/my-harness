@@ -1,0 +1,38 @@
+[
+  {
+    "model": "gpt-5.6-luna",
+    "exitCode": 0,
+    "timedOut": false,
+    "durationMs": 9515,
+    "messages": [
+      "READY"
+    ],
+    "usage": {
+      "input_tokens": 20170,
+      "cached_input_tokens": 3840,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 5,
+      "reasoning_output_tokens": 0
+    },
+    "errors": [],
+    "stderr": "2026-09-14T04:28:45.400471Z  WARN codex_core_plugins::manager: remote installed plugin bundle sync failed error=chatgpt authentication required for remote plugin catalog; api key auth is not supported\n2026-09-14T04:28:45.474811Z  WARN codex_skills::interface: ignoring interface.icon_small: icon path with '..' must resolve under plugin assets/\n2026-09-14T04:28:45.474859Z  WARN codex_skills::interface: ignoring interface.icon_large: icon path with '..' must resolve under plugin assets/\n2026-09-14T04:28:45.495109Z  WARN codex_core::shell_snapshot: Failed to create shell snapshot for powershell: Shell snapshot not supported yet for PowerShell\n2026-09-14T04:28:46.431283Z  WARN codex_core_plugins::manager: failed to warm featured plugin ids cache error=remote featured plugin request to https://chatgpt.com/backend-api/plugins/featured?platform=codex failed with status 401 Unauthorized: {\"detail\":\"Unauthorized\"}\n2026-09-14T04:28:47.469836Z  WARN codex_core_plugins::manifest: ignoring interface.defaultPrompt[0]: prompt must be at most 128 characters path=file:///C:/Users/jhon/.codex/.tmp/plugins/plugins/ngs-analysis/.codex-plugin/plugin.json\n2026-09-14T04:28:47.477658Z  WARN codex_core_plugins::manifest: ignoring interface.defaultPrompt[0]: prompt must be at most 128 characters path=file:///C:/Users/jhon/.codex/.tmp/plugins/plugins/ngs-analysis/.codex-plugin/plugin.json\n2026-09-14T04:28:48.844073Z  WARN codex_rmcp_client::rmcp_client: stored OAuth refresh credentials could not be bound to their issuer for MCP server `figma`; using the stored access token without refresh\n"
+  },
+  {
+    "model": "gpt-5.6-sol",
+    "exitCode": 0,
+    "timedOut": false,
+    "durationMs": 6586,
+    "messages": [
+      "READY"
+    ],
+    "usage": {
+      "input_tokens": 21731,
+      "cached_input_tokens": 4224,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 5,
+      "reasoning_output_tokens": 0
+    },
+    "errors": [],
+    "stderr": "2026-09-14T04:28:54.894384Z  WARN codex_core_plugins::manager: remote installed plugin bundle sync failed error=chatgpt authentication required for remote plugin catalog; api key auth is not supported\n2026-09-14T04:28:54.935536Z  WARN codex_skills::interface: ignoring interface.icon_small: icon path with '..' must resolve under plugin assets/\n2026-09-14T04:28:54.935580Z  WARN codex_skills::interface: ignoring interface.icon_large: icon path with '..' must resolve under plugin assets/\n2026-09-14T04:28:54.944221Z  WARN codex_core::shell_snapshot: Failed to create shell snapshot for powershell: Shell snapshot not supported yet for PowerShell\n2026-09-14T04:28:55.738402Z  WARN codex_core_plugins::manager: failed to warm featured plugin ids cache error=remote featured plugin request to https://chatgpt.com/backend-api/plugins/featured?platform=codex failed with status 401 Unauthorized: {\"detail\":\"Unauthorized\"}\n2026-09-14T04:28:56.452970Z  WARN codex_core_plugins::manifest: ignoring interface.defaultPrompt[0]: prompt must be at most 128 characters path=file:///C:/Users/jhon/.codex/.tmp/plugins/plugins/ngs-analysis/.codex-plugin/plugin.json\n2026-09-14T04:28:56.459897Z  WARN codex_core_plugins::manifest: ignoring interface.defaultPrompt[0]: prompt must be at most 128 characters path=file:///C:/Users/jhon/.codex/.tmp/plugins/plugins/ngs-analysis/.codex-plugin/plugin.json\n2026-09-14T04:28:57.959515Z  WARN codex_rmcp_client::rmcp_client: stored OAuth refresh credentials could not be bound to their issuer for MCP server `figma`; using the stored access token without refresh\n"
+  }
+]

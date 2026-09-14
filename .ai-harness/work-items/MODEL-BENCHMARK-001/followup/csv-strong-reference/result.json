@@ -1,0 +1,125 @@
+{
+  "schemaVersion": 1,
+  "mode": "real",
+  "taskId": "csv",
+  "split": "development",
+  "group": "strong-reference",
+  "model": "gpt-5.6-sol",
+  "taskDigest": "c3cfc33cfb3f2ac504fd63705cd1d03d2dc7f497017362037152af0e251ca223",
+  "judgeDigest": "30194704e69ab805f27ffa7fefb9849b9313f355a3da6ff5145e05fafc458561",
+  "candidateDigest": "f95e7affcae0b81ee904ab70decfb7d76fc71e292add9c795c44c205b1728437",
+  "budget": {
+    "timeoutMs": 180000,
+    "maxToolCalls": 80,
+    "reasoning": "medium"
+  },
+  "run": {
+    "mode": "real",
+    "startedAt": "2026-09-14T06:54:38.936Z",
+    "durationMs": 152067,
+    "exitCode": 0,
+    "timedOut": false,
+    "toolLimit": false,
+    "toolCalls": 11,
+    "turnCompleted": true,
+    "usage": {
+      "input_tokens": 206670,
+      "cached_input_tokens": 176000,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 4823,
+      "reasoning_output_tokens": 1019
+    },
+    "error": null,
+    "errors": [],
+    "final": {
+      "completed": true,
+      "summary": "已完成严格 CSV 解析：支持 BOM、空记录、CRLF/LF/CR、引号字段及转义，并对非法引号和非字符串输入显式报错。保持 caller 兼容；仅修改 src/csv.mjs 并新增 test/extra.test.mjs。",
+      "tests": [
+        "node --test test/public.test.mjs：通过，1/1",
+        "node --test test/extra.test.mjs：通过，4/4",
+        "node --test：通过，5/5",
+        "git diff --check：通过"
+      ]
+    },
+    "completed": true
+  },
+  "scope": {
+    "ok": true,
+    "changes": [
+      {
+        "path": "src/csv.mjs",
+        "before": "dd51e6b8418a474ba38c772e6825c45edeeac7f628fdab3e83058a737955b3c2",
+        "after": "f95e7affcae0b81ee904ab70decfb7d76fc71e292add9c795c44c205b1728437"
+      },
+      {
+        "path": "test/extra.test.mjs",
+        "before": null,
+        "after": "f4f692be328ae3a8477f918e0d8ec8d20562d688d323f30339a5a6c6f4e9b28e"
+      }
+    ],
+    "violations": []
+  },
+  "workflow": null,
+  "grade": {
+    "complete": true,
+    "ok": true,
+    "cases": [
+      {
+        "id": "empty",
+        "pass": true
+      },
+      {
+        "id": "bom",
+        "pass": true
+      },
+      {
+        "id": "delimiters",
+        "pass": true
+      },
+      {
+        "id": "blank-rows",
+        "pass": true
+      },
+      {
+        "id": "quoted-fields",
+        "pass": true
+      },
+      {
+        "id": "escaped-quotes",
+        "pass": true
+      },
+      {
+        "id": "embedded-newline",
+        "pass": true
+      },
+      {
+        "id": "whitespace",
+        "pass": true
+      },
+      {
+        "id": "unterminated",
+        "pass": true
+      },
+      {
+        "id": "bare-quote",
+        "pass": true
+      },
+      {
+        "id": "after-quote",
+        "pass": true
+      },
+      {
+        "id": "input-type",
+        "pass": true
+      }
+    ],
+    "expectedCases": 12,
+    "exitCode": 0,
+    "timedOut": false,
+    "stderr": "",
+    "error": null
+  },
+  "success": true,
+  "falseCompletion": false,
+  "falseFunctionalCompletion": false
+}

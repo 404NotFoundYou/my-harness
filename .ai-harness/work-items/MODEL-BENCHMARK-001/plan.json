@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "MODEL-BENCHMARK-001",
+  "mode": "single",
+  "rationale": "单一上下文串行维护比较协议与判定器，真实模型只在独立临时参与者工作区执行固定任务；不并行修改本项目。",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "建立真实三组对照并根据失败补辅助和复验",
+      "module": "benchmark",
+      "status": "COMPLETED",
+      "attempt": 1,
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        "benchmarks/**",
+        ".ai-harness/src/cli.mjs",
+        ".ai-harness/src/guide.mjs",
+        ".ai-harness/src/context.mjs",
+        ".ai-harness/tests/**"
+      ],
+      "verification": [
+        "node --test benchmarks/tests/runner.test.mjs",
+        "node .ai-harness/tests/run.mjs"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            "--test",
+            "benchmarks/tests/runner.test.mjs"
+          ]
+        },
+        {
+          "id": "V2",
+          "command": "node",
+          "args": [
+            ".ai-harness/tests/run.mjs"
+          ]
+        }
+      ],
+      "docsImpact": [
+        "benchmarks/README.md",
+        "README.md",
+        "docs/guides/usage.md",
+        "docs/guides/model-guidance.md",
+        "docs/reports/model-comparison.md"
+      ],
+      "reviewBatch": "R1",
+      "risk": "medium",
+      "owner": "primary-ai",
+      "verificationStatus": "pass",
+      "reviewStatus": "pass",
+      "evidence": [
+        "50f8e4bf-4c23-45cf-b1e3-d340b8e4c2bf",
+        "b771fa69-2326-44bf-86db-027447c2c506"
+      ],
+      "deferralApproval": null,
+      "verificationSource": {
+        "digest": "625f0fa8e0458c72e42a1a2b5ff17653a5c67aef5558e50683adb13dd18d82fe",
+        "document": ".ai-harness/work-items/MODEL-BENCHMARK-001/snapshots/625f0fa8e0458c72e42a1a2b5ff17653a5c67aef5558e50683adb13dd18d82fe.json"
+      },
+      "reviewSource": {
+        "digest": "625f0fa8e0458c72e42a1a2b5ff17653a5c67aef5558e50683adb13dd18d82fe",
+        "document": ".ai-harness/work-items/MODEL-BENCHMARK-001/snapshots/625f0fa8e0458c72e42a1a2b5ff17653a5c67aef5558e50683adb13dd18d82fe.json"
+      }
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "固定输入、判定可信度与辅助兼容性",
+      "risk": "medium",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": false
+    }
+  ],
+  "createdAt": "2026-09-14T05:58:30.340Z",
+  "updatedAt": "2026-09-14T07:21:12.981Z"
+}

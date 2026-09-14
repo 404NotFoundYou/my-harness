@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "CSV-ITERATION-1",
+  "mode": "single",
+  "rationale": "在现有 csv.mjs 内使用单次状态机解析；新增边界回归测试覆盖规格意图",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "实现严格 CSV 解析",
+      "module": "compact",
+      "status": "COMPLETED",
+      "attempt": 1,
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        "src/csv.mjs",
+        "test/extra.test.mjs"
+      ],
+      "verification": [
+        "node --test test/public.test.mjs",
+        "node --test test/extra.test.mjs"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            "--test",
+            "test/public.test.mjs"
+          ]
+        },
+        {
+          "id": "V2",
+          "command": "node",
+          "args": [
+            "--test",
+            "test/extra.test.mjs"
+          ]
+        }
+      ],
+      "docsImpact": [
+        "N/A: TASK.md 规格无需同步文档"
+      ],
+      "reviewBatch": "R1",
+      "risk": "low",
+      "owner": "primary-ai",
+      "verificationStatus": "pass",
+      "reviewStatus": "pass",
+      "evidence": [
+        "b2867cc7-9536-4ba5-8c83-71ccd1ff1646",
+        "b615acdb-fe3c-4b68-b249-14b109fa8885"
+      ],
+      "deferralApproval": null,
+      "verificationSource": {
+        "digest": "9e33408e27b8825cd6013bd06d227de8ff624e1b9682a3f64001104efa16b495",
+        "document": ".ai-harness/work-items/CSV-ITERATION-1/snapshots/9e33408e27b8825cd6013bd06d227de8ff624e1b9682a3f64001104efa16b495.json"
+      },
+      "reviewSource": {
+        "digest": "9e33408e27b8825cd6013bd06d227de8ff624e1b9682a3f64001104efa16b495",
+        "document": ".ai-harness/work-items/CSV-ITERATION-1/snapshots/9e33408e27b8825cd6013bd06d227de8ff624e1b9682a3f64001104efa16b495.json"
+      }
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "实现严格 CSV 解析",
+      "risk": "low",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": false
+    }
+  ],
+  "createdAt": "2026-09-14T06:52:36.085Z",
+  "updatedAt": "2026-09-14T06:54:15.804Z"
+}

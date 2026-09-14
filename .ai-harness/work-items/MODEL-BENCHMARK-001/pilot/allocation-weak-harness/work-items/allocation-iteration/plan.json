@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "allocation-iteration",
+  "mode": "single",
+  "rationale": "在单文件中增加严格输入校验，使用 BigInt 计算商和余数以覆盖安全整数范围，按余数及原索引稳定补余，并新增边界自测",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "实现精确最大余数分配",
+      "module": "compact",
+      "status": "COMPLETED",
+      "attempt": 1,
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        "src/allocate.mjs",
+        "test/extra.test.mjs"
+      ],
+      "verification": [
+        "node --test test/public.test.mjs"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            "--test",
+            "test/public.test.mjs"
+          ]
+        }
+      ],
+      "docsImpact": [
+        "N/A: TASK.md 明确规格文件不可修改"
+      ],
+      "reviewBatch": "R1",
+      "risk": "low",
+      "owner": "primary-ai",
+      "verificationStatus": "pass",
+      "reviewStatus": "pass",
+      "evidence": [
+        "ddb0fc36-7a8f-44ab-ad4d-d595fa0ffd5a",
+        "968e279b-6b8e-4713-b274-2b5e6a9cc8eb"
+      ],
+      "deferralApproval": null,
+      "verificationSource": {
+        "digest": "071d07a530a4753feaa632c396e9788bf9dd3be24906d223cfec94bae1fb0d74",
+        "document": ".ai-harness/work-items/allocation-iteration/snapshots/071d07a530a4753feaa632c396e9788bf9dd3be24906d223cfec94bae1fb0d74.json"
+      },
+      "reviewSource": {
+        "digest": "071d07a530a4753feaa632c396e9788bf9dd3be24906d223cfec94bae1fb0d74",
+        "document": ".ai-harness/work-items/allocation-iteration/snapshots/071d07a530a4753feaa632c396e9788bf9dd3be24906d223cfec94bae1fb0d74.json"
+      }
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "实现精确最大余数分配",
+      "risk": "low",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": false
+    }
+  ],
+  "createdAt": "2026-09-14T06:15:46.627Z",
+  "updatedAt": "2026-09-14T06:17:07.169Z"
+}

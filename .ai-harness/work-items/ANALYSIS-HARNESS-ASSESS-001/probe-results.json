@@ -1,0 +1,76 @@
+[
+  {
+    "name": "stale_code_evidence",
+    "originalCommand": "pass",
+    "actualCurrentExitCode": 1,
+    "finalStatus": "DONE",
+    "ciOk": true,
+    "ciErrors": []
+  },
+  {
+    "name": "unrelated_command_satisfies_verification",
+    "planned": "node --test case.test.mjs",
+    "executed": "node --version",
+    "actualAcceptanceExitCode": 1,
+    "guideNext": "record-verification",
+    "finalStatus": "DONE",
+    "ciOk": true
+  },
+  {
+    "name": "late_failure_does_not_invalidate_pass",
+    "latestCommand": "fail",
+    "guideNext": "advance-work",
+    "guideTarget": "CODE_REVIEW",
+    "finalStatus": "DONE",
+    "ciOk": true
+  },
+  {
+    "name": "deleted_outside_file_not_detected",
+    "gitDeletion": " D unrelated.txt",
+    "deletionInCheckedFiles": false,
+    "ciOk": true,
+    "ciErrors": []
+  },
+  {
+    "name": "completed_work_item_scope_remains_active",
+    "currentScope": [
+      "new.mjs"
+    ],
+    "oldFileChanged": true,
+    "oldScopeStillAllowed": true,
+    "ciOk": true
+  },
+  {
+    "name": "final_review_has_no_rework_route",
+    "returnToImplementation": "INVALID_TRANSITION",
+    "revalidate": "WRONG_STAGE",
+    "addTask": "PLAN_LOCKED",
+    "guideNext": "record-review"
+  },
+  {
+    "name": "windows_package_manager_execution",
+    "platform": "win32",
+    "observed": [
+      {
+        "command": "npm",
+        "policy": "allow",
+        "status": "fail",
+        "exitCode": 1,
+        "spawnError": "spawnSync npm ENOENT"
+      },
+      {
+        "command": "npm.cmd",
+        "policy": "allow",
+        "status": "fail",
+        "exitCode": 1,
+        "spawnError": "spawnSync npm.cmd EINVAL"
+      }
+    ]
+  },
+  {
+    "name": "version_token_changes_eval_classification",
+    "withoutVersion": "ask",
+    "withPositionalVersion": "allow",
+    "payloadExecuted": false
+  }
+]

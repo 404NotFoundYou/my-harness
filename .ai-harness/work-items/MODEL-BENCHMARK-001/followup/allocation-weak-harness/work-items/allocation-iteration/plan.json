@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "allocation-iteration",
+  "mode": "single",
+  "rationale": "使用 BigInt 做精确分子、商和余数比较，先分配下整数再按余数及原索引补余数；入口先验证 total、weights 稠密性及元素安全整数，避免修改输入。",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "实现精确权重分配",
+      "module": "compact",
+      "status": "IN_PROGRESS",
+      "attempt": 1,
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        "src/allocate.mjs,test/extra.test.mjs"
+      ],
+      "verification": [
+        "{\"command\":\"node\",\"args\":[\"--test\",\"test/public.test.mjs\"]}"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            "--test",
+            "test/public.test.mjs"
+          ]
+        }
+      ],
+      "docsImpact": [
+        "N/A：仅恢复并实现 TASK.md 已定义函数契约，未改变公共文档或接口。"
+      ],
+      "reviewBatch": "R1",
+      "risk": "low",
+      "owner": "primary-ai",
+      "verificationStatus": "pending",
+      "reviewStatus": "pending",
+      "evidence": [],
+      "deferralApproval": null
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "实现精确权重分配",
+      "risk": "low",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": false
+    }
+  ],
+  "createdAt": "2026-09-14T06:58:13.280Z",
+  "updatedAt": "2026-09-14T06:58:13.300Z"
+}

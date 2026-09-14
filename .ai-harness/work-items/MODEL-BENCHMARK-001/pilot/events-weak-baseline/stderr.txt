@@ -1,0 +1,11 @@
+2026-09-14T06:25:18.988605Z  WARN codex_core_plugins::manager: remote installed plugin bundle sync failed error=chatgpt authentication required for remote plugin catalog; api key auth is not supported
+2026-09-14T06:25:19.035708Z  WARN codex_skills::interface: ignoring interface.icon_small: icon path with '..' must resolve under plugin assets/
+2026-09-14T06:25:19.035761Z  WARN codex_skills::interface: ignoring interface.icon_large: icon path with '..' must resolve under plugin assets/
+2026-09-14T06:25:19.043322Z  WARN codex_core::shell_snapshot: Failed to create shell snapshot for powershell: Shell snapshot not supported yet for PowerShell
+2026-09-14T06:25:20.514357Z  WARN codex_core_plugins::manager: failed to warm featured plugin ids cache error=remote featured plugin request to https://chatgpt.com/backend-api/plugins/featured?platform=codex failed with status 401 Unauthorized: {"detail":"Unauthorized"}
+2026-09-14T06:25:21.186614Z  WARN codex_core_plugins::manifest: ignoring interface.defaultPrompt[0]: prompt must be at most 128 characters path=file:///C:/Users/jhon/.codex/.tmp/plugins/plugins/ngs-analysis/.codex-plugin/plugin.json
+2026-09-14T06:25:21.199457Z  WARN codex_core_plugins::manifest: ignoring interface.defaultPrompt[0]: prompt must be at most 128 characters path=file:///C:/Users/jhon/.codex/.tmp/plugins/plugins/ngs-analysis/.codex-plugin/plugin.json
+2026-09-14T06:25:22.614509Z  WARN codex_rmcp_client::rmcp_client: stored OAuth refresh credentials could not be bound to their issuer for MCP server `figma`; using the stored access token without refresh
+2026-09-14T06:26:30.971370Z ERROR codex_core::tools::router: error=apply_patch verification failed: invalid patch: multiple operations target C:\Users\jhon\AppData\Local\Temp\ai-harness-bench-0CpLii\src\reconcile.mjs
+2026-09-14T06:28:05.533666Z  WARN codex_mcp::rmcp_client: failed to initialize MCP client during shutdown: MCP startup failed: timed out handshaking with MCP server after 29.9999995s
+2026-09-14T06:28:05.533906Z  WARN codex_mcp::rmcp_client: failed to initialize MCP client during shutdown: MCP startup failed: timed out handshaking with MCP server after 29.9999998s

@@ -1,0 +1,1 @@
+{"completed":true,"summary":"已按 TASK.md 完成 reconcile：校验输入与 JSON 值、按版本仲裁并保留删除墓碑，结果按 JavaScript 字符串顺序排序且不修改输入。仅修改 src/reconcile.mjs 并新增 test/extra.test.mjs。","tests":["通过：node --test test/public.test.mjs test/extra.test.mjs（5/5）","通过：git diff --check"]}

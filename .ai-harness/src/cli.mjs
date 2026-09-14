@@ -4,6 +4,7 @@ import { readdir, readFile } from "node:fs/promises";
 import { checkProject, doctorProject } from "./checker.mjs";
 import { beginWorkItem, finishWorkItem } from "./compact.mjs";
 import { getWorkGuide } from "./guide.mjs";
+import { checksFor } from "./verification.mjs";
 import { HarnessError, invariant } from "./errors.mjs";
 import { runRecordedCommand } from "./evidence.mjs";
 import { findProjectRoot, readJson } from "./filesystem.mjs";
@@ -16,12 +17,14 @@ import {
   approvePlan,
   completeBaseline,
   completeSolution,
+  editTask,
   createWorkItemState,
   initializePlan,
   loadConfig,
   loadPlan,
   loadWorkItem,
   recordResult,
+  reopenWorkItem,
   setDatabaseDecision,
   transitionWorkItem,
   updateTaskStatus,
@@ -112,13 +115,16 @@ function helpText() {
   finish        普通任务：引用成功命令和实际审查/验收结论完成工作项
   start         创建工作项
   show          显示 state 和 plan
-  guide         只读任务引导：--id ID [--task T]，汇总目标、证据与下一步命令
+  guide         只读任务引导：--id ID [--task T] [--context]，汇总目标、证据与可选源码上下文
+  reopen        返工并失效旧验证：--id ID --reason TEXT [--approval-ref REF]
+  replan        保存旧计划版本后重新计划：--id ID --reason TEXT [--approval-ref REF]
   baseline      记录 Git/文档基线
   solution      完成业务/领域/接口技术设计
   database      记录 none|required 数据库影响
   plan-init     初始化执行计划
   batch-add     增加 Review Batch
   task-add      增加任务
+  task-edit     修改未批准的任务定义（已批准任务需先 replan）
   plan-approve  批准计划
   task-update   推进任务状态
   record        记录验证、审查、验收、文档或分析结果（流水线用 --stage；reproduction/regression 用 --command 引用 run 证据）
@@ -128,6 +134,7 @@ function helpText() {
 命令：
   guard -- <command...>          只判定 allow/ask/deny
   run --id ID [--task T] -- ...  仅执行 allow 命令并记录证据
+  run --id ID --task T --all    顺序执行本任务已声明检查，遇失败停止并列出未运行项
 
 普通任务：
   begin --id ID --type ITERATION|BUGFIX --title TITLE --input SOURCE --acceptance CONDITION
@@ -286,7 +293,17 @@ export async function runCli(argv, io = { stdout: console.log, stderr: console.e
   if (command === "guide") {
     emit(io, parsed, await getWorkGuide(root, one(parsed, "id", { required: true }), {
       taskId: one(parsed, "task"),
+      includeContext: flag(parsed, "context"),
     }));
+    return 0;
+  }
+  if (command === "reopen" || command === "replan") {
+    const id = one(parsed, "id", { required: true });
+    const result = await reopenWorkItem(root, id, {
+      reason: one(parsed, "reason", { required: true }), replan: command === "replan", approvalRef: one(parsed, "approval-ref"),
+    });
+    const guide = await getWorkGuide(root, id);
+    emit(io, parsed, { ...result, tasks: guide.tasks, next: guide.next });
     return 0;
   }
   if (command === "baseline") {
@@ -347,6 +364,17 @@ export async function runCli(argv, io = { stdout: console.log, stderr: console.e
       owner: one(parsed, "owner", { required: true }),
     });
     emit(io, parsed, result);
+    return 0;
+  }
+  if (command === "task-edit") {
+    const changes = {};
+    for (const [option, property] of [["title", "title"], ["module", "module"], ["batch", "reviewBatch"], ["risk", "risk"], ["owner", "owner"]]) {
+      if (parsed.options[option] !== undefined) changes[property] = one(parsed, option, { required: true });
+    }
+    for (const [option, property] of [["writes", "writeScopes"], ["verify", "verification"], ["docs", "docsImpact"], ["blocked-by", "blockedBy"]]) {
+      if (parsed.options[option] !== undefined) changes[property] = many(parsed, option);
+    }
+    emit(io, parsed, await editTask(root, one(parsed, "id", { required: true }), one(parsed, "task", { required: true }), changes));
     return 0;
   }
   if (command === "plan-approve") {
@@ -413,15 +441,40 @@ export async function runCli(argv, io = { stdout: console.log, stderr: console.e
     return result.decision === "allow" ? 0 : result.decision === "ask" ? 2 : 3;
   }
   if (command === "run") {
-    invariant(parsed.passthrough.length > 0, "COMMAND_REQUIRED", "run 需要在 -- 后提供命令。" );
+    if (flag(parsed, "all")) {
+      invariant(!one(parsed, "check") && parsed.passthrough.length === 0, "CONFLICTING_CHECK_SELECTION", "--all 不能与 --check 或透传命令混用。" );
+      const id = one(parsed, "id", { required: true });
+      const taskId = one(parsed, "task", { required: true });
+      const plan = await loadPlan(root, id);
+      const task = plan.tasks.find(entry => entry.id === taskId);
+      invariant(task, "TASK_NOT_FOUND", `任务不存在：${taskId}`);
+      const checks = checksFor(task), commands = [];
+      invariant(checks.length > 0, "VERIFICATION_REQUIRED", "任务没有可执行的计划检查。" );
+      let blockedCheck = null;
+      for (const check of checks) {
+        try {
+          const event = await runRecordedCommand(root, { id, taskId, checkId: check.id });
+          commands.push({ id: event.id, checkId: check.id, status: event.status, exitCode: event.command.exitCode, stdout: event.command.stdout, stderr: event.command.stderr });
+          if (event.status !== "pass") break;
+        } catch (error) {
+          blockedCheck = { checkId: check.id, code: error.code || "UNEXPECTED_ERROR", message: error.message };
+          break;
+        }
+      }
+      const passed = commands.length === checks.length && commands.every(entry => entry.status === "pass") && !blockedCheck;
+      emit(io, parsed, { id, taskId, status: passed ? "pass" : "fail", commands, blockedCheck, notRun: checks.slice(commands.length).map(check => check.id) });
+      return passed ? 0 : 1;
+    }
+    invariant(parsed.passthrough.length > 0 || one(parsed, "check"), "COMMAND_REQUIRED", "run 需要 --check 或在 -- 后提供命令。" );
     const result = await runRecordedCommand(root, {
       id: one(parsed, "id", { required: true }),
       taskId: one(parsed, "task"),
       command: parsed.passthrough[0],
       args: parsed.passthrough.slice(1),
+      checkId: one(parsed, "check"),
     });
     emit(io, parsed, result);
-    return result.command.exitCode;
+    return result.status === "pass" ? 0 : result.command.exitCode || 1;
   }
 
   throw new HarnessError("UNKNOWN_COMMAND", `未知命令：${command}`);

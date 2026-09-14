@@ -1,0 +1,1 @@
+{"completed":true,"summary":"已在授权范围内实现精确最大余数分配：校验输入、使用 BigInt 处理超出安全整数范围的中间计算，并按索引处理余数并列。新增测试覆盖边界、输入不变性及 invoice 调用方兼容性。","tests":["通过：node --test test/public.test.mjs（1/1）","通过：node --test test/extra.test.mjs（4/4）","通过：node --test test/public.test.mjs test/extra.test.mjs（5/5）","通过：git diff --check"]}

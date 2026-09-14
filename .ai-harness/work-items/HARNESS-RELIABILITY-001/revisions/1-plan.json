@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "HARNESS-RELIABILITY-001",
+  "mode": "single",
+  "rationale": "源码、验证协议、状态恢复和范围审计共用数据结构，由一个实现上下文串行维护；高风险结果单独独立复核",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "修复可靠验证与恢复闭环",
+      "module": "runtime",
+      "status": "IN_PROGRESS",
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        ".ai-harness/src/**",
+        ".ai-harness/tests/**",
+        ".ai-harness/schemas/**",
+        ".ai-harness/manifest.json",
+        "AGENTS.md",
+        ".ai-harness/templates/instructions/AGENTS.md",
+        ".ai-harness/policies/**"
+      ],
+      "verification": [
+        "node .ai-harness/tests/run.mjs"
+      ],
+      "docsImpact": [
+        "README.md",
+        "docs/guides/usage.md",
+        "docs/guides/getting-started.md",
+        "docs/guides/model-guidance.md",
+        "docs/architecture/overview.md",
+        "docs/architecture/decisions/0007-verification-integrity-and-recovery.md"
+      ],
+      "reviewBatch": "R1",
+      "risk": "high",
+      "owner": "primary-ai",
+      "verificationStatus": "pending",
+      "reviewStatus": "pending",
+      "evidence": [],
+      "deferralApproval": null
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "验收与命令边界独立复核",
+      "risk": "high",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": true
+    }
+  ],
+  "createdAt": "2026-09-14T03:22:23.351Z",
+  "updatedAt": "2026-09-14T03:22:25.753Z"
+}

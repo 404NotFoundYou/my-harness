@@ -1,0 +1,155 @@
+{
+  "schemaVersion": 1,
+  "mode": "real",
+  "taskId": "allocation",
+  "split": "development",
+  "group": "weak-harness",
+  "model": "gpt-5.6-luna",
+  "taskDigest": "ea01ac42353ca41a94b7cf06dff7697634920789f8e9c40c20b00a1af077da5a",
+  "judgeDigest": "a860e70ff0b427bfd6bd0173ea3c42abfe4d72b54a61b2af2d0bca0c9b79e74b",
+  "candidateDigest": "57a67ca60f928f3e7cb8ef55fd12bcfe7554b48b185050b7d3543374d49ceffd",
+  "budget": {
+    "timeoutMs": 180000,
+    "maxToolCalls": 80,
+    "reasoning": "medium"
+  },
+  "run": {
+    "mode": "real",
+    "startedAt": "2026-09-14T06:57:12.102Z",
+    "durationMs": 180360,
+    "exitCode": 1,
+    "timedOut": true,
+    "toolLimit": false,
+    "toolCalls": 18,
+    "turnCompleted": false,
+    "usage": null,
+    "error": null,
+    "errors": [],
+    "final": null,
+    "completed": false
+  },
+  "scope": {
+    "ok": true,
+    "changes": [
+      {
+        "path": "src/allocate.mjs",
+        "before": "60d9d7242829bbca87e702ca6d0488d81c7b702d7f5ded0f0c62620de580547b",
+        "after": "57a67ca60f928f3e7cb8ef55fd12bcfe7554b48b185050b7d3543374d49ceffd"
+      },
+      {
+        "path": ".ai-harness/work-items/allocation-iteration/events.jsonl",
+        "before": null,
+        "after": "65bb66414c89092665549808d3d73a76ec03934f2405b911f5e8ec131129aa4a"
+      },
+      {
+        "path": ".ai-harness/work-items/allocation-iteration/evidence.jsonl",
+        "before": null,
+        "after": "b5f0a48dc3ad4e895f455c52ea40992d8a26ab0b3bf13250f845e2609e2085b9"
+      },
+      {
+        "path": ".ai-harness/work-items/allocation-iteration/plan.json",
+        "before": null,
+        "after": "3cf74daed097f0726ed60ef0762cf2345b714623bc82c8eb24e0ba005116eb40"
+      },
+      {
+        "path": ".ai-harness/work-items/allocation-iteration/snapshots/1b3d0bd30ee85dbb6ff5ec07fc8a34dea41d4f84e92f60f46c3d5663dd1f7339.json",
+        "before": null,
+        "after": "711bded4ca33944bb99eb926cd5dbb6239bddb96a3e31072f0bc18f86a22fc8e"
+      },
+      {
+        "path": ".ai-harness/work-items/allocation-iteration/snapshots/e296fd88912d8d03c0046722712d8bdcf669bf99ef57ac7e997a9a108cbd4161.json",
+        "before": null,
+        "after": "c4e0e527db9c3e4b8386e475302949ef0db273c494d8b05ed714497137006be2"
+      },
+      {
+        "path": ".ai-harness/work-items/allocation-iteration/solution.md",
+        "before": null,
+        "after": "ea871e905f20e6c9583569c833ecf0cb82303a6ecdb4f21010f30a17e51dba86"
+      },
+      {
+        "path": ".ai-harness/work-items/allocation-iteration/state.json",
+        "before": null,
+        "after": "4e94b896f85735c9d310ff272cb129358f22caac20644f0441036b26180b8c1d"
+      },
+      {
+        "path": "test/extra.test.mjs",
+        "before": null,
+        "after": "4b65d42894fab6bcd744e9f86cd3d39ef66f9589a8fc56e91c6d0b18690370b8"
+      }
+    ],
+    "violations": []
+  },
+  "workflow": {
+    "ok": false,
+    "errors": [
+      "当前变更没有活动工作项授权，历史完成范围不能复用：src/allocate.mjs",
+      "当前变更没有活动工作项授权，历史完成范围不能复用：test/extra.test.mjs",
+      "CI 不接受未完成工作项：allocation-iteration:IMPLEMENTING"
+    ],
+    "workItems": [
+      "allocation-iteration"
+    ]
+  },
+  "grade": {
+    "complete": true,
+    "ok": true,
+    "cases": [
+      {
+        "id": "conservation",
+        "pass": true
+      },
+      {
+        "id": "remainder-order",
+        "pass": true
+      },
+      {
+        "id": "zero-weight",
+        "pass": true
+      },
+      {
+        "id": "zero-total",
+        "pass": true
+      },
+      {
+        "id": "zero-sum",
+        "pass": true
+      },
+      {
+        "id": "invalid-total",
+        "pass": true
+      },
+      {
+        "id": "invalid-weights",
+        "pass": true
+      },
+      {
+        "id": "immutable",
+        "pass": true
+      },
+      {
+        "id": "large-total",
+        "pass": true
+      },
+      {
+        "id": "large-weights",
+        "pass": true
+      },
+      {
+        "id": "exact-order",
+        "pass": true
+      },
+      {
+        "id": "many-shares",
+        "pass": true
+      }
+    ],
+    "expectedCases": 12,
+    "exitCode": 0,
+    "timedOut": false,
+    "stderr": "",
+    "error": null
+  },
+  "success": false,
+  "falseCompletion": false,
+  "falseFunctionalCompletion": false
+}

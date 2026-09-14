@@ -16,7 +16,7 @@ function options(overrides = {}) {
     authorizationMode: "autonomous", authorizationSource: "user task authorization",
     risk: "medium", approach: "Update the local behavior and its regression check.",
     databaseEvidence: "No persistence or query changes.",
-    writeScopes: ["feature.test.mjs"], verification: ["node --test feature.test.mjs"],
+    writeScopes: ["feature.test.mjs"], verification: ["node --version"],
     docsImpact: ["N/A: existing behavior remains documented"], ...overrides,
   };
 }
@@ -54,6 +54,7 @@ for (const type of ["ITERATION", "BUGFIX"]) {
     try {
       const started = await beginWorkItem(root, options({
         type,
+        verification: ["node --test feature.test.mjs"],
         ...(type === "BUGFIX" ? { bug: { actual: "wrong local result", expected: "documented result", reproduction: "run the local regression" } } : {}),
       }));
       assert.equal(started.status, "IMPLEMENTING");
@@ -103,8 +104,8 @@ test("unfinished work and out-of-scope edits cannot acquire a successful compact
   try {
     await beginWorkItem(root, options());
     assert.equal((await checkProject(root, { ci: true })).ok, false);
-    const command = await run(root);
     await writeFile(path.join(root, "outside.txt"), "unplanned change");
+    const command = await run(root);
     await assert.rejects(() => finishWorkItem(root, "COMPACT-1", results([command.id])), { code: "CHECK_FAILED" });
     assert.equal((await loadWorkItem(root, "COMPACT-1")).verification.status, "pending");
   } finally {
@@ -136,13 +137,13 @@ test("compact completion requires explicit review, acceptance and real current-t
 test("a successful unrelated command cannot conceal a failing regression", async () => {
   const root = await createInstalledProject();
   try {
-    await beginWorkItem(root, options());
+    await beginWorkItem(root, options({ verification: ["node --test feature.test.mjs"] }));
     const file = path.join(root, "feature.test.mjs");
     await writeFile(file, 'throw new Error("regression");\n');
     const failed = await run(root, "COMPACT-1", ["--test", "feature.test.mjs"]);
     assert.equal(failed.status, "fail", JSON.stringify(failed.command));
     const unrelated = await run(root);
-    await assert.rejects(() => finishWorkItem(root, "COMPACT-1", results([unrelated.id])), { code: "VERIFICATION_FAILED" });
+    await assert.rejects(() => finishWorkItem(root, "COMPACT-1", results([unrelated.id])), { code: "VERIFICATION_NOT_CURRENT" });
     await writeFile(file, 'import assert from "node:assert/strict";\nassert.equal(2 + 2, 4);\n');
     const passed = await run(root, "COMPACT-1", ["--test", "feature.test.mjs"]);
     assert.equal((await finishWorkItem(root, "COMPACT-1", results([passed.id]))).status, "DONE");
@@ -151,14 +152,13 @@ test("a successful unrelated command cannot conceal a failing regression", async
   }
 });
 
-test("superseded command results cannot stand in for current verification", async () => {
+test("repeating a successful check does not invalidate identical current evidence", async () => {
   const root = await createInstalledProject();
   try {
     await beginWorkItem(root, options());
     const old = await run(root);
-    const current = await run(root);
-    await assert.rejects(() => finishWorkItem(root, "COMPACT-1", results([old.id])), { code: "COMMAND_EVIDENCE_INVALID" });
-    assert.equal((await finishWorkItem(root, "COMPACT-1", results([current.id]))).status, "DONE");
+    await run(root);
+    assert.equal((await finishWorkItem(root, "COMPACT-1", results([old.id]))).status, "DONE");
   } finally {
     await cleanup(root);
   }
@@ -173,7 +173,7 @@ test("rework requires a new command run rather than recycling the previous attem
     await updateTaskStatus(root, "COMPACT-1", "T1", "IMPLEMENTED");
     await updateTaskStatus(root, "COMPACT-1", "T1", "REWORK");
     await updateTaskStatus(root, "COMPACT-1", "T1", "IN_PROGRESS");
-    await assert.rejects(() => finishWorkItem(root, "COMPACT-1", results([old.id])), { code: "COMMAND_EVIDENCE_STALE" });
+    await assert.rejects(() => finishWorkItem(root, "COMPACT-1", results([old.id])), { code: "VERIFICATION_NOT_CURRENT" });
     const current = await run(root);
     assert.equal((await finishWorkItem(root, "COMPACT-1", results([current.id]))).status, "DONE");
   } finally {

@@ -7,10 +7,11 @@ import {
   RESULT_STATUSES,
   TERMINAL_STATUSES,
 } from "./constants.mjs";
-import { changedFilesSince, fileFingerprint, getGitBaseline } from "./git.mjs";
+import { getGitBaseline } from "./git.mjs";
 import { exists, readJson } from "./filesystem.mjs";
 import { inspectManagedBlock, normalizeManagedBody } from "./managed-block.mjs";
-import { collectPlanErrors, fileMatchesScope } from "./validator.mjs";
+import { collectPlanErrors } from "./validator.mjs";
+import { collectScopeErrors } from "./scope.mjs";
 import { loadConfig, loadPlan, loadWorkItem, validateWorkItem, workItemPaths } from "./workflow.mjs";
 
 function parseVersion(value) {
@@ -164,50 +165,6 @@ function expectedPolicyFiles(index, item) {
   return [...names].map((name) => `.ai-harness/policies/${name}`);
 }
 
-function plannedScopes(item, plan) {
-  if (!plan) return [];
-  const scopes = new Set([`.ai-harness/work-items/${item.id}/**`]);
-  for (const task of plan.tasks) {
-    for (const scope of task.writeScopes) scopes.add(scope);
-    for (const impact of task.docsImpact) {
-      if (!/^N\/A\s*:/i.test(impact)) scopes.add(impact);
-    }
-  }
-  return [...scopes];
-}
-
-async function collectScopeErrors(root, records) {
-  const errors = [];
-  const warnings = [];
-  const changed = new Set();
-  const scopes = new Set();
-  const initialFingerprints = new Map();
-  for (const { item, plan } of records) {
-    for (const scope of plannedScopes(item, plan)) scopes.add(scope);
-    const baseline = item.baseline.repository;
-    if (!baseline?.isGit) continue;
-    const result = await changedFilesSince(root, baseline.commit);
-    if (result.warning) warnings.push(`${item.id}: ${result.warning}`);
-    for (const file of result.files) changed.add(file);
-    for (const [file, fingerprint] of Object.entries(baseline.fingerprints || {})) {
-      if (!initialFingerprints.has(file)) initialFingerprints.set(file, new Set());
-      initialFingerprints.get(file).add(fingerprint);
-    }
-  }
-
-  for (const file of [...changed]) {
-    const initial = initialFingerprints.get(file);
-    if (initial) {
-      const current = await fileFingerprint(root, file);
-      if (initial.has(current)) continue;
-    }
-    if (![...scopes].some((scope) => fileMatchesScope(file, scope))) {
-      errors.push(`Git 差异超出所有活动工作项写入范围：${file}`);
-    }
-  }
-  return { errors, warnings, changedFiles: [...changed].sort(), scopes: [...scopes].sort() };
-}
-
 async function collectEvidenceErrors(root, item, plan) {
   const errors = [];
   const paths = await workItemPaths(root, item.id);
@@ -345,7 +302,7 @@ export async function checkProject(root, { ci = false } = {}) {
       if (error.details?.errors) errors.push(...error.details.errors.map((message) => `${id}: ${message}`));
     }
   }
-  const scope = await collectScopeErrors(root, records);
+  const scope = await collectScopeErrors(root, records, items);
   errors.push(...scope.errors);
   warnings.push(...scope.warnings);
   if (ci) {

@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "mode": "real",
+  "createdAt": "2026-09-14T06:49:56.583Z",
+  "budget": {
+    "timeoutMs": 180000,
+    "maxToolCalls": 80,
+    "reasoning": "medium"
+  },
+  "groups": [
+    {
+      "id": "weak-baseline",
+      "model": "gpt-5.6-luna",
+      "harness": false
+    },
+    {
+      "id": "weak-harness",
+      "model": "gpt-5.6-luna",
+      "harness": true
+    },
+    {
+      "id": "strong-reference",
+      "model": "gpt-5.6-sol",
+      "harness": false
+    }
+  ],
+  "source": "625f0fa8e0458c72e42a1a2b5ff17653a5c67aef5558e50683adb13dd18d82fe",
+  "tasks": [
+    {
+      "id": "csv",
+      "split": "development",
+      "taskDigest": "c3cfc33cfb3f2ac504fd63705cd1d03d2dc7f497017362037152af0e251ca223",
+      "judgeDigest": "30194704e69ab805f27ffa7fefb9849b9313f355a3da6ff5145e05fafc458561"
+    },
+    {
+      "id": "allocation",
+      "split": "development",
+      "taskDigest": "ea01ac42353ca41a94b7cf06dff7697634920789f8e9c40c20b00a1af077da5a",
+      "judgeDigest": "a860e70ff0b427bfd6bd0173ea3c42abfe4d72b54a61b2af2d0bca0c9b79e74b"
+    },
+    {
+      "id": "events",
+      "split": "holdout",
+      "taskDigest": "e8a7130efc1592e2fdb89853fd6ba482da6b67285b7887b074da97ae289d4b2d",
+      "judgeDigest": "653600052c1e1ab18c5601412a2c49b1d6f0106747aca300db788e819dc765ae"
+    }
+  ],
+  "limitations": [
+    "模型名按现有CLI与服务配置记录，不能验证自定义服务实际后端权重。",
+    "单次三题先导不支持统计显著性或通用能力等价结论。",
+    "固定同一墙钟与工具预算；token为CLI用量，未换算货币费用。"
+  ]
+}

@@ -58,6 +58,7 @@ async function advanceBugfixToVerifying(root, id, flags = []) {
   await transitionWorkItem(root, id, "PLANNED");
   await transitionWorkItem(root, id, "IMPLEMENTING");
   await updateTaskStatus(root, id, "T1", "IN_PROGRESS");
+  await runRecordedCommand(root, { id, taskId: "T1", command: process.execPath, args: ["--version"] });
   await recordResult(root, id, { kind: "verification", status: "pass", summary: "task verified", taskId: "T1" });
   await updateTaskStatus(root, id, "T1", "IMPLEMENTED");
   await updateTaskStatus(root, id, "T1", "IN_REVIEW");
@@ -122,6 +123,8 @@ test("reproduction 引用失败命令而记为 pass 被拒绝", async () => {
     await writeFile(path.join(root, "bad.mjs"), "const x = (\n", "utf8");
     const failing = await runRecordedCommand(root, { id: "BUG-3", command: process.execPath, args: ["--check", path.join(root, "bad.mjs")] });
     assert.equal(failing.status, "fail");
+    await recordResult(root, "BUG-3", { kind: "verification", status: "pass", summary: "static fixture for command-reference guard", stage: "static" });
+    await recordResult(root, "BUG-3", { kind: "verification", status: "pass", summary: "sandbox fixture for command-reference guard", stage: "sandbox" });
     await assert.rejects(
       () => recordResult(root, "BUG-3", { kind: "verification", status: "pass", summary: "repro", stage: "reproduction", commandRef: failing.id }),
       { code: "STAGE_RUN_EVIDENCE_NOT_PASSING" },

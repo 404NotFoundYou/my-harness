@@ -1,0 +1,1 @@
+{"findings":[],"limitations":["按要求仅进行只读复核，未创建工作项、未修改文件，也未重新运行会写入临时目录的端到端测试；已检查回归测试的执行路径与断言。"],"reviewedFiles":[".ai-harness/src/policy.mjs",".ai-harness/src/commands.mjs",".ai-harness/src/evidence.mjs",".ai-harness/src/verification.mjs",".ai-harness/tests/reliability.test.mjs"],"verdict":"pass"}

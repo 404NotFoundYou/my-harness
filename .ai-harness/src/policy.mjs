@@ -1,4 +1,5 @@
 import path from "node:path";
+import { commandKey } from "./commands.mjs";
 
 const DEFAULT_DENY_EXECUTABLES = new Set([
   "bash",
@@ -91,17 +92,19 @@ function usesExplicitPath(command) {
   return path.isAbsolute(command) || command.includes("/") || command.includes("\\");
 }
 
-function includesAny(set, values) {
-  return values.some((value) => set.has(value));
-}
-
 function allowKnownSubcommand(executable, args) {
   const normalizedArgs = args.map((arg) => arg.toLowerCase());
-  if (normalizedArgs.some((arg) => ["--version", "-v", "version"].includes(arg))) return true;
   if (executable === "node") {
-    if (includesAny(new Set(normalizedArgs), ["-e", "--eval", "-p", "--print", "--interactive"])) return false;
-    return normalizedArgs[0] === "--test" || normalizedArgs[0] === "--check" || normalizedArgs[0]?.includes(".ai-harness/bin/harness.mjs") || normalizedArgs[0]?.includes(".ai-harness/tests/run.mjs");
+    if (normalizedArgs.some((arg) => /^(--eval|--print)(=|$)/.test(arg) || /^-[ep]/.test(arg) || arg === "--interactive")) return false;
+    if (normalizedArgs.length === 1 && ["--version", "-v"].includes(normalizedArgs[0])) return true;
+    const script = normalizedArgs[0]?.replaceAll("\\", "/");
+    if (script === ".ai-harness/bin/harness.mjs" || script?.endsWith("/.ai-harness/bin/harness.mjs")) {
+      return ["doctor", "check", "guide", "show", "list", "policies", "version", "help"].includes(normalizedArgs[1]);
+    }
+    return normalizedArgs[0] === "--test" || normalizedArgs[0] === "--check" || script === ".ai-harness/tests/run.mjs" || script?.endsWith("/.ai-harness/tests/run.mjs");
   }
+  if (normalizedArgs.length === 1 && ["--version", "-v"].includes(normalizedArgs[0])) return true;
+  if (executable === "go" && normalizedArgs.length === 1 && normalizedArgs[0] === "version") return true;
   if (["npm", "pnpm", "yarn"].includes(executable)) {
     if (normalizedArgs[0] === "test") return true;
     if (normalizedArgs[0] === "run") {
@@ -123,7 +126,7 @@ function allowKnownSubcommand(executable, args) {
 }
 
 export function classifyCommand(command, args = [], config = {}) {
-  if (typeof command !== "string" || !command.trim() || !Array.isArray(args)) {
+  if (typeof command !== "string" || !command.trim() || !Array.isArray(args) || !args.every((arg) => typeof arg === "string")) {
     return { decision: "deny", rule: "parse-failure", reason: "命令或参数结构无效。" };
   }
   const executable = executableName(command);
@@ -135,7 +138,7 @@ export function classifyCommand(command, args = [], config = {}) {
   if (deny.has(executable)) {
     return { decision: "deny", rule: "deny-executable", reason: `禁止通过 Harness 执行 ${executable}。` };
   }
-  if (usesExplicitPath(command) && path.resolve(command) !== path.resolve(process.execPath)) {
+  if (usesExplicitPath(command) && commandKey(command, []) !== commandKey(process.execPath, [])) {
     return { decision: "ask", rule: "explicit-executable-path", reason: "显式可执行文件路径需要外部确认，避免同名程序伪装。" };
   }
   const deniedPattern = DENY_TEXT_PATTERNS.find((pattern) => pattern.test(text));

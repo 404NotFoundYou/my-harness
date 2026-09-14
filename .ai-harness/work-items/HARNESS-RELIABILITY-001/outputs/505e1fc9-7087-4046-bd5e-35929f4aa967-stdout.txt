@@ -1,0 +1,1136 @@
+TAP version 13
+# Subtest: BUGFIX 走 static→sandbox→reproduction→regression 真跑流水线并完成
+not ok 1 - BUGFIX 走 static→sandbox→reproduction→regression 真跑流水线并完成
+  ---
+  duration_ms: 2459.4874
+  type: 'test'
+  location: 'D:\\Projects\\aiproject\\.ai-harness\\tests\\bugfix-pipeline.test.mjs:73:1'
+  failureType: 'testCodeFailure'
+  error: '计划中的验证尚未针对当前代码全部通过，或存在新的失败。'
+  code: 'VERIFICATION_NOT_CURRENT'
+  name: 'HarnessError'
+  stack: |-
+    invariant (file:///D:/Projects/aiproject/.ai-harness/src/errors.mjs:12:11)
+    assertVerification (file:///D:/Projects/aiproject/.ai-harness/src/verification.mjs:83:3)
+    async file:///D:/Projects/aiproject/.ai-harness/src/workflow.mjs:467:54
+    async withFileLock (file:///D:/Projects/aiproject/.ai-harness/src/filesystem.mjs:183:12)
+    async advanceBugfixToVerifying (file:///D:/Projects/aiproject/.ai-harness/tests/bugfix-pipeline.test.mjs:61:3)
+    async TestContext.<anonymous> (file:///D:/Projects/aiproject/.ai-harness/tests/bugfix-pipeline.test.mjs:76:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+# Subtest: reproduction 缺 --command 被拒绝
+not ok 2 - reproduction 缺 --command 被拒绝
+  ---
+  duration_ms: 2206.1961
+  type: 'test'
+  location: 'D:\\Projects\\aiproject\\.ai-harness\\tests\\bugfix-pipeline.test.mjs:101:1'
+  failureType: 'testCodeFailure'
+  error: '计划中的验证尚未针对当前代码全部通过，或存在新的失败。'
+  code: 'VERIFICATION_NOT_CURRENT'
+  name: 'HarnessError'
+  stack: |-
+    invariant (file:///D:/Projects/aiproject/.ai-harness/src/errors.mjs:12:11)
+    assertVerification (file:///D:/Projects/aiproject/.ai-harness/src/verification.mjs:83:3)
+    async file:///D:/Projects/aiproject/.ai-harness/src/workflow.mjs:467:54
+    async withFileLock (file:///D:/Projects/aiproject/.ai-harness/src/filesystem.mjs:183:12)
+    async advanceBugfixToVerifying (file:///D:/Projects/aiproject/.ai-harness/tests/bugfix-pipeline.test.mjs:61:3)
+    async TestContext.<anonymous> (file:///D:/Projects/aiproject/.ai-harness/tests/bugfix-pipeline.test.mjs:104:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: reproduction 引用失败命令而记为 pass 被拒绝
+not ok 3 - reproduction 引用失败命令而记为 pass 被拒绝
+  ---
+  duration_ms: 2081.9823
+  type: 'test'
+  location: 'D:\\Projects\\aiproject\\.ai-harness\\tests\\bugfix-pipeline.test.mjs:116:1'
+  failureType: 'testCodeFailure'
+  error: '计划中的验证尚未针对当前代码全部通过，或存在新的失败。'
+  code: 'VERIFICATION_NOT_CURRENT'
+  name: 'HarnessError'
+  stack: |-
+    invariant (file:///D:/Projects/aiproject/.ai-harness/src/errors.mjs:12:11)
+    assertVerification (file:///D:/Projects/aiproject/.ai-harness/src/verification.mjs:83:3)
+    async file:///D:/Projects/aiproject/.ai-harness/src/workflow.mjs:467:54
+    async withFileLock (file:///D:/Projects/aiproject/.ai-harness/src/filesystem.mjs:183:12)
+    async advanceBugfixToVerifying (file:///D:/Projects/aiproject/.ai-harness/tests/bugfix-pipeline.test.mjs:61:3)
+    async TestContext.<anonymous> (file:///D:/Projects/aiproject/.ai-harness/tests/bugfix-pipeline.test.mjs:119:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: BUGFIX 裸 verification 记录被拒绝
+not ok 4 - BUGFIX 裸 verification 记录被拒绝
+  ---
+  duration_ms: 1996.5047
+  type: 'test'
+  location: 'D:\\Projects\\aiproject\\.ai-harness\\tests\\bugfix-pipeline.test.mjs:134:1'
+  failureType: 'testCodeFailure'
+  error: '计划中的验证尚未针对当前代码全部通过，或存在新的失败。'
+  code: 'VERIFICATION_NOT_CURRENT'
+  name: 'HarnessError'
+  stack: |-
+    invariant (file:///D:/Projects/aiproject/.ai-harness/src/errors.mjs:12:11)
+    assertVerification (file:///D:/Projects/aiproject/.ai-harness/src/verification.mjs:83:3)
+    async file:///D:/Projects/aiproject/.ai-harness/src/workflow.mjs:467:54
+    async withFileLock (file:///D:/Projects/aiproject/.ai-harness/src/filesystem.mjs:183:12)
+    async advanceBugfixToVerifying (file:///D:/Projects/aiproject/.ai-harness/tests/bugfix-pipeline.test.mjs:61:3)
+    async TestContext.<anonymous> (file:///D:/Projects/aiproject/.ai-harness/tests/bugfix-pipeline.test.mjs:137:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: BUGFIX 缺 regression 段无法进入 CODE_REVIEW
+not ok 5 - BUGFIX 缺 regression 段无法进入 CODE_REVIEW
+  ---
+  duration_ms: 2082.2447
+  type: 'test'
+  location: 'D:\\Projects\\aiproject\\.ai-harness\\tests\\bugfix-pipeline.test.mjs:147:1'
+  failureType: 'testCodeFailure'
+  error: '计划中的验证尚未针对当前代码全部通过，或存在新的失败。'
+  code: 'VERIFICATION_NOT_CURRENT'
+  name: 'HarnessError'
+  stack: |-
+    invariant (file:///D:/Projects/aiproject/.ai-harness/src/errors.mjs:12:11)
+    assertVerification (file:///D:/Projects/aiproject/.ai-harness/src/verification.mjs:83:3)
+    async file:///D:/Projects/aiproject/.ai-harness/src/workflow.mjs:467:54
+    async withFileLock (file:///D:/Projects/aiproject/.ai-harness/src/filesystem.mjs:183:12)
+    async advanceBugfixToVerifying (file:///D:/Projects/aiproject/.ai-harness/tests/bugfix-pipeline.test.mjs:61:3)
+    async TestContext.<anonymous> (file:///D:/Projects/aiproject/.ai-harness/tests/bugfix-pipeline.test.mjs:150:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: BUGFIX + frontend 时 browser 段亦必需
+not ok 6 - BUGFIX + frontend 时 browser 段亦必需
+  ---
+  duration_ms: 1858.9129
+  type: 'test'
+  location: 'D:\\Projects\\aiproject\\.ai-harness\\tests\\bugfix-pipeline.test.mjs:162:1'
+  failureType: 'testCodeFailure'
+  error: '计划中的验证尚未针对当前代码全部通过，或存在新的失败。'
+  code: 'VERIFICATION_NOT_CURRENT'
+  name: 'HarnessError'
+  stack: |-
+    invariant (file:///D:/Projects/aiproject/.ai-harness/src/errors.mjs:12:11)
+    assertVerification (file:///D:/Projects/aiproject/.ai-harness/src/verification.mjs:83:3)
+    async file:///D:/Projects/aiproject/.ai-harness/src/workflow.mjs:467:54
+    async withFileLock (file:///D:/Projects/aiproject/.ai-harness/src/filesystem.mjs:183:12)
+    async advanceBugfixToVerifying (file:///D:/Projects/aiproject/.ai-harness/tests/bugfix-pipeline.test.mjs:61:3)
+    async TestContext.<anonymous> (file:///D:/Projects/aiproject/.ai-harness/tests/bugfix-pipeline.test.mjs:165:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: BUGFIX 类型确定性路由到 verification 策略
+ok 7 - BUGFIX 类型确定性路由到 verification 策略
+  ---
+  duration_ms: 917.8698
+  type: 'test'
+  ...
+# Subtest: doctor reports a concise Git summary without baseline fingerprints
+ok 8 - doctor reports a concise Git summary without baseline fingerprints
+  ---
+  duration_ms: 1802.3989
+  type: 'test'
+  ...
+# Subtest: doctor accepts managed AGENTS with byte-preserved compatible adapters
+ok 9 - doctor accepts managed AGENTS with byte-preserved compatible adapters
+  ---
+  duration_ms: 1012.2948
+  type: 'test'
+  ...
+# Subtest: doctor fails when managed instruction content is modified
+ok 10 - doctor fails when managed instruction content is modified
+  ---
+  duration_ms: 1452.3486
+  type: 'test'
+  ...
+# Subtest: CI rejects every non-terminal work item including BLOCKED
+ok 11 - CI rejects every non-terminal work item including BLOCKED
+  ---
+  duration_ms: 1882.6638
+  type: 'test'
+  ...
+# Subtest: check rejects result references that do not exist in evidence JSONL
+ok 12 - check rejects result references that do not exist in evidence JSONL
+  ---
+  duration_ms: 2487.0118
+  type: 'test'
+  ...
+# Subtest: check rejects policy files that do not match type and flags
+ok 13 - check rejects policy files that do not match type and flags
+  ---
+  duration_ms: 1883.3079
+  type: 'test'
+  ...
+# Subtest: installed CLI supports compact ITERATION and preserves its CI gate
+ok 14 - installed CLI supports compact ITERATION and preserves its CI gate
+  ---
+  duration_ms: 11353.4485
+  type: 'test'
+  ...
+# Subtest: installed CLI supports compact BUGFIX and preserves its CI gate
+ok 15 - installed CLI supports compact BUGFIX and preserves its CI gate
+  ---
+  duration_ms: 9620.0147
+  type: 'test'
+  ...
+# Subtest: CLI guard uses stable allow, ask and deny exit codes
+ok 16 - CLI guard uses stable allow, ask and deny exit codes
+  ---
+  duration_ms: 237.4522
+  type: 'test'
+  ...
+# Subtest: CLI requires confirmation and uninstalls only from an independent source
+ok 17 - CLI requires confirmation and uninstalls only from an independent source
+  ---
+  duration_ms: 1100.2097
+  type: 'test'
+  ...
+# Subtest: installed CLI completes an iteration and passes its CI gate
+ok 18 - installed CLI completes an iteration and passes its CI gate
+  ---
+  duration_ms: 8943.6022
+  type: 'test'
+  ...
+# Subtest: version-looking arguments cannot authorize inline code or nested runtime mutations
+ok 19 - version-looking arguments cannot authorize inline code or nested runtime mutations
+  ---
+  duration_ms: 5.4489
+  type: 'test'
+  ...
+# Subtest: Windows package manager execution uses an explicit Node entry without a shell
+ok 20 - Windows package manager execution uses an explicit Node entry without a shell
+  ---
+  duration_ms: 113.9146
+  type: 'test'
+  ...
+# Subtest: compact ITERATION keeps auditable gates without manual state bookkeeping
+ok 21 - compact ITERATION keeps auditable gates without manual state bookkeeping
+  ---
+  duration_ms: 10214.6905
+  type: 'test'
+  ...
+# Subtest: compact BUGFIX keeps auditable gates without manual state bookkeeping
+ok 22 - compact BUGFIX keeps auditable gates without manual state bookkeeping
+  ---
+  duration_ms: 8864.1877
+  type: 'test'
+  ...
+# Subtest: compact startup rejects ineligible or incomplete work before leaving state behind
+ok 23 - compact startup rejects ineligible or incomplete work before leaving state behind
+  ---
+  duration_ms: 747.9522
+  type: 'test'
+  ...
+# Subtest: unfinished work and out-of-scope edits cannot acquire a successful compact completion
+not ok 24 - unfinished work and out-of-scope edits cannot acquire a successful compact completion
+  ---
+  duration_ms: 2517.0078
+  type: 'test'
+  location: 'D:\\Projects\\aiproject\\.ai-harness\\tests\\compact.test.mjs:101:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly deep-equal:
+    + actual - expected
+    
+      Comparison {
+    +   code: 'VERIFICATION_NOT_CURRENT'
+    -   code: 'CHECK_FAILED'
+      }
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+    code: 'CHECK_FAILED'
+  actual:
+  error: '计划中的验证尚未针对当前代码全部通过，或存在新的失败。'
+  stack: |-
+    invariant (file:///D:/Projects/aiproject/.ai-harness/src/errors.mjs:12:11)
+    assertVerification (file:///D:/Projects/aiproject/.ai-harness/src/verification.mjs:83:3)
+    async finishWorkItem (file:///D:/Projects/aiproject/.ai-harness/src/compact.mjs:103:3)
+    async waitForActual (node:assert:644:5)
+    async Function.rejects (node:assert:767:25)
+    async TestContext.<anonymous> (file:///D:/Projects/aiproject/.ai-harness/tests/compact.test.mjs:108:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  operator: 'rejects'
+  stack: |-
+    async TestContext.<anonymous> (file:///D:/Projects/aiproject/.ai-harness/tests/compact.test.mjs:108:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: compact completion requires explicit review, acceptance and real current-task evidence
+not ok 25 - compact completion requires explicit review, acceptance and real current-task evidence
+  ---
+  duration_ms: 2805.8542
+  type: 'test'
+  location: 'D:\\Projects\\aiproject\\.ai-harness\\tests\\compact.test.mjs:115:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly deep-equal:
+    + actual - expected
+    
+      Comparison {
+    +   code: 'VERIFICATION_NOT_CURRENT'
+    -   code: 'COMMAND_EVIDENCE_INVALID'
+      }
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+    code: 'COMMAND_EVIDENCE_INVALID'
+  actual:
+  error: '计划中的验证尚未针对当前代码全部通过，或存在新的失败。'
+  stack: |-
+    invariant (file:///D:/Projects/aiproject/.ai-harness/src/errors.mjs:12:11)
+    assertVerification (file:///D:/Projects/aiproject/.ai-harness/src/verification.mjs:83:3)
+    async finishWorkItem (file:///D:/Projects/aiproject/.ai-harness/src/compact.mjs:103:3)
+    async waitForActual (node:assert:644:5)
+    async Function.rejects (node:assert:767:25)
+    async TestContext.<anonymous> (file:///D:/Projects/aiproject/.ai-harness/tests/compact.test.mjs:122:7)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  operator: 'rejects'
+  stack: |-
+    async TestContext.<anonymous> (file:///D:/Projects/aiproject/.ai-harness/tests/compact.test.mjs:122:7)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: a successful unrelated command cannot conceal a failing regression
+not ok 26 - a successful unrelated command cannot conceal a failing regression
+  ---
+  duration_ms: 2871.753
+  type: 'test'
+  location: 'D:\\Projects\\aiproject\\.ai-harness\\tests\\compact.test.mjs:136:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly deep-equal:
+    + actual - expected
+    
+      Comparison {
+    +   code: 'VERIFICATION_NOT_CURRENT'
+    -   code: 'VERIFICATION_FAILED'
+      }
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+    code: 'VERIFICATION_FAILED'
+  actual:
+  error: '计划中的验证尚未针对当前代码全部通过，或存在新的失败。'
+  stack: |-
+    invariant (file:///D:/Projects/aiproject/.ai-harness/src/errors.mjs:12:11)
+    assertVerification (file:///D:/Projects/aiproject/.ai-harness/src/verification.mjs:83:3)
+    async finishWorkItem (file:///D:/Projects/aiproject/.ai-harness/src/compact.mjs:103:3)
+    async waitForActual (node:assert:644:5)
+    async Function.rejects (node:assert:767:25)
+    async TestContext.<anonymous> (file:///D:/Projects/aiproject/.ai-harness/tests/compact.test.mjs:145:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  operator: 'rejects'
+  stack: |-
+    async TestContext.<anonymous> (file:///D:/Projects/aiproject/.ai-harness/tests/compact.test.mjs:145:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: superseded command results cannot stand in for current verification
+not ok 27 - superseded command results cannot stand in for current verification
+  ---
+  duration_ms: 2550.7549
+  type: 'test'
+  location: 'D:\\Projects\\aiproject\\.ai-harness\\tests\\compact.test.mjs:154:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly deep-equal:
+    + actual - expected
+    
+      Comparison {
+    +   code: 'VERIFICATION_NOT_CURRENT'
+    -   code: 'COMMAND_EVIDENCE_INVALID'
+      }
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+    code: 'COMMAND_EVIDENCE_INVALID'
+  actual:
+  error: '计划中的验证尚未针对当前代码全部通过，或存在新的失败。'
+  stack: |-
+    invariant (file:///D:/Projects/aiproject/.ai-harness/src/errors.mjs:12:11)
+    assertVerification (file:///D:/Projects/aiproject/.ai-harness/src/verification.mjs:83:3)
+    async finishWorkItem (file:///D:/Projects/aiproject/.ai-harness/src/compact.mjs:103:3)
+    async waitForActual (node:assert:644:5)
+    async Function.rejects (node:assert:767:25)
+    async TestContext.<anonymous> (file:///D:/Projects/aiproject/.ai-harness/tests/compact.test.mjs:160:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  operator: 'rejects'
+  stack: |-
+    async TestContext.<anonymous> (file:///D:/Projects/aiproject/.ai-harness/tests/compact.test.mjs:160:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: rework requires a new command run rather than recycling the previous attempt
+not ok 28 - rework requires a new command run rather than recycling the previous attempt
+  ---
+  duration_ms: 1991.8007
+  type: 'test'
+  location: 'D:\\Projects\\aiproject\\.ai-harness\\tests\\compact.test.mjs:167:1'
+  failureType: 'testCodeFailure'
+  error: '计划中的验证尚未针对当前代码全部通过，或存在新的失败。'
+  code: 'VERIFICATION_NOT_CURRENT'
+  name: 'HarnessError'
+  stack: |-
+    invariant (file:///D:/Projects/aiproject/.ai-harness/src/errors.mjs:12:11)
+    assertVerification (file:///D:/Projects/aiproject/.ai-harness/src/verification.mjs:83:3)
+    async file:///D:/Projects/aiproject/.ai-harness/src/workflow.mjs:467:54
+    async withFileLock (file:///D:/Projects/aiproject/.ai-harness/src/filesystem.mjs:183:12)
+    async TestContext.<anonymous> (file:///D:/Projects/aiproject/.ai-harness/tests/compact.test.mjs:172:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: compact finish cannot take over work requiring independent review
+ok 29 - compact finish cannot take over work requiring independent review
+  ---
+  duration_ms: 1781.676
+  type: 'test'
+  ...
+# Subtest: compact frontend bug requires all pipeline evidence before changing any result
+not ok 30 - compact frontend bug requires all pipeline evidence before changing any result
+  ---
+  duration_ms: 2037.7785
+  type: 'test'
+  location: 'D:\\Projects\\aiproject\\.ai-harness\\tests\\compact.test.mjs:200:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly deep-equal:
+    + actual - expected
+    
+      Comparison {
+    +   code: 'VERIFICATION_NOT_CURRENT'
+    -   code: 'COMMAND_EVIDENCE_INVALID'
+      }
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+    code: 'COMMAND_EVIDENCE_INVALID'
+  actual:
+  error: '计划中的验证尚未针对当前代码全部通过，或存在新的失败。'
+  stack: |-
+    invariant (file:///D:/Projects/aiproject/.ai-harness/src/errors.mjs:12:11)
+    assertVerification (file:///D:/Projects/aiproject/.ai-harness/src/verification.mjs:83:3)
+    async finishWorkItem (file:///D:/Projects/aiproject/.ai-harness/src/compact.mjs:103:3)
+    async waitForActual (node:assert:644:5)
+    async Function.rejects (node:assert:767:25)
+    async TestContext.<anonymous> (file:///D:/Projects/aiproject/.ai-harness/tests/compact.test.mjs:213:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  operator: 'rejects'
+  stack: |-
+    async TestContext.<anonymous> (file:///D:/Projects/aiproject/.ai-harness/tests/compact.test.mjs:213:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: project paths reject absolute and parent traversal
+ok 31 - project paths reject absolute and parent traversal
+  ---
+  duration_ms: 1414.7334
+  type: 'test'
+  ...
+# Subtest: write paths reject symlink components when the platform permits links
+ok 32 - write paths reject symlink components when the platform permits links
+  ---
+  duration_ms: 1203.2676
+  type: 'test'
+  ...
+# Subtest: guide restores goals and scope without changing state or granting completion
+not ok 33 - guide restores goals and scope without changing state or granting completion
+  ---
+  duration_ms: 2921.685
+  type: 'test'
+  location: 'D:\\Projects\\aiproject\\.ai-harness\\tests\\guide.test.mjs:75:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The expression evaluated to a falsy value:
+    
+      assert.ok(guide.next.command.args.includes("<EXECUTABLE>"))
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (file:///D:/Projects/aiproject/.ai-harness/tests/guide.test.mjs:88:12)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+# Subtest: guide follows verification and review gates while leaving verdicts to the caller
+not ok 34 - guide follows verification and review gates while leaving verdicts to the caller
+  ---
+  duration_ms: 3179.2447
+  type: 'test'
+  location: 'D:\\Projects\\aiproject\\.ai-harness\\tests\\guide.test.mjs:93:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+    
+    + 'implement-and-verify'
+    - 'record-verification'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'record-verification'
+  actual: 'implement-and-verify'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///D:/Projects/aiproject/.ai-harness/tests/guide.test.mjs:99:12)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: guide prioritizes real failures, redacts previews and marks truncation
+not ok 35 - guide prioritizes real failures, redacts previews and marks truncation
+  ---
+  duration_ms: 2529.597
+  type: 'test'
+  location: 'D:\\Projects\\aiproject\\.ai-harness\\tests\\guide.test.mjs:123:1'
+  failureType: 'testCodeFailure'
+  error: 'node 子命令不在验证型允许范围内。'
+  code: 'COMMAND_REQUIRES_APPROVAL'
+  name: 'HarnessError'
+  stack: |-
+    runRecordedCommand (file:///D:/Projects/aiproject/.ai-harness/src/evidence.mjs:64:11)
+    async TestContext.<anonymous> (file:///D:/Projects/aiproject/.ai-harness/tests/guide.test.mjs:131:36)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: guide never borrows a different task's successful command
+not ok 36 - guide never borrows a different task's successful command
+  ---
+  duration_ms: 2760.6628
+  type: 'test'
+  location: 'D:\\Projects\\aiproject\\.ai-harness\\tests\\guide.test.mjs:146:1'
+  failureType: 'testCodeFailure'
+  error: '计划中的验证尚未针对当前代码全部通过，或存在新的失败。'
+  code: 'VERIFICATION_NOT_CURRENT'
+  name: 'HarnessError'
+  stack: |-
+    invariant (file:///D:/Projects/aiproject/.ai-harness/src/errors.mjs:12:11)
+    assertVerification (file:///D:/Projects/aiproject/.ai-harness/src/verification.mjs:83:3)
+    async file:///D:/Projects/aiproject/.ai-harness/src/workflow.mjs:467:54
+    async withFileLock (file:///D:/Projects/aiproject/.ai-harness/src/filesystem.mjs:183:12)
+    async completeTask (file:///D:/Projects/aiproject/.ai-harness/tests/guide.test.mjs:62:3)
+    async TestContext.<anonymous> (file:///D:/Projects/aiproject/.ai-harness/tests/guide.test.mjs:150:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: dependency and ownership decisions do not unlock or take over other tasks
+not ok 37 - dependency and ownership decisions do not unlock or take over other tasks
+  ---
+  duration_ms: 5261.3333
+  type: 'test'
+  location: 'D:\\Projects\\aiproject\\.ai-harness\\tests\\guide.test.mjs:158:1'
+  failureType: 'testCodeFailure'
+  error: '计划中的验证尚未针对当前代码全部通过，或存在新的失败。'
+  code: 'VERIFICATION_NOT_CURRENT'
+  name: 'HarnessError'
+  stack: |-
+    invariant (file:///D:/Projects/aiproject/.ai-harness/src/errors.mjs:12:11)
+    assertVerification (file:///D:/Projects/aiproject/.ai-harness/src/verification.mjs:83:3)
+    async file:///D:/Projects/aiproject/.ai-harness/src/workflow.mjs:467:54
+    async withFileLock (file:///D:/Projects/aiproject/.ai-harness/src/filesystem.mjs:183:12)
+    async completeTask (file:///D:/Projects/aiproject/.ai-harness/tests/guide.test.mjs:62:3)
+    async TestContext.<anonymous> (file:///D:/Projects/aiproject/.ai-harness/tests/guide.test.mjs:172:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: blocked guidance describes the condition before suggesting the recorded resume state
+ok 38 - blocked guidance describes the condition before suggesting the recorded resume state
+  ---
+  duration_ms: 1043.0613
+  type: 'test'
+  ...
+# Subtest: resolved task blockers do not remain active in recovery context
+ok 39 - resolved task blockers do not remain active in recovery context
+  ---
+  duration_ms: 2282.8319
+  type: 'test'
+  ...
+# Subtest: plan guidance preserves autonomous authorization
+ok 40 - plan guidance preserves autonomous authorization
+  ---
+  duration_ms: 1474.6793
+  type: 'test'
+  ...
+# Subtest: plan guidance preserves approval-required authorization
+ok 41 - plan guidance preserves approval-required authorization
+  ---
+  duration_ms: 1421.1787
+  type: 'test'
+  ...
+# Subtest: guide requires actual ordered pipeline evidence for BUGFIX frontend
+not ok 42 - guide requires actual ordered pipeline evidence for BUGFIX frontend
+  ---
+  duration_ms: 1992.5414
+  type: 'test'
+  location: 'D:\\Projects\\aiproject\\.ai-harness\\tests\\guide.test.mjs:227:3'
+  failureType: 'testCodeFailure'
+  error: '计划中的验证尚未针对当前代码全部通过，或存在新的失败。'
+  code: 'VERIFICATION_NOT_CURRENT'
+  name: 'HarnessError'
+  stack: |-
+    invariant (file:///D:/Projects/aiproject/.ai-harness/src/errors.mjs:12:11)
+    assertVerification (file:///D:/Projects/aiproject/.ai-harness/src/verification.mjs:83:3)
+    async file:///D:/Projects/aiproject/.ai-harness/src/workflow.mjs:467:54
+    async withFileLock (file:///D:/Projects/aiproject/.ai-harness/src/filesystem.mjs:183:12)
+    async completeTask (file:///D:/Projects/aiproject/.ai-harness/tests/guide.test.mjs:62:3)
+    async TestContext.<anonymous> (file:///D:/Projects/aiproject/.ai-harness/tests/guide.test.mjs:231:23)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: guide requires actual ordered pipeline evidence for ITERATION codegen/frontend
+not ok 43 - guide requires actual ordered pipeline evidence for ITERATION codegen/frontend
+  ---
+  duration_ms: 1937.1617
+  type: 'test'
+  location: 'D:\\Projects\\aiproject\\.ai-harness\\tests\\guide.test.mjs:227:3'
+  failureType: 'testCodeFailure'
+  error: '计划中的验证尚未针对当前代码全部通过，或存在新的失败。'
+  code: 'VERIFICATION_NOT_CURRENT'
+  name: 'HarnessError'
+  stack: |-
+    invariant (file:///D:/Projects/aiproject/.ai-harness/src/errors.mjs:12:11)
+    assertVerification (file:///D:/Projects/aiproject/.ai-harness/src/verification.mjs:83:3)
+    async file:///D:/Projects/aiproject/.ai-harness/src/workflow.mjs:467:54
+    async withFileLock (file:///D:/Projects/aiproject/.ai-harness/src/filesystem.mjs:183:12)
+    async completeTask (file:///D:/Projects/aiproject/.ai-harness/tests/guide.test.mjs:62:3)
+    async TestContext.<anonymous> (file:///D:/Projects/aiproject/.ai-harness/tests/guide.test.mjs:231:23)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: guide keeps final independent review and acceptance explicit
+not ok 44 - guide keeps final independent review and acceptance explicit
+  ---
+  duration_ms: 2011.163
+  type: 'test'
+  location: 'D:\\Projects\\aiproject\\.ai-harness\\tests\\guide.test.mjs:248:1'
+  failureType: 'testCodeFailure'
+  error: '计划中的验证尚未针对当前代码全部通过，或存在新的失败。'
+  code: 'VERIFICATION_NOT_CURRENT'
+  name: 'HarnessError'
+  stack: |-
+    invariant (file:///D:/Projects/aiproject/.ai-harness/src/errors.mjs:12:11)
+    assertVerification (file:///D:/Projects/aiproject/.ai-harness/src/verification.mjs:83:3)
+    async file:///D:/Projects/aiproject/.ai-harness/src/workflow.mjs:467:54
+    async withFileLock (file:///D:/Projects/aiproject/.ai-harness/src/filesystem.mjs:183:12)
+    async completeTask (file:///D:/Projects/aiproject/.ai-harness/tests/guide.test.mjs:62:3)
+    async TestContext.<anonymous> (file:///D:/Projects/aiproject/.ai-harness/tests/guide.test.mjs:252:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: analysis guidance advances without creating a product editing task
+ok 45 - analysis guidance advances without creating a product editing task
+  ---
+  duration_ms: 2762.0587
+  type: 'test'
+  ...
+# Subtest: invalid or foreign evidence fails explicitly rather than becoming guidance
+ok 46 - invalid or foreign evidence fails explicitly rather than becoming guidance
+  ---
+  duration_ms: 1592.4119
+  type: 'test'
+  ...
+# Subtest: planning guidance waits for database design before proposing an implementation plan
+ok 47 - planning guidance waits for database design before proposing an implementation plan
+  ---
+  duration_ms: 3528.4584
+  type: 'test'
+  ...
+# Subtest: inconsistent persisted progress never produces a next-step recommendation
+ok 48 - inconsistent persisted progress never produces a next-step recommendation
+  ---
+  duration_ms: 1133.2955
+  type: 'test'
+  ...
+# Subtest: existing instruction files are merged losslessly and reinstall is byte-idempotent
+not ok 49 - existing instruction files are merged losslessly and reinstall is byte-idempotent
+  ---
+  duration_ms: 344.2364
+  type: 'test'
+  location: 'D:\\Projects\\aiproject\\.ai-harness\\tests\\installer.test.mjs:26:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    
+    '1.1.0' !== '1.0.0'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: '1.0.0'
+  actual: '1.1.0'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///D:/Projects/aiproject/.ai-harness/tests/installer.test.mjs:62:14)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+# Subtest: compatible Claude and Gemini imports remain byte-identical
+ok 50 - compatible Claude and Gemini imports remain byte-identical
+  ---
+  duration_ms: 193.0803
+  type: 'test'
+  ...
+# Subtest: installed contract keeps trivial work outside the state machine without weakening side-effect approval
+ok 51 - installed contract keeps trivial work outside the state machine without weakening side-effect approval
+  ---
+  duration_ms: 188.1767
+  type: 'test'
+  ...
+# Subtest: uninstall is previewable, recoverable and preserves project data across reinstall
+ok 52 - uninstall is previewable, recoverable and preserves project data across reinstall
+  ---
+  duration_ms: 1681.2627
+  type: 'test'
+  ...
+# Subtest: uninstall conflicts and managed-block tampering fail before any deletion
+ok 53 - uninstall conflicts and managed-block tampering fail before any deletion
+  ---
+  duration_ms: 746.5161
+  type: 'test'
+  ...
+# Subtest: uninstall version mismatch fails closed without recommending self-uninstall
+ok 54 - uninstall version mismatch fails closed without recommending self-uninstall
+  ---
+  duration_ms: 193.7237
+  type: 'test'
+  ...
+# Subtest: uninstall restores pre-existing whitespace bytes instead of deleting the rules file
+ok 55 - uninstall restores pre-existing whitespace bytes instead of deleting the rules file
+  ---
+  duration_ms: 893.9942
+  type: 'test'
+  ...
+# Subtest: uninstall uses the install receipt instead of a dirty source directory listing
+ok 56 - uninstall uses the install receipt instead of a dirty source directory listing
+  ---
+  duration_ms: 1171.0927
+  type: 'test'
+  ...
+# Subtest: uninstall revalidates target snapshots after backup before deleting
+ok 57 - uninstall revalidates target snapshots after backup before deleting
+  ---
+  duration_ms: 629.2509
+  type: 'test'
+  ...
+# Subtest: uninstall rolls back partial application and retains backup if rollback fails
+ok 58 - uninstall rolls back partial application and retains backup if rollback fails
+  ---
+  duration_ms: 1750.576
+  type: 'test'
+  ...
+# Subtest: modified managed content fails closed and force repairs only the managed block
+ok 59 - modified managed content fails closed and force repairs only the managed block
+  ---
+  duration_ms: 310.515
+  type: 'test'
+  ...
+# Subtest: malformed or duplicate managed markers fail even with force
+ok 60 - malformed or duplicate managed markers fail even with force
+  ---
+  duration_ms: 191.4958
+  type: 'test'
+  ...
+# Subtest: ordinary runtime conflicts prevent every planned instruction merge before writes
+ok 61 - ordinary runtime conflicts prevent every planned instruction merge before writes
+  ---
+  duration_ms: 74.0279
+  type: 'test'
+  ...
+# Subtest: installer rejects a source workflow reached through a symlink or junction
+ok 62 - installer rejects a source workflow reached through a symlink or junction
+  ---
+  duration_ms: 212.1564
+  type: 'test'
+  ...
+# Subtest: installer rejects a symlinked or junction-backed runtime root
+ok 63 - installer rejects a symlinked or junction-backed runtime root
+  ---
+  duration_ms: 4.5785
+  type: 'test'
+  ...
+# Subtest: force replaces ordinary runtime conflicts but still merges and backs up local rules
+ok 64 - force replaces ordinary runtime conflicts but still merges and backs up local rules
+  ---
+  duration_ms: 188.94
+  type: 'test'
+  ...
+# Subtest: redistribution uses canonical payload and never propagates source-project rules
+ok 65 - redistribution uses canonical payload and never propagates source-project rules
+  ---
+  duration_ms: 346.9646
+  type: 'test'
+  ...
+# Subtest: oversized merged AGENTS fails before any file is written
+ok 66 - oversized merged AGENTS fails before any file is written
+  ---
+  duration_ms: 65.036
+  type: 'test'
+  ...
+# Subtest: an existing empty instruction file is backed up before adoption
+ok 67 - an existing empty instruction file is backed up before adoption
+  ---
+  duration_ms: 177.758
+  type: 'test'
+  ...
+# Subtest: new project init creates templates but refuses conflicting docs
+ok 68 - new project init creates templates but refuses conflicting docs
+  ---
+  duration_ms: 1191.116
+  type: 'test'
+  ...
+# Subtest: managed blocks round-trip LF, CRLF and a file BOM
+ok 69 - managed blocks round-trip LF, CRLF and a file BOM
+  ---
+  duration_ms: 2.8424
+  type: 'test'
+  ...
+# Subtest: merge preserves custom bytes outside the managed block
+ok 70 - merge preserves custom bytes outside the managed block
+  ---
+  duration_ms: 0.5743
+  type: 'test'
+  ...
+# Subtest: a compatible adapter import is accepted without rewriting
+ok 71 - a compatible adapter import is accepted without rewriting
+  ---
+  duration_ms: 1.0572
+  type: 'test'
+  ...
+# Subtest: a valid older block upgrades while a modified block requires force
+ok 72 - a valid older block upgrades while a modified block requires force
+  ---
+  duration_ms: 1.4342
+  type: 'test'
+  ...
+# Subtest: partial, duplicate and inline markers are rejected as malformed
+ok 73 - partial, duplicate and inline markers are rejected as malformed
+  ---
+  duration_ms: 0.3948
+  type: 'test'
+  ...
+# Subtest: removal preserves project bytes and rejects modified managed content
+ok 74 - removal preserves project bytes and rejects modified managed content
+  ---
+  duration_ms: 0.7245
+  type: 'test'
+  ...
+# Subtest: parse failure and nested shells are denied
+ok 75 - parse failure and nested shells are denied
+  ---
+  duration_ms: 1.7091
+  type: 'test'
+  ...
+# Subtest: destructive git rules win before permissive fallbacks
+ok 76 - destructive git rules win before permissive fallbacks
+  ---
+  duration_ms: 1.2104
+  type: 'test'
+  ...
+# Subtest: external mutations ask while verification commands allow
+ok 77 - external mutations ask while verification commands allow
+  ---
+  duration_ms: 2.6255
+  type: 'test'
+  ...
+# Subtest: inline interpreters do not bypass command policy
+ok 78 - inline interpreters do not bypass command policy
+  ---
+  duration_ms: 0.3079
+  type: 'test'
+  ...
+# Subtest: explicit executable paths cannot impersonate an allowed tool
+ok 79 - explicit executable paths cannot impersonate an allowed tool
+  ---
+  duration_ms: 0.2319
+  type: 'test'
+  ...
+# Subtest: evidence redacts common credentials
+ok 80 - evidence redacts common credentials
+  ---
+  duration_ms: 0.8895
+  type: 'test'
+  ...
+# Subtest: stale code and unrelated commands cannot support a completion claim
+ok 81 - stale code and unrelated commands cannot support a completion claim
+  ---
+  duration_ms: 4760.2359
+  type: 'test'
+  ...
+# Subtest: a later failure invalidates pass and a real repair can complete through a new revision
+ok 82 - a later failure invalidates pass and a real repair can complete through a new revision
+  ---
+  duration_ms: 12651.0077
+  type: 'test'
+  ...
+# Subtest: deleted files outside a task scope are rejected even when the declared check passes
+ok 83 - deleted files outside a task scope are rejected even when the declared check passes
+  ---
+  duration_ms: 3637.1883
+  type: 'test'
+  ...
+# Subtest: completed scopes do not authorize a later task's unrelated modifications
+ok 84 - completed scopes do not authorize a later task's unrelated modifications
+  ---
+  duration_ms: 9644.7522
+  type: 'test'
+  ...
+# Subtest: analysis records are valid control changes without authorizing product writes
+ok 85 - analysis records are valid control changes without authorizing product writes
+  ---
+  duration_ms: 7486.4429
+  type: 'test'
+  ...
+# Subtest: final review rework archives the prior plan and replan allows an authorized amendment
+ok 86 - final review rework archives the prior plan and replan allows an authorized amendment
+  ---
+  duration_ms: 4109.5571
+  type: 'test'
+  ...
+# Subtest: Windows npm runs an actual package test through the recorded executor
+ok 87 - Windows npm runs an actual package test through the recorded executor
+  ---
+  duration_ms: 6042.5606
+  type: 'test'
+  ...
+# Subtest: source identity survives staging but detects edits, deletion and renamed Unicode paths
+ok 88 - source identity survives staging but detects edits, deletion and renamed Unicode paths
+  ---
+  duration_ms: 3177.1829
+  type: 'test'
+  ...
+# Subtest: control records do not stale product verification and snapshot tampering fails
+ok 89 - control records do not stale product verification and snapshot tampering fails
+  ---
+  duration_ms: 1696.0291
+  type: 'test'
+  ...
+# Subtest: state transition graph blocks skipped gates
+ok 90 - state transition graph blocks skipped gates
+  ---
+  duration_ms: 5.1259
+  type: 'test'
+  ...
+# Subtest: plan validator catches cycles and missing independent review
+ok 91 - plan validator catches cycles and missing independent review
+  ---
+  duration_ms: 1.9195
+  type: 'test'
+  ...
+# Subtest: multi-agent plan rejects overlapping unordered write scopes
+ok 92 - multi-agent plan rejects overlapping unordered write scopes
+  ---
+  duration_ms: 0.8829
+  type: 'test'
+  ...
+# Subtest: scope matching is deterministic
+ok 93 - scope matching is deterministic
+  ---
+  duration_ms: 0.4019
+  type: 'test'
+  ...
+# Subtest: codegen+frontend 工作项只有五段流水线全部按序通过才能进入 CODE_REVIEW 并完成
+not ok 94 - codegen+frontend 工作项只有五段流水线全部按序通过才能进入 CODE_REVIEW 并完成
+  ---
+  duration_ms: 2538.594
+  type: 'test'
+  location: 'D:\\Projects\\aiproject\\.ai-harness\\tests\\verification-pipeline.test.mjs:73:1'
+  failureType: 'testCodeFailure'
+  error: '计划中的验证尚未针对当前代码全部通过，或存在新的失败。'
+  code: 'VERIFICATION_NOT_CURRENT'
+  name: 'HarnessError'
+  stack: |-
+    invariant (file:///D:/Projects/aiproject/.ai-harness/src/errors.mjs:12:11)
+    assertVerification (file:///D:/Projects/aiproject/.ai-harness/src/verification.mjs:83:3)
+    async file:///D:/Projects/aiproject/.ai-harness/src/workflow.mjs:467:54
+    async withFileLock (file:///D:/Projects/aiproject/.ai-harness/src/filesystem.mjs:183:12)
+    async advanceToVerifying (file:///D:/Projects/aiproject/.ai-harness/tests/verification-pipeline.test.mjs:61:3)
+    async TestContext.<anonymous> (file:///D:/Projects/aiproject/.ai-harness/tests/verification-pipeline.test.mjs:76:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+# Subtest: codegen 但无 frontend 时 browser 子阶段可选，前四段通过即可聚合为 pass
+not ok 95 - codegen 但无 frontend 时 browser 子阶段可选，前四段通过即可聚合为 pass
+  ---
+  duration_ms: 2162.2983
+  type: 'test'
+  location: 'D:\\Projects\\aiproject\\.ai-harness\\tests\\verification-pipeline.test.mjs:97:1'
+  failureType: 'testCodeFailure'
+  error: '计划中的验证尚未针对当前代码全部通过，或存在新的失败。'
+  code: 'VERIFICATION_NOT_CURRENT'
+  name: 'HarnessError'
+  stack: |-
+    invariant (file:///D:/Projects/aiproject/.ai-harness/src/errors.mjs:12:11)
+    assertVerification (file:///D:/Projects/aiproject/.ai-harness/src/verification.mjs:83:3)
+    async file:///D:/Projects/aiproject/.ai-harness/src/workflow.mjs:467:54
+    async withFileLock (file:///D:/Projects/aiproject/.ai-harness/src/filesystem.mjs:183:12)
+    async advanceToVerifying (file:///D:/Projects/aiproject/.ai-harness/tests/verification-pipeline.test.mjs:61:3)
+    async TestContext.<anonymous> (file:///D:/Projects/aiproject/.ai-harness/tests/verification-pipeline.test.mjs:100:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: 乱序记录子阶段被确定性拒绝
+not ok 96 - 乱序记录子阶段被确定性拒绝
+  ---
+  duration_ms: 2013.1458
+  type: 'test'
+  location: 'D:\\Projects\\aiproject\\.ai-harness\\tests\\verification-pipeline.test.mjs:114:1'
+  failureType: 'testCodeFailure'
+  error: '计划中的验证尚未针对当前代码全部通过，或存在新的失败。'
+  code: 'VERIFICATION_NOT_CURRENT'
+  name: 'HarnessError'
+  stack: |-
+    invariant (file:///D:/Projects/aiproject/.ai-harness/src/errors.mjs:12:11)
+    assertVerification (file:///D:/Projects/aiproject/.ai-harness/src/verification.mjs:83:3)
+    async file:///D:/Projects/aiproject/.ai-harness/src/workflow.mjs:467:54
+    async withFileLock (file:///D:/Projects/aiproject/.ai-harness/src/filesystem.mjs:183:12)
+    async advanceToVerifying (file:///D:/Projects/aiproject/.ai-harness/tests/verification-pipeline.test.mjs:61:3)
+    async TestContext.<anonymous> (file:///D:/Projects/aiproject/.ai-harness/tests/verification-pipeline.test.mjs:117:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: codegen+frontend 缺 browser 段时无法进入 CODE_REVIEW
+not ok 97 - codegen+frontend 缺 browser 段时无法进入 CODE_REVIEW
+  ---
+  duration_ms: 2054.7907
+  type: 'test'
+  location: 'D:\\Projects\\aiproject\\.ai-harness\\tests\\verification-pipeline.test.mjs:124:1'
+  failureType: 'testCodeFailure'
+  error: '计划中的验证尚未针对当前代码全部通过，或存在新的失败。'
+  code: 'VERIFICATION_NOT_CURRENT'
+  name: 'HarnessError'
+  stack: |-
+    invariant (file:///D:/Projects/aiproject/.ai-harness/src/errors.mjs:12:11)
+    assertVerification (file:///D:/Projects/aiproject/.ai-harness/src/verification.mjs:83:3)
+    async file:///D:/Projects/aiproject/.ai-harness/src/workflow.mjs:467:54
+    async withFileLock (file:///D:/Projects/aiproject/.ai-harness/src/filesystem.mjs:183:12)
+    async advanceToVerifying (file:///D:/Projects/aiproject/.ai-harness/tests/verification-pipeline.test.mjs:61:3)
+    async TestContext.<anonymous> (file:///D:/Projects/aiproject/.ai-harness/tests/verification-pipeline.test.mjs:127:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: codegen 工作项禁止用裸 verification 记录绕过流水线
+not ok 98 - codegen 工作项禁止用裸 verification 记录绕过流水线
+  ---
+  duration_ms: 2092.6612
+  type: 'test'
+  location: 'D:\\Projects\\aiproject\\.ai-harness\\tests\\verification-pipeline.test.mjs:138:1'
+  failureType: 'testCodeFailure'
+  error: '计划中的验证尚未针对当前代码全部通过，或存在新的失败。'
+  code: 'VERIFICATION_NOT_CURRENT'
+  name: 'HarnessError'
+  stack: |-
+    invariant (file:///D:/Projects/aiproject/.ai-harness/src/errors.mjs:12:11)
+    assertVerification (file:///D:/Projects/aiproject/.ai-harness/src/verification.mjs:83:3)
+    async file:///D:/Projects/aiproject/.ai-harness/src/workflow.mjs:467:54
+    async withFileLock (file:///D:/Projects/aiproject/.ai-harness/src/filesystem.mjs:183:12)
+    async advanceToVerifying (file:///D:/Projects/aiproject/.ai-harness/tests/verification-pipeline.test.mjs:61:3)
+    async TestContext.<anonymous> (file:///D:/Projects/aiproject/.ai-harness/tests/verification-pipeline.test.mjs:141:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: check 拒绝子阶段状态与证据不一致的手改 state
+not ok 99 - check 拒绝子阶段状态与证据不一致的手改 state
+  ---
+  duration_ms: 1877.6158
+  type: 'test'
+  location: 'D:\\Projects\\aiproject\\.ai-harness\\tests\\verification-pipeline.test.mjs:151:1'
+  failureType: 'testCodeFailure'
+  error: '计划中的验证尚未针对当前代码全部通过，或存在新的失败。'
+  code: 'VERIFICATION_NOT_CURRENT'
+  name: 'HarnessError'
+  stack: |-
+    invariant (file:///D:/Projects/aiproject/.ai-harness/src/errors.mjs:12:11)
+    assertVerification (file:///D:/Projects/aiproject/.ai-harness/src/verification.mjs:83:3)
+    async file:///D:/Projects/aiproject/.ai-harness/src/workflow.mjs:467:54
+    async withFileLock (file:///D:/Projects/aiproject/.ai-harness/src/filesystem.mjs:183:12)
+    async advanceToVerifying (file:///D:/Projects/aiproject/.ai-harness/tests/verification-pipeline.test.mjs:61:3)
+    async TestContext.<anonymous> (file:///D:/Projects/aiproject/.ai-harness/tests/verification-pipeline.test.mjs:154:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: codegen 标志确定性路由到 verification 策略
+ok 100 - codegen 标志确定性路由到 verification 策略
+  ---
+  duration_ms: 912.7762
+  type: 'test'
+  ...
+# Subtest: record 命令解析 --stage 参数
+ok 101 - record 命令解析 --stage 参数
+  ---
+  duration_ms: 0.3107
+  type: 'test'
+  ...
+# Subtest: iteration completes only through solution, database, plan, task, review and acceptance gates
+ok 102 - iteration completes only through solution, database, plan, task, review and acceptance gates
+  ---
+  duration_ms: 8556.5982
+  type: 'test'
+  ...
+# Subtest: analysis uses evidence statuses and ends at ANSWERED without development gates
+ok 103 - analysis uses evidence statuses and ends at ANSWERED without development gates
+  ---
+  duration_ms: 1745.6017
+  type: 'test'
+  ...
+# Subtest: new projects require an approved architecture source
+ok 104 - new projects require an approved architecture source
+  ---
+  duration_ms: 1044.6819
+  type: 'test'
+  ...
+# Subtest: bug fixes require actual, expected and reproduction details
+ok 105 - bug fixes require actual, expected and reproduction details
+  ---
+  duration_ms: 950.1658
+  type: 'test'
+  ...
+# Subtest: flags deterministically select policy files
+ok 106 - flags deterministically select policy files
+  ---
+  duration_ms: 960.5766
+  type: 'test'
+  ...
+# Subtest: required database impact cannot reach planning before design completes
+ok 107 - required database impact cannot reach planning before design completes
+  ---
+  duration_ms: 1362.9687
+  type: 'test'
+  ...
+# Subtest: result evidence cannot be recorded before its workflow stage
+ok 108 - result evidence cannot be recorded before its workflow stage
+  ---
+  duration_ms: 795.7169
+  type: 'test'
+  ...
+# Subtest: multi-agent plans require the multi-agent policy flag
+ok 109 - multi-agent plans require the multi-agent policy flag
+  ---
+  duration_ms: 1276.7795
+  type: 'test'
+  ...
+# Subtest: development baselines require an initial Git commit
+ok 110 - development baselines require an initial Git commit
+  ---
+  duration_ms: 789.3857
+  type: 'test'
+  ...
+1..110
+# tests 110
+# suites 0
+# pass 83
+# fail 27
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 48526.4371

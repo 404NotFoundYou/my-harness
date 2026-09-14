@@ -6,6 +6,10 @@
   "required": ["schemaVersion", "id", "workItemId", "kind", "timestamp"],
   "properties": {
     "schemaVersion": {"const": 1},
+    "revision": {"type": "integer", "minimum": 1},
+    "taskAttempt": {"type": ["integer", "null"], "minimum": 1},
+    "source": {"$ref": "work-item.schema.json#/$defs/snapshotRef"},
+    "planDigest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "id": {"type": "string"},
     "workItemId": {"type": "string"},
     "taskId": {"type": ["string", "null"]},
@@ -14,6 +18,7 @@
     "summary": {"type": ["string", "null"]},
     "timestamp": {"type": "string", "format": "date-time"},
     "command": {"type": ["object", "null"]},
+    "commandRef": {"type": "string", "minLength": 1},
     "independent": {"type": "boolean"},
     "stage": {"type": ["string", "null"], "enum": ["static", "sandbox", "contract", "eval", "reproduction", "regression", "browser", null]}
   },

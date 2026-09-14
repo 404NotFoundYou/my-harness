@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "HARNESS-RELIABILITY-001",
+  "mode": "single",
+  "rationale": "源码、验证协议、状态恢复和范围审计共用数据结构，由一个实现上下文串行维护；高风险结果单独独立复核",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "修复可靠验证与恢复闭环",
+      "module": "runtime",
+      "status": "COMPLETED",
+      "attempt": 4,
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        ".ai-harness/src/**",
+        ".ai-harness/tests/**",
+        ".ai-harness/schemas/**",
+        ".ai-harness/manifest.json",
+        ".github/workflows/ai-harness.yml",
+        "AGENTS.md",
+        ".ai-harness/templates/instructions/AGENTS.md",
+        ".ai-harness/policies/**"
+      ],
+      "verification": [
+        "node .ai-harness/tests/run.mjs"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            ".ai-harness/tests/run.mjs"
+          ]
+        }
+      ],
+      "docsImpact": [
+        "README.md",
+        "docs/guides/usage.md",
+        "docs/guides/getting-started.md",
+        "docs/guides/model-guidance.md",
+        "docs/architecture/overview.md",
+        "docs/architecture/decisions/0007-verification-integrity-and-recovery.md"
+      ],
+      "reviewBatch": "R1",
+      "risk": "high",
+      "owner": "primary-ai",
+      "verificationStatus": "pass",
+      "reviewStatus": "pass",
+      "evidence": [
+        "f83913e3-edb0-44e3-8fa5-8d31c04f1cc6",
+        "c0775672-58ab-4824-af90-481b682ffc2a",
+        "df1a34ef-ebce-4d01-9055-6e75658a2033",
+        "e5dbd737-1f82-4a17-bfdd-65fcf642e5f2",
+        "55a3c790-da1d-40ac-8d8a-769530db43ad",
+        "a60cbccf-57f7-4df2-a6ad-cad4e335d154",
+        "1d57a07c-8edf-4dae-a7b6-ec31fa11aa40",
+        "aef8b01a-7306-448b-8f60-07d27d466a2b"
+      ],
+      "deferralApproval": null,
+      "verificationSource": {
+        "digest": "60a828c35abc7597a63f74e38ecaca2554482a71e7bde3a48f78e30dc5935dab",
+        "document": ".ai-harness/work-items/HARNESS-RELIABILITY-001/snapshots/60a828c35abc7597a63f74e38ecaca2554482a71e7bde3a48f78e30dc5935dab.json"
+      },
+      "reviewSource": {
+        "digest": "60a828c35abc7597a63f74e38ecaca2554482a71e7bde3a48f78e30dc5935dab",
+        "document": ".ai-harness/work-items/HARNESS-RELIABILITY-001/snapshots/60a828c35abc7597a63f74e38ecaca2554482a71e7bde3a48f78e30dc5935dab.json"
+      }
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "验收与命令边界独立复核",
+      "risk": "high",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": true
+    }
+  ],
+  "createdAt": "2026-09-14T03:22:23.351Z",
+  "updatedAt": "2026-09-14T05:56:38.997Z",
+  "revision": 2
+}

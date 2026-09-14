@@ -1,0 +1,16 @@
+请对当前工作区的可靠性修复做独立代码审查，用简体中文返回结构化结果。只读审查，不修改文件或新建工作项；当前委托已授权直接读取源码和 Git 差异，项目执行流程由主任务维护。
+
+本次需要检查以下具体行为：
+1. 验证必须匹配计划中的命令、当前修订/任务尝试和实际代码快照；无关命令、旧证据、代码变化、新失败不能支持完成。
+2. 删除、重命名及范围外修改必须被识别；历史终态范围不能放行新修改；合法 ANALYSIS 控制面不误报。
+3. reopen/replan 保留历史并撤销旧结果，计划可以合法调整；不能通过普通 transition 绕过失效流程。
+4. 命令 version 参数不能绕过审批；Windows 包管理器使用明确入口且保持参数数组。
+5. 新旧工作项、公开 Schema、CLI、guide 和 CI 兼容性。
+
+重点读取 .ai-harness/src/{commands,snapshot,verification,scope,evidence,workflow,validator,compact,guide,policy,cli,model}.mjs，以及相应测试和 schemas。工作区包含未跟踪的新源文件，git diff 本身不会显示它们，需直接读取。设计在 docs/architecture/decisions/0007-verification-integrity-and-recovery.md。
+上一轮全量111项通过后，独立审查发现以下三个问题，已补失败回归并修改，三个原始反例现已通过。此次重点确认修复和其直接影响：
+1. 流水线中途修改代码会混用旧阶段：现在阶段与事件绑定source/revision/planDigest，run和record发现变化撤销旧阶段，最终逐阶段检查。
+2. fail可被pending/pass覆盖：现在查询当前revision/taskAttempt内的失败日志，任务需REWORK后新attempt，工作项需reopen后新revision。guide使用相同失败判定。
+3. 两个活动项交付范围混入彼此改动：现在delivery保存全仓source及本项ownedChanges，范围比较仅叠加已完成的归属变更，DONE前复核范围，已完成项reopen后保留上一交付作为新基线。
+新版本全量测试正在由主任务运行；测试通过不是免除审查的理由。请优先寻找可复现的逻辑错误、意外兼容性破坏或错误通过，不报告纯风格意见。不要把调用方恶意修改整套Runtime的能力当作新漏洞；本项目明确不构成抵抗仓库所有者的防篡改沙箱。不要无限扩展审查范围；若三项已修且没有确认的新增阻塞问题，返回pass并列明验证边界。
+这是具体修复的代码审查，不进行全面安全评估或其他工作。若存在阻塞交付的问题，verdict 为 changes_requested，并给出精确文件、行号、触发步骤与修复建议；未确认的问题写在 limitations，不当作已证实缺陷。

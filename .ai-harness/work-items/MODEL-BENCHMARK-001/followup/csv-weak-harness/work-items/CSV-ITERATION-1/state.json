@@ -1,0 +1,213 @@
+{
+  "schemaVersion": 1,
+  "integrityVersion": 1,
+  "revision": 1,
+  "id": "CSV-ITERATION-1",
+  "type": "ITERATION",
+  "title": "实现严格 CSV 解析",
+  "status": "DONE",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/iteration.md",
+    ".ai-harness/policies/database.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户在本轮明确授权完成 TASK.md 普通迭代"
+  },
+  "input": {
+    "references": [
+      "TASK.md 中的 parseCsv 规格及 caller 兼容性"
+    ],
+    "acceptance": [
+      "parseCsv 满足 TASK.md 全部 CSV 解析、错误处理和 caller 兼容要求；公共测试与新增自测通过"
+    ],
+    "nonGoals": [],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": null,
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "TASK.md 中的 parseCsv 规格及 caller 兼容性"
+    ],
+    "completedAt": "2026-09-14T06:52:35.898Z",
+    "repository": {
+      "isGit": true,
+      "branch": "master",
+      "commit": "f7f7ef69aa98b5b63ba96a6954cf86ab614fd948",
+      "dirty": true,
+      "changedFiles": [
+        ".ai-harness/work-items/CSV-ITERATION-1/events.jsonl",
+        ".ai-harness/work-items/CSV-ITERATION-1/state.json"
+      ],
+      "fingerprints": {
+        ".ai-harness/work-items/CSV-ITERATION-1/events.jsonl": "85a35bc2ebb47f3e6efc3229ffc1229a0f6d1f0f8dea3e87a0ff4fd7da872b4e",
+        ".ai-harness/work-items/CSV-ITERATION-1/state.json": "b44807e8590a5b54f76e0b5bcd69f813d016387fbfdcff0bdfa7ab757a1072ae"
+      },
+      "source": {
+        "digest": "f32f6bde8a78c616dcf997277d23dce870c498dd7fc1f807e5502d0330c4eead",
+        "document": ".ai-harness/work-items/CSV-ITERATION-1/snapshots/f32f6bde8a78c616dcf997277d23dce870c498dd7fc1f807e5502d0330c4eead.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": ".ai-harness/work-items/CSV-ITERATION-1/solution.md",
+    "evidence": [
+      "在现有 csv.mjs 内使用单次状态机解析；新增边界回归测试覆盖规格意图"
+    ],
+    "completedAt": "2026-09-14T06:52:36.080Z"
+  },
+  "database": {
+    "impact": "none",
+    "status": "not-applicable",
+    "document": null,
+    "evidence": [
+      "无数据库影响：纯字符串解析，不访问持久化或外部服务"
+    ],
+    "completedAt": "2026-09-14T06:52:36.082Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/CSV-ITERATION-1/plan.json",
+    "approved": true,
+    "approvalRef": "用户在本轮明确授权完成 TASK.md 普通迭代"
+  },
+  "verification": {
+    "status": "pass",
+    "evidence": [
+      "207d50d2-9635-4ac8-af21-e0b4333be4bc"
+    ],
+    "stages": [],
+    "source": {
+      "digest": "9e33408e27b8825cd6013bd06d227de8ff624e1b9682a3f64001104efa16b495",
+      "document": ".ai-harness/work-items/CSV-ITERATION-1/snapshots/9e33408e27b8825cd6013bd06d227de8ff624e1b9682a3f64001104efa16b495.json"
+    }
+  },
+  "review": {
+    "status": "pass",
+    "evidence": [
+      "25d43987-ea37-4fc8-bf34-244f59a69c3c"
+    ],
+    "independent": false,
+    "source": {
+      "digest": "9e33408e27b8825cd6013bd06d227de8ff624e1b9682a3f64001104efa16b495",
+      "document": ".ai-harness/work-items/CSV-ITERATION-1/snapshots/9e33408e27b8825cd6013bd06d227de8ff624e1b9682a3f64001104efa16b495.json"
+    }
+  },
+  "acceptance": {
+    "status": "pass",
+    "evidence": [
+      "21f8d046-d289-45e5-ac22-72d444744d9a"
+    ],
+    "source": {
+      "digest": "9e33408e27b8825cd6013bd06d227de8ff624e1b9682a3f64001104efa16b495",
+      "document": ".ai-harness/work-items/CSV-ITERATION-1/snapshots/9e33408e27b8825cd6013bd06d227de8ff624e1b9682a3f64001104efa16b495.json"
+    }
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "not-applicable",
+    "evidence": [
+      "34a3e4e4-4574-48e7-9ac3-87aabfde0e56"
+    ]
+  },
+  "blocked": null,
+  "delivery": {
+    "source": {
+      "digest": "9e33408e27b8825cd6013bd06d227de8ff624e1b9682a3f64001104efa16b495",
+      "document": ".ai-harness/work-items/CSV-ITERATION-1/snapshots/9e33408e27b8825cd6013bd06d227de8ff624e1b9682a3f64001104efa16b495.json"
+    },
+    "baseline": {
+      "digest": "f32f6bde8a78c616dcf997277d23dce870c498dd7fc1f807e5502d0330c4eead",
+      "document": ".ai-harness/work-items/CSV-ITERATION-1/snapshots/f32f6bde8a78c616dcf997277d23dce870c498dd7fc1f807e5502d0330c4eead.json"
+    },
+    "baselineAt": "2026-09-14T06:52:35.898Z",
+    "ownedChanges": [
+      {
+        "path": "src/csv.mjs",
+        "before": "100644:865133e55d2a6204011eee26110f9f994c8f2745",
+        "after": "100644:372d7ee52f8f27cc4074aea416c7776563c7a0ff"
+      },
+      {
+        "path": "test/extra.test.mjs",
+        "before": null,
+        "after": "100644:13f650c698bbdc5abc2c80deadf766208315ecb9"
+      }
+    ],
+    "planDigest": "ec5ff1fd4d1c3a9ac0d5b212ed29f14282f0050d6e010d802be90a4076a123db",
+    "at": "2026-09-14T06:54:18.611Z",
+    "head": "f7f7ef69aa98b5b63ba96a6954cf86ab614fd948"
+  },
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-09-14T06:52:35.667Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-09-14T06:52:35.679Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-09-14T06:52:36.076Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-09-14T06:52:36.099Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-09-14T06:52:36.102Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "VERIFYING",
+      "at": "2026-09-14T06:54:15.807Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "VERIFYING",
+      "to": "CODE_REVIEW",
+      "at": "2026-09-14T06:54:16.484Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "CODE_REVIEW",
+      "to": "READY_FOR_ACCEPTANCE",
+      "at": "2026-09-14T06:54:17.198Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "READY_FOR_ACCEPTANCE",
+      "to": "DONE",
+      "at": "2026-09-14T06:54:18.858Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-09-14T06:52:35.667Z",
+  "updatedAt": "2026-09-14T06:54:18.858Z"
+}

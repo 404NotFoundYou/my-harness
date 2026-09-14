@@ -1,0 +1,195 @@
+{
+  "schemaVersion": 1,
+  "id": "ANALYSIS-HARNESS-ASSESS-001",
+  "type": "ANALYSIS",
+  "title": "评估任务引导与弱模型增强的可靠性缺口",
+  "status": "ANSWERED",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/analysis.md"
+  ],
+  "authorization": {
+    "mode": "approval-required",
+    "source": "用户当前只读评估请求"
+  },
+  "input": {
+    "references": [
+      "用户要求从专业角度评估当前项目还有哪些问题"
+    ],
+    "acceptance": [
+      "基于 a40af12 当前源码及隔离复现，按优先级说明具体问题、影响、改进建议和未验证范围"
+    ],
+    "nonGoals": [
+      "不修改产品代码，不提交推送，不进行真实外部模型调用或生产操作"
+    ],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": null,
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "D:/Projects/aiproject；main；a40af12c7f7a7d03bee37173f4bfcd83a24a6da0；初始工作树干净。证据来自当前 guide/compact/workflow/validator/checker/git/policy/evidence、公开 Schema、测试与使用指南。可运行本地临时夹具，未访问生产或外部模型。"
+    ],
+    "completedAt": "2026-09-14T02:42:09.418Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "a40af12c7f7a7d03bee37173f4bfcd83a24a6da0",
+      "dirty": true,
+      "changedFiles": [
+        ".ai-harness/work-items/ANALYSIS-HARNESS-ASSESS-001/events.jsonl",
+        ".ai-harness/work-items/ANALYSIS-HARNESS-ASSESS-001/state.json"
+      ],
+      "fingerprints": {
+        ".ai-harness/work-items/ANALYSIS-HARNESS-ASSESS-001/events.jsonl": "07507f1d2fa341994448374c850bb6dac284819a0ea316c9d23dc552de6cdcea",
+        ".ai-harness/work-items/ANALYSIS-HARNESS-ASSESS-001/state.json": "aeb26cb1620084817af15ee62abf15d4c5b07ee989619f38c7819065c12d79bc"
+      }
+    }
+  },
+  "solution": {
+    "status": "pending",
+    "document": null,
+    "evidence": [],
+    "completedAt": null
+  },
+  "database": {
+    "status": "pending",
+    "document": null,
+    "evidence": [],
+    "completedAt": null,
+    "impact": "unknown"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/ANALYSIS-HARNESS-ASSESS-001/plan.json",
+    "approved": false,
+    "approvalRef": null
+  },
+  "verification": {
+    "status": "pending",
+    "evidence": [],
+    "stages": []
+  },
+  "review": {
+    "status": "pending",
+    "evidence": [],
+    "independent": false
+  },
+  "acceptance": {
+    "status": "pending",
+    "evidence": []
+  },
+  "analysis": {
+    "status": "pass",
+    "evidence": [
+      "3ed0373c-988c-4ec6-8550-81bee25a6a00"
+    ],
+    "conclusions": [
+      {
+        "id": "374417d3-1481-4dc8-8b7f-a45398c5dddf",
+        "status": "PROVEN",
+        "text": "验证证据可在代码改变后继续使用，无关版本命令可完成计划验证；VERIFYING 新失败未使旧 pass 失效，guide 和 CI 可继续通过。",
+        "evidence": [
+          "probe-results.json: stale_code_evidence / unrelated_command_satisfies_verification / late_failure_does_not_invalidate_pass；src/evidence.mjs:75；compact.mjs:109-119；guide.mjs:137-147"
+        ]
+      },
+      {
+        "id": "4723f693-6aef-4523-aec0-71eaddfd99ba",
+        "status": "PROVEN",
+        "text": "范围检查漏掉删除并延续 DONE 历史任务范围；当前合法 ANALYSIS 控制面记录被误判越界。",
+        "evidence": [
+          "probe-results.json: deleted_outside_file_not_detected / completed_work_item_scope_remains_active；本仓 check --json exit 1；src/git.mjs:34,72；checker.mjs:167-204,340-341"
+        ]
+      },
+      {
+        "id": "ea64bee1-1e2c-4d7d-96b6-1efd365a48f2",
+        "status": "PROVEN",
+        "text": "最终审查失败缺少可用的返回实现与重测路径；批准计划也不能追加任务。",
+        "evidence": [
+          "probe-results.json: final_review_has_no_rework_route；constants.mjs:71-105；workflow.mjs:254,263；evidence.mjs:40"
+        ]
+      },
+      {
+        "id": "3867acdf-1098-4c95-9c3c-571e0a9c67bd",
+        "status": "PROVEN",
+        "text": "node eval 的审批分类能被位置参数 version 改为 allow；只验证分类，未执行载荷。",
+        "evidence": [
+          "probe-results.json: version_token_changes_eval_classification；policy.mjs:100-102"
+        ]
+      },
+      {
+        "id": "b3b89cf9-858d-4206-b46f-b2bc6f87efe2",
+        "status": "PROVEN",
+        "text": "本机 PowerShell 的 npm 查询可用，但 Runtime 运行 npm/npm.cmd 分别 ENOENT/EINVAL。",
+        "evidence": [
+          "probe-results.json: windows_package_manager_execution；npm --version=10.9.3；evidence.mjs:61-68"
+        ]
+      },
+      {
+        "id": "27dfb55b-dd7e-4304-9b1b-bba853109420",
+        "status": "INFERRED",
+        "text": "当前主要改善流程导航，弱模型的代码理解、目标拆解及验证选择仍缺少自动整理的具体代码上下文。",
+        "evidence": [
+          "guide.mjs:190；compact.mjs:35-51；docs/guides/model-guidance.md:3,58-68"
+        ]
+      },
+      {
+        "id": "8e7fa4ce-58b2-4e8f-90d1-a771db3c934f",
+        "status": "PROPOSAL",
+        "text": "优先修复验证/范围/返工/命令分类，再补 Windows 验证器和模型对照，用失败样例决定后续上下文增强。",
+        "evidence": [
+          "assessment.md：建议实施顺序；本轮已复现反例及现有产品目标"
+        ]
+      },
+      {
+        "id": "4ff435ca-b0b6-4dd6-ad3d-28e5c62ff3fe",
+        "status": "UNKNOWN",
+        "text": "尚不能量化较弱模型的完成率、成本或与强模型的差距。",
+        "evidence": []
+      }
+    ],
+    "unknowns": [
+      "未进行真实模型 A/B，对其他操作系统和生产环境未作验证；既有全量测试本轮未重跑。"
+    ]
+  },
+  "documentation": {
+    "status": "pending",
+    "evidence": []
+  },
+  "blocked": null,
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-09-14T02:42:08.493Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-09-14T02:42:08.848Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "ANALYZING",
+      "at": "2026-09-14T02:42:09.829Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "ANALYZING",
+      "to": "ANSWERED",
+      "at": "2026-09-14T03:02:14.792Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-09-14T02:42:08.493Z",
+  "updatedAt": "2026-09-14T03:02:14.792Z"
+}

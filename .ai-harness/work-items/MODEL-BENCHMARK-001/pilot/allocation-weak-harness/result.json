@@ -1,0 +1,168 @@
+{
+  "schemaVersion": 1,
+  "mode": "real",
+  "taskId": "allocation",
+  "split": "development",
+  "group": "weak-harness",
+  "model": "gpt-5.6-luna",
+  "taskDigest": "ea01ac42353ca41a94b7cf06dff7697634920789f8e9c40c20b00a1af077da5a",
+  "judgeDigest": "a860e70ff0b427bfd6bd0173ea3c42abfe4d72b54a61b2af2d0bca0c9b79e74b",
+  "candidateDigest": "499de6bfb3cdb6f0b6694fc971efcd03491721ecb73c3bb7714d91892f8519e5",
+  "budget": {
+    "timeoutMs": 180000,
+    "maxToolCalls": 80,
+    "reasoning": "medium"
+  },
+  "run": {
+    "mode": "real",
+    "startedAt": "2026-09-14T06:15:10.155Z",
+    "durationMs": 136374,
+    "exitCode": 0,
+    "timedOut": false,
+    "toolLimit": false,
+    "toolCalls": 14,
+    "turnCompleted": true,
+    "usage": {
+      "input_tokens": 306933,
+      "cached_input_tokens": 265728,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 4608,
+      "reasoning_output_tokens": 1044
+    },
+    "error": null,
+    "errors": [],
+    "final": {
+      "completed": true,
+      "summary": "已完成 TASK.md 迭代：使用 BigInt 实现精确最大余数分配，增加完整输入校验、零权重处理及稳定同余数排序；保持 caller 兼容。仅修改 src/allocate.mjs 并新增 test/extra.test.mjs。Harness finish 状态为 DONE，最终 check --ci 通过。",
+      "tests": [
+        "node .ai-harness/bin/harness.mjs run --id allocation-iteration --task T1 -- node --test test/public.test.mjs：通过",
+        "node --test test/extra.test.mjs：4/4 通过",
+        "node --test test/public.test.mjs test/extra.test.mjs：5/5 通过",
+        "caller 兼容性 smoke test：通过",
+        "git diff --check：通过",
+        "node .ai-harness/bin/harness.mjs check --ci --json：通过"
+      ]
+    },
+    "completed": true
+  },
+  "scope": {
+    "ok": true,
+    "changes": [
+      {
+        "path": "src/allocate.mjs",
+        "before": "60d9d7242829bbca87e702ca6d0488d81c7b702d7f5ded0f0c62620de580547b",
+        "after": "499de6bfb3cdb6f0b6694fc971efcd03491721ecb73c3bb7714d91892f8519e5"
+      },
+      {
+        "path": ".ai-harness/work-items/allocation-iteration/events.jsonl",
+        "before": null,
+        "after": "f4ff7a5de67b9ea099ec757a1c74e87da2fbd304ac0276ec8e5a7056c390ec41"
+      },
+      {
+        "path": ".ai-harness/work-items/allocation-iteration/evidence.jsonl",
+        "before": null,
+        "after": "63cc97d85e439abdac00f15bc2d3ec8281c6691ca0167e01eddb01eaa144f9bc"
+      },
+      {
+        "path": ".ai-harness/work-items/allocation-iteration/plan.json",
+        "before": null,
+        "after": "0759836371d9770991615289ab5cd5fe3e9dbaa8028226794c13d87a8bed7f07"
+      },
+      {
+        "path": ".ai-harness/work-items/allocation-iteration/snapshots/071d07a530a4753feaa632c396e9788bf9dd3be24906d223cfec94bae1fb0d74.json",
+        "before": null,
+        "after": "f59df119cb064501d2ea187f3c027d95dc3d271fd77b1174e8423acc36463e16"
+      },
+      {
+        "path": ".ai-harness/work-items/allocation-iteration/snapshots/fd5d9dd51e9f320aff41991a3dbaa366962b98c8258a812b89b4cbc10a45271a.json",
+        "before": null,
+        "after": "6bc03992b8df70383fc8984d9ce7fa46226b71367aee4bf4b74ff8ffe38906f2"
+      },
+      {
+        "path": ".ai-harness/work-items/allocation-iteration/solution.md",
+        "before": null,
+        "after": "3a9503982a5334b73b95845368375be8589c95fc17de2a0cbc39384157707028"
+      },
+      {
+        "path": ".ai-harness/work-items/allocation-iteration/state.json",
+        "before": null,
+        "after": "ca44c351949461efb8583d952e29e3879570474ab42da4dcdd274a45c6f48de6"
+      },
+      {
+        "path": "test/extra.test.mjs",
+        "before": null,
+        "after": "da9756745dc92ff1866f148f27822777bd89bcd24e38b165b0c165bda018c7f9"
+      }
+    ],
+    "violations": []
+  },
+  "workflow": {
+    "ok": true,
+    "errors": [],
+    "workItems": [
+      "allocation-iteration"
+    ]
+  },
+  "grade": {
+    "complete": true,
+    "ok": true,
+    "cases": [
+      {
+        "id": "conservation",
+        "pass": true
+      },
+      {
+        "id": "remainder-order",
+        "pass": true
+      },
+      {
+        "id": "zero-weight",
+        "pass": true
+      },
+      {
+        "id": "zero-total",
+        "pass": true
+      },
+      {
+        "id": "zero-sum",
+        "pass": true
+      },
+      {
+        "id": "invalid-total",
+        "pass": true
+      },
+      {
+        "id": "invalid-weights",
+        "pass": true
+      },
+      {
+        "id": "immutable",
+        "pass": true
+      },
+      {
+        "id": "large-total",
+        "pass": true
+      },
+      {
+        "id": "large-weights",
+        "pass": true
+      },
+      {
+        "id": "exact-order",
+        "pass": true
+      },
+      {
+        "id": "many-shares",
+        "pass": true
+      }
+    ],
+    "expectedCases": 12,
+    "exitCode": 0,
+    "timedOut": false,
+    "stderr": "",
+    "error": null
+  },
+  "success": true,
+  "falseCompletion": false,
+  "falseFunctionalCompletion": false
+}

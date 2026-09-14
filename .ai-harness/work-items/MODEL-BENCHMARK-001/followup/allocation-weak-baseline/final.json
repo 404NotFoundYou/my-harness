@@ -1,0 +1,1 @@
+{"completed":true,"summary":"已完成最大余数精确分配实现：校验非法输入，使用 BigInt 处理中间数值溢出风险，并按余数和原索引分配。新增测试覆盖边界、输入不变性及 invoice 调用兼容；仅修改 src/allocate.mjs 和新增 test/extra.test.mjs。","tests":["通过：node --test test/public.test.mjs（1/1）","通过：node --test test/extra.test.mjs（5/5）","通过：git diff --check"]}

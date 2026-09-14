@@ -1,0 +1,23 @@
+{
+  "type": "object",
+  "properties": {
+    "verdict": {"type": "string", "enum": ["pass", "changes_requested"]},
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "priority": {"type": "string", "enum": ["P1", "P2", "P3"]},
+          "file": {"type": "string"}, "line": {"type": "integer"},
+          "issue": {"type": "string"}, "reproduction": {"type": "string"}, "recommendation": {"type": "string"}
+        },
+        "required": ["priority", "file", "line", "issue", "reproduction", "recommendation"],
+        "additionalProperties": false
+      }
+    },
+    "reviewedFiles": {"type": "array", "items": {"type": "string"}},
+    "limitations": {"type": "array", "items": {"type": "string"}}
+  },
+  "required": ["verdict", "findings", "reviewedFiles", "limitations"],
+  "additionalProperties": false
+}

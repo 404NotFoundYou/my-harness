@@ -1,0 +1,123 @@
+{
+  "schemaVersion": 1,
+  "mode": "real",
+  "taskId": "events",
+  "split": "holdout",
+  "group": "weak-baseline",
+  "model": "gpt-5.6-luna",
+  "taskDigest": "e8a7130efc1592e2fdb89853fd6ba482da6b67285b7887b074da97ae289d4b2d",
+  "judgeDigest": "653600052c1e1ab18c5601412a2c49b1d6f0106747aca300db788e819dc765ae",
+  "candidateDigest": "0576764bed77d53d6a511d0a4197e3a5e281a52503dedb3041c996f685e444a2",
+  "budget": {
+    "timeoutMs": 180000,
+    "maxToolCalls": 80,
+    "reasoning": "medium"
+  },
+  "run": {
+    "mode": "real",
+    "startedAt": "2026-09-14T07:07:44.171Z",
+    "durationMs": 174566,
+    "exitCode": 0,
+    "timedOut": false,
+    "toolLimit": false,
+    "toolCalls": 13,
+    "turnCompleted": true,
+    "usage": {
+      "input_tokens": 251360,
+      "cached_input_tokens": 213760,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 7052,
+      "reasoning_output_tokens": 2576
+    },
+    "error": null,
+    "errors": [],
+    "final": {
+      "completed": true,
+      "summary": "已按 TASK.md 完成 reconcile：校验输入与 JSON 值、按版本仲裁并保留删除墓碑，结果按 JavaScript 字符串顺序排序且不修改输入。仅修改 src/reconcile.mjs 并新增 test/extra.test.mjs。",
+      "tests": [
+        "通过：node --test test/public.test.mjs test/extra.test.mjs（5/5）",
+        "通过：git diff --check"
+      ]
+    },
+    "completed": true
+  },
+  "scope": {
+    "ok": true,
+    "changes": [
+      {
+        "path": "src/reconcile.mjs",
+        "before": "033e356666be01c5f7f5f885bb91b2bd51768db10dfbc17f86be1dbffc0a4c0f",
+        "after": "0576764bed77d53d6a511d0a4197e3a5e281a52503dedb3041c996f685e444a2"
+      },
+      {
+        "path": "test/extra.test.mjs",
+        "before": null,
+        "after": "c20b865814aac6cb3a2b43eb026611d594b1e0e87780fb9e7651e47d33dd3196"
+      }
+    ],
+    "violations": []
+  },
+  "workflow": null,
+  "grade": {
+    "complete": true,
+    "ok": true,
+    "cases": [
+      {
+        "id": "stale",
+        "pass": true
+      },
+      {
+        "id": "tombstone",
+        "pass": true
+      },
+      {
+        "id": "same-version",
+        "pass": true
+      },
+      {
+        "id": "resurrection",
+        "pass": true
+      },
+      {
+        "id": "idempotent",
+        "pass": true
+      },
+      {
+        "id": "sorted",
+        "pass": true
+      },
+      {
+        "id": "ordinary-string-ids",
+        "pass": true
+      },
+      {
+        "id": "immutable",
+        "pass": true
+      },
+      {
+        "id": "invalid-shape",
+        "pass": true
+      },
+      {
+        "id": "invalid-version",
+        "pass": true
+      },
+      {
+        "id": "duplicate-current",
+        "pass": true
+      },
+      {
+        "id": "clean-fields",
+        "pass": true
+      }
+    ],
+    "expectedCases": 12,
+    "exitCode": 0,
+    "timedOut": false,
+    "stderr": "",
+    "error": null
+  },
+  "success": true,
+  "falseCompletion": false,
+  "falseFunctionalCompletion": false
+}

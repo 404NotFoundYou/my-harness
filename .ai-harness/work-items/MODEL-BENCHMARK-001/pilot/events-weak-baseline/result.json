@@ -1,0 +1,125 @@
+{
+  "schemaVersion": 1,
+  "mode": "real",
+  "taskId": "events",
+  "split": "holdout",
+  "group": "weak-baseline",
+  "model": "gpt-5.6-luna",
+  "taskDigest": "e8a7130efc1592e2fdb89853fd6ba482da6b67285b7887b074da97ae289d4b2d",
+  "judgeDigest": "653600052c1e1ab18c5601412a2c49b1d6f0106747aca300db788e819dc765ae",
+  "candidateDigest": "158fb3814bd9fd12a4bd35ece30e79e0814a0487fa1fe40f7f8c1ce3bc0e4f9e",
+  "budget": {
+    "timeoutMs": 180000,
+    "maxToolCalls": 80,
+    "reasoning": "medium"
+  },
+  "run": {
+    "mode": "real",
+    "startedAt": "2026-09-14T06:25:18.872Z",
+    "durationMs": 166995,
+    "exitCode": 0,
+    "timedOut": false,
+    "toolLimit": false,
+    "toolCalls": 14,
+    "turnCompleted": true,
+    "usage": {
+      "input_tokens": 181449,
+      "cached_input_tokens": 147968,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 6796,
+      "reasoning_output_tokens": 1576
+    },
+    "error": null,
+    "errors": [],
+    "final": {
+      "completed": true,
+      "summary": "已完成 TASK.md：实现 reconcile 的完整输入校验、版本冲突处理、删除墓碑、按 id 排序、幂等及纯函数行为；新增 test/extra.test.mjs。仅修改了允许范围内的两个文件，未安装依赖、访问网络或提交 Git。",
+      "tests": [
+        "node --test test/public.test.mjs：1/1 通过",
+        "node --test test/extra.test.mjs：4/4 通过",
+        "caller.mjs 兼容性冒烟验证：通过",
+        "git diff --check：通过"
+      ]
+    },
+    "completed": true
+  },
+  "scope": {
+    "ok": true,
+    "changes": [
+      {
+        "path": "src/reconcile.mjs",
+        "before": "033e356666be01c5f7f5f885bb91b2bd51768db10dfbc17f86be1dbffc0a4c0f",
+        "after": "158fb3814bd9fd12a4bd35ece30e79e0814a0487fa1fe40f7f8c1ce3bc0e4f9e"
+      },
+      {
+        "path": "test/extra.test.mjs",
+        "before": null,
+        "after": "b55f841d30b0aa4026d0e1702cc4b6ba4d8142acde6cf9713eb8440edcc23751"
+      }
+    ],
+    "violations": []
+  },
+  "workflow": null,
+  "grade": {
+    "complete": true,
+    "ok": true,
+    "cases": [
+      {
+        "id": "stale",
+        "pass": true
+      },
+      {
+        "id": "tombstone",
+        "pass": true
+      },
+      {
+        "id": "same-version",
+        "pass": true
+      },
+      {
+        "id": "resurrection",
+        "pass": true
+      },
+      {
+        "id": "idempotent",
+        "pass": true
+      },
+      {
+        "id": "sorted",
+        "pass": true
+      },
+      {
+        "id": "ordinary-string-ids",
+        "pass": true
+      },
+      {
+        "id": "immutable",
+        "pass": true
+      },
+      {
+        "id": "invalid-shape",
+        "pass": true
+      },
+      {
+        "id": "invalid-version",
+        "pass": true
+      },
+      {
+        "id": "duplicate-current",
+        "pass": true
+      },
+      {
+        "id": "clean-fields",
+        "pass": true
+      }
+    ],
+    "expectedCases": 12,
+    "exitCode": 0,
+    "timedOut": false,
+    "stderr": "",
+    "error": null
+  },
+  "success": true,
+  "falseCompletion": false,
+  "falseFunctionalCompletion": false
+}

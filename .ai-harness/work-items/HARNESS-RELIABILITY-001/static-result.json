@@ -1,0 +1,32 @@
+{
+  "source": "60a828c35abc7597a63f74e38ecaca2554482a71e7bde3a48f78e30dc5935dab",
+  "checkedFiles": [
+    ".ai-harness/src/checker.mjs",
+    ".ai-harness/src/cli.mjs",
+    ".ai-harness/src/commands.mjs",
+    ".ai-harness/src/compact.mjs",
+    ".ai-harness/src/constants.mjs",
+    ".ai-harness/src/errors.mjs",
+    ".ai-harness/src/evidence.mjs",
+    ".ai-harness/src/filesystem.mjs",
+    ".ai-harness/src/git.mjs",
+    ".ai-harness/src/guide.mjs",
+    ".ai-harness/src/installer.mjs",
+    ".ai-harness/src/managed-block.mjs",
+    ".ai-harness/src/model.mjs",
+    ".ai-harness/src/policy.mjs",
+    ".ai-harness/src/scope.mjs",
+    ".ai-harness/src/snapshot.mjs",
+    ".ai-harness/src/validator.mjs",
+    ".ai-harness/src/verification.mjs",
+    ".ai-harness/src/workflow.mjs",
+    ".ai-harness/bin/harness.mjs"
+  ],
+  "syntaxChecks": 20,
+  "staticRules": [
+    "no-shell-true",
+    "no-dynamic-js-evaluation"
+  ],
+  "failures": [],
+  "limitation": "仅验证列出的语法和项目特定静态规则，不是完整漏洞扫描。"
+}

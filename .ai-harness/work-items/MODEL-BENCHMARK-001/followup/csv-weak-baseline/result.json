@@ -1,0 +1,126 @@
+{
+  "schemaVersion": 1,
+  "mode": "real",
+  "taskId": "csv",
+  "split": "development",
+  "group": "weak-baseline",
+  "model": "gpt-5.6-luna",
+  "taskDigest": "c3cfc33cfb3f2ac504fd63705cd1d03d2dc7f497017362037152af0e251ca223",
+  "judgeDigest": "30194704e69ab805f27ffa7fefb9849b9313f355a3da6ff5145e05fafc458561",
+  "candidateDigest": "b0400e572aff6e46c5fe1f52b8300be376b51727f8e5042e5678a6efd33e7926",
+  "budget": {
+    "timeoutMs": 180000,
+    "maxToolCalls": 80,
+    "reasoning": "medium"
+  },
+  "run": {
+    "mode": "real",
+    "startedAt": "2026-09-14T06:49:56.912Z",
+    "durationMs": 112211,
+    "exitCode": 0,
+    "timedOut": false,
+    "toolLimit": false,
+    "toolCalls": 16,
+    "turnCompleted": true,
+    "usage": {
+      "input_tokens": 166308,
+      "cached_input_tokens": 136704,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 4004,
+      "reasoning_output_tokens": 1056
+    },
+    "error": null,
+    "errors": [],
+    "final": {
+      "completed": true,
+      "summary": "已完成 TASK.md：实现严格 CSV 解析，支持 BOM、空字段/空行、CRLF/LF/CR、引号字段、转义双引号及引号内换行，并对非法格式抛出 TypeError/SyntaxError。仅修改 src/csv.mjs，新增 test/extra.test.mjs；未安装依赖、联网或提交 Git。",
+      "tests": [
+        "node --test test/public.test.mjs：1/1 通过",
+        "node --test test/extra.test.mjs：3/3 通过",
+        "node --test test/public.test.mjs test/extra.test.mjs：4/4 通过",
+        "node --input-type=module -e \"import { importRows } from './src/caller.mjs'; console.log(JSON.stringify(importRows('a,b')))\"：通过",
+        "git diff --check：通过"
+      ]
+    },
+    "completed": true
+  },
+  "scope": {
+    "ok": true,
+    "changes": [
+      {
+        "path": "src/csv.mjs",
+        "before": "dd51e6b8418a474ba38c772e6825c45edeeac7f628fdab3e83058a737955b3c2",
+        "after": "b0400e572aff6e46c5fe1f52b8300be376b51727f8e5042e5678a6efd33e7926"
+      },
+      {
+        "path": "test/extra.test.mjs",
+        "before": null,
+        "after": "17a6daa6ae7d653c65294bd253ecd7b33eaac779bd97d64d76e559841db34e36"
+      }
+    ],
+    "violations": []
+  },
+  "workflow": null,
+  "grade": {
+    "complete": true,
+    "ok": true,
+    "cases": [
+      {
+        "id": "empty",
+        "pass": true
+      },
+      {
+        "id": "bom",
+        "pass": true
+      },
+      {
+        "id": "delimiters",
+        "pass": true
+      },
+      {
+        "id": "blank-rows",
+        "pass": true
+      },
+      {
+        "id": "quoted-fields",
+        "pass": true
+      },
+      {
+        "id": "escaped-quotes",
+        "pass": true
+      },
+      {
+        "id": "embedded-newline",
+        "pass": true
+      },
+      {
+        "id": "whitespace",
+        "pass": true
+      },
+      {
+        "id": "unterminated",
+        "pass": true
+      },
+      {
+        "id": "bare-quote",
+        "pass": true
+      },
+      {
+        "id": "after-quote",
+        "pass": true
+      },
+      {
+        "id": "input-type",
+        "pass": true
+      }
+    ],
+    "expectedCases": 12,
+    "exitCode": 0,
+    "timedOut": false,
+    "stderr": "",
+    "error": null
+  },
+  "success": true,
+  "falseCompletion": false,
+  "falseFunctionalCompletion": false
+}

@@ -35,6 +35,8 @@
 - `run --id <ID> --task T1 -- <COMMAND>` 记录实际命令结果。审查后用 `finish` 引用成功命令 ID，提交真实验证、文档及验收结论；它登记证据，不代做检查。
 - 状态、计划和证据仅通过 CLI 维护。中断保留真实进度，先 `show` 再用细粒度命令继续，禁止手改控制面 JSON/JSONL。
 - 需要更明确的下一步或恢复上下文时，可用 `guide --id <ID> [--task T1] --json` 读取目标、范围、证据与命令模板；先解决 `next.needs`，不将占位符或建议当成实际结果。此入口只读且可选。
+- 验证声明会编译成命令/参数数组；可用 `run --id <ID> --task T1 --check V1` 执行。完成证据必须匹配计划修订和当前代码快照，诊断命令不能代替未运行的计划检查。
+- 审查失败或需要重做时用 `reopen --id <ID> --reason <原因>`；调整计划用 `replan`，再以 `task-edit` 修改未批准任务并重新批准。旧版本和证据保留，当前完成结果失效。
 
 - BUGFIX 的验证保留 static/sandbox/reproduction/regression 阶段，frontend 另需 browser；finish 一次接收真实阶段证据并按顺序登记，复现及回归必须引用成功命令。codegen 标志继续使用完整验证流水线，详见 .ai-harness/policies/verification.md。
 

@@ -107,11 +107,31 @@ BUGFIX 保留远端引入的完整验证流水线。完成实际验证后，在�
 
 这是参数清单，追加到同一条 `finish` 命令；PowerShell 换行时仍需反引号。带 `frontend` 时还需 `--stage-evidence "browser=实际浏览器探针结果"`。Runtime 先检查全部必需阶段和命令引用，再按原流水线顺序登记；缺失时在更新结果前拒绝，不把普通测试推断为隔离或浏览器验证。同一个命令确实覆盖复现和回归时可复用其 ID。
 
-方案保存在 `.ai-harness/work-items/<ID>/solution.md`，任务固定为 T1、审查批次 R1。`--verify` 描述计划执行的验证，不执行命令。`finish --command` 可以重复，引用本任务最新成功的命令结果；不能使用其他任务的结果，不能用无关成功命令掩盖另一个仍失败的命令，返工后必须重新验证。审查、文档、验收都是执行者提交的实际结论，Runtime 不从退出码推断业务正确或自动代做审查。验证后若修改相关代码，必须重新验证。
+方案保存在 `.ai-harness/work-items/<ID>/solution.md`，任务固定为 T1、审查批次 R1。`--verify` 提供实际验证命令，或包含 `command` / `args` 的 JSON 字符串；Runtime 编译为 V1、V2 等检查，不执行 shell 展开。可用 `run --id <ID> --task T1 --check V1` 直接执行计划，或通过原有透传方式执行完全匹配的命令。诊断命令可以留证，但不能代替未运行的计划检查。
+
+一次执行本任务所有已声明检查可用 `run --id <ID> --task T1 --all --json`。检查逐条经过原权限与证据执行器；遇失败停止，响应的 `notRun` 列出未执行项。`--all` 不能与 `--check` 或透传命令混用。
+
+`finish --command` 可以重复。所引证据必须属于当前任务、匹配计划签名和任务执行次数，并对应当前代码快照；验证过程中代码变化、验证后修改产品内容或出现新失败，都不能继续使用旧的通过结论。审查、文档、验收仍须是实际结论，Runtime 不从退出码推断业务语义。
 
 新项目、数据库、公共 API、跨端、多 AI、高风险或需要逐步批准的任务使用下述完整流程。安全/权限、支付、并发、全局 UI/路由和破坏性影响也必须升级，不能以缺少业务标志为由归为低风险。
 
-精简命令依次调用原有门禁，不是跨多个文件的原子事务。运行中断时保留真实阶段；用 `show --id <ID> --json` 检查后，通过细粒度命令补齐后续步骤，不重复 `begin` / `finish`，不手改状态文件。失败退出码为 1，最终仍必须通过 CI。若实施前发现范围或风险变化，在原工作项记录原因并进入 BLOCKED，使用新工作项完成重新设计；旧项的后续处理需要明确记录，不能假装通过以消除 CI 阻塞。
+精简命令依次调用原有门禁，不是跨多个文件的原子事务。运行中断时保留真实阶段；用 `show` 或 `guide` 检查后，通过细粒度命令继续。需要返工时使用 `reopen`，需要调整计划时使用 `replan`；不手改状态或用通过结论覆盖失败。最终仍须通过 CI。
+
+```powershell
+node .ai-harness/bin/harness.mjs reopen --id ITER-001 --reason "修复最终审查发现的边界问题" --json
+node .ai-harness/bin/harness.mjs task-update --id ITER-001 --task T1 --status IN_PROGRESS --json
+# 修改后重新执行计划检查
+node .ai-harness/bin/harness.mjs run --id ITER-001 --task T1 --check V1 --json
+
+# 需要改变任务定义时，先保存旧计划并解除批准
+node .ai-harness/bin/harness.mjs replan --id ITER-001 --reason "补充验证与写入范围" --json
+node .ai-harness/bin/harness.mjs task-edit --id ITER-001 --task T1 --writes "src/validation/**" --writes "tests/validation.test.mjs" --verify "node --test tests/validation.test.mjs" --json
+node .ai-harness/bin/harness.mjs plan-approve --id ITER-001 --approval-ref "已有范围内授权或实际新增批准" --json
+node .ai-harness/bin/harness.mjs transition --id ITER-001 --to PLANNED --json
+node .ai-harness/bin/harness.mjs transition --id ITER-001 --to IMPLEMENTING --json
+```
+
+旧状态和计划保留在工作项的 `revisions/`，当前验证、审查、验收全部失效。`approval-required` 的工作项必须给出真实 `--approval-ref` 才能返工。replan 保留现有技术和数据库设计；需要改变时在重新批准计划前通过 solution/database 更新。
 
 ### 新项目
 
@@ -157,6 +177,8 @@ node .ai-harness/bin/harness.mjs start --id ANALYSIS-001 --type ANALYSIS --title
 
 需要辅助判断下一步时，可在任意已创建的工作项阶段运行 `guide --id <ID> [--task <TASK_ID>] --json`。它提供当前目标、任务与证据、命令参数模板和需要实际判断的内容；不写状态、不执行命令。引导会沿用数据库设计、授权、验证流水线、任务依赖及独立审查门禁。具体使用和模型效果对照方法见[模型任务引导](model-guidance.md)。
 
+按需增加 `--context` 会读取有界的明确源码、测试和公开文档，标记路径、哈希、截断与遗漏。普通已验证迭代还会提供 `shortcuts` 中的 `finish` 建议，需填真实审查和验收结论。实施中修正实现或自测后直接复验；需要整体 `reopen` 时，响应会列出重置后的任务状态与准确下一步，不能把 `READY` 当作 `IN_PROGRESS`。
+
 ### 基线与设计
 
 ```text
@@ -189,7 +211,7 @@ node .ai-harness/bin/harness.mjs database --id <ID> --impact required --complete
 node .ai-harness/bin/harness.mjs plan-init --id <ID> --mode single --rationale "模块存在连续依赖" --json
 node .ai-harness/bin/harness.mjs batch-add --id <ID> --batch R1 --title "业务模块" --risk medium --json
 node .ai-harness/bin/harness.mjs task-add --id <ID> --task T1 --title "纵向任务" --module <MODULE> \
-  --writes "src/module/**" --verify "项目测试命令" --docs "docs/相关文档.md" \
+  --writes "src/module/**" --verify "npm test" --docs "docs/相关文档.md" \
   --batch R1 --risk medium --owner primary-ai --json
 node .ai-harness/bin/harness.mjs plan-approve --id <ID> --approval-ref "计划批准或端到端授权" --json
 node .ai-harness/bin/harness.mjs transition --id <ID> --to PLANNED --json
@@ -271,3 +293,7 @@ node .ai-harness/bin/harness.mjs check --ci --json
 ```
 
 其他 CI 平台调用相同命令即可。CI 是合并门禁，不替代客户端权限、代码托管分支保护或人工独立复核。
+
+CI 检出需保留完整 Git 历史（GitHub Actions 示例使用 `fetch-depth: 0`），以确定旧终态记录的真实归档提交。新工作项保存交付内容快照；历史范围不再授权新的修改，合法分析控制面单独处理。
+
+代码快照基于 Git 跟踪及未忽略文件，包含删除、重命名、配置与测试，排除工作项控制面；暂存不会改变等价内容的标识。被忽略文件、外部服务和环境变化不属于代码快照，必要时应增加实际环境验证。未冻结的子模块变更会明确失败。

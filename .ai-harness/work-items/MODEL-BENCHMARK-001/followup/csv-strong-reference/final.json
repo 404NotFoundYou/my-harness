@@ -1,0 +1,1 @@
+{"completed":true,"summary":"已完成严格 CSV 解析：支持 BOM、空记录、CRLF/LF/CR、引号字段及转义，并对非法引号和非字符串输入显式报错。保持 caller 兼容；仅修改 src/csv.mjs 并新增 test/extra.test.mjs。","tests":["node --test test/public.test.mjs：通过，1/1","node --test test/extra.test.mjs：通过，4/4","node --test：通过，5/5","git diff --check：通过"]}
