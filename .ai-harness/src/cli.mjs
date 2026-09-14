@@ -3,6 +3,7 @@ import { dirname, resolve } from "node:path";
 import { readdir, readFile } from "node:fs/promises";
 import { checkProject, doctorProject } from "./checker.mjs";
 import { beginWorkItem, finishWorkItem } from "./compact.mjs";
+import { getWorkGuide } from "./guide.mjs";
 import { HarnessError, invariant } from "./errors.mjs";
 import { runRecordedCommand } from "./evidence.mjs";
 import { findProjectRoot, readJson } from "./filesystem.mjs";
@@ -111,6 +112,7 @@ function helpText() {
   finish        普通任务：引用成功命令和实际审查/验收结论完成工作项
   start         创建工作项
   show          显示 state 和 plan
+  guide         只读任务引导：--id ID [--task T]，汇总目标、证据与下一步命令
   baseline      记录 Git/文档基线
   solution      完成业务/领域/接口技术设计
   database      记录 none|required 数据库影响
@@ -279,6 +281,12 @@ export async function runCli(argv, io = { stdout: console.log, stderr: console.e
       state: await loadWorkItem(root, id),
       plan: await loadPlan(root, id, { optional: true }),
     });
+    return 0;
+  }
+  if (command === "guide") {
+    emit(io, parsed, await getWorkGuide(root, one(parsed, "id", { required: true }), {
+      taskId: one(parsed, "task"),
+    }));
     return 0;
   }
   if (command === "baseline") {

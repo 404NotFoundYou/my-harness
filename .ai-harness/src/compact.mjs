@@ -71,7 +71,9 @@ export async function beginWorkItem(root, options) {
   await transitionWorkItem(root, options.id, "PLANNED");
   const item = await transitionWorkItem(root, options.id, "IMPLEMENTING");
   await updateTaskStatus(root, options.id, task.id, "IN_PROGRESS");
-  return { id: item.id, status: item.status, taskId: task.id, policyFiles: item.policyFiles, document };
+  return { id: item.id, status: item.status, taskId: task.id, policyFiles: item.policyFiles, document,
+    guide: { executable: "node", args: [".ai-harness/bin/harness.mjs", "guide", "--id", item.id, "--task", task.id, "--json"] },
+  };
 }
 
 export async function finishWorkItem(root, id, { commandIds, verification, review, documentation, acceptance, stageEvidence = [], stageCommands = [] }) {

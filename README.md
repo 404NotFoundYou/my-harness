@@ -82,6 +82,8 @@ node .ai-harness/bin/harness.mjs start `
 
 普通任务的可复制命令及完整流程见[使用指南](docs/guides/usage.md#普通任务默认路径)。`begin` 内置环境检查；`finish` 必须引用真实成功命令，且缺少审查、文档或验收结论时拒绝完成。旧命令与工作项格式继续兼容。
 
+需要帮助模型选择下一步或恢复上下文时，运行 `node .ai-harness/bin/harness.mjs guide --id <ID> --json`。它只读汇总目标、范围、近期证据和下一步参数，将缺失的判断、授权与独立审查明确列出，不自动执行或标记通过。适用于不同厂商的模型，使用与效果对照方法见[模型任务引导](docs/guides/model-guidance.md)。
+
 ## AI 代码生成验证流水线
 
 声明 `codegen` 标志的工作项，`VERIFYING` 必须逐段通过有序验证流水线，Runtime 才允许进入 `CODE_REVIEW`：

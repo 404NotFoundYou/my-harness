@@ -155,6 +155,8 @@ node .ai-harness/bin/harness.mjs start --id ANALYSIS-001 --type ANALYSIS --title
 
 ## 3. 开发型状态流
 
+需要辅助判断下一步时，可在任意已创建的工作项阶段运行 `guide --id <ID> [--task <TASK_ID>] --json`。它提供当前目标、任务与证据、命令参数模板和需要实际判断的内容；不写状态、不执行命令。引导会沿用数据库设计、授权、验证流水线、任务依赖及独立审查门禁。具体使用和模型效果对照方法见[模型任务引导](model-guidance.md)。
+
 ### 基线与设计
 
 ```text

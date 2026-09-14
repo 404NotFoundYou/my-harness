@@ -34,6 +34,7 @@
 - 完整流程先 doctor，再 start；依次完成基线、设计、数据库判断/设计、计划、实现、验证、审查、验收。具体门禁由 Runtime 校验。
 - `run --id <ID> --task T1 -- <COMMAND>` 记录实际命令结果。审查后用 `finish` 引用成功命令 ID，提交真实验证、文档及验收结论；它登记证据，不代做检查。
 - 状态、计划和证据仅通过 CLI 维护。中断保留真实进度，先 `show` 再用细粒度命令继续，禁止手改控制面 JSON/JSONL。
+- 需要更明确的下一步或恢复上下文时，可用 `guide --id <ID> [--task T1] --json` 读取目标、范围、证据与命令模板；先解决 `next.needs`，不将占位符或建议当成实际结果。此入口只读且可选。
 
 - BUGFIX 的验证保留 static/sandbox/reproduction/regression 阶段，frontend 另需 browser；finish 一次接收真实阶段证据并按顺序登记，复现及回归必须引用成功命令。codegen 标志继续使用完整验证流水线，详见 .ai-harness/policies/verification.md。
 

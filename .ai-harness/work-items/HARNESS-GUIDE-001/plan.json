@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "HARNESS-GUIDE-001",
+  "mode": "single",
+  "rationale": "增加独立只读 guide 模块，由已记录状态、计划依赖及现有门禁函数计算下一步；提供精简任务上下文、证据摘要与需要模型判断的字段。CLI 增加 guide --id [--task]，begin 结果提供入口提示。保留所有原命令和持久格式，不自动执行、不新增强制门禁。测试覆盖状态分流、证据归属、失败与恢复、权限判断和安装后 CLI。",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "为通用较弱模型提供确定性任务引导",
+      "module": "compact",
+      "status": "COMPLETED",
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        ".ai-harness/src/guide.mjs",
+        ".ai-harness/src/cli.mjs",
+        ".ai-harness/src/compact.mjs",
+        ".ai-harness/tests/guide.test.mjs",
+        ".ai-harness/tests/cli.test.mjs",
+        "AGENTS.md",
+        ".ai-harness/templates/instructions/AGENTS.md"
+      ],
+      "verification": [
+        "node --test .ai-harness/tests/guide.test.mjs .ai-harness/tests/cli.test.mjs",
+        "node .ai-harness/tests/run.mjs"
+      ],
+      "docsImpact": [
+        "README.md",
+        "docs/guides/usage.md",
+        "docs/guides/model-guidance.md",
+        "docs/architecture/overview.md"
+      ],
+      "reviewBatch": "R1",
+      "risk": "medium",
+      "owner": "primary-ai",
+      "verificationStatus": "pass",
+      "reviewStatus": "pass",
+      "evidence": [
+        "d757a73d-d1ca-4c1e-a026-45e772d81ece",
+        "1e15f521-6ec4-4cad-ac70-ad3078e9eb34"
+      ],
+      "deferralApproval": null
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "为通用较弱模型提供确定性任务引导",
+      "risk": "medium",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": false
+    }
+  ],
+  "createdAt": "2026-09-14T02:03:53.629Z",
+  "updatedAt": "2026-09-14T02:24:05.476Z"
+}

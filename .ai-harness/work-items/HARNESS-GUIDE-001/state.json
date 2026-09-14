@@ -1,0 +1,171 @@
+{
+  "schemaVersion": 1,
+  "id": "HARNESS-GUIDE-001",
+  "type": "ITERATION",
+  "title": "为通用较弱模型提供确定性任务引导",
+  "status": "DONE",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/iteration.md",
+    ".ai-harness/policies/database.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "本轮用户继续优化及通用较弱模型选项确认"
+  },
+  "input": {
+    "references": [
+      "用户要求继续优化，使通用较弱或较便宜模型更稳定完成任务，不限定厂商"
+    ],
+    "acceptance": [
+      "guide 只读返回目标、范围、相关资源、近期证据、缺失判断和合法下一步；不伪造授权或结果",
+      "覆盖开发、分析、BUGFIX/codegen 流水线、返工、阻塞和完成状态；错误状态不能静默推进；命令使用参数数组",
+      "已有精简与完整流程兼容；测试和最终 CI 门禁通过；说明模型效果需要对照评估"
+    ],
+    "nonGoals": [],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": null,
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "用户要求继续优化，使通用较弱或较便宜模型更稳定完成任务，不限定厂商"
+    ],
+    "completedAt": "2026-09-14T02:03:53.616Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "a8d0d06e07a802b7050183ca9774245af80fae8d",
+      "dirty": true,
+      "changedFiles": [
+        ".ai-harness/work-items/HARNESS-GUIDE-001/events.jsonl",
+        ".ai-harness/work-items/HARNESS-GUIDE-001/state.json"
+      ],
+      "fingerprints": {
+        ".ai-harness/work-items/HARNESS-GUIDE-001/events.jsonl": "7905e85d2221dc6688284c4fa78a2f57a0f2efe513ef7edf102066b5cc71ab14",
+        ".ai-harness/work-items/HARNESS-GUIDE-001/state.json": "90d67b212ad5d8c88c107e1991e875cb152297c400a20121814ab54979eee97b"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": ".ai-harness/work-items/HARNESS-GUIDE-001/solution.md",
+    "evidence": [
+      "增加独立只读 guide 模块，由已记录状态、计划依赖及现有门禁函数计算下一步；提供精简任务上下文、证据摘要与需要模型判断的字段。CLI 增加 guide --id [--task]，begin 结果提供入口提示。保留所有原命令和持久格式，不自动执行、不新增强制门禁。测试覆盖状态分流、证据归属、失败与恢复、权限判断和安装后 CLI。"
+    ],
+    "completedAt": "2026-09-14T02:03:53.623Z"
+  },
+  "database": {
+    "impact": "none",
+    "status": "not-applicable",
+    "document": null,
+    "evidence": [
+      "只读取既有工作项和证据，不新增持久化结构或数据库查询写入"
+    ],
+    "completedAt": "2026-09-14T02:03:53.626Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/HARNESS-GUIDE-001/plan.json",
+    "approved": true,
+    "approvalRef": "本轮用户继续优化及通用较弱模型选项确认"
+  },
+  "verification": {
+    "status": "pass",
+    "evidence": [
+      "cbcff8f2-3307-4a5e-9170-b27bd5544abb"
+    ],
+    "stages": []
+  },
+  "review": {
+    "status": "pass",
+    "evidence": [
+      "53be1b4c-7606-4d67-a40f-93a2b0040010"
+    ],
+    "independent": false
+  },
+  "acceptance": {
+    "status": "pass",
+    "evidence": [
+      "14b42d52-e7ce-4423-abd2-533930a7326b"
+    ]
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "pass",
+    "evidence": [
+      "e6ca0939-190c-44dd-aabf-7de79a8e2641"
+    ]
+  },
+  "blocked": null,
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-09-14T02:03:53.408Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-09-14T02:03:53.412Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-09-14T02:03:53.619Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-09-14T02:03:53.645Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-09-14T02:03:53.648Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "VERIFYING",
+      "at": "2026-09-14T02:24:05.483Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "VERIFYING",
+      "to": "CODE_REVIEW",
+      "at": "2026-09-14T02:24:05.497Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "CODE_REVIEW",
+      "to": "READY_FOR_ACCEPTANCE",
+      "at": "2026-09-14T02:24:05.505Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "READY_FOR_ACCEPTANCE",
+      "to": "DONE",
+      "at": "2026-09-14T02:24:05.511Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-09-14T02:03:53.408Z",
+  "updatedAt": "2026-09-14T02:34:32.835Z"
+}

@@ -46,6 +46,11 @@ for (const type of ["ITERATION", "BUGFIX"]) {
       ]));
       assert.equal(started.status, "IMPLEMENTING");
       assert.equal(started.taskId, "T1");
+      assert.equal(started.guide.executable, "node");
+      const guide = jsonOutput(runCli(entrypoint, root, started.guide.args.slice(1)));
+      assert.equal(guide.workItem.id, started.id);
+      assert.equal(guide.task.id, started.taskId);
+      assert.equal(guide.next.code, "implement-and-verify");
       await writeFile(path.join(root, "feature.test.mjs"), 'import assert from "node:assert/strict";\nassert.equal(2 + 2, 4);\n');
       const command = jsonOutput(runCli(entrypoint, root, [
         "run", "--id", started.id, "--task", started.taskId, "--json", "--", process.execPath, "--test", "feature.test.mjs",
