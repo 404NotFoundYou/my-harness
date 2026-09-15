@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "policyRoutingVersion": 2,
   "integrityVersion": 1,
-  "revision": 3,
+  "revision": 2,
   "id": "HARNESS-MULTIFILE-20260915",
   "type": "ITERATION",
   "title": "增加多文件工程BUG评测及独立候选验收",
@@ -48,7 +48,7 @@
     "evidence": [
       "main@062ea90，Runtime1.4.0；仅上一轮ANALYSIS记录未提交，产品工作区干净；doctor通过。已读runner/experiment/tasks/audit/run/README/CI、驱动与现有测试调用链。默认实验三题协议v2，旧记录v1须保持。"
     ],
-    "completedAt": "2026-09-15T09:53:05.187Z",
+    "completedAt": "2026-09-15T08:58:15.153Z",
     "repository": {
       "isGit": true,
       "branch": "main",
@@ -73,8 +73,8 @@
         ".ai-harness/work-items/HARNESS-MULTIFILE-20260915/state.json": "7c7f71fcbc5ea6cade5b50d27cf67a2b51636b997dc3472cf8caf78c68dbcefe"
       },
       "source": {
-        "digest": "a666a22cf2f37eb77415bca25bb136115c7504b9a5ad7504722c70a0b8b3198e",
-        "document": ".ai-harness/work-items/HARNESS-MULTIFILE-20260915/snapshots/a666a22cf2f37eb77415bca25bb136115c7504b9a5ad7504722c70a0b8b3198e.json"
+        "digest": "40f6679596619bd1592795560a6426f5c4804efae009b9c28b3fd9b800a3a533",
+        "document": ".ai-harness/work-items/HARNESS-MULTIFILE-20260915/snapshots/40f6679596619bd1592795560a6426f5c4804efae009b9c28b3fd9b800a3a533.json"
       }
     }
   },
@@ -103,33 +103,33 @@
   "verification": {
     "status": "pass",
     "evidence": [
-      "3d58ee82-9b9e-4f5d-89db-709b37b22090"
+      "1fc21208-11e7-4b94-be4e-05943e405e65"
     ],
     "stages": [],
     "source": {
-      "digest": "2d1a75682bd6d620d2e289170aa1add9165a1fc50cc78052c6afd6d014685738",
-      "document": ".ai-harness/work-items/HARNESS-MULTIFILE-20260915/snapshots/2d1a75682bd6d620d2e289170aa1add9165a1fc50cc78052c6afd6d014685738.json"
+      "digest": "a666a22cf2f37eb77415bca25bb136115c7504b9a5ad7504722c70a0b8b3198e",
+      "document": ".ai-harness/work-items/HARNESS-MULTIFILE-20260915/snapshots/a666a22cf2f37eb77415bca25bb136115c7504b9a5ad7504722c70a0b8b3198e.json"
     }
   },
   "review": {
     "status": "pass",
     "evidence": [
-      "445e56c8-57f7-4b69-b31a-6212fe25c062"
+      "7eaa30bd-506f-4b89-9a17-c216c3b18668"
     ],
     "independent": true,
     "source": {
-      "digest": "2d1a75682bd6d620d2e289170aa1add9165a1fc50cc78052c6afd6d014685738",
-      "document": ".ai-harness/work-items/HARNESS-MULTIFILE-20260915/snapshots/2d1a75682bd6d620d2e289170aa1add9165a1fc50cc78052c6afd6d014685738.json"
+      "digest": "a666a22cf2f37eb77415bca25bb136115c7504b9a5ad7504722c70a0b8b3198e",
+      "document": ".ai-harness/work-items/HARNESS-MULTIFILE-20260915/snapshots/a666a22cf2f37eb77415bca25bb136115c7504b9a5ad7504722c70a0b8b3198e.json"
     }
   },
   "acceptance": {
     "status": "pass",
     "evidence": [
-      "0deb8427-dffb-4d3e-ba85-49491384eb1f"
+      "f598a17a-0179-44a0-901c-e7e3b07f06c5"
     ],
     "source": {
-      "digest": "2d1a75682bd6d620d2e289170aa1add9165a1fc50cc78052c6afd6d014685738",
-      "document": ".ai-harness/work-items/HARNESS-MULTIFILE-20260915/snapshots/2d1a75682bd6d620d2e289170aa1add9165a1fc50cc78052c6afd6d014685738.json"
+      "digest": "a666a22cf2f37eb77415bca25bb136115c7504b9a5ad7504722c70a0b8b3198e",
+      "document": ".ai-harness/work-items/HARNESS-MULTIFILE-20260915/snapshots/a666a22cf2f37eb77415bca25bb136115c7504b9a5ad7504722c70a0b8b3198e.json"
     }
   },
   "analysis": {
@@ -141,30 +141,85 @@
   "documentation": {
     "status": "pass",
     "evidence": [
-      "b591cd07-1119-41b7-aaa6-398e7ca08b9e"
+      "f0aeab0a-8d42-40bf-ade9-970f26801e3e"
     ]
   },
   "blocked": null,
   "delivery": {
     "source": {
-      "digest": "2d1a75682bd6d620d2e289170aa1add9165a1fc50cc78052c6afd6d014685738",
-      "document": ".ai-harness/work-items/HARNESS-MULTIFILE-20260915/snapshots/2d1a75682bd6d620d2e289170aa1add9165a1fc50cc78052c6afd6d014685738.json"
-    },
-    "baseline": {
       "digest": "a666a22cf2f37eb77415bca25bb136115c7504b9a5ad7504722c70a0b8b3198e",
       "document": ".ai-harness/work-items/HARNESS-MULTIFILE-20260915/snapshots/a666a22cf2f37eb77415bca25bb136115c7504b9a5ad7504722c70a0b8b3198e.json"
     },
-    "baselineAt": "2026-09-15T09:53:05.187Z",
+    "baseline": {
+      "digest": "40f6679596619bd1592795560a6426f5c4804efae009b9c28b3fd9b800a3a533",
+      "document": ".ai-harness/work-items/HARNESS-MULTIFILE-20260915/snapshots/40f6679596619bd1592795560a6426f5c4804efae009b9c28b3fd9b800a3a533.json"
+    },
+    "baselineAt": "2026-09-15T08:58:15.153Z",
     "ownedChanges": [
       {
+        "path": ".ai-harness/manifest.json",
+        "before": "100644:a30f33f2d88d18042d8875bae9682ded4133c915",
+        "after": "100644:2bc28cd8b9fd812365eeb981aed0163613d5369e"
+      },
+      {
+        "path": ".github/workflows/source-tests.yml",
+        "before": "100644:67279b9b99141c2207456544cd7a8f4c68de86ce",
+        "after": "100644:75f712fd1b4f390bd98f6109ffd0ac209fbd5ce3"
+      },
+      {
+        "path": "README.md",
+        "before": "100644:7ee424f5550f0216de6c4f23ae4e0b95001defc1",
+        "after": "100644:e05505f5a2a95e7760c874961c843273745b1fe4"
+      },
+      {
+        "path": "benchmarks/README.md",
+        "before": "100644:2e814375df921c750f534cc664d5358410541ca8",
+        "after": "100644:dca410a2e3983e49d93f72a7e3f6fcac67bdb583"
+      },
+      {
+        "path": "benchmarks/audit.mjs",
+        "before": "100644:37aa03819d76a58a938c346f353845613f791f3d",
+        "after": "100644:65e7dd4d2ab05e86f20cc0f1fefd26042433f295"
+      },
+      {
+        "path": "benchmarks/candidates.mjs",
+        "before": null,
+        "after": "100644:19b8d3213e2186f602a423f3771d641b67ef6e43"
+      },
+      {
+        "path": "benchmarks/experiment.mjs",
+        "before": "100644:022c2e6f262fe34bc6af61650e12e17300275f70",
+        "after": "100644:b58af784fdf28742cce44ccf44f8ddc3bed86538"
+      },
+      {
+        "path": "benchmarks/project-tasks.mjs",
+        "before": null,
+        "after": "100644:4e943261c96265aeda8be4d634fbc1e659288954"
+      },
+      {
+        "path": "benchmarks/run.mjs",
+        "before": "100644:e915489045a27dfa121329253a932844569a21ee",
+        "after": "100644:0763780b7013691de77a35242c7d2fc2761f0c88"
+      },
+      {
+        "path": "benchmarks/runner.mjs",
+        "before": "100644:403de3d16ec226ad47182d95819531495b006ea0",
+        "after": "100644:9ecf59b81a92232b78ad14777866b50b6c47a1f2"
+      },
+      {
+        "path": "benchmarks/task-contract.mjs",
+        "before": null,
+        "after": "100644:09426d34bcd0d6fbcf9a4aa91dc2609ff34c0c14"
+      },
+      {
         "path": "benchmarks/tests/multifile.test.mjs",
-        "before": "100644:dbdd85d4cb5886038eae5010b0b9f30cdfed072e",
-        "after": "100644:26c3ba7114e2bce59b0e205841accc242221d8ad"
+        "before": null,
+        "after": "100644:dbdd85d4cb5886038eae5010b0b9f30cdfed072e"
       }
     ],
-    "planDigest": "31716051205ffd950174ad367efe8448d013055605fb4d7cdca84e863f4db8ac",
-    "at": "2026-09-15T10:03:59.514Z",
-    "head": "88d09cd0c64197faaf2effd87290df9f06b75a1f"
+    "planDigest": "987ac1947f053d0018491664779b6f64732634019db4f7b25a0ace89d6fca0bb",
+    "at": "2026-09-15T09:53:05.187Z",
+    "head": "062ea908bc1ff1a45a29a9851813511e0e07a7c9"
   },
   "history": [
     {
@@ -234,40 +289,8 @@
       "to": "DONE",
       "at": "2026-09-15T09:53:05.408Z",
       "reason": "gate-passed"
-    },
-    {
-      "from": "DONE",
-      "to": "IMPLEMENTING",
-      "at": "2026-09-15T09:57:15.004Z",
-      "reason": "远端88d09cd的Windows评测23项中1项失败：EACCES模拟未命中规范化后的路径。用根目录别名复现并修正测试路径匹配，保留旧CI和证据。",
-      "action": "reopen",
-      "revision": 3
-    },
-    {
-      "from": "IMPLEMENTING",
-      "to": "VERIFYING",
-      "at": "2026-09-15T10:03:55.258Z",
-      "reason": "gate-passed"
-    },
-    {
-      "from": "VERIFYING",
-      "to": "CODE_REVIEW",
-      "at": "2026-09-15T10:03:56.218Z",
-      "reason": "gate-passed"
-    },
-    {
-      "from": "CODE_REVIEW",
-      "to": "READY_FOR_ACCEPTANCE",
-      "at": "2026-09-15T10:03:57.107Z",
-      "reason": "gate-passed"
-    },
-    {
-      "from": "READY_FOR_ACCEPTANCE",
-      "to": "DONE",
-      "at": "2026-09-15T10:03:59.740Z",
-      "reason": "gate-passed"
     }
   ],
   "createdAt": "2026-09-15T08:58:14.754Z",
-  "updatedAt": "2026-09-15T10:03:59.740Z"
+  "updatedAt": "2026-09-15T09:53:05.408Z"
 }

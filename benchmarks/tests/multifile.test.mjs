@@ -4,7 +4,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { tmpdir } from "node:os";
 import { spawnSync } from "node:child_process";
-import { mkdir, mkdtemp, readFile, readdir, rm, symlink, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, readdir, realpath, rm, symlink, writeFile } from "node:fs/promises";
 import fsPromises from "node:fs/promises";
 import { syncBuiltinESMExports } from "node:module";
 import { projectTasks } from "../project-tasks.mjs";
@@ -59,21 +59,25 @@ test("candidate manifests reject ambiguous states and task paths cannot authoriz
 
 test("candidate collection preserves BOM and CRLF bytes and does not hide unexpected IO errors",async(t)=>{
   const participant=await createParticipant(task,{sourceRoot,harness:false});
-  const file=path.join(participant.root,task.writableFiles[0]);
+  const aliases=await mkdtemp(path.join(tmpdir(),"ai-harness-multifile-alias-"));
+  const alias=path.join(aliases,"project");
+  const file=path.join(alias,task.writableFiles[0]);
   const raw="\uFEFF"+task.reference[task.writableFiles[0]].replaceAll("\n","\r\n");
   try{
+    await symlink(participant.root,alias,process.platform === "win32" ? "junction" : "dir");
     await writeFile(file,raw);
-    const captured=await collectCandidate(participant.root,task);
+    const captured=await collectCandidate(alias,task);
     assert.equal(captured.files[task.writableFiles[0]].content,raw);
     assert.equal(captured.files[task.writableFiles[0]].sha256,hash(Buffer.from(raw)));
     const original=fsPromises.readFile;
+    const canonicalFile=await realpath(file);
     t.mock.method(fsPromises,"readFile",async(target,...args)=>{
-      if(String(target)===file)throw Object.assign(new Error("synthetic read denied"),{code:"EACCES"});
+      if(await realpath(target)===canonicalFile)throw Object.assign(new Error("synthetic read denied"),{code:"EACCES"});
       return original(target,...args);
     });
     syncBuiltinESMExports();
-    await assert.rejects(()=>collectCandidate(participant.root,task),{code:"EACCES"});
-  }finally{t.mock.restoreAll();syncBuiltinESMExports();await cleanupSandbox(participant.root);}
+    await assert.rejects(()=>collectCandidate(alias,task),{code:"EACCES"});
+  }finally{t.mock.restoreAll();syncBuiltinESMExports();await cleanup(aliases);await cleanupSandbox(participant.root);}
 });
 
 test("project selection is explicit and dry-run budgets preserve the default core experiment",async()=>{
