@@ -1,0 +1,169 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 1,
+  "id": "HARNESS-MULTIFILE-20260915",
+  "type": "ITERATION",
+  "title": "增加多文件工程BUG评测及独立候选验收",
+  "status": "IMPLEMENTING",
+  "flags": [
+    "api",
+    "database"
+  ],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/iteration.md",
+    ".ai-harness/policies/database.md",
+    ".ai-harness/policies/api.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户ok继续授权多文件评测实现；会话既有提交推送和远端验证授权持续有效"
+  },
+  "input": {
+    "references": [
+      "用户接受下一轮优先做多文件工程任务评测；ANALYSIS-NEXT-DIRECTIONS-20260915"
+    ],
+    "acceptance": [
+      "新增涉及两个实现文件的分页BUG题，固定调用方与依赖，完整参考修复通过、任一单文件修复不足，参与者不能改原规格和测试",
+      "新题集显式选择，多文件候选完整归档、哈希审计和独立目录验收；缺失或链接候选失败，默认三题与历史协议兼容",
+      "模拟两组可重复跑通并保留真实BUGFIX门禁证据；本地回归/独立复核/check --ci后提交推送并核验远端CI"
+    ],
+    "nonGoals": [
+      "不调用付费模型，不宣称模拟结果证明模型收益，不增加实验续跑或CI性能重构"
+    ],
+    "version": "1.5.0"
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": null,
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "main@062ea90，Runtime1.4.0；仅上一轮ANALYSIS记录未提交，产品工作区干净；doctor通过。已读runner/experiment/tasks/audit/run/README/CI、驱动与现有测试调用链。默认实验三题协议v2，旧记录v1须保持。"
+    ],
+    "completedAt": "2026-09-15T08:58:15.153Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "062ea908bc1ff1a45a29a9851813511e0e07a7c9",
+      "dirty": true,
+      "changedFiles": [
+        ".ai-harness/work-items/ANALYSIS-NEXT-DIRECTIONS-20260915/assessment.md",
+        ".ai-harness/work-items/ANALYSIS-NEXT-DIRECTIONS-20260915/events.jsonl",
+        ".ai-harness/work-items/ANALYSIS-NEXT-DIRECTIONS-20260915/evidence.jsonl",
+        ".ai-harness/work-items/ANALYSIS-NEXT-DIRECTIONS-20260915/snapshots/40f6679596619bd1592795560a6426f5c4804efae009b9c28b3fd9b800a3a533.json",
+        ".ai-harness/work-items/ANALYSIS-NEXT-DIRECTIONS-20260915/state.json",
+        ".ai-harness/work-items/HARNESS-MULTIFILE-20260915/events.jsonl",
+        ".ai-harness/work-items/HARNESS-MULTIFILE-20260915/state.json"
+      ],
+      "fingerprints": {
+        ".ai-harness/work-items/ANALYSIS-NEXT-DIRECTIONS-20260915/assessment.md": "24bc7cc3c33133d44b48e1647fee9a31f71ada3ba82ad87acaff8effc45262b5",
+        ".ai-harness/work-items/ANALYSIS-NEXT-DIRECTIONS-20260915/events.jsonl": "cc0780a36f9eb32ec4d74c1dbc6530615b449dce9bb3048a8fc76d14008db897",
+        ".ai-harness/work-items/ANALYSIS-NEXT-DIRECTIONS-20260915/evidence.jsonl": "9e50c989059692838004789deb4f0da38e91a25eae492c652745e4f21fbf1808",
+        ".ai-harness/work-items/ANALYSIS-NEXT-DIRECTIONS-20260915/snapshots/40f6679596619bd1592795560a6426f5c4804efae009b9c28b3fd9b800a3a533.json": "f3f5ab9af97589976e1893dc07e03e3727b7ce766042265dbbbc7d0edd06cbc1",
+        ".ai-harness/work-items/ANALYSIS-NEXT-DIRECTIONS-20260915/state.json": "08c2c7ceb966ba726112ea4fd159033fe9510ab63907c745e00a6055503702c5",
+        ".ai-harness/work-items/HARNESS-MULTIFILE-20260915/events.jsonl": "903401eadc5af4888c58f8c5138e912ffd88181b901ac94338ec65a30a400c32",
+        ".ai-harness/work-items/HARNESS-MULTIFILE-20260915/state.json": "7c7f71fcbc5ea6cade5b50d27cf67a2b51636b997dc3472cf8caf78c68dbcefe"
+      },
+      "source": {
+        "digest": "40f6679596619bd1592795560a6426f5c4804efae009b9c28b3fd9b800a3a533",
+        "document": ".ai-harness/work-items/HARNESS-MULTIFILE-20260915/snapshots/40f6679596619bd1592795560a6426f5c4804efae009b9c28b3fd9b800a3a533.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": ".ai-harness/work-items/HARNESS-MULTIFILE-20260915/design.md",
+    "evidence": [
+      "显式project题集和v3候选，保留core三题v1/v2；独立复核方案覆盖精确白名单、路径/UTF8/缺失候选及完整audit兼容边界。"
+    ],
+    "completedAt": "2026-09-15T08:59:59.321Z"
+  },
+  "database": {
+    "impact": "required",
+    "status": "complete",
+    "document": ".ai-harness/work-items/HARNESS-MULTIFILE-20260915/design.md",
+    "evidence": [
+      "新suite才使用协议v3，旧core、candidate.mjs与历史哈希不变；冻结元数据及候选manifest精确校验，无外部数据库或迁移。"
+    ],
+    "completedAt": "2026-09-15T08:59:59.593Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/HARNESS-MULTIFILE-20260915/plan.json",
+    "approved": true,
+    "approvalRef": "用户ok继续的自主授权；设计已明确，完整高风险独立复核。"
+  },
+  "verification": {
+    "status": "pending",
+    "evidence": [],
+    "stages": []
+  },
+  "review": {
+    "status": "pending",
+    "evidence": [],
+    "independent": false
+  },
+  "acceptance": {
+    "status": "pending",
+    "evidence": []
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "pending",
+    "evidence": []
+  },
+  "blocked": null,
+  "delivery": null,
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-09-15T08:58:14.754Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-09-15T08:58:14.846Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-09-15T08:58:15.416Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "DATABASE_DESIGN",
+      "at": "2026-09-15T08:59:59.503Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "DATABASE_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-09-15T09:00:00.122Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-09-15T09:00:00.214Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-09-15T08:58:14.754Z",
+  "updatedAt": "2026-09-15T09:44:30.566Z"
+}

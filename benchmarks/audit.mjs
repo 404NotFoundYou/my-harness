@@ -2,7 +2,9 @@ import assert from "node:assert/strict";
 import path from "node:path";
 import { readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
-import { tasks } from "./tasks.mjs";
+import { projectWorkflowContract, taskManifest, tasksForSuite } from "./task-contract.mjs";
+import { WORK_ID_PATTERN } from "../.ai-harness/src/constants.mjs";
+import { candidateDigest, validateCandidate } from "./candidates.mjs";
 import { hash, summarize } from "./runner.mjs";
 import { experimentPlan } from "./experiment.mjs";
 import { completedRun } from "./protocol.mjs";
@@ -12,8 +14,12 @@ export async function auditExperiment(directory) {
   const read = async file => JSON.parse(await readFile(path.join(directory, file), "utf8"));
   const protocol = await read("protocol.json");
   const summary = await read("summary.json");
-  assert.ok([1, 2].includes(protocol.schemaVersion));
-  const extended = protocol.schemaVersion === 2;
+  assert.ok([1, 2, 3].includes(protocol.schemaVersion));
+  const extended = protocol.schemaVersion >= 2;
+  const project = protocol.schemaVersion === 3;
+  if (project) assert.equal(protocol.suite,"project");
+  else assert.equal(protocol.suite,undefined);
+  const tasks=tasksForSuite(project?protocol.suite:"core");
   assert.ok(extended ? ["real", "simulated"].includes(protocol.mode) : protocol.mode === "real");
   assert.equal(summary.mode, protocol.mode);
   assert.equal(summary.complete, true, "experiment is incomplete");
@@ -26,7 +32,8 @@ export async function auditExperiment(directory) {
   assert.equal(protocol.tasks.length, tasks.length);
   const schedule = extended ? experimentPlan({ weak: protocol.groups.find(group => group.id === "weak-baseline").model,
     strong: protocol.groups.find(group => group.id === "strong-reference")?.model, client: protocol.client, comparison: protocol.comparison,
-    repetitions: protocol.repetitions, timeoutMs: protocol.budget.timeoutMs, maxToolCalls: protocol.budget.maxToolCalls }).schedule : null;
+    repetitions: protocol.repetitions, timeoutMs: protocol.budget.timeoutMs, maxToolCalls: protocol.budget.maxToolCalls, suite: project?protocol.suite:undefined }).schedule : null;
+  if (project) assert.deepEqual(protocol.tasks,tasks.map(taskManifest));
   if (extended) { assert.deepEqual(protocol.schedule, schedule); assert.deepEqual(summary.notRun, []); }
   const rows = [];
   for (const task of tasks) {
@@ -47,7 +54,29 @@ export async function auditExperiment(directory) {
       assert.equal(row.model, group.model);
       assert.equal(row.taskDigest, definition.taskDigest);
       assert.equal(row.judgeDigest, definition.judgeDigest);
-      assert.equal(row.candidateDigest, hash(await readFile(path.join(directory, folder, "candidate.mjs"))));
+      if (project) {
+        assert.equal(row.schemaVersion,2);
+        const candidate=validateCandidate(task,await read(`${folder}/candidate-files.json`));
+        assert.equal(row.candidateDigest,candidateDigest(task,candidate),"candidate digest differs");
+        if (Object.values(candidate.files).some(entry=>entry.status!=="present")) {
+          assert.equal(row.grade.complete,false,"invalid candidate cannot complete grading");
+          assert.equal(row.scope.ok,false,"invalid candidate cannot pass scope checks");
+        }
+        if (group.harness && (row.workflow?.contract || row.workflow?.ok)) {
+          assert.ok(Array.isArray(row.workflow.workItems),"project workflow work items missing");
+          assert.equal(new Set(row.workflow.workItems).size,row.workflow.workItems.length,"duplicate project workflow work item");
+          const records=[];
+          for (const id of row.workflow.workItems) {
+            assert.ok(typeof id === "string" && WORK_ID_PATTERN.test(id),"invalid project workflow work item");
+            const state=await read(`${folder}/work-items/${id}/state.json`);
+            assert.equal(state.id,id,"project workflow state owner differs");
+            records.push({state,plan:state.type === "ANALYSIS" ? null : await read(`${folder}/work-items/${id}/plan.json`)});
+          }
+          const contract=projectWorkflowContract(task,records);
+          assert.deepEqual(row.workflow.contract,contract,"project workflow differs from archived state and plan");
+          if (row.workflow.ok) assert.equal(contract.ok,true,"project workflow contract failed");
+        }
+      } else assert.equal(row.candidateDigest, hash(await readFile(path.join(directory, folder, "candidate.mjs"))));
       assert.deepEqual(row.budget, protocol.budget);
       if (row.grade.complete) assert.deepEqual(row.grade.cases.map(entry=>entry.id), task.cases.map(([id])=>id));
       assert.equal(row.grade.ok, row.grade.complete && row.grade.exitCode===0 && row.grade.cases.every(entry=>entry.pass));

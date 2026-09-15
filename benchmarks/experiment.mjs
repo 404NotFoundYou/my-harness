@@ -1,11 +1,13 @@
 import path from "node:path";
 import { mkdir } from "node:fs/promises";
-import { tasks } from "./tasks.mjs";
-import { budget, groups, hash, runCase, saveJson, summarize } from "./runner.mjs";
+import assert from "node:assert/strict";
+import { taskManifest, tasksForSuite } from "./task-contract.mjs";
+import { budget, groups, runCase, saveJson, summarize } from "./runner.mjs";
 import { sourceSnapshot } from "../.ai-harness/src/snapshot.mjs";
 import { redact } from "../.ai-harness/src/evidence.mjs";
 
-export function experimentPlan({ weak, strong, client = "codex", comparison = "reference", repetitions = 1, timeoutMs = budget.timeoutMs, maxToolCalls = budget.maxToolCalls }) {
+export function experimentPlan({ weak, strong, client = "codex", comparison = "reference", repetitions = 1, timeoutMs = budget.timeoutMs, maxToolCalls = budget.maxToolCalls, suite = "core" }) {
+  const tasks=tasksForSuite(suite);
   if (!["codex", "claude", "gemini"].includes(client) || !["paired", "reference"].includes(comparison)) throw new Error("Invalid client or comparison");
   if (typeof weak !== "string" || !weak.trim() || (comparison === "reference" && (typeof strong !== "string" || !strong.trim()))) throw new Error("Models must be explicit");
   if (!Number.isSafeInteger(repetitions) || repetitions < 1 || repetitions > 100) throw new Error("repetitions must be 1..100");
@@ -16,15 +18,18 @@ export function experimentPlan({ weak, strong, client = "codex", comparison = "r
     const group = matrix[(index + trial - 1 + offset) % matrix.length];
     schedule.push({ taskId: tasks[index].id, group: group.id, trial, directory: `${tasks[index].id}-${group.id}${repetitions > 1 ? `-trial-${trial}` : ""}` });
   }
-  return { schemaVersion: 2, client, comparison, repetitions, groups: matrix, budget: { timeoutMs, maxToolCalls, reasoning: client === "gemini" ? null : budget.reasoning }, schedule };
+  return { schemaVersion: suite === "core" ? 2 : 3, ...(suite === "core" ? {} : {suite}), client, comparison, repetitions, groups: matrix, budget: { timeoutMs, maxToolCalls, reasoning: client === "gemini" ? null : budget.reasoning }, schedule };
 }
 
 export async function runExperiment({ plan, sourceRoot, outputDirectory, driver, mode = "real", onProgress = () => {} }) {
   if (!["real", "simulated"].includes(mode)) throw new Error("Invalid experiment mode");
+  const expected=experimentPlan({weak:plan.groups.find(group=>group.id==="weak-baseline")?.model,strong:plan.groups.find(group=>group.id==="strong-reference")?.model,client:plan.client,comparison:plan.comparison,repetitions:plan.repetitions,timeoutMs:plan.budget.timeoutMs,maxToolCalls:plan.budget.maxToolCalls,suite:plan.suite});
+  assert.deepEqual(plan,expected,"Experiment plan differs from the declared task suite");
+  const tasks=tasksForSuite(plan.suite);
   await mkdir(outputDirectory); // 已有实验不可覆盖。
   const source = (await sourceSnapshot(sourceRoot)).digest;
   await saveJson(path.join(outputDirectory, "protocol.json"), { ...plan, mode, source, createdAt: new Date().toISOString(),
-    tasks: tasks.map(task => ({ id: task.id, split: task.split, taskDigest: hash(JSON.stringify(task.files)), judgeDigest: hash(JSON.stringify(task.cases)) })) });
+    tasks: tasks.map(taskManifest) });
   const results = [];
   async function summary(complete, error = null) {
     const sourceAfter = (await sourceSnapshot(sourceRoot)).digest;

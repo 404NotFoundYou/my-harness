@@ -1,0 +1,171 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 1,
+  "id": "ANALYSIS-NEXT-DIRECTIONS-20260915",
+  "type": "ANALYSIS",
+  "title": "评估1.4.0之后的优化方向",
+  "status": "ANSWERED",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/analysis.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户请求优化建议，授权相关只读检查及必要分析控制面记录"
+  },
+  "input": {
+    "references": [
+      "用户询问下一步优化方向；当前版本1.4.0及上一轮已验证结果"
+    ],
+    "acceptance": [
+      "从当前源码给出下一步优先级、收益和最小验收，明确已确认限制与待测假设"
+    ],
+    "nonGoals": [
+      "本轮不实现产品改动，不调用付费模型，不提交推送分析记录"
+    ],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": null,
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "main@062ea90，1.4.0，初始工作区干净，doctor通过；单项预算、安装字节和长日志修复已完成。读取experiment/runner/tasks/README与现有CI及上一轮实际Windows日志。"
+    ],
+    "completedAt": "2026-09-15T08:50:37.981Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "062ea908bc1ff1a45a29a9851813511e0e07a7c9",
+      "dirty": true,
+      "changedFiles": [
+        ".ai-harness/work-items/ANALYSIS-NEXT-DIRECTIONS-20260915/events.jsonl",
+        ".ai-harness/work-items/ANALYSIS-NEXT-DIRECTIONS-20260915/state.json"
+      ],
+      "fingerprints": {
+        ".ai-harness/work-items/ANALYSIS-NEXT-DIRECTIONS-20260915/events.jsonl": "17241f3726d6476162ac95351ee998cc2fb4183347195f9667f3f25107877099",
+        ".ai-harness/work-items/ANALYSIS-NEXT-DIRECTIONS-20260915/state.json": "d5a6c56347b71458a19f880b1a10dca73ec8b2fee3ec2aa6f9eb3927fb7c1e3e"
+      },
+      "source": {
+        "digest": "40f6679596619bd1592795560a6426f5c4804efae009b9c28b3fd9b800a3a533",
+        "document": ".ai-harness/work-items/ANALYSIS-NEXT-DIRECTIONS-20260915/snapshots/40f6679596619bd1592795560a6426f5c4804efae009b9c28b3fd9b800a3a533.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "pending",
+    "document": null,
+    "evidence": [],
+    "completedAt": null
+  },
+  "database": {
+    "status": "pending",
+    "document": null,
+    "evidence": [],
+    "completedAt": null,
+    "impact": "unknown"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/ANALYSIS-NEXT-DIRECTIONS-20260915/plan.json",
+    "approved": false,
+    "approvalRef": null
+  },
+  "verification": {
+    "status": "pending",
+    "evidence": [],
+    "stages": []
+  },
+  "review": {
+    "status": "pending",
+    "evidence": [],
+    "independent": false
+  },
+  "acceptance": {
+    "status": "pending",
+    "evidence": []
+  },
+  "analysis": {
+    "status": "pass",
+    "evidence": [
+      "fbc939bc-cc08-4c58-a4ea-1f4c416dc2c5"
+    ],
+    "conclusions": [
+      {
+        "id": "665597df-fc47-4c43-a441-21fc76c13887",
+        "status": "PROVEN",
+        "text": "当前评测仅有三个单文件任务；候选收集与独立验收围绕task.entry，尚未覆盖多文件跨模块修复。",
+        "evidence": [
+          "benchmarks/tasks.mjs；runner.mjs:79 inspectChanges、99 gradeCandidate、126 runCase；assessment.md"
+        ]
+      },
+      {
+        "id": "869818a0-1881-4dfc-b973-3b490d2d95b1",
+        "status": "PROVEN",
+        "text": "实验入口拒绝已存在输出目录，虽有notRun与冻结协议但没有续跑入口。",
+        "evidence": [
+          "benchmarks/experiment.mjs:22-49；benchmarks/README.md输出目录契约"
+        ]
+      },
+      {
+        "id": "049e4791-681f-4964-b189-0c2f80717e4d",
+        "status": "UNKNOWN",
+        "text": "Windows CI运行开销热点和真实多文件任务收益仍待测；本地载荷列举仅9至13毫秒，不能归因为CI主瓶颈。",
+        "evidence": [
+          "本轮只读计数与计时；上一轮同会话Windows Runtime日志373196.5463ms；assessment.md"
+        ]
+      },
+      {
+        "id": "47675784-ca6c-456f-99ce-65f7fe22abaa",
+        "status": "PROPOSAL",
+        "text": "优先一个2至3文件真实BUG评测题，再补严格冻结协议的实验续跑；CI先分段计时再优化热点。若近期高频批量实验，续跑可提前。",
+        "evidence": [
+          "assessment.md的当前事实、目标、适用条件和验收建议"
+        ]
+      }
+    ],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "pending",
+    "evidence": []
+  },
+  "blocked": null,
+  "delivery": null,
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-09-15T08:50:37.580Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-09-15T08:50:37.670Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "ANALYZING",
+      "at": "2026-09-15T08:50:38.246Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "ANALYZING",
+      "to": "ANSWERED",
+      "at": "2026-09-15T08:52:20.081Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-09-15T08:50:37.580Z",
+  "updatedAt": "2026-09-15T08:52:20.081Z"
+}

@@ -1,0 +1,133 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "HARNESS-MULTIFILE-20260915",
+  "mode": "single",
+  "rationale": "同一纵向任务维护候选/判定/审计契约，独立上下文只读复核。",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "实现多文件分页BUG题和模拟验收闭环",
+      "module": "benchmarks",
+      "status": "IN_REVIEW",
+      "attempt": 1,
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        "benchmarks/project-tasks.mjs",
+        "benchmarks/task-contract.mjs",
+        "benchmarks/candidates.mjs",
+        "benchmarks/runner.mjs",
+        "benchmarks/experiment.mjs",
+        "benchmarks/audit.mjs",
+        "benchmarks/run.mjs",
+        "benchmarks/tests/multifile.test.mjs",
+        "benchmarks/README.md",
+        ".github/workflows/source-tests.yml",
+        ".ai-harness/manifest.json",
+        "README.md"
+      ],
+      "verification": [
+        "node --test benchmarks/tests/multifile.test.mjs",
+        "node --test benchmarks/tests/runner.test.mjs",
+        "node --test .ai-harness/tests/reliability.test.mjs",
+        "node --test .ai-harness/tests/installer.test.mjs",
+        "node --test .ai-harness/tests/acceptance-artifacts.test.mjs .ai-harness/tests/bugfix-pipeline.test.mjs .ai-harness/tests/checker.test.mjs .ai-harness/tests/cli.test.mjs .ai-harness/tests/command-execution.test.mjs .ai-harness/tests/compact.test.mjs .ai-harness/tests/context-delta.test.mjs .ai-harness/tests/filesystem.test.mjs .ai-harness/tests/finish-resume.test.mjs .ai-harness/tests/guidance-tools.test.mjs .ai-harness/tests/guide.test.mjs .ai-harness/tests/installer-checkout.test.mjs .ai-harness/tests/locking.test.mjs .ai-harness/tests/managed-block.test.mjs .ai-harness/tests/output.test.mjs .ai-harness/tests/policy.test.mjs .ai-harness/tests/root-alias.test.mjs .ai-harness/tests/snapshot.test.mjs .ai-harness/tests/spec-input.test.mjs .ai-harness/tests/timeout.test.mjs .ai-harness/tests/validator.test.mjs .ai-harness/tests/verification-pipeline.test.mjs .ai-harness/tests/workflow.test.mjs"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            "--test",
+            "benchmarks/tests/multifile.test.mjs"
+          ]
+        },
+        {
+          "id": "V2",
+          "command": "node",
+          "args": [
+            "--test",
+            "benchmarks/tests/runner.test.mjs"
+          ]
+        },
+        {
+          "id": "V3",
+          "command": "node",
+          "args": [
+            "--test",
+            ".ai-harness/tests/reliability.test.mjs"
+          ]
+        },
+        {
+          "id": "V4",
+          "command": "node",
+          "args": [
+            "--test",
+            ".ai-harness/tests/installer.test.mjs"
+          ]
+        },
+        {
+          "id": "V5",
+          "command": "node",
+          "args": [
+            "--test",
+            ".ai-harness/tests/acceptance-artifacts.test.mjs",
+            ".ai-harness/tests/bugfix-pipeline.test.mjs",
+            ".ai-harness/tests/checker.test.mjs",
+            ".ai-harness/tests/cli.test.mjs",
+            ".ai-harness/tests/command-execution.test.mjs",
+            ".ai-harness/tests/compact.test.mjs",
+            ".ai-harness/tests/context-delta.test.mjs",
+            ".ai-harness/tests/filesystem.test.mjs",
+            ".ai-harness/tests/finish-resume.test.mjs",
+            ".ai-harness/tests/guidance-tools.test.mjs",
+            ".ai-harness/tests/guide.test.mjs",
+            ".ai-harness/tests/installer-checkout.test.mjs",
+            ".ai-harness/tests/locking.test.mjs",
+            ".ai-harness/tests/managed-block.test.mjs",
+            ".ai-harness/tests/output.test.mjs",
+            ".ai-harness/tests/policy.test.mjs",
+            ".ai-harness/tests/root-alias.test.mjs",
+            ".ai-harness/tests/snapshot.test.mjs",
+            ".ai-harness/tests/spec-input.test.mjs",
+            ".ai-harness/tests/timeout.test.mjs",
+            ".ai-harness/tests/validator.test.mjs",
+            ".ai-harness/tests/verification-pipeline.test.mjs",
+            ".ai-harness/tests/workflow.test.mjs"
+          ]
+        }
+      ],
+      "docsImpact": [
+        "benchmarks/README.md",
+        "README.md"
+      ],
+      "reviewBatch": "R1",
+      "risk": "high",
+      "owner": "primary-ai",
+      "verificationStatus": "pass",
+      "reviewStatus": "fail",
+      "evidence": [
+        "f032d659-1a3c-4208-ba25-3b6a72ebcf12",
+        "3d7c1d9a-ca65-4082-a817-558254595749"
+      ],
+      "deferralApproval": null,
+      "verificationSource": {
+        "digest": "18249bb54d1a21b7beb5c077a457c56d4b70c5886c293549cc59f3ebfdcdfee8",
+        "document": ".ai-harness/work-items/HARNESS-MULTIFILE-20260915/snapshots/18249bb54d1a21b7beb5c077a457c56d4b70c5886c293549cc59f3ebfdcdfee8.json"
+      }
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "多文件候选与历史证据独立复核",
+      "risk": "high",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": true
+    }
+  ],
+  "createdAt": "2026-09-15T08:59:59.683Z",
+  "updatedAt": "2026-09-15T09:44:30.564Z"
+}

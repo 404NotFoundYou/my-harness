@@ -4,7 +4,7 @@ import { clientDriver } from "./client-drivers.mjs";
 import { experimentPlan, runExperiment } from "./experiment.mjs";
 
 const options = {};
-const keys = ["--cli", "--weak", "--strong", "--out", "--client", "--comparison", "--repetitions", "--timeout-ms", "--max-tools", "--dry-run"];
+const keys = ["--cli", "--weak", "--strong", "--out", "--client", "--comparison", "--repetitions", "--timeout-ms", "--max-tools", "--suite", "--dry-run"];
 for (let index = 2; index < process.argv.length; index++) {
   const key = process.argv[index];
   if (!keys.includes(key) || Object.hasOwn(options, key)) throw new Error(`Unknown or repeated option: ${key}`);
@@ -16,7 +16,7 @@ for (let index = 2; index < process.argv.length; index++) {
   }
 }
 for (const key of ["--cli", "--weak", "--out"]) if (!options[key]) throw new Error(`Missing ${key}`);
-const plan = experimentPlan({ weak: options["--weak"], strong: options["--strong"], client: options["--client"], comparison: options["--comparison"],
+const plan = experimentPlan({ weak: options["--weak"], strong: options["--strong"], client: options["--client"], comparison: options["--comparison"], suite: options["--suite"],
   repetitions: options["--repetitions"] === undefined ? undefined : Number(options["--repetitions"]),
   timeoutMs: options["--timeout-ms"] === undefined ? undefined : Number(options["--timeout-ms"]),
   maxToolCalls: options["--max-tools"] === undefined ? undefined : Number(options["--max-tools"]) });
