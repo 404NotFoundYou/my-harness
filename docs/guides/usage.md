@@ -317,6 +317,8 @@ node .ai-harness/bin/harness.mjs record --id ITER-001 --task T1 `
 
 新可选字段要求使用 1.3.0 或更新的 Runtime 校验；历史记录不补写或重新解释。`run.command.timing` 分开记录准备、实际执行及证据准备，观测截至最终追加证据前，不包括进程启动和最后的持久化；完整 CLI 区间由客户端事件计时。原 `durationMs` 语义保持不变。
 
+工作项证据按原始字节计算哈希。随 Runtime 安装的 `.ai-harness/.gitattributes` 对默认 `work-items/**` 禁用 Git 文本转换，使 LF、CRLF 和二进制产物在提交及跨平台检出后保持不变。使用自定义工作项目录时，应在该目录的 Git 属性中设置同等保护。已被换行转换破坏的旧工作副本应从可信提交重新检出，不修改证据哈希来迁就变化后的内容。
+
 ### 锁诊断与恢复
 
 ```powershell

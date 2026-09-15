@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "BUG-WINDOWS-CI-20260915",
+  "mode": "single",
+  "rationale": "在随Runtime安装的.ai-harness/.gitattributes中为work-items禁用文本转换，补安装后Git跨换行配置往返测试，文档明确证据按字节保留；不放宽哈希校验",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "修复Windows检出导致证据哈希漂移",
+      "module": "compact",
+      "status": "IN_PROGRESS",
+      "attempt": 1,
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        ".ai-harness/.gitattributes",
+        "benchmarks/tests/runner.test.mjs",
+        "docs/guides/usage.md"
+      ],
+      "verification": [
+        "node --test benchmarks/tests/runner.test.mjs",
+        "node .ai-harness/tests/run.mjs"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            "--test",
+            "benchmarks/tests/runner.test.mjs"
+          ]
+        },
+        {
+          "id": "V2",
+          "command": "node",
+          "args": [
+            ".ai-harness/tests/run.mjs"
+          ]
+        }
+      ],
+      "docsImpact": [
+        "docs/guides/usage.md"
+      ],
+      "reviewBatch": "R1",
+      "risk": "medium",
+      "owner": "primary-ai",
+      "verificationStatus": "pending",
+      "reviewStatus": "pending",
+      "evidence": [],
+      "deferralApproval": null
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "修复Windows检出导致证据哈希漂移",
+      "risk": "medium",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": false
+    }
+  ],
+  "createdAt": "2026-09-15T05:58:10.808Z",
+  "updatedAt": "2026-09-15T05:58:10.846Z"
+}

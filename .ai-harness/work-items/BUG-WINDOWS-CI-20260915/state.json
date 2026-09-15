@@ -1,0 +1,313 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 2,
+  "id": "BUG-WINDOWS-CI-20260915",
+  "type": "BUGFIX",
+  "title": "修复Windows检出导致证据哈希漂移",
+  "status": "DONE",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/bugfix.md",
+    ".ai-harness/policies/verification.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户明确回复允许继续修复"
+  },
+  "input": {
+    "references": [
+      "用户确认允许创建工作项并继续修复",
+      "https://github.com/404NotFoundYou/my-harness/actions/runs/34933624306/job/104266793779"
+    ],
+    "acceptance": [
+      "Git自动CRLF检出后历史候选和归档产物字节保持不变，评测框架与Runtime通过且实际内容篡改仍被拒绝"
+    ],
+    "nonGoals": [],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": {
+    "actual": "全新Windows检出将证据LF转换为CRLF，历史审计candidateDigest及归档产物校验失败",
+    "expected": "证据按原始字节保存和检出，Windows与Linux得出相同哈希",
+    "reproduction": "以core.autocrlf=true克隆a2108c9后运行historical nine-sample测试失败；LF归一化后的哈希与记录一致"
+  },
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "用户确认允许创建工作项并继续修复",
+      "https://github.com/404NotFoundYou/my-harness/actions/runs/34933624306/job/104266793779"
+    ],
+    "completedAt": "2026-09-15T05:58:10.614Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "a2108c90e4f95c1ec2b8db980bb73f22e514e7ac",
+      "dirty": true,
+      "changedFiles": [
+        ".ai-harness/work-items/ANALYSIS-NEXT-OPT-20260915/events.jsonl",
+        ".ai-harness/work-items/ANALYSIS-NEXT-OPT-20260915/evidence.jsonl",
+        ".ai-harness/work-items/ANALYSIS-NEXT-OPT-20260915/snapshots/a02edcf2d41105d11f7328a4b841cee589253833598037f6757eba16b3673ca0.json",
+        ".ai-harness/work-items/ANALYSIS-NEXT-OPT-20260915/state.json",
+        ".ai-harness/work-items/BUG-WINDOWS-CI-20260915/events.jsonl",
+        ".ai-harness/work-items/BUG-WINDOWS-CI-20260915/state.json"
+      ],
+      "fingerprints": {
+        ".ai-harness/work-items/ANALYSIS-NEXT-OPT-20260915/events.jsonl": "e59cdd0d1fdf1e93023f88c7ad6bd2ce9a7087a5b83622024ffe1f6869c8a052",
+        ".ai-harness/work-items/ANALYSIS-NEXT-OPT-20260915/evidence.jsonl": "9bf3c35b3dd1232ef88672225fbc4c1350f640ef1a2a70ae68539bc67908b071",
+        ".ai-harness/work-items/ANALYSIS-NEXT-OPT-20260915/snapshots/a02edcf2d41105d11f7328a4b841cee589253833598037f6757eba16b3673ca0.json": "5820e3423a5261a50a2636e367be8532e1e69e76c09e8d44c3d0ed722e79adba",
+        ".ai-harness/work-items/ANALYSIS-NEXT-OPT-20260915/state.json": "875e74260348a5be93f9559b9ffb6bc047f8e9279c4b39b9fb9af71a0b086e4d",
+        ".ai-harness/work-items/BUG-WINDOWS-CI-20260915/events.jsonl": "03ab41181e07690a8a015518b6687adf1e33240507b37ece86dcaf9d36926646",
+        ".ai-harness/work-items/BUG-WINDOWS-CI-20260915/state.json": "832eb6454afee29360b16c5e44f19f85fa9cde31a6ec42387bfb88f26edc9ef8"
+      },
+      "source": {
+        "digest": "a02edcf2d41105d11f7328a4b841cee589253833598037f6757eba16b3673ca0",
+        "document": ".ai-harness/work-items/BUG-WINDOWS-CI-20260915/snapshots/a02edcf2d41105d11f7328a4b841cee589253833598037f6757eba16b3673ca0.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": ".ai-harness/work-items/BUG-WINDOWS-CI-20260915/solution.md",
+    "evidence": [
+      "在随Runtime安装的.ai-harness/.gitattributes中为work-items禁用文本转换，补安装后Git跨换行配置往返测试，文档明确证据按字节保留；不放宽哈希校验"
+    ],
+    "completedAt": "2026-09-15T05:58:10.797Z"
+  },
+  "database": {
+    "impact": "none",
+    "status": "not-applicable",
+    "document": null,
+    "evidence": [
+      "无外部数据库、Schema或存储格式变更；仅阻止Git检出时改写既有证据字节"
+    ],
+    "completedAt": "2026-09-15T05:58:10.803Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/BUG-WINDOWS-CI-20260915/plan.json",
+    "approved": true,
+    "approvalRef": "用户已授权修复和回归；验证按全量文件分批，不调整命令时间上限或跳过测试"
+  },
+  "verification": {
+    "status": "pass",
+    "evidence": [
+      "3fb5616d-82c6-4e00-a00b-b52596dfdfa5",
+      "f0dffa5f-fbd2-4119-a161-9fa5c8fdb68d",
+      "08d53f87-766a-48f6-a28c-5f67bb4cb57e",
+      "aa0833a8-756b-4501-973d-35c820896913"
+    ],
+    "stages": [
+      {
+        "stage": "static",
+        "status": "pass",
+        "evidence": [
+          "3fb5616d-82c6-4e00-a00b-b52596dfdfa5"
+        ],
+        "command": null,
+        "revision": 2,
+        "source": {
+          "digest": "91514908e73e7869bf7d0ff36c7f514d31348fb19669f159f2b2eeb6f27e6d90",
+          "document": ".ai-harness/work-items/BUG-WINDOWS-CI-20260915/snapshots/91514908e73e7869bf7d0ff36c7f514d31348fb19669f159f2b2eeb6f27e6d90.json"
+        },
+        "planDigest": "f0aa1beb79b876a327350bd4caea0eaff1966353d20866607d77728cf63f237b"
+      },
+      {
+        "stage": "sandbox",
+        "status": "pass",
+        "evidence": [
+          "f0dffa5f-fbd2-4119-a161-9fa5c8fdb68d"
+        ],
+        "command": null,
+        "revision": 2,
+        "source": {
+          "digest": "91514908e73e7869bf7d0ff36c7f514d31348fb19669f159f2b2eeb6f27e6d90",
+          "document": ".ai-harness/work-items/BUG-WINDOWS-CI-20260915/snapshots/91514908e73e7869bf7d0ff36c7f514d31348fb19669f159f2b2eeb6f27e6d90.json"
+        },
+        "planDigest": "f0aa1beb79b876a327350bd4caea0eaff1966353d20866607d77728cf63f237b"
+      },
+      {
+        "stage": "reproduction",
+        "status": "pass",
+        "evidence": [
+          "08d53f87-766a-48f6-a28c-5f67bb4cb57e"
+        ],
+        "command": "12e3f4ee-b6a3-48c2-bd34-fd165678c4a4",
+        "revision": 2,
+        "source": {
+          "digest": "91514908e73e7869bf7d0ff36c7f514d31348fb19669f159f2b2eeb6f27e6d90",
+          "document": ".ai-harness/work-items/BUG-WINDOWS-CI-20260915/snapshots/91514908e73e7869bf7d0ff36c7f514d31348fb19669f159f2b2eeb6f27e6d90.json"
+        },
+        "planDigest": "f0aa1beb79b876a327350bd4caea0eaff1966353d20866607d77728cf63f237b"
+      },
+      {
+        "stage": "regression",
+        "status": "pass",
+        "evidence": [
+          "aa0833a8-756b-4501-973d-35c820896913"
+        ],
+        "command": "3f6559c7-896d-4a1d-87de-55fde3a44126",
+        "revision": 2,
+        "source": {
+          "digest": "91514908e73e7869bf7d0ff36c7f514d31348fb19669f159f2b2eeb6f27e6d90",
+          "document": ".ai-harness/work-items/BUG-WINDOWS-CI-20260915/snapshots/91514908e73e7869bf7d0ff36c7f514d31348fb19669f159f2b2eeb6f27e6d90.json"
+        },
+        "planDigest": "f0aa1beb79b876a327350bd4caea0eaff1966353d20866607d77728cf63f237b"
+      }
+    ],
+    "source": {
+      "digest": "91514908e73e7869bf7d0ff36c7f514d31348fb19669f159f2b2eeb6f27e6d90",
+      "document": ".ai-harness/work-items/BUG-WINDOWS-CI-20260915/snapshots/91514908e73e7869bf7d0ff36c7f514d31348fb19669f159f2b2eeb6f27e6d90.json"
+    }
+  },
+  "review": {
+    "status": "pass",
+    "evidence": [
+      "01a8becb-9fd9-4415-8ef6-859218253fc3"
+    ],
+    "independent": false,
+    "source": {
+      "digest": "91514908e73e7869bf7d0ff36c7f514d31348fb19669f159f2b2eeb6f27e6d90",
+      "document": ".ai-harness/work-items/BUG-WINDOWS-CI-20260915/snapshots/91514908e73e7869bf7d0ff36c7f514d31348fb19669f159f2b2eeb6f27e6d90.json"
+    }
+  },
+  "acceptance": {
+    "status": "pass",
+    "evidence": [
+      "d6ec6f12-cbb3-44db-9394-859636ee11c2"
+    ],
+    "source": {
+      "digest": "91514908e73e7869bf7d0ff36c7f514d31348fb19669f159f2b2eeb6f27e6d90",
+      "document": ".ai-harness/work-items/BUG-WINDOWS-CI-20260915/snapshots/91514908e73e7869bf7d0ff36c7f514d31348fb19669f159f2b2eeb6f27e6d90.json"
+    }
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "pass",
+    "evidence": [
+      "87d8e47c-0ccb-4929-a917-fb652501853c"
+    ]
+  },
+  "blocked": null,
+  "delivery": {
+    "source": {
+      "digest": "91514908e73e7869bf7d0ff36c7f514d31348fb19669f159f2b2eeb6f27e6d90",
+      "document": ".ai-harness/work-items/BUG-WINDOWS-CI-20260915/snapshots/91514908e73e7869bf7d0ff36c7f514d31348fb19669f159f2b2eeb6f27e6d90.json"
+    },
+    "baseline": {
+      "digest": "a02edcf2d41105d11f7328a4b841cee589253833598037f6757eba16b3673ca0",
+      "document": ".ai-harness/work-items/BUG-WINDOWS-CI-20260915/snapshots/a02edcf2d41105d11f7328a4b841cee589253833598037f6757eba16b3673ca0.json"
+    },
+    "baselineAt": "2026-09-15T05:58:10.614Z",
+    "ownedChanges": [
+      {
+        "path": ".ai-harness/.gitattributes",
+        "before": null,
+        "after": "100644:d1510acd9627d763858ded0ed659584e3561fd88"
+      },
+      {
+        "path": "benchmarks/tests/runner.test.mjs",
+        "before": "100644:c0073ff0f6ce520a3a111b4e14d4cf226f8180d6",
+        "after": "100644:7cac9a2654bc91b5b029dc071801c61a60380737"
+      },
+      {
+        "path": "docs/guides/usage.md",
+        "before": "100644:5b949285f7aca3bcd4f7e225f4b87078ab63da6a",
+        "after": "100644:d19c35de8385915380e049c746afe613b980b779"
+      }
+    ],
+    "planDigest": "f0aa1beb79b876a327350bd4caea0eaff1966353d20866607d77728cf63f237b",
+    "at": "2026-09-15T06:10:34.685Z",
+    "head": "a2108c90e4f95c1ec2b8db980bb73f22e514e7ac"
+  },
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-09-15T05:58:10.389Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-09-15T05:58:10.401Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-09-15T05:58:10.792Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-09-15T05:58:10.835Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-09-15T05:58:10.840Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-09-15T06:04:47.504Z",
+      "reason": "Node20全量单命令触及120秒上限；把全部21个Runtime测试文件明确分为reliability及其余20文件两个批次，覆盖不变且保留超时证据",
+      "action": "replan",
+      "revision": 2
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-09-15T06:04:48.952Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-09-15T06:04:49.368Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "VERIFYING",
+      "at": "2026-09-15T06:10:28.972Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "VERIFYING",
+      "to": "CODE_REVIEW",
+      "at": "2026-09-15T06:10:31.027Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "CODE_REVIEW",
+      "to": "READY_FOR_ACCEPTANCE",
+      "at": "2026-09-15T06:10:31.930Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "READY_FOR_ACCEPTANCE",
+      "to": "DONE",
+      "at": "2026-09-15T06:10:34.926Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-09-15T05:58:10.389Z",
+  "updatedAt": "2026-09-15T06:10:34.926Z"
+}

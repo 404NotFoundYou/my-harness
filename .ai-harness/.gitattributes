@@ -1,0 +1,2 @@
+# Evidence hashes cover original bytes; Git must not rewrite line endings.
+work-items/** -text

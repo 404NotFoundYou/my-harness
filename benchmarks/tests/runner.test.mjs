@@ -263,6 +263,41 @@ test("historical nine-sample protocols retain their original statistics and evid
   }
 });
 
+test("installed evidence retains exact bytes through Git add and fresh CRLF checkouts", async () => {
+  const participant = await createParticipant(tasks[0], { sourceRoot, harness: true });
+  const directory = await mkdtemp(path.join(tmpdir(), "ai-harness-checkout-test-"));
+  const git = (root, args) => {
+    const result = spawnSync("git", args, { cwd: root, shell: false, windowsHide: true, encoding: "utf8", timeout: 30000 });
+    assert.equal(result.status, 0, result.stderr);
+  };
+  try {
+    git(participant.root, ["config", "core.autocrlf", "true"]);
+    const files = {
+      ".ai-harness/work-items/CHECKOUT-PROOF/candidate.mjs": Buffer.from("export const value = 1;\n"),
+      ".ai-harness/work-items/CHECKOUT-PROOF/artifacts/lf.txt": Buffer.from("line one\nline two\n"),
+      ".ai-harness/work-items/CHECKOUT-PROOF/artifacts/crlf.txt": Buffer.from("line one\r\nline two\r\n"),
+      ".ai-harness/work-items/CHECKOUT-PROOF/artifacts/binary.bin": Buffer.from([0, 10, 13, 255]),
+    };
+    for (const [file, content] of Object.entries(files)) {
+      await mkdir(path.dirname(path.join(participant.root, file)), { recursive: true });
+      await writeFile(path.join(participant.root, file), content);
+    }
+    git(participant.root, ["add", "--", ".ai-harness/work-items/CHECKOUT-PROOF"]);
+    git(participant.root, ["commit", "-m", "freeze evidence bytes"]);
+    for (const autocrlf of ["true", "false"]) {
+      const checkout = path.join(directory, autocrlf);
+      git(directory, ["clone", "--quiet", "--no-hardlinks", "--config", `core.autocrlf=${autocrlf}`, participant.root, checkout]);
+      for (const [file, expected] of Object.entries(files)) assert.deepEqual(await readFile(path.join(checkout, file)), expected,
+        `${file}: evidence must survive checkout without changing the bytes used by its hash`);
+    }
+  } finally {
+    await cleanupSandbox(participant.root);
+    assert.equal(path.dirname(path.resolve(directory)), path.resolve(tmpdir()));
+    assert.ok(path.basename(directory).startsWith("ai-harness-checkout-test-"));
+    await rm(directory, { recursive: true, force: true });
+  }
+});
+
 test("timing categories merge overlapping intervals and statistics retain unknown measurements", () => {
   const timing = createToolTiming();
   timing.start("one", 0, toolCategory("command_execution", "node .ai-harness/bin/harness.mjs run --id X"));
