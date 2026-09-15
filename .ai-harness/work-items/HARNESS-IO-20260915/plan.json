@@ -1,0 +1,135 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "HARNESS-IO-20260915",
+  "mode": "single",
+  "rationale": "主AI串行维护安装和执行的兼容边界，独立上下文只读复核完整差异",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "落实安装字节契约与长日志边界",
+      "module": "runtime",
+      "status": "COMPLETED",
+      "attempt": 2,
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        ".ai-harness/.gitattributes",
+        ".github/workflows/.gitattributes",
+        ".ai-harness/src/installer.mjs",
+        ".ai-harness/src/evidence.mjs",
+        ".ai-harness/config.json",
+        ".ai-harness/manifest.json",
+        ".ai-harness/tests/output.test.mjs",
+        ".ai-harness/tests/installer-checkout.test.mjs",
+        ".ai-harness/tests/installer.test.mjs",
+        "README.md",
+        "docs/guides/usage.md"
+      ],
+      "verification": [
+        "node --test .ai-harness/tests/installer-checkout.test.mjs .ai-harness/tests/output.test.mjs",
+        "node --test .ai-harness/tests/reliability.test.mjs",
+        "node --test .ai-harness/tests/installer.test.mjs",
+        "node --test .ai-harness/tests/acceptance-artifacts.test.mjs .ai-harness/tests/bugfix-pipeline.test.mjs .ai-harness/tests/checker.test.mjs .ai-harness/tests/cli.test.mjs .ai-harness/tests/command-execution.test.mjs .ai-harness/tests/compact.test.mjs .ai-harness/tests/context-delta.test.mjs .ai-harness/tests/filesystem.test.mjs .ai-harness/tests/finish-resume.test.mjs .ai-harness/tests/guidance-tools.test.mjs .ai-harness/tests/guide.test.mjs .ai-harness/tests/locking.test.mjs .ai-harness/tests/managed-block.test.mjs .ai-harness/tests/policy.test.mjs .ai-harness/tests/root-alias.test.mjs .ai-harness/tests/snapshot.test.mjs .ai-harness/tests/spec-input.test.mjs .ai-harness/tests/validator.test.mjs .ai-harness/tests/verification-pipeline.test.mjs .ai-harness/tests/workflow.test.mjs",
+        "node --test benchmarks/tests/runner.test.mjs"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            "--test",
+            ".ai-harness/tests/installer-checkout.test.mjs",
+            ".ai-harness/tests/output.test.mjs"
+          ]
+        },
+        {
+          "id": "V2",
+          "command": "node",
+          "args": [
+            "--test",
+            ".ai-harness/tests/reliability.test.mjs"
+          ]
+        },
+        {
+          "id": "V3",
+          "command": "node",
+          "args": [
+            "--test",
+            ".ai-harness/tests/installer.test.mjs"
+          ]
+        },
+        {
+          "id": "V4",
+          "command": "node",
+          "args": [
+            "--test",
+            ".ai-harness/tests/acceptance-artifacts.test.mjs",
+            ".ai-harness/tests/bugfix-pipeline.test.mjs",
+            ".ai-harness/tests/checker.test.mjs",
+            ".ai-harness/tests/cli.test.mjs",
+            ".ai-harness/tests/command-execution.test.mjs",
+            ".ai-harness/tests/compact.test.mjs",
+            ".ai-harness/tests/context-delta.test.mjs",
+            ".ai-harness/tests/filesystem.test.mjs",
+            ".ai-harness/tests/finish-resume.test.mjs",
+            ".ai-harness/tests/guidance-tools.test.mjs",
+            ".ai-harness/tests/guide.test.mjs",
+            ".ai-harness/tests/locking.test.mjs",
+            ".ai-harness/tests/managed-block.test.mjs",
+            ".ai-harness/tests/policy.test.mjs",
+            ".ai-harness/tests/root-alias.test.mjs",
+            ".ai-harness/tests/snapshot.test.mjs",
+            ".ai-harness/tests/spec-input.test.mjs",
+            ".ai-harness/tests/validator.test.mjs",
+            ".ai-harness/tests/verification-pipeline.test.mjs",
+            ".ai-harness/tests/workflow.test.mjs"
+          ]
+        },
+        {
+          "id": "V5",
+          "command": "node",
+          "args": [
+            "--test",
+            "benchmarks/tests/runner.test.mjs"
+          ]
+        }
+      ],
+      "docsImpact": [
+        "README.md",
+        "docs/guides/usage.md"
+      ],
+      "reviewBatch": "R1",
+      "risk": "high",
+      "owner": "primary-ai",
+      "verificationStatus": "pass",
+      "reviewStatus": "pass",
+      "evidence": [
+        "2f956095-5f64-4e35-b658-cc6df9ed4450",
+        "09988644-bd00-446c-89a6-51d936d4b046"
+      ],
+      "deferralApproval": null,
+      "verificationSource": {
+        "digest": "c7922af380e7ec8ff4c0d09da26c585e858c4e351c0f22e36d0ec8200313eab7",
+        "document": ".ai-harness/work-items/HARNESS-IO-20260915/snapshots/c7922af380e7ec8ff4c0d09da26c585e858c4e351c0f22e36d0ec8200313eab7.json"
+      },
+      "reviewSource": {
+        "digest": "c7922af380e7ec8ff4c0d09da26c585e858c4e351c0f22e36d0ec8200313eab7",
+        "document": ".ai-harness/work-items/HARNESS-IO-20260915/snapshots/c7922af380e7ec8ff4c0d09da26c585e858c4e351c0f22e36d0ec8200313eab7.json"
+      }
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "安装与输出边界独立复核",
+      "risk": "high",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": true
+    }
+  ],
+  "createdAt": "2026-09-15T07:15:50.664Z",
+  "updatedAt": "2026-09-15T07:43:43.720Z",
+  "revision": 2
+}

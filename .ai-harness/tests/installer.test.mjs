@@ -143,6 +143,7 @@ test("uninstall is previewable, recoverable and preserves project data across re
     assert.equal(await exists(path.join(target, ".ai-harness", "install-receipt.json")), false);
     assert.equal(await exists(path.join(target, ".ai-harness", "project.json")), false);
     assert.equal(await exists(path.join(target, ".github", "workflows", "ai-harness.yml")), false);
+    assert.equal(await exists(path.join(target, ".github", "workflows", ".gitattributes")), false);
     assert.equal(await exists(path.join(target, ".ai-harness", "work-items", "AUDIT-1", "state.json")), true);
     assert.equal(await exists(path.join(target, "project-notes.md")), true);
     assert.equal(
@@ -253,6 +254,10 @@ test("uninstall uses the install receipt instead of a dirty source directory lis
     await cp(
       path.join(sourceRoot, ".github", "workflows", "ai-harness.yml"),
       path.join(source, ".github", "workflows", "ai-harness.yml"),
+    );
+    await cp(
+      path.join(sourceRoot, ".github", "workflows", ".gitattributes"),
+      path.join(source, ".github", "workflows", ".gitattributes"),
     );
     await installRuntime(source, target);
     await writeFile(path.join(source, extraRelative), "source-local\n", "utf8");

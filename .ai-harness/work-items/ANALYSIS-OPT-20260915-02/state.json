@@ -1,0 +1,181 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 1,
+  "id": "ANALYSIS-OPT-20260915-02",
+  "type": "ANALYSIS",
+  "title": "复查1.3.0后续优化项",
+  "status": "ANSWERED",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/analysis.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户授权只读调研和本地隔离验证"
+  },
+  "input": {
+    "references": [
+      "用户要求继续看看还有哪些可优化项"
+    ],
+    "acceptance": [
+      "区分可复现缺陷与能力建议，给出源码证据、最小方案和优先级，不重复已完成项"
+    ],
+    "nonGoals": [],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": null,
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "main@dc89dbb；初始工作树干净，doctor通过；上一轮远端Windows/Linux已验证。已读安装/证据/验证/上下文及评测运行器的相关代码，产品文件只读。"
+    ],
+    "completedAt": "2026-09-15T06:52:41.731Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "dc89dbb0fb78dc49ce02446f2b78a3cc2eca74c0",
+      "dirty": true,
+      "changedFiles": [
+        ".ai-harness/work-items/ANALYSIS-OPT-20260915-02/events.jsonl",
+        ".ai-harness/work-items/ANALYSIS-OPT-20260915-02/state.json"
+      ],
+      "fingerprints": {
+        ".ai-harness/work-items/ANALYSIS-OPT-20260915-02/events.jsonl": "4a23fe097a9474cb6d5207c1dea21958b24740fcc8f32aac085c74a05fe89d9d",
+        ".ai-harness/work-items/ANALYSIS-OPT-20260915-02/state.json": "bf9f5b44fb45d426bfb8b702826162543526d64b87f896f03294ce0f13cc868b"
+      },
+      "source": {
+        "digest": "079606ae4e661bb2c6c498befabfea088d5729707601b96bb2e8286dcf010b0d",
+        "document": ".ai-harness/work-items/ANALYSIS-OPT-20260915-02/snapshots/079606ae4e661bb2c6c498befabfea088d5729707601b96bb2e8286dcf010b0d.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "pending",
+    "document": null,
+    "evidence": [],
+    "completedAt": null
+  },
+  "database": {
+    "status": "pending",
+    "document": null,
+    "evidence": [],
+    "completedAt": null,
+    "impact": "unknown"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/ANALYSIS-OPT-20260915-02/plan.json",
+    "approved": false,
+    "approvalRef": null
+  },
+  "verification": {
+    "status": "pending",
+    "evidence": [],
+    "stages": []
+  },
+  "review": {
+    "status": "pending",
+    "evidence": [],
+    "independent": false
+  },
+  "acceptance": {
+    "status": "pending",
+    "evidence": []
+  },
+  "analysis": {
+    "status": "pass",
+    "evidence": [
+      "10bc7c4d-ffb3-4d4a-982b-017358e53ffb"
+    ],
+    "conclusions": [
+      {
+        "id": "07fddfe8-b5a4-4ad1-934a-d51cea638a6b",
+        "status": "PROVEN",
+        "text": "当前安装载荷的收据在Git跨换行检出后产生伪冲突：自动CRLF源安装到空目标，卸载dry-run起初0冲突；目标提交后用autocrlf=false克隆，卸载dry-run87冲突，87项均仅换行差异。未执行卸载删除。",
+        "evidence": [
+          ".ai-harness/work-items/ANALYSIS-OPT-20260915-02/probes.mjs",
+          "实际node probes.mjs全场景与installation子场景输出；installer.mjs:478,628,640"
+        ]
+      },
+      {
+        "id": "d74683e4-aece-4705-86f4-ff239bc41fe7",
+        "status": "PROVEN",
+        "text": "约2MiB日志的同一Node测试直接运行退出0，通过runRecordedCommand因1MiB默认执行缓冲区返回fail/ENOBUFS，capturedBytes1048639，非超时。",
+        "evidence": [
+          ".ai-harness/work-items/ANALYSIS-OPT-20260915-02/probes.mjs",
+          ".ai-harness/src/evidence.mjs:84-99；.ai-harness/config.json:7-8"
+        ]
+      },
+      {
+        "id": "f0085bd2-bb31-407a-be7d-fe3378b25a4a",
+        "status": "PROVEN",
+        "text": "当前检查使用全局120秒上限；实验有notRun但拒绝复用输出目录；候选实现和独立判定仍绑定单个task.entry。",
+        "evidence": [
+          ".ai-harness/config.json:7",
+          "benchmarks/experiment.mjs:24-50",
+          "benchmarks/runner.mjs:84,104,134"
+        ]
+      },
+      {
+        "id": "f634f711-f636-4d1e-8e95-42084b500c01",
+        "status": "PROPOSAL",
+        "text": "建议先修安装载荷字节契约和长日志执行支持；单项超时可与执行器一起改进，随后做校验版本的实验续跑和多文件真实任务夹具。保留哈希与权限检查，具体最小方案和验收见assessment.md。",
+        "evidence": [
+          ".ai-harness/work-items/ANALYSIS-OPT-20260915-02/assessment.md"
+        ]
+      },
+      {
+        "id": "940ccb06-cb84-49f6-bf0d-f16f9bb7a3c2",
+        "status": "UNKNOWN",
+        "text": "超时后后代进程继续写入本次未复现，不能列为已确认缺陷；新优化收益未通过真实模型实验验证。",
+        "evidence": []
+      }
+    ],
+    "unknowns": [
+      "仅验证具体Windows短时子进程夹具；本次无真实模型与完整进程树验证。"
+    ]
+  },
+  "documentation": {
+    "status": "pending",
+    "evidence": []
+  },
+  "blocked": null,
+  "delivery": null,
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-09-15T06:52:40.677Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-09-15T06:52:41.112Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "ANALYZING",
+      "at": "2026-09-15T06:52:42.323Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "ANALYZING",
+      "to": "ANSWERED",
+      "at": "2026-09-15T07:03:32.848Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-09-15T06:52:40.677Z",
+  "updatedAt": "2026-09-15T07:03:32.848Z"
+}

@@ -1,2 +1,5 @@
-# Evidence hashes cover original bytes; Git must not rewrite line endings.
+# Installed runtime text must have the same bytes in every Git checkout.
+** text=auto eol=lf
+# Evidence and backups preserve original bytes, including CRLF and binary data.
 work-items/** -text
+backups/** -text

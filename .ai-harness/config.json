@@ -6,6 +6,7 @@
   "rootInstructionsMaxBytes": 32768,
   "commandTimeoutMs": 120000,
   "maxCapturedOutputBytes": 16384,
+  "maxCommandOutputBytes": 16777216,
   "additionalAllowExecutables": [],
   "additionalAskExecutables": [],
   "additionalDenyExecutables": []

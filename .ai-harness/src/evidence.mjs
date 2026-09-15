@@ -21,21 +21,22 @@ export function redact(value) {
   return String(value)
     .replace(/\b(Bearer)\s+[A-Za-z0-9._~+\/-]+=*/gi, "$1 [REDACTED]")
     .replace(/\b(ghp|github_pat|sk|pk_live|AKIA)[A-Za-z0-9_-]{12,}\b/g, "[REDACTED]")
-    .replace(/\b([A-Z][A-Z0-9_]*(?:TOKEN|SECRET|PASSWORD|API_KEY|PRIVATE_KEY)[A-Z0-9_]*)\s*[=:]\s*(?:"([^"\\]*(?:\\.[^"\\]*)*)"|'([^']*)'|([^\s"'\\]+))/g,
+    .replace(/\b((?:[A-Z][A-Z0-9_]*)?(?:TOKEN|SECRET|PASSWORD|API_KEY|PRIVATE_KEY)[A-Z0-9_]*)\s*[=:]\s*(?:"([^"\\]*(?:\\[\s\S][^"\\]*)*)(?:"|\\?$)|'([^']*)(?:'|$)|([^\s"'\\]+))/g,
       (_match, key, quoted, single) => `${key}=${quoted !== undefined ? '"[REDACTED]"' : single !== undefined ? "'[REDACTED]'" : "[REDACTED]"}`)
     .replace(/\beyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\b/g, "[REDACTED_JWT]");
 }
 
-function capture(buffer, maxBytes) {
+function capture(buffer, maxBytes, complete) {
   const source = Buffer.isBuffer(buffer) ? buffer : Buffer.from(buffer || "");
   const redacted = Buffer.from(redact(decoder.decode(source)));
   const truncated = redacted.length > maxBytes;
   const head = Math.floor(maxBytes / 2);
-  const visible = truncated ? Buffer.concat([redacted.subarray(0, head), Buffer.from("\n… output truncated; see artifact …\n"), redacted.subarray(redacted.length - (maxBytes - head))]) : redacted;
+  const visible = truncated ? Buffer.concat([redacted.subarray(0, head), Buffer.from("\n… output truncated …\n"), redacted.subarray(redacted.length - (maxBytes - head))]) : redacted;
   return {
     text: decoder.decode(visible),
     bytes: source.length,
     truncated,
+    complete,
     sha256: sha256(source),
   };
 }
@@ -63,6 +64,9 @@ export async function runRecordedCommand(root, { id, taskId = null, command, arg
     invariant(task.status === "IN_PROGRESS" || (item.status === "VERIFYING" && task.status === "COMPLETED"), "WRONG_TASK_STAGE", "受控命令需要实施中任务，或最终验证阶段已完成的任务。" );
   }
   const config = await loadConfig(root);
+  const outputLimitBytes = config.maxCommandOutputBytes === undefined ? 16 * 1024 * 1024 : config.maxCommandOutputBytes;
+  invariant(Number.isInteger(outputLimitBytes) && outputLimitBytes > 0 && outputLimitBytes <= 64 * 1024 * 1024,
+    "INVALID_COMMAND_OUTPUT_LIMIT", "maxCommandOutputBytes 必须是 1 到 67108864 之间的整数。" );
   const classification = classifyCommand(command, args, config);
   if (classification.decision !== "allow") {
     throw new HarnessError(
@@ -88,16 +92,20 @@ export async function runRecordedCommand(root, { id, taskId = null, command, arg
     windowsHide: true,
     env: { ...process.env, NODE_TEST_CONTEXT: undefined },
     timeout: config.commandTimeoutMs,
-    maxBuffer: Math.max(config.maxCapturedOutputBytes * 16, 1024 * 1024),
+    maxBuffer: outputLimitBytes,
     });
   } catch (error) { result = { status: null, error, stdout: null, stderr: null }; }
   const endedAt = Date.now();
   const after = await sourceSnapshot(root);
   const sourceAfter = await saveSnapshot(root, paths.directory, after);
-  const stdout = capture(result.stdout, config.maxCapturedOutputBytes);
-  const stderr = capture(result.stderr, config.maxCapturedOutputBytes);
   const timedOut = result.error?.code === "ETIMEDOUT";
+  const outputLimitExceeded = result.error?.code === "ENOBUFS";
+  const complete = !result.error && !result.signal && typeof result.status === "number";
+  const stdout = capture(result.stdout, config.maxCapturedOutputBytes, complete);
+  const stderr = capture(result.stderr, config.maxCapturedOutputBytes, complete);
   const exitCode = typeof result.status === "number" ? result.status : 1;
+  const failureReason = timedOut ? "timeout" : outputLimitExceeded ? "output-limit" : result.error ? "spawn-error"
+    : result.signal ? "signal" : exitCode !== 0 ? "exit-code" : before.digest !== after.digest ? "source-changed" : null;
   const event = {
     schemaVersion: 1,
     id: randomUUID(),
@@ -106,7 +114,7 @@ export async function runRecordedCommand(root, { id, taskId = null, command, arg
     revision: item.revision || 1,
     taskAttempt: taskId ? plan.tasks.find((task) => task.id === taskId).attempt || 1 : null,
     kind: "command",
-    status: exitCode === 0 && !timedOut && before.digest === after.digest ? "pass" : "fail",
+    status: failureReason === null ? "pass" : "fail",
     summary: `${redact(command)} ${redactedArgs(args).join(" ")}`.trim(),
     timestamp: new Date(startedAt).toISOString(),
     command: {
@@ -122,6 +130,9 @@ export async function runRecordedCommand(root, { id, taskId = null, command, arg
       exitCode,
       signal: result.signal || null,
       timedOut,
+      outputLimitBytes,
+      outputLimitExceeded,
+      failureReason,
       durationMs: endedAt - startedAt,
       stdout,
       stderr,
@@ -132,14 +143,23 @@ export async function runRecordedCommand(root, { id, taskId = null, command, arg
     if (!captured.truncated) continue;
     const content = redact(decoder.decode(Buffer.isBuffer(original) ? original : Buffer.from(original || "")));
     const document = path.relative(root, path.join(paths.directory, "outputs", `${event.id}-${name}.txt`)).replaceAll("\\", "/");
-    await writeFileAtomic(await resolveProjectPath(root, document, { forWrite: true }), content);
-    captured.artifact = document;
-    captured.artifactSha256 = sha256(content);
+    try {
+      await writeFileAtomic(await resolveProjectPath(root, document, { forWrite: true }), content);
+      captured.artifact = document;
+      captured.artifactSha256 = sha256(content);
+    } catch (error) {
+      captured.saveError = { code: error.code || "OUTPUT_SAVE_FAILED", message: redact(error.message) };
+      event.status = "fail";
+      event.command.failureReason ||= "output-save";
+    }
   }
   await withFileLock(paths.lock, async () => {
     const latestItem = await readJson(paths.state);
     const latestPlan = await readJson(paths.plan);
-    if ((latestItem.revision || 1) !== event.revision || planDigest(latestItem, latestPlan) !== definition || latestItem.status !== item.status) event.status = "fail";
+    if ((latestItem.revision || 1) !== event.revision || planDigest(latestItem, latestPlan) !== definition || latestItem.status !== item.status) {
+      event.status = "fail";
+      event.command.failureReason ||= "work-changed";
+    }
     const observedAt = Date.now();
     event.command.timing = { preparationMs: startedAt - enteredAt, executionMs: endedAt - startedAt,
       evidencePreparationMs: observedAt - endedAt, observedMs: observedAt - enteredAt,

@@ -22,6 +22,7 @@ const INSTRUCTION_FILES = Object.freeze([
 ]);
 const INSTALL_RECEIPT_RELATIVE = ".ai-harness/install-receipt.json";
 const STANDARD_WORKFLOW_RELATIVE = ".github/workflows/ai-harness.yml";
+const WORKFLOW_ATTRIBUTES_RELATIVE = ".github/workflows/.gitattributes";
 
 function hash(content) {
   return createHash("sha256").update(content).digest("hex");
@@ -33,7 +34,7 @@ function inside(root, candidate) {
 }
 
 function receiptPayloadPathAllowed(relative) {
-  if (relative === STANDARD_WORKFLOW_RELATIVE) return true;
+  if ([STANDARD_WORKFLOW_RELATIVE, WORKFLOW_ATTRIBUTES_RELATIVE].includes(relative)) return true;
   return relative.startsWith(".ai-harness/")
     && !relative.includes("\\")
     && !relative.includes("\0")
@@ -186,9 +187,11 @@ export async function installationFiles(sourceRoot) {
     ) continue;
     files.push(`.ai-harness/${relative}`);
   }
-  if (await exists(path.join(sourceRoot, STANDARD_WORKFLOW_RELATIVE))) {
-    await assertSourceFile(sourceRoot, STANDARD_WORKFLOW_RELATIVE);
-    files.push(STANDARD_WORKFLOW_RELATIVE);
+  for (const relative of [STANDARD_WORKFLOW_RELATIVE, WORKFLOW_ATTRIBUTES_RELATIVE]) {
+    if (await exists(path.join(sourceRoot, relative))) {
+      await assertSourceFile(sourceRoot, relative);
+      files.push(relative);
+    }
   }
   return files.sort();
 }
@@ -361,7 +364,15 @@ async function planUninstallInstructionOperations(targetRoot, receipt) {
       "UNINSTALL_RECEIPT_INVALID",
       `${relative} 存在托管块，但安装收据缺少其归属记录。`,
     );
-    const removal = removeManagedBlock(current, relative, ownership || undefined);
+    // Git may change the generated separators in project-owned rule files.
+    // Adapt only pure line endings; the receipt and all project text stay intact.
+    const boundary = ownership && inspection.present ? { ...ownership } : ownership;
+    if (boundary && inspection.present) {
+      for (const key of ["prefix", "suffix"]) {
+        if (/^(?:\r\n|\n)*$/.test(boundary[key])) boundary[key] = boundary[key].replace(/\r\n|\n/g, inspection.eol);
+      }
+    }
+    const removal = removeManagedBlock(current, relative, boundary || undefined);
     operations.push({
       relative,
       targetPath,

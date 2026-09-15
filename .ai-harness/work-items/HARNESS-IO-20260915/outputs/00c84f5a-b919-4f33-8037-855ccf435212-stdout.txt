@@ -1,0 +1,560 @@
+TAP version 13
+# Subtest: explicit acceptance mappings reject missing intent before creating work and retain current command identity
+ok 1 - explicit acceptance mappings reject missing intent before creating work and retain current command identity
+  ---
+  duration_ms: 5700.9724
+  ...
+# Subtest: archived evidence survives regeneration but tampering prevents completion
+ok 2 - archived evidence survives regeneration but tampering prevents completion
+  ---
+  duration_ms: 6703.6922
+  ...
+# Subtest: BUGFIX 走 static→sandbox→reproduction→regression 真跑流水线并完成
+ok 3 - BUGFIX 走 static→sandbox→reproduction→regression 真跑流水线并完成
+  ---
+  duration_ms: 15297.3054
+  ...
+# Subtest: reproduction 缺 --command 被拒绝
+ok 4 - reproduction 缺 --command 被拒绝
+  ---
+  duration_ms: 4720.2025
+  ...
+# Subtest: reproduction 引用失败命令而记为 pass 被拒绝
+ok 5 - reproduction 引用失败命令而记为 pass 被拒绝
+  ---
+  duration_ms: 6671.0708
+  ...
+# Subtest: BUGFIX 裸 verification 记录被拒绝
+ok 6 - BUGFIX 裸 verification 记录被拒绝
+  ---
+  duration_ms: 4160.2516
+  ...
+# Subtest: BUGFIX 缺 regression 段无法进入 CODE_REVIEW
+ok 7 - BUGFIX 缺 regression 段无法进入 CODE_REVIEW
+  ---
+  duration_ms: 6339.3915
+  ...
+# Subtest: BUGFIX + frontend 时 browser 段亦必需
+ok 8 - BUGFIX + frontend 时 browser 段亦必需
+  ---
+  duration_ms: 7581.0303
+  ...
+# Subtest: BUGFIX 类型确定性路由到 verification 策略
+ok 9 - BUGFIX 类型确定性路由到 verification 策略
+  ---
+  duration_ms: 1290.206
+  ...
+# Subtest: doctor reports a concise Git summary without baseline fingerprints
+ok 10 - doctor reports a concise Git summary without baseline fingerprints
+  ---
+  duration_ms: 2779.1527
+  ...
+# Subtest: doctor accepts managed AGENTS with byte-preserved compatible adapters
+ok 11 - doctor accepts managed AGENTS with byte-preserved compatible adapters
+  ---
+  duration_ms: 1589.2895
+  ...
+# Subtest: doctor fails when managed instruction content is modified
+ok 12 - doctor fails when managed instruction content is modified
+  ---
+  duration_ms: 2157.5962
+  ...
+# Subtest: CI rejects every non-terminal work item including BLOCKED
+ok 13 - CI rejects every non-terminal work item including BLOCKED
+  ---
+  duration_ms: 2525.5635
+  ...
+# Subtest: check rejects result references that do not exist in evidence JSONL
+ok 14 - check rejects result references that do not exist in evidence JSONL
+  ---
+  duration_ms: 3011.5377
+  ...
+# Subtest: check rejects policy files that do not match type and flags
+ok 15 - check rejects policy files that do not match type and flags
+  ---
+  duration_ms: 2214.1582
+  ...
+# Subtest: installed CLI supports compact ITERATION and preserves its CI gate
+ok 16 - installed CLI supports compact ITERATION and preserves its CI gate
+  ---
+  duration_ms: 15464.3206
+  ...
+# Subtest: installed CLI supports compact BUGFIX and preserves its CI gate
+ok 17 - installed CLI supports compact BUGFIX and preserves its CI gate
+  ---
+  duration_ms: 13739.5491
+  ...
+# Subtest: CLI guard uses stable allow, ask and deny exit codes
+ok 18 - CLI guard uses stable allow, ask and deny exit codes
+  ---
+  duration_ms: 375.5099
+  ...
+# Subtest: CLI requires confirmation and uninstalls only from an independent source
+ok 19 - CLI requires confirmation and uninstalls only from an independent source
+  ---
+  duration_ms: 2831.3815
+  ...
+# Subtest: installed CLI completes an iteration and passes its CI gate
+ok 20 - installed CLI completes an iteration and passes its CI gate
+  ---
+  duration_ms: 13505.7379
+  ...
+# Subtest: version-looking arguments cannot authorize inline code or nested runtime mutations
+ok 21 - version-looking arguments cannot authorize inline code or nested runtime mutations
+  ---
+  duration_ms: 5.2788
+  ...
+# Subtest: verification declarations become literal argument arrays without shell interpretation
+ok 22 - verification declarations become literal argument arrays without shell interpretation
+  ---
+  duration_ms: 2.7034
+  ...
+# Subtest: an explicit verification executable cannot be replaced by a different same-named command
+ok 23 - an explicit verification executable cannot be replaced by a different same-named command
+  ---
+  duration_ms: 0.5245
+  ...
+# Subtest: Windows package manager execution uses an explicit Node entry without a shell
+ok 24 - Windows package manager execution uses an explicit Node entry without a shell
+  ---
+  duration_ms: 130.75
+  ...
+# Subtest: compact ITERATION keeps auditable gates without manual state bookkeeping
+ok 25 - compact ITERATION keeps auditable gates without manual state bookkeeping
+  ---
+  duration_ms: 14408.9079
+  ...
+# Subtest: compact BUGFIX keeps auditable gates without manual state bookkeeping
+ok 26 - compact BUGFIX keeps auditable gates without manual state bookkeeping
+  ---
+  duration_ms: 12325.4055
+  ...
+# Subtest: compact startup rejects ineligible or incomplete work before leaving state behind
+ok 27 - compact startup rejects ineligible or incomplete work before leaving state behind
+  ---
+  duration_ms: 1383.7322
+  ...
+# Subtest: unfinished work and out-of-scope edits cannot acquire a successful compact completion
+ok 28 - unfinished work and out-of-scope edits cannot acquire a successful compact completion
+  ---
+  duration_ms: 4950.0775
+  ...
+# Subtest: compact completion requires explicit review, acceptance and real current-task evidence
+ok 29 - compact completion requires explicit review, acceptance and real current-task evidence
+  ---
+  duration_ms: 5019.656
+  ...
+# Subtest: a successful unrelated command cannot conceal a failing regression
+ok 30 - a successful unrelated command cannot conceal a failing regression
+  ---
+  duration_ms: 10510.2996
+  ...
+# Subtest: repeating a successful check does not invalidate identical current evidence
+ok 31 - repeating a successful check does not invalidate identical current evidence
+  ---
+  duration_ms: 6336.3375
+  ...
+# Subtest: rework requires a new command run rather than recycling the previous attempt
+ok 32 - rework requires a new command run rather than recycling the previous attempt
+  ---
+  duration_ms: 8271.8937
+  ...
+# Subtest: compact finish cannot take over work requiring independent review
+ok 33 - compact finish cannot take over work requiring independent review
+  ---
+  duration_ms: 2424.127
+  ...
+# Subtest: compact frontend bug requires all pipeline evidence before changing any result
+ok 34 - compact frontend bug requires all pipeline evidence before changing any result
+  ---
+  duration_ms: 8496.0339
+  ...
+# Subtest: context omits unchanged complete content but repeats changed or truncated files
+ok 35 - context omits unchanged complete content but repeats changed or truncated files
+  ---
+  duration_ms: 2276.4701
+  ...
+# Subtest: explicit multilingual files are readable and every excluded or excess path is explained
+ok 36 - explicit multilingual files are readable and every excluded or excess path is explained
+  ---
+  duration_ms: 1824.6154
+  ...
+# Subtest: project paths reject absolute and parent traversal
+ok 37 - project paths reject absolute and parent traversal
+  ---
+  duration_ms: 2312.1889
+  ...
+# Subtest: write paths reject symlink components when the platform permits links
+ok 38 - write paths reject symlink components when the platform permits links
+  ---
+  duration_ms: 1874.4663
+  ...
+# Subtest: finish resumes after step 2 without rerunning checks or rewriting completed evidence
+ok 39 - finish resumes after step 2 without rerunning checks or rewriting completed evidence
+  ---
+  duration_ms: 14367.4428
+  ...
+# Subtest: finish resumes after step 4 without rerunning checks or rewriting completed evidence
+ok 40 - finish resumes after step 4 without rerunning checks or rewriting completed evidence
+  ---
+  duration_ms: 10986.569
+  ...
+# Subtest: finish resumes after step 7 without rerunning checks or rewriting completed evidence
+ok 41 - finish resumes after step 7 without rerunning checks or rewriting completed evidence
+  ---
+  duration_ms: 10994.5589
+  ...
+# Subtest: finish resumes after step 9 without rerunning checks or rewriting completed evidence
+ok 42 - finish resumes after step 9 without rerunning checks or rewriting completed evidence
+  ---
+  duration_ms: 10359.5347
+  ...
+# Subtest: finish resumes after step 12 without rerunning checks or rewriting completed evidence
+ok 43 - finish resumes after step 12 without rerunning checks or rewriting completed evidence
+  ---
+  duration_ms: 8457.0167
+  ...
+# Subtest: resuming cannot replace a failed review or reuse earlier code judgments
+ok 44 - resuming cannot replace a failed review or reuse earlier code judgments
+  ---
+  duration_ms: 9187.1986
+  ...
+# Subtest: batch checks retain every result and expose checks left unrun after failure
+ok 45 - batch checks retain every result and expose checks left unrun after failure
+  ---
+  duration_ms: 9881.6712
+  ...
+# Subtest: batch selection cannot hide a denied command or mixed command selectors
+ok 46 - batch selection cannot hide a denied command or mixed command selectors
+  ---
+  duration_ms: 3843.1406
+  ...
+# Subtest: optional context recovers local callers and tests with bounds and no state writes
+ok 47 - optional context recovers local callers and tests with bounds and no state writes
+  ---
+  duration_ms: 3853.9294
+  ...
+# Subtest: verified iterations offer an auditable finish and reopened tasks show the actual next state
+ok 48 - verified iterations offer an auditable finish and reopened tasks show the actual next state
+  ---
+  duration_ms: 5094.5311
+  ...
+# Subtest: brief BUGFIX guidance gives one finish action while preserving actual stage evidence
+ok 49 - brief BUGFIX guidance gives one finish action while preserving actual stage evidence
+  ---
+  duration_ms: 13727.6184
+  ...
+# Subtest: guide restores goals and scope without changing state or granting completion
+ok 50 - guide restores goals and scope without changing state or granting completion
+  ---
+  duration_ms: 4336.5461
+  ...
+# Subtest: guide follows verification and review gates while leaving verdicts to the caller
+ok 51 - guide follows verification and review gates while leaving verdicts to the caller
+  ---
+  duration_ms: 9272.0615
+  ...
+# Subtest: guide prioritizes real failures, redacts previews and marks truncation
+ok 52 - guide prioritizes real failures, redacts previews and marks truncation
+  ---
+  duration_ms: 8697.0662
+  ...
+# Subtest: guide never borrows a different task's successful command
+ok 53 - guide never borrows a different task's successful command
+  ---
+  duration_ms: 5033.1409
+  ...
+# Subtest: dependency and ownership decisions do not unlock or take over other tasks
+ok 54 - dependency and ownership decisions do not unlock or take over other tasks
+  ---
+  duration_ms: 9705.383
+  ...
+# Subtest: blocked guidance describes the condition before suggesting the recorded resume state
+ok 55 - blocked guidance describes the condition before suggesting the recorded resume state
+  ---
+  duration_ms: 1608.4138
+  ...
+# Subtest: resolved task blockers do not remain active in recovery context
+ok 56 - resolved task blockers do not remain active in recovery context
+  ---
+  duration_ms: 3299.8495
+  ...
+# Subtest: plan guidance preserves autonomous authorization
+ok 57 - plan guidance preserves autonomous authorization
+  ---
+  duration_ms: 2094.436
+  ...
+# Subtest: plan guidance preserves approval-required authorization
+ok 58 - plan guidance preserves approval-required authorization
+  ---
+  duration_ms: 2151.6776
+  ...
+# Subtest: guide requires actual ordered pipeline evidence for BUGFIX frontend
+ok 59 - guide requires actual ordered pipeline evidence for BUGFIX frontend
+  ---
+  duration_ms: 7692.0274
+  ...
+# Subtest: guide requires actual ordered pipeline evidence for ITERATION codegen/frontend
+ok 60 - guide requires actual ordered pipeline evidence for ITERATION codegen/frontend
+  ---
+  duration_ms: 7630.7944
+  ...
+# Subtest: guide keeps final independent review and acceptance explicit
+ok 61 - guide keeps final independent review and acceptance explicit
+  ---
+  duration_ms: 9695.2069
+  ...
+# Subtest: analysis guidance advances without creating a product editing task
+ok 62 - analysis guidance advances without creating a product editing task
+  ---
+  duration_ms: 3213.7864
+  ...
+# Subtest: invalid or foreign evidence fails explicitly rather than becoming guidance
+ok 63 - invalid or foreign evidence fails explicitly rather than becoming guidance
+  ---
+  duration_ms: 2174.7163
+  ...
+# Subtest: planning guidance waits for database design before proposing an implementation plan
+ok 64 - planning guidance waits for database design before proposing an implementation plan
+  ---
+  duration_ms: 4354.2443
+  ...
+# Subtest: inconsistent persisted progress never produces a next-step recommendation
+ok 65 - inconsistent persisted progress never produces a next-step recommendation
+  ---
+  duration_ms: 1661.2054
+  ...
+# Subtest: dead owners can be recovered once without stealing a live or replacement lock
+ok 66 - dead owners can be recovered once without stealing a live or replacement lock
+  ---
+  duration_ms: 292.0178
+  ...
+# Subtest: recovering an interrupted work item preserves evidence and reports inconsistent writes
+ok 67 - recovering an interrupted work item preserves evidence and reports inconsistent writes
+  ---
+  duration_ms: 2339.6944
+  ...
+# Subtest: interrupted recovery claims remain recoverable and malformed owners stay unknown
+ok 68 - interrupted recovery claims remain recoverable and malformed owners stay unknown
+  ---
+  duration_ms: 400.3011
+  ...
+# Subtest: a torn JSONL tail prevents recovery from appending or permitting another writer
+ok 69 - a torn JSONL tail prevents recovery from appending or permitting another writer
+  ---
+  duration_ms: 2074.5713
+  ...
+# Subtest: termination during release cleanup cannot leave an ownerless lock blocking future work
+ok 70 - termination during release cleanup cannot leave an ownerless lock blocking future work
+  ---
+  duration_ms: 127.574
+  ...
+# Subtest: managed blocks round-trip LF, CRLF and a file BOM
+ok 71 - managed blocks round-trip LF, CRLF and a file BOM
+  ---
+  duration_ms: 3.4361
+  ...
+# Subtest: merge preserves custom bytes outside the managed block
+ok 72 - merge preserves custom bytes outside the managed block
+  ---
+  duration_ms: 0.6033
+  ...
+# Subtest: a compatible adapter import is accepted without rewriting
+ok 73 - a compatible adapter import is accepted without rewriting
+  ---
+  duration_ms: 0.9912
+  ...
+# Subtest: a valid older block upgrades while a modified block requires force
+ok 74 - a valid older block upgrades while a modified block requires force
+  ---
+  duration_ms: 1.4547
+  ...
+# Subtest: partial, duplicate and inline markers are rejected as malformed
+ok 75 - partial, duplicate and inline markers are rejected as malformed
+  ---
+  duration_ms: 0.4261
+  ...
+# Subtest: removal preserves project bytes and rejects modified managed content
+ok 76 - removal preserves project bytes and rejects modified managed content
+  ---
+  duration_ms: 1.1934
+  ...
+# Subtest: parse failure and nested shells are denied
+ok 77 - parse failure and nested shells are denied
+  ---
+  duration_ms: 2.7197
+  ...
+# Subtest: destructive git rules win before permissive fallbacks
+ok 78 - destructive git rules win before permissive fallbacks
+  ---
+  duration_ms: 1.2947
+  ...
+# Subtest: external mutations ask while verification commands allow
+ok 79 - external mutations ask while verification commands allow
+  ---
+  duration_ms: 2.7171
+  ...
+# Subtest: inline interpreters do not bypass command policy
+ok 80 - inline interpreters do not bypass command policy
+  ---
+  duration_ms: 0.3099
+  ...
+# Subtest: explicit executable paths cannot impersonate an allowed tool
+ok 81 - explicit executable paths cannot impersonate an allowed tool
+  ---
+  duration_ms: 0.9357
+  ...
+# Subtest: evidence redacts common credentials
+ok 82 - evidence redacts common credentials
+  ---
+  duration_ms: 1.0471
+  ...
+# Subtest: root aliases preserve workflow, snapshot and full-output references through completion
+ok 83 - root aliases preserve workflow, snapshot and full-output references through completion
+  ---
+  duration_ms: 15170.4813
+  ...
+# Subtest: snapshot aliases allow new directories while preserving internal-link and escape rejection
+ok 84 - snapshot aliases allow new directories while preserving internal-link and escape rejection
+  ---
+  duration_ms: 1778.1519
+  ...
+# Subtest: source identity survives staging but detects edits, deletion and renamed Unicode paths
+ok 85 - source identity survives staging but detects edits, deletion and renamed Unicode paths
+  ---
+  duration_ms: 5243.7117
+  ...
+# Subtest: control records do not stale product verification and snapshot tampering fails
+ok 86 - control records do not stale product verification and snapshot tampering fails
+  ---
+  duration_ms: 2384.0662
+  ...
+# Subtest: structured input preserves arrays, Unicode and literal comma paths without creating partial work
+ok 87 - structured input preserves arrays, Unicode and literal comma paths without creating partial work
+  ---
+  duration_ms: 4202.0396
+  ...
+# Subtest: spec and legacy definition options cannot silently override each other
+ok 88 - spec and legacy definition options cannot silently override each other
+  ---
+  duration_ms: 1883.3401
+  ...
+# Subtest: database policy follows confirmed impact while legacy routing and explicit flags remain intact
+ok 89 - database policy follows confirmed impact while legacy routing and explicit flags remain intact
+  ---
+  duration_ms: 1.2793
+  ...
+# Subtest: state transition graph blocks skipped gates
+ok 90 - state transition graph blocks skipped gates
+  ---
+  duration_ms: 5.164
+  ...
+# Subtest: plan validator catches cycles and missing independent review
+ok 91 - plan validator catches cycles and missing independent review
+  ---
+  duration_ms: 2.3301
+  ...
+# Subtest: multi-agent plan rejects overlapping unordered write scopes
+ok 92 - multi-agent plan rejects overlapping unordered write scopes
+  ---
+  duration_ms: 1.2654
+  ...
+# Subtest: scope matching is deterministic
+ok 93 - scope matching is deterministic
+  ---
+  duration_ms: 0.6218
+  ...
+# Subtest: codegen+frontend 工作项只有五段流水线全部按序通过才能进入 CODE_REVIEW 并完成
+ok 94 - codegen+frontend 工作项只有五段流水线全部按序通过才能进入 CODE_REVIEW 并完成
+  ---
+  duration_ms: 13396.629
+  ...
+# Subtest: codegen 但无 frontend 时 browser 子阶段可选，前四段通过即可聚合为 pass
+ok 95 - codegen 但无 frontend 时 browser 子阶段可选，前四段通过即可聚合为 pass
+  ---
+  duration_ms: 6017.3217
+  ...
+# Subtest: 乱序记录子阶段被确定性拒绝
+ok 96 - 乱序记录子阶段被确定性拒绝
+  ---
+  duration_ms: 4385.2711
+  ...
+# Subtest: codegen+frontend 缺 browser 段时无法进入 CODE_REVIEW
+ok 97 - codegen+frontend 缺 browser 段时无法进入 CODE_REVIEW
+  ---
+  duration_ms: 5695.8521
+  ...
+# Subtest: codegen 工作项禁止用裸 verification 记录绕过流水线
+ok 98 - codegen 工作项禁止用裸 verification 记录绕过流水线
+  ---
+  duration_ms: 4183.9551
+  ...
+# Subtest: check 拒绝子阶段状态与证据不一致的手改 state
+ok 99 - check 拒绝子阶段状态与证据不一致的手改 state
+  ---
+  duration_ms: 5181.1032
+  ...
+# Subtest: codegen 标志确定性路由到 verification 策略
+ok 100 - codegen 标志确定性路由到 verification 策略
+  ---
+  duration_ms: 1535.1795
+  ...
+# Subtest: record 命令解析 --stage 参数
+ok 101 - record 命令解析 --stage 参数
+  ---
+  duration_ms: 0.7083
+  ...
+# Subtest: iteration completes only through solution, database, plan, task, review and acceptance gates
+ok 102 - iteration completes only through solution, database, plan, task, review and acceptance gates
+  ---
+  duration_ms: 12181.8472
+  ...
+# Subtest: analysis uses evidence statuses and ends at ANSWERED without development gates
+ok 103 - analysis uses evidence statuses and ends at ANSWERED without development gates
+  ---
+  duration_ms: 2141.5392
+  ...
+# Subtest: new projects require an approved architecture source
+ok 104 - new projects require an approved architecture source
+  ---
+  duration_ms: 1536.6432
+  ...
+# Subtest: bug fixes require actual, expected and reproduction details
+ok 105 - bug fixes require actual, expected and reproduction details
+  ---
+  duration_ms: 1301.0891
+  ...
+# Subtest: flags deterministically select policy files
+ok 106 - flags deterministically select policy files
+  ---
+  duration_ms: 1205.0791
+  ...
+# Subtest: required database impact cannot reach planning before design completes
+ok 107 - required database impact cannot reach planning before design completes
+  ---
+  duration_ms: 1876.5637
+  ...
+# Subtest: result evidence cannot be recorded before its workflow stage
+ok 108 - result evidence cannot be recorded before its workflow stage
+  ---
+  duration_ms: 1265.3295
+  ...
+# Subtest: multi-agent plans require the multi-agent policy flag
+ok 109 - multi-agent plans require the multi-agent policy flag
+  ---
+  duration_ms: 1861.6438
+  ...
+# Subtest: development baselines require an initial Git commit
+ok 110 - development baselines require an initial Git commit
+  ---
+  duration_ms: 1359.0626
+  ...
+1..110
+# tests 110
+# suites 0
+# pass 110
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 82881.4368

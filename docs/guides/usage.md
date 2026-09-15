@@ -20,6 +20,8 @@ node <HARNESS_REPO>/.ai-harness/bin/harness.mjs install --target <TARGET> --json
 - 已有项目使用 `init --mode existing --docs existing`。
 - 运行开发工作项前，先建立包含 Harness、初始代码和文档的 Git 提交。
 
+从 `1.3.1` 起，`.ai-harness/.gitattributes` 将 Runtime 文本固定为 LF，`.github/workflows/.gitattributes` 只约束自身及标准 `ai-harness.yml`。这两个文件随安装进入收据、冲突预检、备份和卸载流程；已有不同属性文件默认拒绝覆盖，不修改项目根属性或其他 workflow 的规则。源仓库和安装目标都应保留这两个属性文件，避免不同 `core.autocrlf` 设置导致收据字节不一致。规则文件中的托管正文沿用既有规范化哈希，卸载仅适配生成分隔符的 LF/CRLF，保留检出后的用户正文；丢失边界仍失败。旧安装升级按原冲突/备份规则处理，不自动强制覆盖；旧收据不补写哈希。
+
 托管块形态如下；项目规则写在块外，不要手工编辑块内正文或标记：
 
 ```text
@@ -317,7 +319,13 @@ node .ai-harness/bin/harness.mjs record --id ITER-001 --task T1 `
 
 新可选字段要求使用 1.3.0 或更新的 Runtime 校验；历史记录不补写或重新解释。`run.command.timing` 分开记录准备、实际执行及证据准备，观测截至最终追加证据前，不包括进程启动和最后的持久化；完整 CLI 区间由客户端事件计时。原 `durationMs` 语义保持不变。
 
-工作项证据按原始字节计算哈希。随 Runtime 安装的 `.ai-harness/.gitattributes` 对默认 `work-items/**` 禁用 Git 文本转换，使 LF、CRLF 和二进制产物在提交及跨平台检出后保持不变。使用自定义工作项目录时，应在该目录的 Git 属性中设置同等保护。已被换行转换破坏的旧工作副本应从可信提交重新检出，不修改证据哈希来迁就变化后的内容。
+工作项证据按原始字节计算哈希。随 Runtime 安装的 `.ai-harness/.gitattributes` 对默认 `work-items/**` 和 `backups/**` 禁用 Git 文本转换，使 LF、CRLF 和二进制产物在提交及跨平台检出后保持不变。使用自定义工作项目录时，应在该目录的 Git 属性中设置同等保护。已被换行转换破坏的旧工作副本应从可信提交重新检出，不修改证据哈希来迁就变化后的内容。
+
+### 命令输出预算
+
+`config.json` 的 `maxCapturedOutputBytes` 继续控制每流预览长度（默认 16 KiB，另加截断提示）。`maxCommandOutputBytes` 是独立的 `spawnSync` 输出预算，缺省为 16 MiB，允许 1 到 64 MiB 的整数；显式 null、字符串、零或超上限在启动前报错。stdout/stderr 合计可能触发该预算，读取块可能略越过阈值，因此它不是每流配额或严格内存上界。执行仍为同步、有界捕获，权限及超时机制不变。
+
+正常退出的长日志会整体脱敏，并把超出预览的内容保存为 artifact。`stdout/stderr.complete` 表示采集是否完整，`truncated` 仅表示预览截断；非零退出也可能采集完整。超时、输出超限、启动错误或信号终止的采集标记为不完整，artifact 只包含已捕获部分。`command.failureReason` 区分 `timeout`、`output-limit`、`spawn-error`、`signal`、`exit-code`、`source-changed`、`work-changed` 和 `output-save`；成功时为 null，另有 `outputLimitBytes`、`outputLimitExceeded`。同时发生保存失败时，各流的 `saveError` 保留原因，命令必定失败；只在保存成功后提供 artifact 路径和哈希。整个证据目录不可写时会显式抛错，不能保证持久化。常见带引号凭据在输出中途结束时仍脱敏，原始日志不写临时盘；这不构成任意敏感格式的完整检测。
 
 ### 锁诊断与恢复
 
