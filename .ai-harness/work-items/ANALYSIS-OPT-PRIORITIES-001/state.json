@@ -1,0 +1,163 @@
+{
+  "schemaVersion": 1,
+  "integrityVersion": 1,
+  "revision": 1,
+  "id": "ANALYSIS-OPT-PRIORITIES-001",
+  "type": "ANALYSIS",
+  "title": "现有使用场景的优化优先级",
+  "status": "ANSWERED",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/analysis.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "当前用户的只读优化评估问题"
+  },
+  "input": {
+    "references": [
+      "用户问题：先不管其他模型，基于现在还有可以优化的地方吗",
+      ".ai-harness/work-items/MODEL-BENCHMARK-001/comparison.md"
+    ],
+    "acceptance": [
+      "基于当前源码与已保存实测给出优先级、最小方案和验收标准，区分事实与建议"
+    ],
+    "nonGoals": [
+      "不实现新功能、不修改产品代码、不扩展其他厂商、不调用付费模型"
+    ],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": null,
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "2026-09-15，D:/Projects/aiproject，main/afb485e，开始时工作树干净。已读两轮comparison与失败观察、cli/compact/guide/context、策略索引、benchmark驱动和入口；未重跑模型实验或产品测试。"
+    ],
+    "completedAt": "2026-09-15T01:22:40.575Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "afb485e128b095b44ccc9388236b80741f2e3751",
+      "dirty": true,
+      "changedFiles": [
+        ".ai-harness/work-items/ANALYSIS-OPT-PRIORITIES-001/events.jsonl",
+        ".ai-harness/work-items/ANALYSIS-OPT-PRIORITIES-001/state.json"
+      ],
+      "fingerprints": {
+        ".ai-harness/work-items/ANALYSIS-OPT-PRIORITIES-001/events.jsonl": "3eec1955a440be92bcebbda3d4a86664e80530ca66981d5980064e87a934c972",
+        ".ai-harness/work-items/ANALYSIS-OPT-PRIORITIES-001/state.json": "b1c574e652f2894bfa46ff64adfcb6c1c72dc2b39da7a85a9ec2708686321acc"
+      },
+      "source": {
+        "digest": "625f0fa8e0458c72e42a1a2b5ff17653a5c67aef5558e50683adb13dd18d82fe",
+        "document": ".ai-harness/work-items/ANALYSIS-OPT-PRIORITIES-001/snapshots/625f0fa8e0458c72e42a1a2b5ff17653a5c67aef5558e50683adb13dd18d82fe.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "pending",
+    "document": null,
+    "evidence": [],
+    "completedAt": null
+  },
+  "database": {
+    "status": "pending",
+    "document": null,
+    "evidence": [],
+    "completedAt": null,
+    "impact": "unknown"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/ANALYSIS-OPT-PRIORITIES-001/plan.json",
+    "approved": false,
+    "approvalRef": null
+  },
+  "verification": {
+    "status": "pending",
+    "evidence": [],
+    "stages": []
+  },
+  "review": {
+    "status": "pending",
+    "evidence": [],
+    "independent": false
+  },
+  "acceptance": {
+    "status": "pending",
+    "evidence": []
+  },
+  "analysis": {
+    "status": "pass",
+    "evidence": [
+      "3e428bce-1c45-40a1-a5f3-2b1a477348f1"
+    ],
+    "conclusions": [
+      {
+        "id": "f1f617aa-f4e2-427b-bc9b-f78ccb19fed2",
+        "status": "PROVEN",
+        "text": "现有记录显示模型功能完成与工作流交付存在差距：复验Luna原流程完整完成3/3、Harness1/3，而功能均3/3；参数误声明和中间状态恢复已有具体反例。当前guide同时提供细粒度next和finish快捷建议，finish仅从IMPLEMENTING/IN_PROGRESS启动，ITERATION策略默认包含database.md，实测驱动仅Codex。",
+        "evidence": [
+          ".ai-harness/work-items/MODEL-BENCHMARK-001/comparison.md"
+        ]
+      },
+      {
+        "id": "67db65b4-d357-4844-b016-184d3fd02784",
+        "status": "PROPOSAL",
+        "text": "建议先做结构化任务输入及更早的声明诊断，再统一普通任务下一步并支持合法中间态继续收尾；随后按需加载策略/上下文，补齐现有Gemini/Claude/Codex的真实验证及耗时拆分。具体边界与验收见assessment.md。",
+        "evidence": [
+          ".ai-harness/work-items/ANALYSIS-OPT-PRIORITIES-001/assessment.md"
+        ]
+      },
+      {
+        "id": "a6fa9cc5-0c5c-4768-8df7-921d758a5f98",
+        "status": "UNKNOWN",
+        "text": "尚不能确定各项建议的实际收益比例；三题单次数据不能代表通用模型效果，Gemini/Claude的完整真实对照及逐环节耗时未验证。",
+        "evidence": []
+      }
+    ],
+    "unknowns": [
+      "需要实施后的同条件复验才能判断收益；本次没有调用模型或重跑产品测试。"
+    ]
+  },
+  "documentation": {
+    "status": "pending",
+    "evidence": []
+  },
+  "blocked": null,
+  "delivery": null,
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-09-15T01:22:39.650Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-09-15T01:22:40.013Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "ANALYZING",
+      "at": "2026-09-15T01:22:41.136Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "ANALYZING",
+      "to": "ANSWERED",
+      "at": "2026-09-15T01:24:04.775Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-09-15T01:22:39.650Z",
+  "updatedAt": "2026-09-15T01:24:04.775Z"
+}

@@ -1,0 +1,5 @@
+本次仅复核review-2.json中已确认的Claude/Gemini事件错误判定及直接修复，不重新扫描未变动的Runtime模块。上轮已确认输入、finish门禁、路由兼容及上下文未发现其他可确认缺陷。
+
+改动仅两份产品文件：client-drivers.mjs及benchmarks/tests/runner.test.mjs。现在只有明确severity=warning的错误事件作为警告保留；其他error阻止protocolSuccess，后续success不能掩盖。非JSON行使驱动completed为false；缺失必要usage计数保持null。增加合成error→success、显式warning、缺失usage及真实Node假CLI输出损坏JSONL的回归，均通过8项框架测试。这些合成测试不是模型实跑。
+
+只读确认此修复是否完整且未引入直接回归，给出明确pass或可确认的问题。不要执行需要临时目录写入的测试，也不要在无已确认新问题时继续扩展范围。

@@ -126,7 +126,7 @@ export async function readJson(target) {
     throw error;
   }
   try {
-    return JSON.parse(raw);
+    return JSON.parse(raw.replace(/^\uFEFF/, ""));
   } catch (error) {
     throw new HarnessError("INVALID_JSON", `JSON 无法解析：${target}`, {
       cause: error.message,

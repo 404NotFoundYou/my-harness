@@ -2,7 +2,7 @@
 
 可复制到新项目或已有项目的仓库内 AI 开发 Runtime。普通任务默认自主推进，流程随风险增加：模型负责方案判断，Runtime 负责状态、权限和验证证据。
 
-- 当前版本：`1.1.0`
+- 当前版本：`1.2.0`
 - 运行要求：Node.js 20+、Git
 - 依赖：仅 Node.js 标准库，不修改目标项目依赖清单
 - 用户使用指南：[docs/guides/getting-started.md](docs/guides/getting-started.md)
@@ -13,6 +13,8 @@
 `1.1.0` 将验证绑定到计划命令、任务修订和代码快照，修复删除漏检、历史范围误用和分析控制面误报；新增 `reopen` / `replan` / `task-edit`，并适配 Windows 包管理器启动。旧已完成记录从实际 Git 提交归档，不补造过去未运行的测试。
 
 需要辅助时可使用 `guide --context` 获取有界源码上下文，使用 `run --all --task T1` 执行计划内检查；普通已验证迭代可从 `guide.shortcuts` 获得带证据ID的收尾建议。它们不新增门禁，也不代替实际审查和验收。
+
+`1.2.0` 新增 `begin --spec` 结构化任务输入；普通已验证迭代的 `guide.next` 直接建议收尾，`finish` 可从合法中间状态继续。新工作项按已记录的数据库影响加载策略，`guide --context-since` 可省略相同且完整的已知内容；旧终态记录保持原路由语义。客户端驱动覆盖 Codex、Claude、Gemini，实际可用性与验证范围按运行记录报告。
 
 ## 安装到目标项目
 

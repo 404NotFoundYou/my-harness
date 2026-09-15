@@ -1,0 +1,133 @@
+{
+  "codex": {
+    "status": "verified",
+    "model": "gpt-5.6-luna",
+    "functionalCasesPassed": 3,
+    "workflowPassed": true,
+    "durationMs": 114781,
+    "timing": {
+      "basis": "local-event-receive-time",
+      "toolActiveMs": 11168,
+      "otherElapsedMs": 103613,
+      "spans": [
+        {
+          "id": "item_1",
+          "startMs": 14676,
+          "endMs": 14858,
+          "complete": true
+        },
+        {
+          "id": "item_2",
+          "startMs": 14676,
+          "endMs": 14868,
+          "complete": true
+        },
+        {
+          "id": "item_3",
+          "startMs": 14705,
+          "endMs": 14921,
+          "complete": true
+        },
+        {
+          "id": "item_4",
+          "startMs": 14721,
+          "endMs": 14916,
+          "complete": true
+        },
+        {
+          "id": "item_5",
+          "startMs": 14737,
+          "endMs": 14959,
+          "complete": true
+        },
+        {
+          "id": "item_7",
+          "startMs": 25157,
+          "endMs": 25383,
+          "complete": true
+        },
+        {
+          "id": "item_8",
+          "startMs": 25172,
+          "endMs": 25344,
+          "complete": true
+        },
+        {
+          "id": "item_9",
+          "startMs": 25188,
+          "endMs": 25348,
+          "complete": true
+        },
+        {
+          "id": "item_10",
+          "startMs": 31292,
+          "endMs": 32088,
+          "complete": true
+        },
+        {
+          "id": "item_11",
+          "startMs": 40618,
+          "endMs": 41185,
+          "complete": true
+        },
+        {
+          "id": "item_13",
+          "startMs": 51260,
+          "endMs": 53548,
+          "complete": true
+        },
+        {
+          "id": "item_14",
+          "startMs": 62133,
+          "endMs": 62887,
+          "complete": true
+        },
+        {
+          "id": "item_16",
+          "startMs": 71827,
+          "endMs": 72585,
+          "complete": true
+        },
+        {
+          "id": "item_17",
+          "startMs": 84161,
+          "endMs": 84300,
+          "complete": true
+        },
+        {
+          "id": "item_18",
+          "startMs": 84177,
+          "endMs": 84385,
+          "complete": true
+        },
+        {
+          "id": "item_20",
+          "startMs": 95342,
+          "endMs": 99988,
+          "complete": true
+        },
+        {
+          "id": "item_21",
+          "startMs": 105978,
+          "endMs": 106604,
+          "complete": true
+        }
+      ],
+      "unmatchedCompletions": [],
+      "limitation": "工具区间按接收事件估计并合并重叠；其余耗时包含模型、网络、客户端启动和收尾，不等于纯推理耗时。"
+    }
+  },
+  "claude": {
+    "status": "not-verified",
+    "cliVersion": "2.1.208",
+    "reason": "本机CLI未登录，用户同意按现状标记未验证"
+  },
+  "gemini": {
+    "status": "not-verified",
+    "reason": "本机未找到CLI，用户同意按现状标记未验证"
+  },
+  "changesSinceCodexSmoke": [
+    "benchmarks/client-drivers.mjs",
+    "benchmarks/tests/runner.test.mjs"
+  ]
+}

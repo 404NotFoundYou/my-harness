@@ -122,7 +122,7 @@ test("compact completion requires explicit review, acceptance and real current-t
     for (const commandIds of [["invented-id"], [foreign.id]]) {
       await assert.rejects(() => finishWorkItem(root, "COMPACT-1", results(commandIds)), { code: "COMMAND_EVIDENCE_INVALID" });
     }
-    await assert.rejects(() => finishWorkItem(root, "COMPACT-1", results([])), { code: "COMMAND_EVIDENCE_REQUIRED" });
+    await assert.rejects(() => finishWorkItem(root, "COMPACT-1", results([])), { code: "VERIFICATION_NOT_CURRENT" });
     const command = await run(root);
     for (const field of ["verification", "review", "documentation", "acceptance"]) {
       await assert.rejects(() => finishWorkItem(root, "COMPACT-1", results([command.id], { [field]: "" })), { code: "RESULT_REQUIRED" });

@@ -29,6 +29,7 @@ import { createPlan, createReviewBatch, createTask, createWorkItem } from "./mod
 import { assertCommandEvidence, assertVerification, hasFailedReview, invalidateResults, planDigest, readEvidence } from "./verification.mjs";
 import { saveSnapshot, sourceSnapshot } from "./snapshot.mjs";
 import { prepareDelivery } from "./scope.mjs";
+import { itemPolicyFiles, policyFilesFor } from "./policy-routing.mjs";
 import {
   assertTaskTransition,
   assertTransitionAllowed,
@@ -87,8 +88,6 @@ export async function createWorkItemState(root, options) {
   const flags = [...new Set(options.flags || [])];
   for (const flag of flags) invariant(POLICY_FLAGS.includes(flag), "INVALID_POLICY_FLAG", `未知策略标志：${flag}`);
   const policyIndex = await readJson(path.join(root, ".ai-harness", "policies", "index.json"));
-  const policyNames = new Set([...(policyIndex.always || []), ...(policyIndex.byType[options.type] || [])]);
-  for (const flag of flags) for (const name of policyIndex.byFlag[flag] || []) policyNames.add(name);
   if (options.type === "NEW_PROJECT") {
     invariant(["HUMAN_PROVIDED", "AI_RECOMMENDED"].includes(options.architectureSource), "ARCHITECTURE_SOURCE_REQUIRED", "新项目必须提供架构来源。" );
     invariant(options.architectureApproval?.trim(), "ARCHITECTURE_APPROVAL_REQUIRED", "新项目必须提供架构批准/授权引用。" );
@@ -102,7 +101,7 @@ export async function createWorkItemState(root, options) {
     ...options,
     version: options.version || (options.type === "NEW_PROJECT" ? "v1.0" : null),
     flags,
-    policyFiles: [...policyNames].map((name) => `.ai-harness/policies/${name}`),
+    policyFiles: policyFilesFor(policyIndex, options.type, flags),
   };
   const item = createWorkItem(normalizedOptions);
   assertValidWorkItem(item);
@@ -222,6 +221,7 @@ export async function setDatabaseDecision(root, id, { impact, document = null, e
         completedAt: complete ? nowIso() : null,
       };
     }
+    item.policyFiles = itemPolicyFiles(await readJson(path.join(root, ".ai-harness/policies/index.json")), item);
     await appendEvent(paths, id, "database-decision", {
       impact,
       status: item.database.status,

@@ -30,6 +30,7 @@
   ],
   "properties": {
     "schemaVersion": {"const": 1},
+    "policyRoutingVersion": {"enum": [1, 2]},
     "integrityVersion": {"const": 1},
     "revision": {"type": "integer", "minimum": 1},
     "delivery": {

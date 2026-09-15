@@ -109,13 +109,37 @@ BUGFIX 保留远端引入的完整验证流水线。完成实际验证后，在�
 
 方案保存在 `.ai-harness/work-items/<ID>/solution.md`，任务固定为 T1、审查批次 R1。`--verify` 提供实际验证命令，或包含 `command` / `args` 的 JSON 字符串；Runtime 编译为 V1、V2 等检查，不执行 shell 展开。可用 `run --id <ID> --task T1 --check V1` 直接执行计划，或通过原有透传方式执行完全匹配的命令。诊断命令可以留证，但不能代替未运行的计划检查。
 
+也可以执行 `begin --spec task.json --json`，读取项目内UTF-8 JSON（允许BOM），避免路径列表和命令参数的shell转义。定义字段如下；授权来源与验收必须填写本次真实信息：
+
+```json
+{
+  "schemaVersion": 1,
+  "id": "ITER-001",
+  "type": "ITERATION",
+  "title": "实现输入校验",
+  "references": ["TASK.md"],
+  "acceptance": ["有效输入保持兼容，非法输入明确报错"],
+  "authorizationSource": "用户本次明确授权实现TASK.md",
+  "risk": "low",
+  "approach": "复用现有校验入口并补边界测试",
+  "databaseEvidence": "纯内存校验，无持久化影响",
+  "writeScopes": ["src/validation.mjs", "tests/validation.test.mjs"],
+  "verification": [{"command": "node", "args": ["--test", "tests/validation.test.mjs"]}],
+  "docsImpact": ["N/A: 保持已记录契约"]
+}
+```
+
+Schema位于 `.ai-harness/schemas/begin-spec.schema.json`。不与CLI任务定义参数混用，未知字段在创建前拒绝。旧CLI继续使用重复 `--writes` / `--verify`；疑似把多个完整路径拼成一个逗号字符串时会在创建前提示纠正。确为包含逗号的字面路径，可在JSON数组中明确保留为一个元素。`N/A：理由` 会规范化为 `N/A: 理由`。
+
+新项使用策略路由版本2，确定无数据库影响且无显式database标志时不加载完整数据库细则；影响未知或required时仍加载。用 `policies --id <ID>` 查看实际列表。建项前已完成影响判断时可用 `policies --type ITERATION --database-impact none`；该参数不替代工作项中的正式判断。旧项沿用原路由，不改写历史记录。
+
 一次执行本任务所有已声明检查可用 `run --id <ID> --task T1 --all --json`。检查逐条经过原权限与证据执行器；遇失败停止，响应的 `notRun` 列出未执行项。`--all` 不能与 `--check` 或透传命令混用。
 
 `finish --command` 可以重复。所引证据必须属于当前任务、匹配计划签名和任务执行次数，并对应当前代码快照；验证过程中代码变化、验证后修改产品内容或出现新失败，都不能继续使用旧的通过结论。审查、文档、验收仍须是实际结论，Runtime 不从退出码推断业务语义。
 
 新项目、数据库、公共 API、跨端、多 AI、高风险或需要逐步批准的任务使用下述完整流程。安全/权限、支付、并发、全局 UI/路由和破坏性影响也必须升级，不能以缺少业务标志为由归为低风险。
 
-精简命令依次调用原有门禁，不是跨多个文件的原子事务。运行中断时保留真实阶段；用 `show` 或 `guide` 检查后，通过细粒度命令继续。需要返工时使用 `reopen`，需要调整计划时使用 `replan`；不手改状态或用通过结论覆盖失败。最终仍须通过 CI。
+精简命令依次调用原有门禁，不是跨多个文件的原子事务。运行中断时保留真实阶段；用 `guide` 查看尚缺的实际结论，再调用 `finish` 继续。已经完成且绑定当前代码的结论不重复登记；省略 `--command` 时只复用本项当前通过的计划检查，未运行检查不会被自动补做。已到DONE的重复调用只核对冻结记录，不覆盖证据。需要返工时使用 `reopen`，需要调整计划时使用 `replan`；失败审查、旧代码证据或高风险任务不能通过恢复入口绕过。最终仍须通过 CI。
 
 ```powershell
 node .ai-harness/bin/harness.mjs reopen --id ITER-001 --reason "修复最终审查发现的边界问题" --json

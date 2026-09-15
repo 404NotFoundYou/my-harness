@@ -29,11 +29,11 @@
 
 入口：`node .ai-harness/bin/harness.mjs`。参数见 `help`，详细流程见安装源的 `docs/guides/usage.md`。
 
-- 非琐碎工作选择 NEW_PROJECT / ITERATION / BUGFIX / ANALYSIS，执行 `policies --type <TYPE> [--flag <FLAG>] --json` 并读取适用策略；同一上下文未变的内容不重复加载。
-- `begin` 内置 doctor，按真实输入、验收、授权、方案、风险、无数据库影响依据、写入范围、验证方式和文档影响建立基线及单任务 T1。
+- 非琐碎工作选择 NEW_PROJECT / ITERATION / BUGFIX / ANALYSIS。普通任务可按 begin 返回的实际 policyFiles 读取策略；完整流程使用 `policies --type <TYPE> [--flag <FLAG>] --json`。已建项用 `policies --id <ID>`；新项按记录的数据库影响加载细则，同一上下文未变的内容不重复加载。
+- `begin` 内置 doctor，支持 `begin --spec <项目内JSON文件>` 的结构化数组输入，也保留原CLI参数；按真实输入、验收、授权、方案、风险、无数据库影响依据、写入范围、验证方式和文档影响建立基线及单任务 T1。
 - 完整流程先 doctor，再 start；依次完成基线、设计、数据库判断/设计、计划、实现、验证、审查、验收。具体门禁由 Runtime 校验。
 - `run --id <ID> --task T1 -- <COMMAND>` 记录实际命令结果。审查后用 `finish` 引用成功命令 ID，提交真实验证、文档及验收结论；它登记证据，不代做检查。
-- 状态、计划和证据仅通过 CLI 维护。中断保留真实进度，先 `show` 再用细粒度命令继续，禁止手改控制面 JSON/JSONL。
+- 状态、计划和证据仅通过 CLI 维护。中断保留真实进度；普通收尾先读 guide，再用 finish 继续合法的剩余步骤，只补尚缺的真实结论。失败审查或失效证据须正常返工，禁止手改控制面 JSON/JSONL。
 - 需要更明确的下一步或恢复上下文时，可用 `guide --id <ID> [--task T1] --json` 读取目标、范围、证据与命令模板；先解决 `next.needs`，不将占位符或建议当成实际结果。此入口只读且可选。
 - 验证声明会编译成命令/参数数组；可用 `run --id <ID> --task T1 --check V1` 执行。完成证据必须匹配计划修订和当前代码快照，诊断命令不能代替未运行的计划检查。
 - 审查失败或需要重做时用 `reopen --id <ID> --reason <原因>`；调整计划用 `replan`，再以 `task-edit` 修改未批准任务并重新批准。旧版本和证据保留，当前完成结果失效。

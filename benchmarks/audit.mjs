@@ -29,6 +29,7 @@ export async function auditExperiment(directory) {
       const folder = `${task.id}-${group.id}`;
       const row = await read(`${folder}/result.json`);
       assert.equal(row.mode, "real");
+      assert.equal(row.client || "codex", protocol.client || "codex");
       assert.equal(row.taskId, task.id);
       assert.equal(row.group, group.id);
       assert.equal(row.model, group.model);

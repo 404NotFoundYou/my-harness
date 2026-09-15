@@ -12,6 +12,7 @@ import { exists, readJson } from "./filesystem.mjs";
 import { inspectManagedBlock, normalizeManagedBody } from "./managed-block.mjs";
 import { collectPlanErrors } from "./validator.mjs";
 import { collectScopeErrors } from "./scope.mjs";
+import { itemPolicyFiles } from "./policy-routing.mjs";
 import { loadConfig, loadPlan, loadWorkItem, validateWorkItem, workItemPaths } from "./workflow.mjs";
 
 function parseVersion(value) {
@@ -159,12 +160,6 @@ function stateRequiresCompletePlan(status) {
   return ["PLANNED", "IMPLEMENTING", "VERIFYING", "CODE_REVIEW", "READY_FOR_ACCEPTANCE", "DONE"].includes(status);
 }
 
-function expectedPolicyFiles(index, item) {
-  const names = new Set([...(index.always || []), ...(index.byType?.[item.type] || [])]);
-  for (const flag of item.flags) for (const name of index.byFlag?.[flag] || []) names.add(name);
-  return [...names].map((name) => `.ai-harness/policies/${name}`);
-}
-
 async function collectEvidenceErrors(root, item, plan) {
   const errors = [];
   const paths = await workItemPaths(root, item.id);
@@ -281,7 +276,7 @@ export async function checkProject(root, { ci = false } = {}) {
     try {
       const item = await loadWorkItem(root, id);
       items.push(item);
-      const expectedPolicies = expectedPolicyFiles(policyIndex, item);
+      const expectedPolicies = itemPolicyFiles(policyIndex, item);
       if (JSON.stringify(item.policyFiles) !== JSON.stringify(expectedPolicies)) {
         errors.push(`${id}: policyFiles 与工作类型/flags 的确定性路由不一致。`);
       }

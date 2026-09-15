@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "CLIENT-SMOKE",
+  "mode": "single",
+  "rationale": "update the local pure function",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "double numeric values",
+      "module": "compact",
+      "status": "COMPLETED",
+      "attempt": 1,
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        "src/scale.mjs",
+        "test/extra.test.mjs"
+      ],
+      "verification": [
+        "{\"command\":\"node\",\"args\":[\"--test\",\"test/public.test.mjs\"]}"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            "--test",
+            "test/public.test.mjs"
+          ]
+        }
+      ],
+      "docsImpact": [
+        "N/A: no documentation change"
+      ],
+      "reviewBatch": "R1",
+      "risk": "low",
+      "owner": "primary-ai",
+      "verificationStatus": "pass",
+      "reviewStatus": "pass",
+      "evidence": [
+        "54174be7-d5f2-4765-b451-3ad201ddb157",
+        "9c5b9ded-6797-4160-a125-d874aeabe57a"
+      ],
+      "deferralApproval": null,
+      "verificationSource": {
+        "digest": "8c0051497c48af361edf9d9a7ad5ebf4eca7728043c8a9c2e423c8bf3fbf9de9",
+        "document": ".ai-harness/work-items/CLIENT-SMOKE/snapshots/8c0051497c48af361edf9d9a7ad5ebf4eca7728043c8a9c2e423c8bf3fbf9de9.json"
+      },
+      "reviewSource": {
+        "digest": "8c0051497c48af361edf9d9a7ad5ebf4eca7728043c8a9c2e423c8bf3fbf9de9",
+        "document": ".ai-harness/work-items/CLIENT-SMOKE/snapshots/8c0051497c48af361edf9d9a7ad5ebf4eca7728043c8a9c2e423c8bf3fbf9de9.json"
+      }
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "double numeric values",
+      "risk": "low",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": false
+    }
+  ],
+  "createdAt": "2026-09-15T02:21:15.872Z",
+  "updatedAt": "2026-09-15T02:22:21.176Z"
+}

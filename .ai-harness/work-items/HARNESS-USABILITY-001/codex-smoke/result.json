@@ -1,0 +1,243 @@
+{
+  "schemaVersion": 1,
+  "mode": "real",
+  "client": "codex",
+  "taskId": "client-smoke",
+  "split": "smoke",
+  "group": "weak-harness",
+  "model": "gpt-5.6-luna",
+  "taskDigest": "4daaacb718d6add546bed7fec124babbdab2064b138cb93dbefc1d41689b009b",
+  "judgeDigest": "dc7df1a2d1133d33b90237b78fc5b734cd61afd6b304616f6686d9aad442e777",
+  "candidateDigest": "2c7a8f16c63b20e57bd76aa5d2d68f8cf974cf9d6aa981a5e2ed0bfc8f804b8a",
+  "budget": {
+    "timeoutMs": 120000,
+    "maxToolCalls": 35,
+    "reasoning": "medium"
+  },
+  "run": {
+    "mode": "real",
+    "client": "codex",
+    "startedAt": "2026-09-15T02:20:43.827Z",
+    "durationMs": 114781,
+    "timing": {
+      "basis": "local-event-receive-time",
+      "toolActiveMs": 11168,
+      "otherElapsedMs": 103613,
+      "spans": [
+        {
+          "id": "item_1",
+          "startMs": 14676,
+          "endMs": 14858,
+          "complete": true
+        },
+        {
+          "id": "item_2",
+          "startMs": 14676,
+          "endMs": 14868,
+          "complete": true
+        },
+        {
+          "id": "item_3",
+          "startMs": 14705,
+          "endMs": 14921,
+          "complete": true
+        },
+        {
+          "id": "item_4",
+          "startMs": 14721,
+          "endMs": 14916,
+          "complete": true
+        },
+        {
+          "id": "item_5",
+          "startMs": 14737,
+          "endMs": 14959,
+          "complete": true
+        },
+        {
+          "id": "item_7",
+          "startMs": 25157,
+          "endMs": 25383,
+          "complete": true
+        },
+        {
+          "id": "item_8",
+          "startMs": 25172,
+          "endMs": 25344,
+          "complete": true
+        },
+        {
+          "id": "item_9",
+          "startMs": 25188,
+          "endMs": 25348,
+          "complete": true
+        },
+        {
+          "id": "item_10",
+          "startMs": 31292,
+          "endMs": 32088,
+          "complete": true
+        },
+        {
+          "id": "item_11",
+          "startMs": 40618,
+          "endMs": 41185,
+          "complete": true
+        },
+        {
+          "id": "item_13",
+          "startMs": 51260,
+          "endMs": 53548,
+          "complete": true
+        },
+        {
+          "id": "item_14",
+          "startMs": 62133,
+          "endMs": 62887,
+          "complete": true
+        },
+        {
+          "id": "item_16",
+          "startMs": 71827,
+          "endMs": 72585,
+          "complete": true
+        },
+        {
+          "id": "item_17",
+          "startMs": 84161,
+          "endMs": 84300,
+          "complete": true
+        },
+        {
+          "id": "item_18",
+          "startMs": 84177,
+          "endMs": 84385,
+          "complete": true
+        },
+        {
+          "id": "item_20",
+          "startMs": 95342,
+          "endMs": 99988,
+          "complete": true
+        },
+        {
+          "id": "item_21",
+          "startMs": 105978,
+          "endMs": 106604,
+          "complete": true
+        }
+      ],
+      "unmatchedCompletions": [],
+      "limitation": "工具区间按接收事件估计并合并重叠；其余耗时包含模型、网络、客户端启动和收尾，不等于纯推理耗时。"
+    },
+    "exitCode": 0,
+    "timedOut": false,
+    "toolLimit": false,
+    "toolCalls": 17,
+    "turnCompleted": true,
+    "usage": {
+      "input_tokens": 303757,
+      "cached_input_tokens": 266752,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 2809,
+      "reasoning_output_tokens": 682
+    },
+    "error": null,
+    "errors": [],
+    "final": {
+      "completed": true,
+      "summary": "已完成 TASK.md 迭代：src/scale.mjs 现在返回 value * 2；新增 test/extra.test.mjs 验证 caller.present 返回结构兼容。未修改原有测试或规格，未安装依赖、访问网络或提交 Git。Harness 工作项已 DONE，最终 check --ci 通过。",
+      "tests": [
+        "node --test test/public.test.mjs：通过，1/1",
+        "node --test test/extra.test.mjs test/public.test.mjs：通过，2/2",
+        "git diff --check：通过",
+        "node .ai-harness/bin/harness.mjs check --ci --json：通过"
+      ]
+    },
+    "completed": true
+  },
+  "scope": {
+    "ok": true,
+    "changes": [
+      {
+        "path": "src/scale.mjs",
+        "before": "24af96c4e15de5e0fda310ee0d02ad6eaa81ee01819e75e9418006d5f96c8423",
+        "after": "2c7a8f16c63b20e57bd76aa5d2d68f8cf974cf9d6aa981a5e2ed0bfc8f804b8a"
+      },
+      {
+        "path": ".ai-harness/work-items/CLIENT-SMOKE/events.jsonl",
+        "before": null,
+        "after": "d5d9717e66b6fea8915873435907aa944939869bc348682e3ef01c6fa7a7b230"
+      },
+      {
+        "path": ".ai-harness/work-items/CLIENT-SMOKE/evidence.jsonl",
+        "before": null,
+        "after": "64eb0a9eea5e9052114ef26d6ab933c885dbd8dbea3a8a01178f6650874d2f76"
+      },
+      {
+        "path": ".ai-harness/work-items/CLIENT-SMOKE/plan.json",
+        "before": null,
+        "after": "c12e4d7f34b966886d1a47433df56753045fe9aaa28908a89a5966b72c10e6b4"
+      },
+      {
+        "path": ".ai-harness/work-items/CLIENT-SMOKE/snapshots/72c1466398f2111752c9dd530b58cfecde8ce55406b8c2422b838489290f2313.json",
+        "before": null,
+        "after": "a4f3e989d015918fe9d89d3ef6328d734a6f406fad28bc637c0bae84fd2c04a3"
+      },
+      {
+        "path": ".ai-harness/work-items/CLIENT-SMOKE/snapshots/8c0051497c48af361edf9d9a7ad5ebf4eca7728043c8a9c2e423c8bf3fbf9de9.json",
+        "before": null,
+        "after": "de11005646b850038da9f004954fad5585ae49f09d52943399e4b8e6571b6df1"
+      },
+      {
+        "path": ".ai-harness/work-items/CLIENT-SMOKE/solution.md",
+        "before": null,
+        "after": "9e0a14ec0e8356f84b8211b3fa60a872af73f04ec7377cce8af4b8bd7f610642"
+      },
+      {
+        "path": ".ai-harness/work-items/CLIENT-SMOKE/state.json",
+        "before": null,
+        "after": "108d216d705c0fe5fde7616c6af430179fc011f8ca09658760b874b89912d8ab"
+      },
+      {
+        "path": "test/extra.test.mjs",
+        "before": null,
+        "after": "722c1953cbcecbab77880bee24b530db1b77ba41bba4a6d96f4f732bf486282a"
+      }
+    ],
+    "violations": []
+  },
+  "workflow": {
+    "ok": true,
+    "errors": [],
+    "workItems": [
+      "CLIENT-SMOKE"
+    ]
+  },
+  "grade": {
+    "complete": true,
+    "ok": true,
+    "cases": [
+      {
+        "id": "positive",
+        "pass": true
+      },
+      {
+        "id": "negative",
+        "pass": true
+      },
+      {
+        "id": "zero",
+        "pass": true
+      }
+    ],
+    "expectedCases": 3,
+    "exitCode": 0,
+    "timedOut": false,
+    "stderr": "",
+    "error": null
+  },
+  "success": true,
+  "falseCompletion": false,
+  "falseFunctionalCompletion": false
+}

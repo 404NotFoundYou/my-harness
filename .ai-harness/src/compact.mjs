@@ -6,19 +6,15 @@ import { invariant } from "./errors.mjs";
 import { exists, resolveProjectPath } from "./filesystem.mjs";
 import { createPlan, createReviewBatch, createTask, createWorkItem } from "./model.mjs";
 import { assertValidPlan, assertValidWorkItem } from "./validator.mjs";
-import { assertCommandEvidence, assertVerification, readEvidence } from "./verification.mjs";
+import { assertCommandEvidence, assertVerification, hasFailedReview, matchingChecks, readEvidence, verificationReport } from "./verification.mjs";
+import { loadSnapshot } from "./snapshot.mjs";
+import { assertCompactEligible, completionRequirements, completionSourcesCurrent } from "./completion.mjs";
+import { normalizeDocumentation } from "./input.mjs";
 import {
   addReviewBatch, addTask, approvePlan, completeBaseline, completeSolution,
   createWorkItemState, initializePlan, loadPlan, loadWorkItem, recordResult,
-  setDatabaseDecision, transitionWorkItem, updateTaskStatus, workItemPaths,
+  setDatabaseDecision, transitionWorkItem, updateTaskStatus, validateWorkItem, workItemPaths,
 } from "./workflow.mjs";
-
-function assertCompactEligible(type, flags, authorizationMode, risk) {
-  invariant(["ITERATION", "BUGFIX"].includes(type), "FULL_WORKFLOW_REQUIRED", "精简入口只支持 ITERATION 或 BUGFIX。其他类型使用 start。" );
-  invariant(["low", "medium"].includes(risk), "FULL_WORKFLOW_REQUIRED", "精简入口必须明确 low 或 medium 风险；高风险使用完整流程。" );
-  invariant((flags || []).every((flag) => flag === "frontend"), "FULL_WORKFLOW_REQUIRED", "数据库、API、跨端或多 AI 工作使用完整流程。" );
-  invariant(authorizationMode === "autonomous", "AUTONOMOUS_AUTHORIZATION_REQUIRED", "精简入口需要任务范围内的自主执行授权；需逐步批准时使用完整流程。" );
-}
 
 function parseStageInput(entries, allowed, option) {
   invariant(Array.isArray(entries), "STAGE_INPUT_INVALID", `${option} 必须是 stage=value 数组。`);
@@ -77,58 +73,68 @@ export async function beginWorkItem(root, options) {
   };
 }
 
-export async function finishWorkItem(root, id, { commandIds, verification, review, documentation, acceptance, stageEvidence = [], stageCommands = [] }) {
-  for (const [name, value] of Object.entries({ verification, review, documentation, acceptance })) {
-    invariant(value?.trim(), "RESULT_REQUIRED", `finish 必须提供 ${name} 的实际结论。`);
-  }
-  invariant(Array.isArray(commandIds) && commandIds.length > 0 && commandIds.every((value) => typeof value === "string" && value.trim()), "COMMAND_EVIDENCE_REQUIRED", "finish 必须通过 --command 引用实际验证命令。" );
-  const item = await loadWorkItem(root, id);
-  const plan = await loadPlan(root, id);
+export async function finishWorkItem(root, id, { commandIds = [], verification, review, documentation, acceptance, stageEvidence = [], stageCommands = [] } = {}) {
+  let item = await loadWorkItem(root, id);
+  let plan = await loadPlan(root, id);
   assertValidPlan(plan, id, { requireContent: true });
-  invariant(item.status === "IMPLEMENTING", "WRONG_STAGE", "finish 只从 IMPLEMENTING 开始；中断后使用 show 和细粒度命令恢复。" );
   invariant(plan.mode === "single" && plan.tasks.length === 1 && plan.reviewBatches.length === 1, "FULL_WORKFLOW_REQUIRED", "finish 只支持单 AI、单任务、单审查批次。" );
-  const task = plan.tasks[0];
+  let task = plan.tasks[0];
   assertCompactEligible(item.type, item.flags, item.authorization.mode, task.risk);
-  invariant(!plan.reviewBatches.some((batch) => batch.independentRequired || batch.risk === "high"), "FULL_WORKFLOW_REQUIRED", "需要独立复核的工作不能通过 finish 完成。" );
-  invariant(item.database.impact === "none", "FULL_WORKFLOW_REQUIRED", "涉及数据库的工作使用完整流程。" );
-  invariant(task.status === "IN_PROGRESS", "WRONG_TASK_STAGE", "finish 需要 IN_PROGRESS 任务。" );
-
-  const requiredStages = requiredVerificationStages(item);
-  const runStages = requiredStages.filter(isRunBackedStage);
-  const stageSummaries = parseStageInput(stageEvidence, requiredStages, "--stage-evidence");
-  const stageReferences = parseStageInput(stageCommands, runStages, "--stage-command");
-  invariant(requiredStages.every((stage) => stageSummaries.has(stage)), "VERIFICATION_STAGE_REQUIRED", `finish 需要各阶段实际证据：${requiredStages.join(", ")}。`);
-  invariant(runStages.every((stage) => stageReferences.has(stage)), "STAGE_RUN_REQUIRED", "复现与回归阶段必须通过 --stage-command 引用实际成功命令。" );
-  const references = [...new Set([...commandIds, ...stageReferences.values()])];
+  invariant(!plan.reviewBatches.some(batch => batch.independentRequired || batch.risk === "high") && item.database.impact === "none", "FULL_WORKFLOW_REQUIRED", "该工作需要完整流程或独立复核。" );
+  const requirements = completionRequirements(item, plan);
+  invariant(requirements, "WRONG_TASK_STAGE", "finish 需要已进入实施或合法收尾阶段的任务；先用 guide 确认下一步。" );
+  if (item.status === "DONE") {
+    const errors = await validateWorkItem(root, id);
+    invariant(errors.length === 0, "CHECK_FAILED", "已完成工作项的冻结证据无效。", { errors });
+    const report = item.delivery ? await verificationReport(root, item, plan, { snapshot: await loadSnapshot(root, item.delivery.source) }) : null;
+    return { id, status: "DONE", taskId: task.id, alreadyDone: true, verificationCommands: report?.successful.filter(event => matchingChecks(plan, event.taskId, event.command.executable, event.command.args).length).map(event => event.id) || [] };
+  }
+  const results = { verification, review, documentation: normalizeDocumentation(documentation), acceptance };
+  for (const name of requirements.fields) invariant(typeof results[name] === "string" && results[name].trim(), "RESULT_REQUIRED", `finish 尚缺 ${name} 的实际结论。已完成的结论无需重复提交。`, { required: requirements.fields });
+  invariant(Array.isArray(commandIds) && commandIds.every(value => typeof value === "string" && value.trim()), "COMMAND_EVIDENCE_REQUIRED", "command 必须是命令证据 ID 数组。" );
+  const stages = requiredVerificationStages(item);
+  const stageSummaries = parseStageInput(stageEvidence, stages, "--stage-evidence");
+  const stageReferences = parseStageInput(stageCommands, stages.filter(isRunBackedStage), "--stage-command");
+  invariant(requirements.stages.every(stage => stageSummaries.has(stage)), "VERIFICATION_STAGE_REQUIRED", `finish 尚缺阶段的实际证据：${requirements.stages.join(", ")}。`);
+  invariant(requirements.stages.filter(isRunBackedStage).every(stage => stageReferences.has(stage)), "STAGE_RUN_REQUIRED", "未完成的复现/回归阶段必须引用实际成功命令。" );
   const events = await readEvidence(root, id);
-  for (const reference of references) invariant(events.some((event) => event.id === reference && event.kind === "command" && event.taskId === task.id), "COMMAND_EVIDENCE_INVALID", "引用必须属于当前任务的真实命令。" );
-  await assertVerification(root, item, plan, { taskId: task.id });
-  for (const reference of references) await assertCommandEvidence(root, item, plan, reference, { taskId: task.id });
-
+  invariant(!hasFailedReview(events, item, task) && !hasFailedReview(events, item), "REVIEW_REWORK_REQUIRED", "审查失败后必须先按 REWORK/reopen 建立新尝试或修订。" );
+  const proofOptions = { taskId: item.status === "IMPLEMENTING" ? task.id : null };
+  const references = [...new Set([...commandIds, ...stageReferences.values()])];
+  for (const reference of references) invariant(events.some(event => event.id === reference && event.kind === "command" && (event.taskId === task.id || (!event.taskId && item.status !== "IMPLEMENTING"))), "COMMAND_EVIDENCE_INVALID", "引用必须属于当前任务的真实命令。" );
+  const report = await assertVerification(root, item, plan, proofOptions);
+  if (!references.length) references.push(...report.successful.filter(event => matchingChecks(plan, event.taskId, event.command.executable, event.command.args).length).map(event => event.id));
+  for (const reference of references) await assertCommandEvidence(root, item, plan, reference, proofOptions);
+  invariant(completionSourcesCurrent(item, plan, report.current), "STALE_COMPLETION", "已有通过结论不对应当前代码；请正常返工和重新审查，不能直接续用。" );
   const checked = await checkProject(root);
   invariant(checked.ok, "CHECK_FAILED", "工作项或写入范围检查失败，未记录完成结果。", { errors: checked.errors });
-  const verificationSummary = `${verification}\n命令证据：${references.join(", ")}`;
-  await recordResult(root, id, { taskId: task.id, kind: "verification", status: "pass", summary: verificationSummary });
-  await updateTaskStatus(root, id, task.id, "IMPLEMENTED");
-  await updateTaskStatus(root, id, task.id, "IN_REVIEW");
-  await recordResult(root, id, { taskId: task.id, kind: "review", status: "pass", summary: review });
-  await updateTaskStatus(root, id, task.id, "COMPLETED");
-  await transitionWorkItem(root, id, "VERIFYING");
-  if (requiredStages.length > 0) {
-    for (const stage of requiredStages) {
-      await recordResult(root, id, {
-        kind: "verification", status: "pass", stage, summary: stageSummaries.get(stage),
-        commandRef: stageReferences.get(stage) ?? null,
-      });
-    }
-  } else {
-    await recordResult(root, id, { kind: "verification", status: "pass", summary: verificationSummary });
+  const verificationSummary = `${results.verification}\n命令证据：${references.join(", ")}`;
+  while (item.status !== "DONE") {
+    if (item.status === "IMPLEMENTING") {
+      if (task.status === "IN_PROGRESS") {
+        if (task.verificationStatus !== "pass") await recordResult(root, id, { taskId: task.id, kind: "verification", status: "pass", summary: verificationSummary });
+        await updateTaskStatus(root, id, task.id, "IMPLEMENTED");
+      } else if (task.status === "IMPLEMENTED") await updateTaskStatus(root, id, task.id, "IN_REVIEW");
+      else if (task.status === "IN_REVIEW") {
+        if (task.reviewStatus !== "pass") await recordResult(root, id, { taskId: task.id, kind: "review", status: "pass", summary: results.review });
+        await updateTaskStatus(root, id, task.id, "COMPLETED");
+      } else await transitionWorkItem(root, id, "VERIFYING");
+    } else if (item.status === "VERIFYING") {
+      const stage = stages.find(name => !item.verification.stages?.some(entry => entry.stage === name && entry.status === "pass"));
+      if (stage) await recordResult(root, id, { kind: "verification", status: "pass", stage, summary: stageSummaries.get(stage), commandRef: stageReferences.get(stage) ?? null });
+      else if (!stages.length && item.verification.status !== "pass") await recordResult(root, id, { kind: "verification", status: "pass", summary: verificationSummary });
+      else if (!["pass", "not-applicable"].includes(item.documentation.status)) await recordResult(root, id, { kind: "documentation", status: results.documentation.startsWith("N/A:") ? "not-applicable" : "pass", summary: results.documentation });
+      else await transitionWorkItem(root, id, "CODE_REVIEW");
+    } else if (item.status === "CODE_REVIEW") {
+      if (item.review.status !== "pass") await recordResult(root, id, { kind: "review", status: "pass", summary: results.review });
+      else await transitionWorkItem(root, id, "READY_FOR_ACCEPTANCE");
+    } else if (item.status === "READY_FOR_ACCEPTANCE") {
+      if (item.acceptance.status !== "pass") await recordResult(root, id, { kind: "acceptance", status: "pass", summary: `${results.acceptance}\n授权来源：${item.authorization.source}` });
+      else await transitionWorkItem(root, id, "DONE");
+    } else invariant(false, "WRONG_STAGE", "工作项状态已变化，停止收尾并重新读取 guide。" );
+    item = await loadWorkItem(root, id);
+    plan = await loadPlan(root, id);
+    task = plan.tasks[0];
   }
-  await recordResult(root, id, { kind: "documentation", status: /^N\/A\s*:/i.test(documentation) ? "not-applicable" : "pass", summary: documentation });
-  await transitionWorkItem(root, id, "CODE_REVIEW");
-  await recordResult(root, id, { kind: "review", status: "pass", summary: review });
-  await transitionWorkItem(root, id, "READY_FOR_ACCEPTANCE");
-  await recordResult(root, id, { kind: "acceptance", status: "pass", summary: `${acceptance}\n授权来源：${item.authorization.source}` });
-  const done = await transitionWorkItem(root, id, "DONE");
-  return { id: done.id, status: done.status, taskId: task.id, verificationCommands: references };
+  return { id, status: "DONE", taskId: task.id, verificationCommands: references };
 }

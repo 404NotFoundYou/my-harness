@@ -1,0 +1,397 @@
+{
+  "schemaVersion": 1,
+  "integrityVersion": 1,
+  "revision": 1,
+  "id": "HARNESS-USABILITY-001",
+  "type": "ITERATION",
+  "title": "简化任务输入、恢复收尾与按需上下文",
+  "status": "DONE",
+  "flags": [
+    "database"
+  ],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/iteration.md",
+    ".ai-harness/policies/database.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户本轮明确要求按评估建议实施"
+  },
+  "input": {
+    "references": [
+      "用户授权：根据优化评估建议进行修改，继续聚焦Gemini、Claude和Codex",
+      ".ai-harness/work-items/ANALYSIS-OPT-PRIORITIES-001/assessment.md"
+    ],
+    "acceptance": [
+      "结构化任务输入兼容原CLI，已知列表/标点误用在创建前得到明确诊断",
+      "普通任务主建议统一，合法中间状态可一次继续收尾，旧证据、失败审查和独立复核不能被绕过",
+      "无数据库影响可按需加载规则；上下文可按指纹省略已读完整内容且保持只读",
+      "补现有三客户端验证入口及工具/等待耗时记录，实际缺失环境明确记录，相关回归及独立复核通过"
+    ],
+    "nonGoals": [
+      "不改历史实测结论，不扩其他厂商，不新增多Agent层次，不提交推送"
+    ],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": null,
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "main/afb485e，已提交上一轮实现；仅保留ANALYSIS-OPT-PRIORITIES-001未提交分析目录。读取CLI/compact/workflow/model/validator、guide/context、策略索引、公开Schema和相关测试/驱动；本次持久化影响仅版本化策略路由字段，无外部数据库。"
+    ],
+    "completedAt": "2026-09-15T01:35:32.056Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "afb485e128b095b44ccc9388236b80741f2e3751",
+      "dirty": true,
+      "changedFiles": [
+        ".ai-harness/work-items/ANALYSIS-OPT-PRIORITIES-001/assessment.md",
+        ".ai-harness/work-items/ANALYSIS-OPT-PRIORITIES-001/events.jsonl",
+        ".ai-harness/work-items/ANALYSIS-OPT-PRIORITIES-001/evidence.jsonl",
+        ".ai-harness/work-items/ANALYSIS-OPT-PRIORITIES-001/snapshots/625f0fa8e0458c72e42a1a2b5ff17653a5c67aef5558e50683adb13dd18d82fe.json",
+        ".ai-harness/work-items/ANALYSIS-OPT-PRIORITIES-001/state.json",
+        ".ai-harness/work-items/HARNESS-USABILITY-001/events.jsonl",
+        ".ai-harness/work-items/HARNESS-USABILITY-001/state.json"
+      ],
+      "fingerprints": {
+        ".ai-harness/work-items/ANALYSIS-OPT-PRIORITIES-001/assessment.md": "0552388b1b86aa691c496dc7f6c1b145298b85fdde2af770f0fff92de66fb251",
+        ".ai-harness/work-items/ANALYSIS-OPT-PRIORITIES-001/events.jsonl": "756b0191aae3a586077a526b8392b2757b2d45f5e2ce8a01f59a594ce591a016",
+        ".ai-harness/work-items/ANALYSIS-OPT-PRIORITIES-001/evidence.jsonl": "3ef608e7306c9b67a110df40cad78ae5916006a6c490dec9782215642d0c2426",
+        ".ai-harness/work-items/ANALYSIS-OPT-PRIORITIES-001/snapshots/625f0fa8e0458c72e42a1a2b5ff17653a5c67aef5558e50683adb13dd18d82fe.json": "5c9ef4ea40b6a52e5bffe400ebe88abf263483c7ba675b25497ca0bb07292ef4",
+        ".ai-harness/work-items/ANALYSIS-OPT-PRIORITIES-001/state.json": "0c15b807c50edc2938a686ee5cebf2ac408a9b3023ab5850a06477b51748a4db",
+        ".ai-harness/work-items/HARNESS-USABILITY-001/events.jsonl": "01cbabef84c8ed24be37e985e3ac045a8d6b1fb97eb8242d9ecb1446c1c8803e",
+        ".ai-harness/work-items/HARNESS-USABILITY-001/state.json": "47601567cc0c00e01d88bf5a8f90f303a7d52f574e88b3b25b5dc2837de95a45"
+      },
+      "source": {
+        "digest": "625f0fa8e0458c72e42a1a2b5ff17653a5c67aef5558e50683adb13dd18d82fe",
+        "document": ".ai-harness/work-items/HARNESS-USABILITY-001/snapshots/625f0fa8e0458c72e42a1a2b5ff17653a5c67aef5558e50683adb13dd18d82fe.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": ".ai-harness/work-items/HARNESS-USABILITY-001/design.md",
+    "evidence": [
+      "已明确兼容输入、复用原门禁的可恢复收尾、版本化策略路由及只读指纹上下文方案。"
+    ],
+    "completedAt": "2026-09-15T01:35:32.923Z"
+  },
+  "database": {
+    "impact": "required",
+    "status": "complete",
+    "document": ".ai-harness/work-items/HARNESS-USABILITY-001/design.md",
+    "evidence": [
+      "新项版本2与旧项版本1分别确定路由；Schema和运行校验同步，仅通过CLI写状态，旧终态不迁移。"
+    ],
+    "completedAt": "2026-09-15T01:35:33.979Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/HARNESS-USABILITY-001/plan.json",
+    "approved": true,
+    "approvalRef": "用户已授权按建议实施；设计与边界已记录，沿用原验证与独立复核门禁。"
+  },
+  "verification": {
+    "status": "pass",
+    "evidence": [
+      "a0699a94-35fe-493e-8df6-4a3f5ec1c7a2"
+    ],
+    "stages": [],
+    "source": {
+      "digest": "d9757a23f48542e1a3990d503a594328637428988ca8b50dbe0020bf0e2ff45c",
+      "document": ".ai-harness/work-items/HARNESS-USABILITY-001/snapshots/d9757a23f48542e1a3990d503a594328637428988ca8b50dbe0020bf0e2ff45c.json"
+    }
+  },
+  "review": {
+    "status": "pass",
+    "evidence": [
+      "40bc4a09-f1a4-4d9b-ad60-f70708cebc67"
+    ],
+    "independent": true,
+    "source": {
+      "digest": "d9757a23f48542e1a3990d503a594328637428988ca8b50dbe0020bf0e2ff45c",
+      "document": ".ai-harness/work-items/HARNESS-USABILITY-001/snapshots/d9757a23f48542e1a3990d503a594328637428988ca8b50dbe0020bf0e2ff45c.json"
+    }
+  },
+  "acceptance": {
+    "status": "pass",
+    "evidence": [
+      "4426a2f3-26e4-4526-af46-8eb71c7e8dc9"
+    ],
+    "source": {
+      "digest": "d9757a23f48542e1a3990d503a594328637428988ca8b50dbe0020bf0e2ff45c",
+      "document": ".ai-harness/work-items/HARNESS-USABILITY-001/snapshots/d9757a23f48542e1a3990d503a594328637428988ca8b50dbe0020bf0e2ff45c.json"
+    }
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "pass",
+    "evidence": [
+      "afef6229-d6b3-4722-b3cf-8c2a4e4854e3"
+    ]
+  },
+  "blocked": null,
+  "delivery": {
+    "source": {
+      "digest": "d9757a23f48542e1a3990d503a594328637428988ca8b50dbe0020bf0e2ff45c",
+      "document": ".ai-harness/work-items/HARNESS-USABILITY-001/snapshots/d9757a23f48542e1a3990d503a594328637428988ca8b50dbe0020bf0e2ff45c.json"
+    },
+    "baseline": {
+      "digest": "625f0fa8e0458c72e42a1a2b5ff17653a5c67aef5558e50683adb13dd18d82fe",
+      "document": ".ai-harness/work-items/HARNESS-USABILITY-001/snapshots/625f0fa8e0458c72e42a1a2b5ff17653a5c67aef5558e50683adb13dd18d82fe.json"
+    },
+    "baselineAt": "2026-09-15T01:35:32.056Z",
+    "ownedChanges": [
+      {
+        "path": ".ai-harness/manifest.json",
+        "before": "100644:329a6e663f730a3a338f106939f34ccf482842d7",
+        "after": "100644:5dd196d64eea787e3c2f9df4d72d9ebf504c94ae"
+      },
+      {
+        "path": ".ai-harness/schemas/begin-spec.schema.json",
+        "before": null,
+        "after": "100644:78436c09f165bbbfc2ed88ed8c5fef9f6d6a05aa"
+      },
+      {
+        "path": ".ai-harness/schemas/work-item.schema.json",
+        "before": "100644:d4b8de6293f6e2bdcd366b469da1ed1dbd989175",
+        "after": "100644:9d25275323c38751a5ce3aea9fe1ed9cd57a320e"
+      },
+      {
+        "path": ".ai-harness/src/checker.mjs",
+        "before": "100644:be6facde6a6e11d352a0cb4d7ec797b506e83b94",
+        "after": "100644:2ba0180d8e4577ca816359e19cd99d2b058c245f"
+      },
+      {
+        "path": ".ai-harness/src/cli.mjs",
+        "before": "100644:0cf9c9a9707e00c9983f7343454a86f717ee2a02",
+        "after": "100644:20084a272e478b786f4e09cba9fcaf4259efe4b6"
+      },
+      {
+        "path": ".ai-harness/src/compact.mjs",
+        "before": "100644:835ebbc36e1428c6feaac599cfa5fe5672140b70",
+        "after": "100644:e6422cfe37bac4c873648aa0e4eeda09a90e4090"
+      },
+      {
+        "path": ".ai-harness/src/completion.mjs",
+        "before": null,
+        "after": "100644:13d60b111769eebdb5a0234fe4104bfc1021e771"
+      },
+      {
+        "path": ".ai-harness/src/context.mjs",
+        "before": "100644:e74cc8987436db02b823319e085cc27c238483b0",
+        "after": "100644:ed20759c6d7a37ae603534f798c951409d1be0ba"
+      },
+      {
+        "path": ".ai-harness/src/filesystem.mjs",
+        "before": "100644:607d3fbbc1da103b92a5f16c03e5f77f1e8d5762",
+        "after": "100644:b52d6b634f27c4b6e52514369f4c0a9b7862484f"
+      },
+      {
+        "path": ".ai-harness/src/guide.mjs",
+        "before": "100644:5810daffd9cfb5d8d7f7b60a7c55a26b29c638a4",
+        "after": "100644:a6f1ac8a3c6456b3998458baf41a1dac589a4ced"
+      },
+      {
+        "path": ".ai-harness/src/input.mjs",
+        "before": null,
+        "after": "100644:00522cc472089af3a28aa97f745e0d92fdc845ec"
+      },
+      {
+        "path": ".ai-harness/src/model.mjs",
+        "before": "100644:1080f504bb752e3153b744caa8e6c1281df8d8d6",
+        "after": "100644:b56a6e6d5c8683a94098138d86f9bd763c985dac"
+      },
+      {
+        "path": ".ai-harness/src/policy-routing.mjs",
+        "before": null,
+        "after": "100644:ac359136b4df8e9b9b0e95741202fcf20dc4fd56"
+      },
+      {
+        "path": ".ai-harness/src/validator.mjs",
+        "before": "100644:a7d7e75df910b6db39def7381c18ba8f4cb50067",
+        "after": "100644:06c293349f6902fa626ef2d1fb5685d40760936c"
+      },
+      {
+        "path": ".ai-harness/src/workflow.mjs",
+        "before": "100644:b267d2b1ec370e4c24b30d49e54a28b2effc34c4",
+        "after": "100644:ea2bc21315f8d7a68b07d29a3c3b5d4238068b8a"
+      },
+      {
+        "path": ".ai-harness/templates/instructions/AGENTS.md",
+        "before": "100644:937449bf5a8a4a470dd3366efa103e747b940965",
+        "after": "100644:8a0a8b876010b6cf997b1bebcffeefcf66b93fbb"
+      },
+      {
+        "path": ".ai-harness/tests/compact.test.mjs",
+        "before": "100644:85701fdb238d1c09f923485a2bc39e0af7404961",
+        "after": "100644:958f01d83921ab7a5b4654eda73968db3fc716f5"
+      },
+      {
+        "path": ".ai-harness/tests/context-delta.test.mjs",
+        "before": null,
+        "after": "100644:99c5016ce0f2dd2419e85be5f6f5512e2160f9d8"
+      },
+      {
+        "path": ".ai-harness/tests/finish-resume.test.mjs",
+        "before": null,
+        "after": "100644:25f157fbf0ad17e6aa932643a9faa94617b374e7"
+      },
+      {
+        "path": ".ai-harness/tests/guidance-tools.test.mjs",
+        "before": "100644:3c9187b10e85bf134d109f8c0065be7297366bf0",
+        "after": "100644:65b85f2fba1ac7201b9dbb4f212fcd7722e7cb8a"
+      },
+      {
+        "path": ".ai-harness/tests/guide.test.mjs",
+        "before": "100644:0b0c728d1b70c5f5102479002f8e6ea113c67545",
+        "after": "100644:f516033c2ab5e2eec98275d2e0a6638c45fd11fb"
+      },
+      {
+        "path": ".ai-harness/tests/spec-input.test.mjs",
+        "before": null,
+        "after": "100644:22c357d11788cd35ae10c853e2037d185e3d202d"
+      },
+      {
+        "path": "AGENTS.md",
+        "before": "100644:937449bf5a8a4a470dd3366efa103e747b940965",
+        "after": "100644:8a0a8b876010b6cf997b1bebcffeefcf66b93fbb"
+      },
+      {
+        "path": "README.md",
+        "before": "100644:15efb3b9887dc90b9294be392195ec4aa3316bc9",
+        "after": "100644:aa5d861b2a25eb166a799e898439cb9dd05553f2"
+      },
+      {
+        "path": "benchmarks/README.md",
+        "before": "100644:ca57f39d53fd9c9aa29e8a01a92222193324f2db",
+        "after": "100644:723a88943e7971ea3df7f7a9e71102db7c75344e"
+      },
+      {
+        "path": "benchmarks/audit.mjs",
+        "before": "100644:1afd9385ee9a4eed7dc85e7487694009e7d4d7d5",
+        "after": "100644:012afb8f6c476cfdbd52d03208b8630f1c1f6df2"
+      },
+      {
+        "path": "benchmarks/client-drivers.mjs",
+        "before": null,
+        "after": "100644:1e7f5178cde3b2c539bee137b1962be66cc087b4"
+      },
+      {
+        "path": "benchmarks/codex-driver.mjs",
+        "before": "100644:d74ea241a42d3c24dba4b1b14ac9fdb38b91f15e",
+        "after": "100644:874c30ce426209507d8b9dba8cdff90c5372850b"
+      },
+      {
+        "path": "benchmarks/run.mjs",
+        "before": "100644:3c89433be4ed1cc3dd32ac644ad5de3d82945e9f",
+        "after": "100644:d4fed88bab593dafb1f9e1fcdba5a7c8f4377ed2"
+      },
+      {
+        "path": "benchmarks/runner.mjs",
+        "before": "100644:e1122fdcba307539221b12fa2cebf20c46e68667",
+        "after": "100644:238c3fb7ed5e442ac129178f44df5bb9bae54a7e"
+      },
+      {
+        "path": "benchmarks/tests/runner.test.mjs",
+        "before": "100644:88fe85bee5a0f8a4f5ecfe34a93060248f73e45f",
+        "after": "100644:5e203413102f9024feb6d27953741ef72b8be157"
+      },
+      {
+        "path": "benchmarks/timing.mjs",
+        "before": null,
+        "after": "100644:e75586135dc748374370734b6c532c6cc26da2e2"
+      },
+      {
+        "path": "docs/guides/model-guidance.md",
+        "before": "100644:36e37157f7dd6e3b64e03bfaa5b5fba7d228872e",
+        "after": "100644:d25c67b23799283e114dc1d9115b357c0140522d"
+      },
+      {
+        "path": "docs/guides/usage.md",
+        "before": "100644:35bdd5139cfd63ddb2be8bc0e94567f8cf43de68",
+        "after": "100644:11a5441f8ea9787f21c0378d5874f5cc09fa64c1"
+      }
+    ],
+    "planDigest": "ae7323ff6f08c750e588b83d32e6dc9cd67bf30a5fca7b5c6ef6baaf8694dfd5",
+    "at": "2026-09-15T02:45:00.455Z",
+    "head": "afb485e128b095b44ccc9388236b80741f2e3751"
+  },
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-09-15T01:35:31.130Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-09-15T01:35:31.496Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-09-15T01:35:32.559Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "DATABASE_DESIGN",
+      "at": "2026-09-15T01:35:33.632Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "DATABASE_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-09-15T01:35:35.799Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-09-15T01:35:36.154Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "VERIFYING",
+      "at": "2026-09-15T02:44:54.068Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "VERIFYING",
+      "to": "CODE_REVIEW",
+      "at": "2026-09-15T02:44:55.928Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "CODE_REVIEW",
+      "to": "READY_FOR_ACCEPTANCE",
+      "at": "2026-09-15T02:44:57.445Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "READY_FOR_ACCEPTANCE",
+      "to": "DONE",
+      "at": "2026-09-15T02:45:00.716Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-09-15T01:35:31.130Z",
+  "updatedAt": "2026-09-15T02:45:00.716Z"
+}

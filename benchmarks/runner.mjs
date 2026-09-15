@@ -115,20 +115,20 @@ export async function gradeCandidate(task, implementation) {
   } finally { await cleanupSandbox(root); }
 }
 
-export function participantPrompt(task, group) {
+export function participantPrompt(task, group, runBudget = budget) {
   return `请在当前临时项目完成TASK.md中的迭代，先读规格、实现、src/caller.mjs和公共测试，然后实现并验证。\n` +
     `只有${task.entry}和新增test/extra.test.mjs可写（Harness组另可通过CLI维护工作项控制面）。不要修改原有测试或规格，不安装依赖、不访问网络、不提交Git。无需询问已授权的实现选择。\n` +
-    `预算${budget.timeoutMs / 1000}秒、${budget.maxToolCalls}次工具调用；到期如实报告未完成。最终按结构化格式报告completed、summary和实际运行的tests。\n` +
+    `预算${runBudget.timeoutMs / 1000}秒、${runBudget.maxToolCalls}次工具调用；到期如实报告未完成。最终按结构化格式报告completed、summary和实际运行的tests。\n` +
     (group.harness ? "本组已安装并初始化Harness，请按AGENTS使用普通ITERATION路径。help查看参数；guide --context可集中读取局部上下文，run --all可顺序执行本任务已声明检查；实施中修正代码或自测后直接复验即可。guide的shortcuts可提供带证据ID的finish建议；提交真实检查与自查结论，最终check --ci。\n" : "按当前项目规范直接实施与验证。\n");
 }
 
-export async function runCase({ task, group, sourceRoot, outputDirectory, driver }) {
+export async function runCase({ task, group, sourceRoot, outputDirectory, driver, runBudget = budget }) {
   await mkdir(outputDirectory, { recursive: true });
   const participant = await createParticipant(task, { sourceRoot, harness: group.harness });
   try {
-    const prompt = participantPrompt(task, group);
+    const prompt = participantPrompt(task, group, runBudget);
     await writeFile(path.join(outputDirectory, "prompt.txt"), prompt);
-    const run = await driver({ root: participant.root, model: group.model, prompt, budget, outputDirectory });
+    const run = await driver({ root: participant.root, model: group.model, prompt, budget: runBudget, outputDirectory });
     const scope = await inspectChanges(participant, task, group.harness);
     const sourceFile = path.join(participant.root, task.entry);
     const info = await lstat(sourceFile).catch(() => null);
@@ -152,8 +152,8 @@ export async function runCase({ task, group, sourceRoot, outputDirectory, driver
     }
     const grade = await gradeCandidate(task, implementation);
     const success = Boolean(run.completed && scope.ok && grade.ok && (!group.harness || workflow?.ok));
-    const result = { schemaVersion: 1, mode: run.mode, taskId: task.id, split: task.split, group: group.id, model: group.model,
-      taskDigest: hash(JSON.stringify(task.files)), judgeDigest: hash(JSON.stringify(task.cases)), candidateDigest: hash(implementation), budget,
+    const result = { schemaVersion: 1, mode: run.mode, client: run.client || "codex", taskId: task.id, split: task.split, group: group.id, model: group.model,
+      taskDigest: hash(JSON.stringify(task.files)), judgeDigest: hash(JSON.stringify(task.cases)), candidateDigest: hash(implementation), budget: runBudget,
       run, scope, workflow, grade, success, falseCompletion: Boolean(run.final?.completed && !success),
       falseFunctionalCompletion: Boolean(run.final?.completed && !grade.ok) };
     await saveJson(path.join(outputDirectory, "result.json"), result);
@@ -163,6 +163,7 @@ export async function runCase({ task, group, sourceRoot, outputDirectory, driver
 
 export function summarize(results) {
   const modes = new Set(results.map(result => result.mode));
+  if (new Set(results.map(result => result.client || "codex")).size !== 1) throw new Error("Different clients must be reported separately");
   if (modes.size !== 1 || !["real", "simulated"].includes([...modes][0])) throw new Error("Real and simulated results must not be mixed");
   return [...new Set(results.map(result => result.group))].map(group => {
     const rows = results.filter(result => result.group === group);

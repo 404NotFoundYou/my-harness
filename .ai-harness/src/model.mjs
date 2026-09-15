@@ -1,5 +1,6 @@
 import { SCHEMA_VERSION, nowIso } from "./constants.mjs";
 import { compileChecks } from "./commands.mjs";
+import { normalizeDocumentation } from "./input.mjs";
 
 function pendingGate(extra = {}) {
   return {
@@ -38,6 +39,7 @@ export function createWorkItem({
   const timestamp = nowIso();
   return {
     schemaVersion: SCHEMA_VERSION,
+    policyRoutingVersion: 2,
     integrityVersion: 1,
     revision: 1,
     id,
@@ -126,7 +128,7 @@ export function createTask({
     writeScopes: [...new Set(writeScopes)],
     verification: [...new Set(verification)],
     checks: compileChecks([...new Set(verification)]),
-    docsImpact: [...new Set(docsImpact)],
+    docsImpact: [...new Set(docsImpact.map(normalizeDocumentation))],
     reviewBatch,
     risk,
     owner,

@@ -1,0 +1,213 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 1,
+  "id": "CLIENT-SMOKE",
+  "type": "ITERATION",
+  "title": "double numeric values",
+  "status": "DONE",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/iteration.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户已授权的本地临时客户端验证任务"
+  },
+  "input": {
+    "references": [
+      "TASK.md"
+    ],
+    "acceptance": [
+      "numeric input doubles and caller stays compatible"
+    ],
+    "nonGoals": [],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": null,
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "TASK.md"
+    ],
+    "completedAt": "2026-09-15T02:21:15.690Z",
+    "repository": {
+      "isGit": true,
+      "branch": "master",
+      "commit": "503c2db4a0822835652e86ea64b07d3cac285fdc",
+      "dirty": true,
+      "changedFiles": [
+        ".ai-harness/work-items/CLIENT-SMOKE/events.jsonl",
+        ".ai-harness/work-items/CLIENT-SMOKE/state.json"
+      ],
+      "fingerprints": {
+        ".ai-harness/work-items/CLIENT-SMOKE/events.jsonl": "2910fbafaa630007ca19b979b83648120e733b706812b9d9c52f6972f637c771",
+        ".ai-harness/work-items/CLIENT-SMOKE/state.json": "1227f569812dc968885c6e9795fe5b33cfb8e61098f4d55b718e0b1bf95fd649"
+      },
+      "source": {
+        "digest": "72c1466398f2111752c9dd530b58cfecde8ce55406b8c2422b838489290f2313",
+        "document": ".ai-harness/work-items/CLIENT-SMOKE/snapshots/72c1466398f2111752c9dd530b58cfecde8ce55406b8c2422b838489290f2313.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": ".ai-harness/work-items/CLIENT-SMOKE/solution.md",
+    "evidence": [
+      "update the local pure function"
+    ],
+    "completedAt": "2026-09-15T02:21:15.867Z"
+  },
+  "database": {
+    "impact": "none",
+    "status": "not-applicable",
+    "document": null,
+    "evidence": [
+      "no persistence"
+    ],
+    "completedAt": "2026-09-15T02:21:15.869Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/CLIENT-SMOKE/plan.json",
+    "approved": true,
+    "approvalRef": "用户已授权的本地临时客户端验证任务"
+  },
+  "verification": {
+    "status": "pass",
+    "evidence": [
+      "740c55ee-6a9c-4865-8c50-b55fda94d5b1"
+    ],
+    "stages": [],
+    "source": {
+      "digest": "8c0051497c48af361edf9d9a7ad5ebf4eca7728043c8a9c2e423c8bf3fbf9de9",
+      "document": ".ai-harness/work-items/CLIENT-SMOKE/snapshots/8c0051497c48af361edf9d9a7ad5ebf4eca7728043c8a9c2e423c8bf3fbf9de9.json"
+    }
+  },
+  "review": {
+    "status": "pass",
+    "evidence": [
+      "99a225ca-95d5-4cfe-a8df-5ddbf4fe4e45"
+    ],
+    "independent": false,
+    "source": {
+      "digest": "8c0051497c48af361edf9d9a7ad5ebf4eca7728043c8a9c2e423c8bf3fbf9de9",
+      "document": ".ai-harness/work-items/CLIENT-SMOKE/snapshots/8c0051497c48af361edf9d9a7ad5ebf4eca7728043c8a9c2e423c8bf3fbf9de9.json"
+    }
+  },
+  "acceptance": {
+    "status": "pass",
+    "evidence": [
+      "9bd0ad8d-2be0-4c0e-9abd-c792afa44cc6"
+    ],
+    "source": {
+      "digest": "8c0051497c48af361edf9d9a7ad5ebf4eca7728043c8a9c2e423c8bf3fbf9de9",
+      "document": ".ai-harness/work-items/CLIENT-SMOKE/snapshots/8c0051497c48af361edf9d9a7ad5ebf4eca7728043c8a9c2e423c8bf3fbf9de9.json"
+    }
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "not-applicable",
+    "evidence": [
+      "6b3198eb-3477-41c7-9f45-45f5061a7bc0"
+    ]
+  },
+  "blocked": null,
+  "delivery": {
+    "source": {
+      "digest": "8c0051497c48af361edf9d9a7ad5ebf4eca7728043c8a9c2e423c8bf3fbf9de9",
+      "document": ".ai-harness/work-items/CLIENT-SMOKE/snapshots/8c0051497c48af361edf9d9a7ad5ebf4eca7728043c8a9c2e423c8bf3fbf9de9.json"
+    },
+    "baseline": {
+      "digest": "72c1466398f2111752c9dd530b58cfecde8ce55406b8c2422b838489290f2313",
+      "document": ".ai-harness/work-items/CLIENT-SMOKE/snapshots/72c1466398f2111752c9dd530b58cfecde8ce55406b8c2422b838489290f2313.json"
+    },
+    "baselineAt": "2026-09-15T02:21:15.690Z",
+    "ownedChanges": [
+      {
+        "path": "src/scale.mjs",
+        "before": "100644:dd4578e06b7f37bb407acd04adc21fd77f7e0718",
+        "after": "100644:3ed15afa50e7eb11ed879a82eda20309f9155413"
+      },
+      {
+        "path": "test/extra.test.mjs",
+        "before": null,
+        "after": "100644:0668f2d1633a98bddb2252108f6a61d9ba65ca4a"
+      }
+    ],
+    "planDigest": "0ddbab874f6176533da04150bfd272265acf66698932d8576a422951b581335f",
+    "at": "2026-09-15T02:22:23.579Z",
+    "head": "503c2db4a0822835652e86ea64b07d3cac285fdc"
+  },
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-09-15T02:21:15.478Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-09-15T02:21:15.483Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-09-15T02:21:15.863Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-09-15T02:21:15.886Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-09-15T02:21:15.888Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "VERIFYING",
+      "at": "2026-09-15T02:22:21.180Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "VERIFYING",
+      "to": "CODE_REVIEW",
+      "at": "2026-09-15T02:22:21.846Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "CODE_REVIEW",
+      "to": "READY_FOR_ACCEPTANCE",
+      "at": "2026-09-15T02:22:22.500Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "READY_FOR_ACCEPTANCE",
+      "to": "DONE",
+      "at": "2026-09-15T02:22:23.790Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-09-15T02:21:15.478Z",
+  "updatedAt": "2026-09-15T02:22:23.790Z"
+}

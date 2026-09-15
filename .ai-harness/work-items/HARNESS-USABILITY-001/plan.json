@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "HARNESS-USABILITY-001",
+  "mode": "single",
+  "rationale": "单一实现上下文维护共用资格、路由与校验；高风险门禁另做独立复核。",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "落实任务输入、收尾、上下文与客户端验证改进",
+      "module": "runtime",
+      "status": "COMPLETED",
+      "attempt": 2,
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        ".ai-harness/src/**",
+        ".ai-harness/schemas/**",
+        ".ai-harness/tests/**",
+        ".ai-harness/manifest.json",
+        ".ai-harness/policies/**",
+        ".ai-harness/templates/instructions/AGENTS.md",
+        "AGENTS.md",
+        "benchmarks/**"
+      ],
+      "verification": [
+        "node .ai-harness/tests/run.mjs",
+        "node --test benchmarks/tests/runner.test.mjs"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            ".ai-harness/tests/run.mjs"
+          ]
+        },
+        {
+          "id": "V2",
+          "command": "node",
+          "args": [
+            "--test",
+            "benchmarks/tests/runner.test.mjs"
+          ]
+        }
+      ],
+      "docsImpact": [
+        "README.md",
+        "docs/guides/**",
+        "benchmarks/README.md"
+      ],
+      "reviewBatch": "R1",
+      "risk": "high",
+      "owner": "primary-ai",
+      "verificationStatus": "pass",
+      "reviewStatus": "pass",
+      "evidence": [
+        "d2447242-e693-4dc3-ba53-c5ccd1a29122",
+        "fcacbc09-6ec6-428f-9a4b-11b00faf33f3",
+        "9d125a68-26ce-4362-a05d-e668f383d7a2",
+        "c88ca328-2e56-43b6-b934-c67bce4f80d6"
+      ],
+      "deferralApproval": null,
+      "verificationSource": {
+        "digest": "d9757a23f48542e1a3990d503a594328637428988ca8b50dbe0020bf0e2ff45c",
+        "document": ".ai-harness/work-items/HARNESS-USABILITY-001/snapshots/d9757a23f48542e1a3990d503a594328637428988ca8b50dbe0020bf0e2ff45c.json"
+      },
+      "reviewSource": {
+        "digest": "d9757a23f48542e1a3990d503a594328637428988ca8b50dbe0020bf0e2ff45c",
+        "document": ".ai-harness/work-items/HARNESS-USABILITY-001/snapshots/d9757a23f48542e1a3990d503a594328637428988ca8b50dbe0020bf0e2ff45c.json"
+      }
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "输入、收尾及持久路由独立复核",
+      "risk": "high",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": true
+    }
+  ],
+  "createdAt": "2026-09-15T01:35:34.335Z",
+  "updatedAt": "2026-09-15T02:44:53.695Z"
+}

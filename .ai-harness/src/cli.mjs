@@ -5,6 +5,8 @@ import { checkProject, doctorProject } from "./checker.mjs";
 import { beginWorkItem, finishWorkItem } from "./compact.mjs";
 import { getWorkGuide } from "./guide.mjs";
 import { checksFor } from "./verification.mjs";
+import { diagnoseLegacyScopes, loadBeginSpec } from "./input.mjs";
+import { itemPolicyFiles, policyFilesFor } from "./policy-routing.mjs";
 import { HarnessError, invariant } from "./errors.mjs";
 import { runRecordedCommand } from "./evidence.mjs";
 import { findProjectRoot, readJson } from "./filesystem.mjs";
@@ -108,14 +110,14 @@ function helpText() {
   init          初始化项目元数据：--mode new|existing --docs default|existing
   doctor        检查 runtime、适配器、Git 和项目初始化
   check         校验全部工作项、门禁和 Git 写入范围（CI 使用 --ci）
-  policies      解析适用策略：--type TYPE [--flag frontend ...]
+  policies      读取实际策略：--id ID；或 --type TYPE [--flag frontend ...] [--database-impact none|required|unknown]
 
 工作项：
   begin         普通任务：一次建立基线、简短方案和单任务计划并开始实施
   finish        普通任务：引用成功命令和实际审查/验收结论完成工作项
   start         创建工作项
   show          显示 state 和 plan
-  guide         只读任务引导：--id ID [--task T] [--context]，汇总目标、证据与可选源码上下文
+  guide         只读任务引导：--id ID [--task T] [--context] [--context-since FILE]，汇总目标、证据与按需源码
   reopen        返工并失效旧验证：--id ID --reason TEXT [--approval-ref REF]
   replan        保存旧计划版本后重新计划：--id ID --reason TEXT [--approval-ref REF]
   baseline      记录 Git/文档基线
@@ -137,12 +139,14 @@ function helpText() {
   run --id ID --task T --all    顺序执行本任务已声明检查，遇失败停止并列出未运行项
 
 普通任务：
+  begin --spec task.json [--json]  项目内UTF-8 JSON，数组字段详见 schemas/begin-spec.schema.json；不与任务定义参数混用
   begin --id ID --type ITERATION|BUGFIX --title TITLE --input SOURCE --acceptance CONDITION
         --authorization-source SOURCE --risk low|medium --approach TEXT --database-evidence TEXT
         --writes PATH --verify COMMAND --docs PATH_OR_NA [--flag frontend]
   run --id ID --task T1 -- <COMMAND> [ARGS...]
   finish --id ID --command EVIDENCE_ID --verification TEXT --review TEXT --documentation TEXT --acceptance TEXT
          [--stage-evidence stage=TEXT] [--stage-command stage=EVIDENCE_ID]
+  finish 可从合法中间状态继续；已通过且仍有效的结论无需重复提交，省略 --command 时匹配本项当前成功检查；不会自动执行未跑的测试
   check --ci --json
   begin 默认为 autonomous；授权来源必须真实。BUGFIX 另需 --actual、--expected、--reproduction。
   BUGFIX 的 finish 另需必需阶段的 --stage-evidence，复现/回归另需 --stage-command；按原流水线顺序登记。
@@ -222,18 +226,19 @@ export async function runCli(argv, io = { stdout: console.log, stderr: console.e
     return 0;
   }
   if (command === "policies") {
-    const type = one(parsed, "type", { required: true }).toUpperCase();
     const index = await readJson(resolve(root, ".ai-harness/policies/index.json"));
-    invariant(index.byType[type], "INVALID_WORK_TYPE", `未知工作类型：${type}`);
-    const policyNames = new Set([...(index.always || []), ...index.byType[type]]);
-    for (const selectedFlag of many(parsed, "flag")) {
-      invariant(index.byFlag[selectedFlag], "INVALID_POLICY_FLAG", `未知策略标志：${selectedFlag}`);
-      for (const name of index.byFlag[selectedFlag]) policyNames.add(name);
-    }
-    emit(io, parsed, [...policyNames].map((name) => `.ai-harness/policies/${name}`));
+    if (one(parsed, "id")) {
+      invariant(!one(parsed, "type") && !one(parsed, "database-impact") && many(parsed, "flag").length === 0, "POLICY_OPTION_CONFLICT", "按 --id 读取时不能覆盖工作项的类型、标志或数据库判断。" );
+      emit(io, parsed, itemPolicyFiles(index, await loadWorkItem(root, one(parsed, "id"))));
+    } else emit(io, parsed, policyFilesFor(index, one(parsed, "type", { required: true }).toUpperCase(), many(parsed, "flag"), { databaseImpact: one(parsed, "database-impact", { defaultValue: "unknown" }) }));
     return 0;
   }
   if (command === "start" || command === "begin") {
+    if (command === "begin" && one(parsed, "spec")) {
+      invariant(Object.keys(parsed.options).every(key => ["spec", "json"].includes(key)) && parsed.positional.length === 1 && parsed.passthrough.length === 0, "SPEC_OPTION_CONFLICT", "--spec 不能与命令行任务定义混用；请把完整定义放入 JSON。" );
+      emit(io, parsed, await beginWorkItem(root, await loadBeginSpec(root, one(parsed, "spec", { required: true }))));
+      return 0;
+    }
     const options = {
       id: one(parsed, "id", { required: true }),
       type: one(parsed, "type", { required: true }).toUpperCase(),
@@ -255,6 +260,7 @@ export async function runCli(argv, io = { stdout: console.log, stderr: console.e
           }
         : null,
     };
+    if (command === "begin") await diagnoseLegacyScopes(root, many(parsed, "writes"));
     const item = command === "begin"
       ? await beginWorkItem(root, {
           ...options,
@@ -272,10 +278,10 @@ export async function runCli(argv, io = { stdout: console.log, stderr: console.e
   if (command === "finish") {
     const result = await finishWorkItem(root, one(parsed, "id", { required: true }), {
       commandIds: many(parsed, "command"),
-      verification: one(parsed, "verification", { required: true }),
-      review: one(parsed, "review", { required: true }),
-      documentation: one(parsed, "documentation", { required: true }),
-      acceptance: one(parsed, "acceptance", { required: true }),
+      verification: one(parsed, "verification"),
+      review: one(parsed, "review"),
+      documentation: one(parsed, "documentation"),
+      acceptance: one(parsed, "acceptance"),
       stageEvidence: many(parsed, "stage-evidence"),
       stageCommands: many(parsed, "stage-command"),
     });
@@ -294,6 +300,7 @@ export async function runCli(argv, io = { stdout: console.log, stderr: console.e
     emit(io, parsed, await getWorkGuide(root, one(parsed, "id", { required: true }), {
       taskId: one(parsed, "task"),
       includeContext: flag(parsed, "context"),
+      contextSince: one(parsed, "context-since", { required: parsed.options["context-since"] !== undefined }),
     }));
     return 0;
   }

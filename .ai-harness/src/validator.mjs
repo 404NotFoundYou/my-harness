@@ -50,6 +50,7 @@ export function collectWorkItemShapeErrors(item) {
   const errors = [];
   if (!isObject(item)) return ["工作项必须是 JSON 对象。"];
   if (item.schemaVersion !== 1) errors.push("工作项 schemaVersion 必须为 1。");
+  if (item.policyRoutingVersion !== undefined && ![1, 2].includes(item.policyRoutingVersion)) errors.push("policyRoutingVersion 无效。");
   if (item.integrityVersion !== undefined && item.integrityVersion !== 1) errors.push("integrityVersion 无效。");
   if (item.revision !== undefined && (!Number.isInteger(item.revision) || item.revision < 1)) errors.push("revision 必须是正整数。");
   if (item.delivery !== undefined && item.delivery !== null && (!isObject(item.delivery) || !validSource(item.delivery.source) || !validSource(item.delivery.baseline) || !/^[0-9a-f]{64}$/.test(item.delivery.planDigest || "") || typeof item.delivery.at !== "string" || !/^[0-9a-f]{40,64}$/.test(item.delivery.head || ""))) errors.push("delivery 结构无效。");

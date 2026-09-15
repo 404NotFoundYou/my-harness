@@ -3,6 +3,7 @@ import { spawn, spawnSync } from "node:child_process";
 import { readFile, writeFile } from "node:fs/promises";
 import { redact } from "../.ai-harness/src/evidence.mjs";
 import { saveJson } from "./runner.mjs";
+import { createToolTiming } from "./timing.mjs";
 
 export function codexDriver(cli) {
   return async ({ root, model, prompt, budget, outputDirectory }) => {
@@ -19,6 +20,7 @@ export function codexDriver(cli) {
       const child = spawn(command, launchArgs, { cwd: root, shell: false, windowsHide: true, stdio: ["pipe","pipe","pipe"] });
       let stdout = "", stderr = "", pending = "", timedOut = false, toolLimit = false, spawnError = null;
       const events = [], toolIds = new Set();
+      const timing = createToolTiming();
       function stop() {
         if (child.exitCode !== null || !child.pid) return;
         if (process.platform === "win32") spawnSync("taskkill", ["/PID",String(child.pid),"/T","/F"], { windowsHide: true, stdio: "ignore" });
@@ -30,6 +32,8 @@ export function codexDriver(cli) {
         events.push(event);
         if (event.item && ["command_execution","file_change","mcp_tool_call","web_search"].includes(event.item.type)) {
           toolIds.add(event.item.id);
+          if (event.type === "item.started") timing.start(event.item.id, Date.now()-started);
+          if (event.type === "item.completed") timing.end(event.item.id, Date.now()-started);
           if (toolIds.size >= budget.maxToolCalls) { toolLimit = true; stop(); }
         }
       }
@@ -40,7 +44,8 @@ export function codexDriver(cli) {
       child.once("close", exitCode => {
         clearTimeout(timer); if(pending.trim())line(pending);
         const turn = events.findLast(event => event.type === "turn.completed");
-        resolve({ mode: "real", startedAt, durationMs: Date.now()-started, exitCode, timedOut, toolLimit, toolCalls:toolIds.size,
+        const durationMs = Date.now()-started;
+        resolve({ mode: "real", client: "codex", startedAt, durationMs, timing: timing.summarize(durationMs), exitCode, timedOut, toolLimit, toolCalls:toolIds.size,
           turnCompleted: Boolean(turn), usage: turn?.usage ?? null, error: spawnError ? redact(spawnError) : null,
           errors: events.filter(event=>["error","turn.failed"].includes(event.type)).map(event=>redact(JSON.stringify(event))),
           stdout: redact(stdout), stderr: redact(stderr) });

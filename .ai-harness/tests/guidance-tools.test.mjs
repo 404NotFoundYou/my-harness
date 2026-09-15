@@ -88,7 +88,9 @@ test("verified iterations offer an auditable finish and reopened tasks show the 
     const guide=await getWorkGuide(root,"TOOLS");
     assert.equal(guide.shortcuts[0].code,"finish-iteration");
     assert.equal(guide.shortcuts[0].requiresJudgment,true);
-    assert.ok(guide.shortcuts[0].command.args.includes(event.id));
+    assert.equal(guide.next.code,"finish-iteration");
+    assert.deepEqual(guide.shortcuts[0],guide.next);
+    assert.equal(guide.evidence.commands[0].id,event.id);
     await writeFile(path.join(root,"src/code.mjs"),"export const value = 2;\n");
     assert.deepEqual((await getWorkGuide(root,"TOOLS")).shortcuts,[]);
     const reopened=cli(root,["reopen","--reason","explicit whole-task recovery"]);
