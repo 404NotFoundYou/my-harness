@@ -1,6 +1,6 @@
 import path from "node:path";
 import { createHash } from "node:crypto";
-import { lstat, readlink } from "node:fs/promises";
+import { lstat, readlink, realpath } from "node:fs/promises";
 import { atomicWriteJson, normalizeRelativePath, readJson, resolveProjectPath } from "./filesystem.mjs";
 import { gitResult } from "./git.mjs";
 import { invariant } from "./errors.mjs";
@@ -76,8 +76,14 @@ export function snapshotChanges(before, after) {
 }
 
 export async function saveSnapshot(root, directory, snapshot) {
-  const document = path.relative(root, path.join(directory, "snapshots", `${snapshot.digest}.json`)).replaceAll("\\", "/");
-  await atomicWriteJson(await resolveProjectPath(root, document, { forWrite: true }), snapshot);
+  const originalRoot = path.resolve(root);
+  const canonicalRoot = await realpath(originalRoot);
+  const relativeDirectory = path.relative(originalRoot, path.resolve(directory));
+  const outsideOriginal = relativeDirectory === ".." || relativeDirectory.startsWith(`..${path.sep}`) || path.isAbsolute(relativeDirectory);
+  // Preserve directory components so resolveProjectPath still rejects inner links.
+  const directoryFromRoot = outsideOriginal ? path.relative(canonicalRoot, path.resolve(directory)) : relativeDirectory;
+  const document = path.join(directoryFromRoot, "snapshots", `${snapshot.digest}.json`).replaceAll("\\", "/");
+  await atomicWriteJson(await resolveProjectPath(canonicalRoot, document, { forWrite: true }), snapshot);
   return { digest: snapshot.digest, document };
 }
 

@@ -1,0 +1,9 @@
+# 根目录别名兼容修复
+
+远端Windows日志显示评测15/15已通过，但Runtime70/140报PATH_ESCAPE，堆栈落在compact生成solution文档和snapshot保存引用。内部路径resolver将根目录realpath规范化，调用方却混用原始root计算relative。同一物理目录经8.3短路径或目录别名进入时可能得到错误的父目录段。
+
+最小方案：beginWorkItem、runRecordedCommand和getWorkGuide在入口统一真实root；saveSnapshot保留原始root坐标，优先推导原始root内的directory，必要时使用canonical root坐标，然后仍交给现有resolveProjectPath逐段校验。不得直接realpath(directory)，否则既会拒绝原先支持的未存在目录，也可能抹掉子目录链接而绕过SYMLINK_WRITE。
+
+不变更持久化Schema、授权规则、哈希定义或根目录内链接拒绝语义。文档说明别名根可规范化、内部链接仍受写入规则限制。全流程单主AI实施，高风险批次由独立上下文复核。
+
+验证：使用真实目录junction/符号链接构建同目录别名，跑完整begin→run→guide→finish，强制长stdout使产物路径同样接受验证；另验证alias/canonical目录组合、未存在目录可创建、根内链接与真实越界仍拒绝。保留失败复现。Node20运行新测试、评测框架和全部既有Runtime文件；全量分批，旧140项不能漏。最后核验同一提交的远端Windows与Linux工作流。

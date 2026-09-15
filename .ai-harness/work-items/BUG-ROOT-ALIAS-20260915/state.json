@@ -1,0 +1,301 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 1,
+  "id": "BUG-ROOT-ALIAS-20260915",
+  "type": "BUGFIX",
+  "title": "修复目录别名导致的证据路径误报",
+  "status": "DONE",
+  "flags": [
+    "api"
+  ],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/bugfix.md",
+    ".ai-harness/policies/verification.md",
+    ".ai-harness/policies/api.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户已确认继续修复Windows CI及回归验证"
+  },
+  "input": {
+    "references": [
+      "Windows CI job 104273400041实际日志，70项PATH_ESCAPE失败"
+    ],
+    "acceptance": [
+      "同一真实目录经别名进入时建项、快照、日志与引导路径正确，真实越界仍拒绝，Windows和Linux CI通过"
+    ],
+    "nonGoals": [],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": {
+    "actual": "root使用别名但workItemPaths返回真实路径，path.relative混用后出现父目录段而被拒绝",
+    "expected": "先统一根路径表示，再产生仓库内相对证据引用",
+    "reproduction": "通过目录别名调用建项和证据API，核对PATH_ESCAPE及调用栈"
+  },
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "main@74ed83d，工作树干净。换行修复已让远端Windows评测15项通过；后续Runtime70/140失败，日志堆栈集中compact:55和snapshot:80。已读路径resolver、4个relative调用点和测试调用方。"
+    ],
+    "completedAt": "2026-09-15T06:21:47.965Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "74ed83d9785972bf235b9df81430b769d1d58774",
+      "dirty": true,
+      "changedFiles": [
+        ".ai-harness/work-items/BUG-ROOT-ALIAS-20260915/events.jsonl",
+        ".ai-harness/work-items/BUG-ROOT-ALIAS-20260915/state.json"
+      ],
+      "fingerprints": {
+        ".ai-harness/work-items/BUG-ROOT-ALIAS-20260915/events.jsonl": "cb5b2d4698d1ba4cee4dc1133d8915feb5a2c2dd490cb12c68ec305154de4445",
+        ".ai-harness/work-items/BUG-ROOT-ALIAS-20260915/state.json": "7720cae54fd753039674d8ff00fe80860fca41eb46477413630daad43511a24a"
+      },
+      "source": {
+        "digest": "91514908e73e7869bf7d0ff36c7f514d31348fb19669f159f2b2eeb6f27e6d90",
+        "document": ".ai-harness/work-items/BUG-ROOT-ALIAS-20260915/snapshots/91514908e73e7869bf7d0ff36c7f514d31348fb19669f159f2b2eeb6f27e6d90.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": ".ai-harness/work-items/BUG-ROOT-ALIAS-20260915/design.md",
+    "evidence": [
+      "保留根内链接校验与未存在目录创建，统一root表示后再推导相对路径；独立上下文已审视方案边界"
+    ],
+    "completedAt": "2026-09-15T06:24:33.185Z"
+  },
+  "database": {
+    "impact": "none",
+    "status": "not-applicable",
+    "document": null,
+    "evidence": [
+      "无Schema或证据格式变化，只纠正同一物理目录的路径表示"
+    ],
+    "completedAt": "2026-09-15T06:24:33.585Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/BUG-ROOT-ALIAS-20260915/plan.json",
+    "approved": true,
+    "approvalRef": "用户授权持续修复Windows CI，方案保留权限边界并要求独立复核"
+  },
+  "verification": {
+    "status": "pass",
+    "evidence": [
+      "f57db9e9-fa1a-4f0f-83ec-2b74d6dd403d",
+      "de17d846-0808-4851-adec-068dbcd5b53b",
+      "1051ad1d-df41-4fd8-ac33-9419f8bdc3a8",
+      "ecfc50c7-7d95-4d35-a241-5d84e634731f"
+    ],
+    "stages": [
+      {
+        "stage": "static",
+        "status": "pass",
+        "evidence": [
+          "f57db9e9-fa1a-4f0f-83ec-2b74d6dd403d"
+        ],
+        "command": null,
+        "revision": 1,
+        "source": {
+          "digest": "079606ae4e661bb2c6c498befabfea088d5729707601b96bb2e8286dcf010b0d",
+          "document": ".ai-harness/work-items/BUG-ROOT-ALIAS-20260915/snapshots/079606ae4e661bb2c6c498befabfea088d5729707601b96bb2e8286dcf010b0d.json"
+        },
+        "planDigest": "a635eae130eb3eb2d87644c9dfc324137d6402b155c461f6fbc7d0e439883dc3"
+      },
+      {
+        "stage": "sandbox",
+        "status": "pass",
+        "evidence": [
+          "de17d846-0808-4851-adec-068dbcd5b53b"
+        ],
+        "command": null,
+        "revision": 1,
+        "source": {
+          "digest": "079606ae4e661bb2c6c498befabfea088d5729707601b96bb2e8286dcf010b0d",
+          "document": ".ai-harness/work-items/BUG-ROOT-ALIAS-20260915/snapshots/079606ae4e661bb2c6c498befabfea088d5729707601b96bb2e8286dcf010b0d.json"
+        },
+        "planDigest": "a635eae130eb3eb2d87644c9dfc324137d6402b155c461f6fbc7d0e439883dc3"
+      },
+      {
+        "stage": "reproduction",
+        "status": "pass",
+        "evidence": [
+          "1051ad1d-df41-4fd8-ac33-9419f8bdc3a8"
+        ],
+        "command": "f0955c0d-778c-4976-9436-5e2c9c730cf7",
+        "revision": 1,
+        "source": {
+          "digest": "079606ae4e661bb2c6c498befabfea088d5729707601b96bb2e8286dcf010b0d",
+          "document": ".ai-harness/work-items/BUG-ROOT-ALIAS-20260915/snapshots/079606ae4e661bb2c6c498befabfea088d5729707601b96bb2e8286dcf010b0d.json"
+        },
+        "planDigest": "a635eae130eb3eb2d87644c9dfc324137d6402b155c461f6fbc7d0e439883dc3"
+      },
+      {
+        "stage": "regression",
+        "status": "pass",
+        "evidence": [
+          "ecfc50c7-7d95-4d35-a241-5d84e634731f"
+        ],
+        "command": "e9ec7997-ab83-4900-af49-490e0aad840b",
+        "revision": 1,
+        "source": {
+          "digest": "079606ae4e661bb2c6c498befabfea088d5729707601b96bb2e8286dcf010b0d",
+          "document": ".ai-harness/work-items/BUG-ROOT-ALIAS-20260915/snapshots/079606ae4e661bb2c6c498befabfea088d5729707601b96bb2e8286dcf010b0d.json"
+        },
+        "planDigest": "a635eae130eb3eb2d87644c9dfc324137d6402b155c461f6fbc7d0e439883dc3"
+      }
+    ],
+    "source": {
+      "digest": "079606ae4e661bb2c6c498befabfea088d5729707601b96bb2e8286dcf010b0d",
+      "document": ".ai-harness/work-items/BUG-ROOT-ALIAS-20260915/snapshots/079606ae4e661bb2c6c498befabfea088d5729707601b96bb2e8286dcf010b0d.json"
+    }
+  },
+  "review": {
+    "status": "pass",
+    "evidence": [
+      "c18a69ab-3d59-44b6-a5e2-31ca511b6d95"
+    ],
+    "independent": true,
+    "source": {
+      "digest": "079606ae4e661bb2c6c498befabfea088d5729707601b96bb2e8286dcf010b0d",
+      "document": ".ai-harness/work-items/BUG-ROOT-ALIAS-20260915/snapshots/079606ae4e661bb2c6c498befabfea088d5729707601b96bb2e8286dcf010b0d.json"
+    }
+  },
+  "acceptance": {
+    "status": "pass",
+    "evidence": [
+      "c6a8dae3-bf3b-47cf-9180-cfe0dd1be793"
+    ],
+    "source": {
+      "digest": "079606ae4e661bb2c6c498befabfea088d5729707601b96bb2e8286dcf010b0d",
+      "document": ".ai-harness/work-items/BUG-ROOT-ALIAS-20260915/snapshots/079606ae4e661bb2c6c498befabfea088d5729707601b96bb2e8286dcf010b0d.json"
+    }
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "pass",
+    "evidence": [
+      "f1d941bb-0067-47d9-8da0-07d6a6e2e4a7"
+    ]
+  },
+  "blocked": null,
+  "delivery": {
+    "source": {
+      "digest": "079606ae4e661bb2c6c498befabfea088d5729707601b96bb2e8286dcf010b0d",
+      "document": ".ai-harness/work-items/BUG-ROOT-ALIAS-20260915/snapshots/079606ae4e661bb2c6c498befabfea088d5729707601b96bb2e8286dcf010b0d.json"
+    },
+    "baseline": {
+      "digest": "91514908e73e7869bf7d0ff36c7f514d31348fb19669f159f2b2eeb6f27e6d90",
+      "document": ".ai-harness/work-items/BUG-ROOT-ALIAS-20260915/snapshots/91514908e73e7869bf7d0ff36c7f514d31348fb19669f159f2b2eeb6f27e6d90.json"
+    },
+    "baselineAt": "2026-09-15T06:21:47.965Z",
+    "ownedChanges": [
+      {
+        "path": ".ai-harness/src/compact.mjs",
+        "before": "100644:fc22c6616a7c7bcdb201e4399f36834ce5a63693",
+        "after": "100644:05e629f9b09e3e6f7923f7c5d805825233af7bf6"
+      },
+      {
+        "path": ".ai-harness/src/evidence.mjs",
+        "before": "100644:bbb7915acd9582987bfa3edaf86d40a0f92b9250",
+        "after": "100644:2db441a7e67b4ba4f1d691e79dfac9e73c111a94"
+      },
+      {
+        "path": ".ai-harness/src/guide.mjs",
+        "before": "100644:9f88bba40507b5ee0cbd54ac3b4bccd514ebb491",
+        "after": "100644:6743d2062cf3579384f7e2ad3a7da4407735780c"
+      },
+      {
+        "path": ".ai-harness/src/snapshot.mjs",
+        "before": "100644:f7109a1ae42843e74c9f2e6fb18553afe02799fb",
+        "after": "100644:595cab8350a5f58448a9ffed70a0fdd118efb7e2"
+      },
+      {
+        "path": ".ai-harness/tests/root-alias.test.mjs",
+        "before": null,
+        "after": "100644:607b812032a665b3ec43ed8ef51c0e40f7ee69c1"
+      },
+      {
+        "path": "docs/guides/usage.md",
+        "before": "100644:d19c35de8385915380e049c746afe613b980b779",
+        "after": "100644:47107f2d8d533955c2c278a7695016d8d4aa017e"
+      }
+    ],
+    "planDigest": "a635eae130eb3eb2d87644c9dfc324137d6402b155c461f6fbc7d0e439883dc3",
+    "at": "2026-09-15T06:35:12.285Z",
+    "head": "74ed83d9785972bf235b9df81430b769d1d58774"
+  },
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-09-15T06:21:46.994Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-09-15T06:21:47.373Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-09-15T06:21:48.557Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-09-15T06:24:35.558Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-09-15T06:24:35.940Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "VERIFYING",
+      "at": "2026-09-15T06:35:03.451Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "VERIFYING",
+      "to": "CODE_REVIEW",
+      "at": "2026-09-15T06:35:07.658Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "CODE_REVIEW",
+      "to": "READY_FOR_ACCEPTANCE",
+      "at": "2026-09-15T06:35:09.215Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "READY_FOR_ACCEPTANCE",
+      "to": "DONE",
+      "at": "2026-09-15T06:35:12.494Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-09-15T06:21:46.994Z",
+  "updatedAt": "2026-09-15T06:35:12.494Z"
+}

@@ -1,6 +1,7 @@
 import { createHash, randomUUID } from "node:crypto";
 import { spawnSync } from "node:child_process";
 import { TextDecoder } from "node:util";
+import { realpath } from "node:fs/promises";
 import path from "node:path";
 import { appendJsonLine, atomicWriteJson, readJson, resolveProjectPath, withFileLock, writeFileAtomic } from "./filesystem.mjs";
 import { HarnessError, invariant } from "./errors.mjs";
@@ -45,6 +46,7 @@ function redactedArgs(args) {
 
 export async function runRecordedCommand(root, { id, taskId = null, command, args = [], checkId = null }) {
   const enteredAt = Date.now();
+  root = await realpath(root);
   const item = await loadWorkItem(root, id);
   const plan = await loadPlan(root, id);
   if (checkId) {

@@ -1,4 +1,4 @@
-import { readFile } from "node:fs/promises";
+import { readFile, realpath } from "node:fs/promises";
 import path from "node:path";
 import { isRunBackedStage, requiredVerificationStages, TERMINAL_STATUSES } from "./constants.mjs";
 import { redact } from "./evidence.mjs";
@@ -186,6 +186,7 @@ function nextAction(item, plan, task, commands, verification, reviewFailed) {
 }
 
 export async function getWorkGuide(root, id, { taskId = null, includeContext = false, contextSince = null, brief = false } = {}) {
+  root = await realpath(root);
   const item = await loadWorkItem(root, id);
   const plan = await loadPlan(root, id, { optional: true });
   if (plan) assertValidPlan(plan, id, { requireContent: item.plan.approved });

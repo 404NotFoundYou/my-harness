@@ -1,5 +1,5 @@
 import path from "node:path";
-import { writeFile } from "node:fs/promises";
+import { realpath, writeFile } from "node:fs/promises";
 import { checkProject, doctorProject } from "./checker.mjs";
 import { isRunBackedStage, requiredVerificationStages } from "./constants.mjs";
 import { invariant } from "./errors.mjs";
@@ -31,6 +31,7 @@ function parseStageInput(entries, allowed, option) {
 }
 
 export async function beginWorkItem(root, options) {
+  root = await realpath(root);
   assertCompactEligible(options.type, options.flags, options.authorizationMode, options.risk);
   invariant(options.approach?.trim(), "APPROACH_REQUIRED", "必须提供简短实施方案。" );
   invariant(options.databaseEvidence?.trim(), "DATABASE_EVIDENCE_REQUIRED", "必须提供无数据库影响的依据；有影响时使用完整流程。" );
