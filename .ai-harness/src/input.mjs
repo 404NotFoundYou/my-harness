@@ -30,7 +30,7 @@ export async function loadBeginSpec(root, relative) {
   if (Object.hasOwn(spec, "authorizationMode")) invariant(spec.authorizationMode === "autonomous", "AUTONOMOUS_AUTHORIZATION_REQUIRED", "begin --spec 仅用于已经获得自主执行授权的普通任务。" );
   options.authorizationMode ??= "autonomous";
   options.verification = spec.verification.map(value => {
-    if (value && typeof value === "object") invariant(!Array.isArray(value) && Object.keys(value).every(key => ["command", "args", "acceptance"].includes(key)), "INVALID_BEGIN_SPEC", "检查对象只接受 command、args 和可选 acceptance。" );
+    if (value && typeof value === "object") invariant(!Array.isArray(value) && Object.keys(value).every(key => ["command", "args", "acceptance", "timeoutMs"].includes(key)), "INVALID_BEGIN_SPEC", "检查对象只接受 command、args 和可选 acceptance、timeoutMs。" );
     return JSON.stringify(parseCommand(value));
   });
   return options;

@@ -9,7 +9,7 @@ import {
   assertValidPlan, collectProgressErrors, taskDependenciesComplete,
 } from "./validator.mjs";
 import { loadPlan, loadWorkItem, workItemPaths } from "./workflow.mjs";
-import { acceptanceCoverage, checksFor, hasFailedReview, verificationReport } from "./verification.mjs";
+import { acceptanceCoverage, checksFor, commandEvidenceKey, hasFailedReview, verificationReport } from "./verification.mjs";
 import { taskContext } from "./context.mjs";
 import { completionRequirements, completionSourcesCurrent } from "./completion.mjs";
 
@@ -42,7 +42,7 @@ function latestCommands(evidence, history, taskId) {
     invariant(event.command && Array.isArray(event.command.args), "INVALID_GUIDE_EVIDENCE", "命令记录缺少 executable/args。" );
     const started = history.findLast((entry) => entry.action === "task-transition" && entry.taskId === event.taskId && entry.to === "IN_PROGRESS");
     if (started && event.timestamp < started.timestamp) continue;
-    const key = JSON.stringify([event.taskId, event.command.executable, event.command.args]);
+    const key = JSON.stringify([event.taskId, commandEvidenceKey(event.command)]);
     latest.delete(key);
     latest.set(key, event);
   }
@@ -92,6 +92,8 @@ function nextAction(item, plan, task, commands, verification, reviewFailed) {
   const reopen = () => ({ ...action("reopen-work", "审查失败或代码验证失效，返回实现并撤销旧结果。",
     work("reopen", "--reason", "<REWORK_REASON>", ...(item.authorization.mode === "autonomous" ? [] : ["--approval-ref", "<HUMAN_APPROVAL>"])),
     ["说明需要修改的内容；需要调整计划时改用 replan。", ...(item.authorization.mode === "autonomous" ? [] : ["提供实际返工批准，不能自行编造。"])]), requiresHumanApproval: item.authorization.mode !== "autonomous" });
+  const resolveFailure = () => action("resolve-command-failure", "计划检查已覆盖，但仍有当前代码的失败命令，不能据此收尾。", null,
+    ["核对 failedCommands 对应命令及其实际超时预算，在原预算下重新验证；不同预算的成功不能消除该失败。", "需要改变代码或预算时，说明原因并通过 reopen/replan 正常返工，再按新修订验证；保留旧证据。"]);
 
   if (TERMINAL_STATUSES.includes(item.status)) return action("check-delivery", "工作项已到终态；仍需检查仓库 CI，不能由状态推断部署或发布成功。", ["check", "--ci", "--json"]);
   if (item.status === "BLOCKED") return action("resolve-blocker", item.blocked?.reason || "先查明并解除已记录的阻塞。", item.blocked?.from ? work("transition", "--to", item.blocked.from) : null, ["必须先确认阻塞已实际解除；不能仅因时间过去就执行恢复命令。"]);
@@ -132,6 +134,7 @@ function nextAction(item, plan, task, commands, verification, reviewFailed) {
     if (task.status === "IN_PROGRESS") {
       if (!verification.ok) {
         const missing = verification.missing[0];
+        if (!missing && verification.failed.length) return resolveFailure();
         const candidate = run(["--task", task.id]);
         if (missing) candidate.command = { executable: "node", args: [".ai-harness/bin/harness.mjs", ...work("run", "--task", task.id, "--check", missing.id)] };
         if (verification.missing.length > 1 && verification.missing.length === checksFor(task).length) candidate.command = { executable: "node", args: [".ai-harness/bin/harness.mjs", ...work("run", "--task", task.id, "--all")] };
@@ -150,6 +153,7 @@ function nextAction(item, plan, task, commands, verification, reviewFailed) {
   if (item.status === "VERIFYING") {
     if (!verification.ok) {
       const missing = verification.missing[0];
+      if (!missing && verification.failed.length) return resolveFailure();
       const candidate = run();
       if (missing) candidate.command = { executable: "node", args: [".ai-harness/bin/harness.mjs", ...work("run", "--task", missing.taskId, "--check", missing.id)] };
       candidate.needs.push("需要修改代码或计划时先用 reopen/replan 返回实现，再重新验证。");
@@ -228,7 +232,9 @@ export async function getWorkGuide(root, id, { taskId = null, includeContext = f
     tasks: (plan?.tasks || []).map((entry) => ({ id: entry.id, status: entry.status, owner: entry.owner, blockedBy: entry.blockedBy })),
     resources: { inputs: item.input.references, policies: item.policyFiles, solution: item.solution.document, database: item.database.document, evidence: path.relative(root, paths.evidence).replaceAll("\\", "/") },
     evidence: {
-      commands: prioritized.slice(0, 5).map((event) => ({ id: event.id, taskId: event.taskId, status: event.status, summary: redact(event.summary), timestamp: event.timestamp, exitCode: event.command.exitCode, stdout: preview(event.command.stdout), stderr: preview(event.command.stderr) })),
+      commands: prioritized.slice(0, 5).map((event) => ({ id: event.id, taskId: event.taskId, status: event.status, summary: redact(event.summary), timestamp: event.timestamp, exitCode: event.command.exitCode,
+        ...(event.command.timeoutMs === undefined ? {} : { timeoutMs: event.command.timeoutMs }), ...(event.command.checkTimeoutMs === undefined ? {} : { checkTimeoutMs: event.command.checkTimeoutMs }),
+        stdout: preview(event.command.stdout), stderr: preview(event.command.stderr) })),
       omittedCommands: Math.max(0, prioritized.length - 5),
       latestResult: latestResult ? { id: latestResult.id, kind: latestResult.kind, status: latestResult.status, stage: latestResult.stage ?? null, summary: preview({ text: latestResult.summary }) } : null,
       blocker: item.blocked || (taskBlocker ? { taskId: task.id, from: taskBlocker.from, reason: taskBlocker.reason } : null),

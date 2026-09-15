@@ -6,11 +6,16 @@ export function commandName(command) {
   return command.replaceAll("\\", "/").split("/").at(-1).toLowerCase().replace(/\.(exe|cmd|bat)$/i, "");
 }
 
+export function isValidCheckTimeoutMs(value) {
+  return Number.isInteger(value) && value >= 1 && value <= 1800000;
+}
+
 export function parseCommand(value) {
   if (typeof value === "object" && value !== null) {
     invariant(typeof value.command === "string" && value.command.trim() && Array.isArray(value.args) && value.args.every((arg) => typeof arg === "string"), "INVALID_VERIFICATION_COMMAND", "验证声明需要 command 和字符串 args 数组。" );
     if (value.acceptance !== undefined) invariant(Array.isArray(value.acceptance) && value.acceptance.length > 0 && value.acceptance.every(id => typeof id === "string" && /^A[1-9]\d*$/.test(id)) && new Set(value.acceptance).size === value.acceptance.length, "INVALID_ACCEPTANCE_MAPPING", "acceptance 需要不重复的验收编号数组，例如 [A1]。" );
-    return { command: value.command, args: [...value.args], ...(value.acceptance === undefined ? {} : { acceptance: [...value.acceptance] }) };
+    if (value.timeoutMs !== undefined) invariant(isValidCheckTimeoutMs(value.timeoutMs), "INVALID_CHECK_TIMEOUT", "检查 timeoutMs 必须是 1 到 1800000 之间的整数。" );
+    return { command: value.command, args: [...value.args], ...(value.acceptance === undefined ? {} : { acceptance: [...value.acceptance] }), ...(value.timeoutMs === undefined ? {} : { timeoutMs: value.timeoutMs }) };
   }
   invariant(typeof value === "string" && value.trim(), "INVALID_VERIFICATION_COMMAND", "验证必须声明实际命令。" );
   if (value.trimStart().startsWith("{")) {
@@ -60,6 +65,11 @@ export function commandKey(command, args) {
 export function compileChecks(verification) {
   invariant(Array.isArray(verification) && verification.length > 0, "VERIFICATION_REQUIRED", "任务至少需要一个可执行验证。" );
   return verification.map((value, index) => ({ id: `V${index + 1}`, ...parseCommand(value) }));
+}
+
+export function verificationKey(command, args, timeoutMs) {
+  const key = commandKey(command, args);
+  return timeoutMs === undefined ? key : JSON.stringify([key, timeoutMs]);
 }
 
 async function isFile(file) {

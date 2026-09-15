@@ -89,7 +89,7 @@ export async function finishWorkItem(root, id, { commandIds = [], verification, 
     const errors = await validateWorkItem(root, id);
     invariant(errors.length === 0, "CHECK_FAILED", "已完成工作项的冻结证据无效。", { errors });
     const report = item.delivery ? await verificationReport(root, item, plan, { snapshot: await loadSnapshot(root, item.delivery.source) }) : null;
-    return { id, status: "DONE", taskId: task.id, alreadyDone: true, verificationCommands: report?.successful.filter(event => matchingChecks(plan, event.taskId, event.command.executable, event.command.args).length).map(event => event.id) || [] };
+    return { id, status: "DONE", taskId: task.id, alreadyDone: true, verificationCommands: report?.successful.filter(event => matchingChecks(plan, event.taskId, event.command.executable, event.command.args, event.command.checkTimeoutMs).length).map(event => event.id) || [] };
   }
   const results = { verification, review, documentation: normalizeDocumentation(documentation), acceptance };
   for (const name of requirements.fields) invariant(typeof results[name] === "string" && results[name].trim(), "RESULT_REQUIRED", `finish 尚缺 ${name} 的实际结论。已完成的结论无需重复提交。`, { required: requirements.fields });
@@ -105,7 +105,7 @@ export async function finishWorkItem(root, id, { commandIds = [], verification, 
   const references = [...new Set([...commandIds, ...stageReferences.values()])];
   for (const reference of references) invariant(events.some(event => event.id === reference && event.kind === "command" && (event.taskId === task.id || (!event.taskId && item.status !== "IMPLEMENTING"))), "COMMAND_EVIDENCE_INVALID", "引用必须属于当前任务的真实命令。" );
   const report = await assertVerification(root, item, plan, proofOptions);
-  if (!references.length) references.push(...report.successful.filter(event => matchingChecks(plan, event.taskId, event.command.executable, event.command.args).length).map(event => event.id));
+  if (!references.length) references.push(...report.successful.filter(event => matchingChecks(plan, event.taskId, event.command.executable, event.command.args, event.command.checkTimeoutMs).length).map(event => event.id));
   for (const reference of references) await assertCommandEvidence(root, item, plan, reference, proofOptions);
   invariant(completionSourcesCurrent(item, plan, report.current), "STALE_COMPLETION", "已有通过结论不对应当前代码；请正常返工和重新审查，不能直接续用。" );
   const checked = await checkProject(root);

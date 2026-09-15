@@ -1,7 +1,7 @@
 import path from "node:path";
 import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
-import { commandKey, compileChecks } from "./commands.mjs";
+import { compileChecks, isValidCheckTimeoutMs, verificationKey } from "./commands.mjs";
 import { readJson, resolveProjectPath } from "./filesystem.mjs";
 import { invariant } from "./errors.mjs";
 import { sourceSnapshot, loadSnapshot } from "./snapshot.mjs";
@@ -60,10 +60,16 @@ export async function readEvidence(root, id) {
   });
 }
 
-export function matchingChecks(plan, taskId, command, args) {
-  const key = commandKey(command, args);
+export function commandEvidenceKey(command) {
+  invariant(command.checkTimeoutMs === undefined || (isValidCheckTimeoutMs(command.checkTimeoutMs) && command.timeoutMs === command.checkTimeoutMs),
+    "INVALID_COMMAND_TIMEOUT_EVIDENCE", "命令实际超时预算必须与合法的计划预算一致。" );
+  return verificationKey(command.executable, command.args, command.checkTimeoutMs);
+}
+
+export function matchingChecks(plan, taskId, command, args, checkTimeoutMs) {
+  const key = verificationKey(command, args, checkTimeoutMs);
   return plan.tasks.filter((task) => (!taskId || task.id === taskId) && task.status !== "DEFERRED")
-    .flatMap((task) => checksFor(task).filter((check) => commandKey(check.command, check.args) === key).map((check) => ({ taskId: task.id, checkId: check.id })));
+    .flatMap((task) => checksFor(task).filter((check) => verificationKey(check.command, check.args, check.timeoutMs) === key).map((check) => ({ taskId: task.id, checkId: check.id })));
 }
 
 export function hasFailedReview(events, item, task = null) {
@@ -91,7 +97,7 @@ export async function verificationReport(root, item, plan, { taskId = null, snap
     if (event.kind !== "command" || (event.revision || 1) !== (item.revision || 1) || !event.command || (taskId && event.taskId !== taskId)) continue;
     const task = plan.tasks.find((candidate) => candidate.id === event.taskId);
     if (task && (event.taskAttempt || 1) !== (task.attempt || 1)) continue;
-    latest.set(JSON.stringify([event.taskId, commandKey(event.command.executable, event.command.args)]), event);
+    latest.set(JSON.stringify([event.taskId, commandEvidenceKey(event.command)]), event);
   }
   let failed = [...latest.values()].filter((event) =>
     event.command.planDigest === digest &&
@@ -104,10 +110,10 @@ export async function verificationReport(root, item, plan, { taskId = null, snap
     .flatMap((task) => checksFor(task).map((check) => ({ taskId: task.id, ...check })));
   const positions = new Map(evidence.map((event, index) => [event.id, index]));
   failed = failed.filter((event) => !successful.some((later) => positions.get(later.id) > positions.get(event.id) &&
-    commandKey(later.command.executable, later.command.args) === commandKey(event.command.executable, event.command.args) &&
+    commandEvidenceKey(later.command) === commandEvidenceKey(event.command) &&
     (!later.taskId || later.taskId === event.taskId)));
   const missing = required.filter((check) => !successful.some((event) =>
-    commandKey(event.command.executable, event.command.args) === commandKey(check.command, check.args) &&
+    commandEvidenceKey(event.command) === verificationKey(check.command, check.args, check.timeoutMs) &&
     (!event.taskId || event.taskId === check.taskId)));
   const missingStages = requiredVerificationStages(item).filter((name) =>
     !stageIsCurrent(item, item.verification.stages?.find((entry) => entry.stage === name), current, digest, evidence));
@@ -141,12 +147,12 @@ export async function assertCommandEvidence(root, item, plan, commandId, options
   const subsequentFailure = command && events.slice(index + 1).some((later) => later.kind === "command" && later.status !== "pass" &&
     (later.revision || 1) === (item.revision || 1) && (!later.taskId || later.taskId === event.taskId) &&
     (!later.taskId || (later.taskAttempt || 1) === (event.taskAttempt || 1)) &&
-    commandKey(later.command.executable, later.command.args) === commandKey(command.executable, command.args));
+    commandEvidenceKey(later.command) === commandEvidenceKey(command));
   invariant(event?.kind === "command" && event.status === "pass" && command.exitCode === 0 && !command.timedOut && !command.spawnError && !command.signal &&
     (event.revision || 1) === (item.revision || 1) && (!task || (event.taskAttempt || 1) === (task.attempt || 1)) &&
     (!options.taskId || event.taskId === options.taskId) && command.planDigest === planDigest(item, plan) &&
     command.source?.digest === current.digest && command.sourceAfter?.digest === current.digest && !subsequentFailure &&
-    matchingChecks(plan, event.taskId, command.executable, command.args).length > 0,
+    commandEvidenceKey(command) && matchingChecks(plan, event.taskId, command.executable, command.args, command.checkTimeoutMs).length > 0,
   "COMMAND_EVIDENCE_INVALID", "命令证据必须匹配计划验证、当前代码和计划版本，且没有随后失败。" );
   await loadSnapshot(root, event.command.source);
   await loadSnapshot(root, event.command.sourceAfter);

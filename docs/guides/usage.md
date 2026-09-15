@@ -327,6 +327,20 @@ node .ai-harness/bin/harness.mjs record --id ITER-001 --task T1 `
 
 正常退出的长日志会整体脱敏，并把超出预览的内容保存为 artifact。`stdout/stderr.complete` 表示采集是否完整，`truncated` 仅表示预览截断；非零退出也可能采集完整。超时、输出超限、启动错误或信号终止的采集标记为不完整，artifact 只包含已捕获部分。`command.failureReason` 区分 `timeout`、`output-limit`、`spawn-error`、`signal`、`exit-code`、`source-changed`、`work-changed` 和 `output-save`；成功时为 null，另有 `outputLimitBytes`、`outputLimitExceeded`。同时发生保存失败时，各流的 `saveError` 保留原因，命令必定失败；只在保存成功后提供 artifact 路径和哈希。整个证据目录不可写时会显式抛错，不能保证持久化。常见带引号凭据在输出中途结束时仍脱敏，原始日志不写临时盘；这不构成任意敏感格式的完整检测。
 
+### 单项检查超时预算
+
+从 `1.4.0` 起，结构化验证声明可添加 `timeoutMs`。例如为一个较慢测试批准5分钟预算：
+
+```json
+{"command":"node","args":["--test","test/integration.test.mjs"],"timeoutMs":300000}
+```
+
+该对象可放入 `begin --spec` 的 `verification` 数组，也可作为完整 JSON 传给 `--verify`。预算必须为1到1800000毫秒的整数（最长30分钟）；null、零、负数、小数、字符串及超上限值拒绝，零不表示无限等待。只有 `run --check V1` 或 `run --all` 使用计划中的单项预算；未声明的检查及直接 `run -- COMMAND` 继续使用全局 `commandTimeoutMs`（默认120秒），全局配置语义不变。执行仍沿用原同步超时及进程终止机制，不表示对后代进程提供了新的终止保证。
+
+预算进入已批准计划和计划签名。命令证据的 `timeoutMs` 保存实际执行预算，`checkTimeoutMs` 仅在使用单项计划预算时存在，两者必须相等且合法；`guide` 和 `run --all` 也会显示预算。直接命令不会认领声明单项预算的检查，即使它们可执行文件及参数相同。同一命令的不同计划预算分别匹配证据，长预算成功不能消除短预算失败。调整预算要经 `replan`、重新批准和实际验证；旧版本、失败及历史证据保留，未声明预算的旧检查不增加字段或改变签名。
+
+若直接命令先在较短全局预算下失败，后来同名计划检查在较长预算下成功，原失败仍阻塞收尾。`guide` 会列出失败命令并提示在原预算下重新验证，或通过 `reopen/replan` 正常返工；重复执行已经通过的另一预算不能解除阻塞。新字段需要1.4.0或更新的Runtime，不能让旧版本执行或校验含该字段的新计划。
+
 ### 锁诊断与恢复
 
 ```powershell

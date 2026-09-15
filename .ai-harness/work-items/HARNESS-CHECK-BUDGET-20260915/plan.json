@@ -1,0 +1,137 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "HARNESS-CHECK-BUDGET-20260915",
+  "mode": "single",
+  "rationale": "主AI串行维护计划预算与证据闭环，独立上下文只读审查。",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "实现有界计划超时及证据归属",
+      "module": "runtime",
+      "status": "COMPLETED",
+      "attempt": 1,
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        ".ai-harness/src/commands.mjs",
+        ".ai-harness/src/evidence.mjs",
+        ".ai-harness/src/verification.mjs",
+        ".ai-harness/src/compact.mjs",
+        ".ai-harness/src/guide.mjs",
+        ".ai-harness/src/input.mjs",
+        ".ai-harness/src/cli.mjs",
+        ".ai-harness/schemas/begin-spec.schema.json",
+        ".ai-harness/schemas/plan.schema.json",
+        ".ai-harness/manifest.json",
+        ".ai-harness/tests/timeout.test.mjs",
+        "README.md",
+        "docs/guides/usage.md"
+      ],
+      "verification": [
+        "node --test .ai-harness/tests/timeout.test.mjs .ai-harness/tests/command-execution.test.mjs .ai-harness/tests/spec-input.test.mjs",
+        "node --test .ai-harness/tests/reliability.test.mjs",
+        "node --test .ai-harness/tests/installer.test.mjs",
+        "node --test .ai-harness/tests/acceptance-artifacts.test.mjs .ai-harness/tests/bugfix-pipeline.test.mjs .ai-harness/tests/checker.test.mjs .ai-harness/tests/cli.test.mjs .ai-harness/tests/compact.test.mjs .ai-harness/tests/context-delta.test.mjs .ai-harness/tests/filesystem.test.mjs .ai-harness/tests/finish-resume.test.mjs .ai-harness/tests/guidance-tools.test.mjs .ai-harness/tests/guide.test.mjs .ai-harness/tests/installer-checkout.test.mjs .ai-harness/tests/locking.test.mjs .ai-harness/tests/managed-block.test.mjs .ai-harness/tests/output.test.mjs .ai-harness/tests/policy.test.mjs .ai-harness/tests/root-alias.test.mjs .ai-harness/tests/snapshot.test.mjs .ai-harness/tests/validator.test.mjs .ai-harness/tests/verification-pipeline.test.mjs .ai-harness/tests/workflow.test.mjs",
+        "node --test benchmarks/tests/runner.test.mjs"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            "--test",
+            ".ai-harness/tests/timeout.test.mjs",
+            ".ai-harness/tests/command-execution.test.mjs",
+            ".ai-harness/tests/spec-input.test.mjs"
+          ]
+        },
+        {
+          "id": "V2",
+          "command": "node",
+          "args": [
+            "--test",
+            ".ai-harness/tests/reliability.test.mjs"
+          ]
+        },
+        {
+          "id": "V3",
+          "command": "node",
+          "args": [
+            "--test",
+            ".ai-harness/tests/installer.test.mjs"
+          ]
+        },
+        {
+          "id": "V4",
+          "command": "node",
+          "args": [
+            "--test",
+            ".ai-harness/tests/acceptance-artifacts.test.mjs",
+            ".ai-harness/tests/bugfix-pipeline.test.mjs",
+            ".ai-harness/tests/checker.test.mjs",
+            ".ai-harness/tests/cli.test.mjs",
+            ".ai-harness/tests/compact.test.mjs",
+            ".ai-harness/tests/context-delta.test.mjs",
+            ".ai-harness/tests/filesystem.test.mjs",
+            ".ai-harness/tests/finish-resume.test.mjs",
+            ".ai-harness/tests/guidance-tools.test.mjs",
+            ".ai-harness/tests/guide.test.mjs",
+            ".ai-harness/tests/installer-checkout.test.mjs",
+            ".ai-harness/tests/locking.test.mjs",
+            ".ai-harness/tests/managed-block.test.mjs",
+            ".ai-harness/tests/output.test.mjs",
+            ".ai-harness/tests/policy.test.mjs",
+            ".ai-harness/tests/root-alias.test.mjs",
+            ".ai-harness/tests/snapshot.test.mjs",
+            ".ai-harness/tests/validator.test.mjs",
+            ".ai-harness/tests/verification-pipeline.test.mjs",
+            ".ai-harness/tests/workflow.test.mjs"
+          ]
+        },
+        {
+          "id": "V5",
+          "command": "node",
+          "args": [
+            "--test",
+            "benchmarks/tests/runner.test.mjs"
+          ]
+        }
+      ],
+      "docsImpact": [
+        "README.md",
+        "docs/guides/usage.md"
+      ],
+      "reviewBatch": "R1",
+      "risk": "high",
+      "owner": "primary-ai",
+      "verificationStatus": "pass",
+      "reviewStatus": "pass",
+      "evidence": [
+        "e8554e60-d08a-4b59-b0ae-499600c5ecca",
+        "bb5e1677-f953-45e7-ad26-a527fa2f46e7"
+      ],
+      "deferralApproval": null,
+      "verificationSource": {
+        "digest": "40f6679596619bd1592795560a6426f5c4804efae009b9c28b3fd9b800a3a533",
+        "document": ".ai-harness/work-items/HARNESS-CHECK-BUDGET-20260915/snapshots/40f6679596619bd1592795560a6426f5c4804efae009b9c28b3fd9b800a3a533.json"
+      },
+      "reviewSource": {
+        "digest": "40f6679596619bd1592795560a6426f5c4804efae009b9c28b3fd9b800a3a533",
+        "document": ".ai-harness/work-items/HARNESS-CHECK-BUDGET-20260915/snapshots/40f6679596619bd1592795560a6426f5c4804efae009b9c28b3fd9b800a3a533.json"
+      }
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "计划预算与证据兼容独立审查",
+      "risk": "high",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": true
+    }
+  ],
+  "createdAt": "2026-09-15T08:01:11.386Z",
+  "updatedAt": "2026-09-15T08:15:47.876Z"
+}

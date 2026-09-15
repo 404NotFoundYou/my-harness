@@ -6,7 +6,7 @@ import path from "node:path";
 import { appendJsonLine, atomicWriteJson, readJson, resolveProjectPath, withFileLock, writeFileAtomic } from "./filesystem.mjs";
 import { HarnessError, invariant } from "./errors.mjs";
 import { classifyCommand } from "./policy.mjs";
-import { resolveCommandLaunch } from "./commands.mjs";
+import { isValidCheckTimeoutMs, resolveCommandLaunch } from "./commands.mjs";
 import { sourceSnapshot, saveSnapshot } from "./snapshot.mjs";
 import { checksFor, invalidateResults, matchingChecks, planDigest } from "./verification.mjs";
 import { loadConfig, loadPlan, loadWorkItem, workItemPaths } from "./workflow.mjs";
@@ -50,10 +50,11 @@ export async function runRecordedCommand(root, { id, taskId = null, command, arg
   root = await realpath(root);
   const item = await loadWorkItem(root, id);
   const plan = await loadPlan(root, id);
+  let checkTimeoutMs;
   if (checkId) {
     const matches = plan.tasks.filter((task) => !taskId || task.id === taskId).flatMap((task) => checksFor(task).filter((check) => check.id === checkId));
     invariant(matches.length === 1, "CHECK_NOT_FOUND", "检查 ID 不存在或不唯一，请同时指定任务。" );
-    ({ command, args } = matches[0]);
+    ({ command, args, timeoutMs: checkTimeoutMs } = matches[0]);
   }
   invariant(item.status === "IMPLEMENTING" || item.status === "VERIFYING", "WRONG_STAGE", "受控命令只允许在 IMPLEMENTING 或 VERIFYING 阶段运行。" );
   invariant(typeof command === "string" && command.trim() && Array.isArray(args) && args.every((arg) => typeof arg === "string"), "INVALID_COMMAND", "命令和参数必须是字符串数组。" );
@@ -64,6 +65,8 @@ export async function runRecordedCommand(root, { id, taskId = null, command, arg
     invariant(task.status === "IN_PROGRESS" || (item.status === "VERIFYING" && task.status === "COMPLETED"), "WRONG_TASK_STAGE", "受控命令需要实施中任务，或最终验证阶段已完成的任务。" );
   }
   const config = await loadConfig(root);
+  invariant(checkTimeoutMs === undefined || isValidCheckTimeoutMs(checkTimeoutMs), "INVALID_CHECK_TIMEOUT", "检查 timeoutMs 必须是 1 到 1800000 之间的整数。" );
+  const timeoutMs = checkTimeoutMs === undefined ? config.commandTimeoutMs : checkTimeoutMs;
   const outputLimitBytes = config.maxCommandOutputBytes === undefined ? 16 * 1024 * 1024 : config.maxCommandOutputBytes;
   invariant(Number.isInteger(outputLimitBytes) && outputLimitBytes > 0 && outputLimitBytes <= 64 * 1024 * 1024,
     "INVALID_COMMAND_OUTPUT_LIMIT", "maxCommandOutputBytes 必须是 1 到 67108864 之间的整数。" );
@@ -91,7 +94,7 @@ export async function runRecordedCommand(root, { id, taskId = null, command, arg
     shell: false,
     windowsHide: true,
     env: { ...process.env, NODE_TEST_CONTEXT: undefined },
-    timeout: config.commandTimeoutMs,
+    timeout: timeoutMs,
     maxBuffer: outputLimitBytes,
     });
   } catch (error) { result = { status: null, error, stdout: null, stderr: null }; }
@@ -121,7 +124,7 @@ export async function runRecordedCommand(root, { id, taskId = null, command, arg
       executable: redact(command),
       args: redactedArgs(args),
       launch: launch ? { executable: redact(launch.command), args: redactedArgs(launch.args) } : null,
-      checkIds: matchingChecks(plan, taskId, command, args),
+      checkIds: matchingChecks(plan, taskId, command, args, checkTimeoutMs),
       planDigest: definition,
       source,
       sourceAfter,
@@ -130,6 +133,8 @@ export async function runRecordedCommand(root, { id, taskId = null, command, arg
       exitCode,
       signal: result.signal || null,
       timedOut,
+      timeoutMs,
+      ...(checkTimeoutMs === undefined ? {} : { checkTimeoutMs }),
       outputLimitBytes,
       outputLimitExceeded,
       failureReason,

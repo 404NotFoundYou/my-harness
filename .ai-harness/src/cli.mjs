@@ -480,7 +480,8 @@ export async function runCli(argv, io = { stdout: console.log, stderr: console.e
       for (const check of checks) {
         try {
           const event = await runRecordedCommand(root, { id, taskId, checkId: check.id });
-          commands.push({ id: event.id, checkId: check.id, status: event.status, exitCode: event.command.exitCode, stdout: event.command.stdout, stderr: event.command.stderr });
+          commands.push({ id: event.id, checkId: check.id, status: event.status, exitCode: event.command.exitCode, timeoutMs: event.command.timeoutMs,
+            ...(event.command.checkTimeoutMs === undefined ? {} : { checkTimeoutMs: event.command.checkTimeoutMs }), stdout: event.command.stdout, stderr: event.command.stderr });
           if (event.status !== "pass") break;
         } catch (error) {
           blockedCheck = { checkId: check.id, code: error.code || "UNEXPECTED_ERROR", message: error.message };
