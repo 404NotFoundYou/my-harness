@@ -1,0 +1,173 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 1,
+  "id": "HARNESS-OPT-20260915",
+  "type": "ITERATION",
+  "title": "优化评测可信性、恢复和任务交互",
+  "status": "IMPLEMENTING",
+  "flags": [
+    "api",
+    "database"
+  ],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/iteration.md",
+    ".ai-harness/policies/database.md",
+    ".ai-harness/policies/api.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户明确授权按调研建议优化现有工程"
+  },
+  "input": {
+    "references": [
+      ".ai-harness/work-items/ANALYSIS-HARNESS-OPT-20260915/assessment.md",
+      "用户授权：根据调研建议进行优化"
+    ],
+    "acceptance": [
+      "三个评测驱动拒绝异常完成且源仓库CI覆盖评测和Windows/Linux",
+      "失效锁可诊断并通过CLI安全恢复，存活和未知锁不被抢占，原有记录保留",
+      "明确文本文件有界读取并说明遗漏，BUGFIX收尾和精简引导保留所有门禁",
+      "支持固定任务重复对照与耗时统计，验收与实际证据可追溯，兼容历史记录"
+    ],
+    "nonGoals": [
+      "不执行收费模型对照、不提交推送、不发布、不引入外部数据库或依赖"
+    ],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": null,
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "main@a5c1bee；产品快照d9757a23。保留上一轮未提交ANALYSIS目录。上轮同一产品快照已实测131/131 Runtime、8/8框架，复现协议误报、失效锁及上下文遗漏。已读核心调用链和策略，本次不访问外部数据库。"
+    ],
+    "completedAt": "2026-09-15T03:18:04.447Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "a5c1bee279f2e204724cfb34ad00287bb585b8ef",
+      "dirty": true,
+      "changedFiles": [
+        ".ai-harness/work-items/ANALYSIS-HARNESS-OPT-20260915/assessment.md",
+        ".ai-harness/work-items/ANALYSIS-HARNESS-OPT-20260915/events.jsonl",
+        ".ai-harness/work-items/ANALYSIS-HARNESS-OPT-20260915/evidence.jsonl",
+        ".ai-harness/work-items/ANALYSIS-HARNESS-OPT-20260915/probes.mjs",
+        ".ai-harness/work-items/ANALYSIS-HARNESS-OPT-20260915/snapshots/d9757a23f48542e1a3990d503a594328637428988ca8b50dbe0020bf0e2ff45c.json",
+        ".ai-harness/work-items/ANALYSIS-HARNESS-OPT-20260915/state.json",
+        ".ai-harness/work-items/HARNESS-OPT-20260915/events.jsonl",
+        ".ai-harness/work-items/HARNESS-OPT-20260915/state.json"
+      ],
+      "fingerprints": {
+        ".ai-harness/work-items/ANALYSIS-HARNESS-OPT-20260915/assessment.md": "f3c4a5c2d6b2cad16648bed6d454ae45549eae4722c28e8b96307c168adbc5d5",
+        ".ai-harness/work-items/ANALYSIS-HARNESS-OPT-20260915/events.jsonl": "cc45a14fcb0ae3c8410b5552498087f0910268539e5f6fc3ede65e1b69efed7c",
+        ".ai-harness/work-items/ANALYSIS-HARNESS-OPT-20260915/evidence.jsonl": "6fff0af40cb2d29b9b954b677b1eefa57692fcf6c09360c18c4f2f988bb52e1c",
+        ".ai-harness/work-items/ANALYSIS-HARNESS-OPT-20260915/probes.mjs": "05dc75474e53be4e3bfb72e5b4d212af826291a53b2efd6948f810e4af4840dd",
+        ".ai-harness/work-items/ANALYSIS-HARNESS-OPT-20260915/snapshots/d9757a23f48542e1a3990d503a594328637428988ca8b50dbe0020bf0e2ff45c.json": "6230943a7f853bd809faf5d12273cb57e1ae5a8fcf0052f38f14c1464afe22cf",
+        ".ai-harness/work-items/ANALYSIS-HARNESS-OPT-20260915/state.json": "b45cd195339639757ca5dc9b8f67be2c6636b04292e64ba57c03bcb40bd0bf4f",
+        ".ai-harness/work-items/HARNESS-OPT-20260915/events.jsonl": "a8bd00e81e1529c553c0388b83d6ccb3f3d1a5628d8bc05c7f74c0acd962b71a",
+        ".ai-harness/work-items/HARNESS-OPT-20260915/state.json": "5fd2ae537b6dd8a72872e592ceb7596479edb270cf60e0a1178262acc349b08b"
+      },
+      "source": {
+        "digest": "d9757a23f48542e1a3990d503a594328637428988ca8b50dbe0020bf0e2ff45c",
+        "document": ".ai-harness/work-items/HARNESS-OPT-20260915/snapshots/d9757a23f48542e1a3990d503a594328637428988ca8b50dbe0020bf0e2ff45c.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": ".ai-harness/work-items/HARNESS-OPT-20260915/design.md",
+    "evidence": [
+      "复用既有门禁；明确评测异常、所有者锁、上下文和证据兼容设计及验收"
+    ],
+    "completedAt": "2026-09-15T03:19:21.627Z"
+  },
+  "database": {
+    "impact": "required",
+    "status": "complete",
+    "document": ".ai-harness/work-items/HARNESS-OPT-20260915/design.md",
+    "evidence": [
+      "新字段向后兼容；历史终态不迁移；回收只作用确定失活锁，产物按哈希校验；未运行环境单列"
+    ],
+    "completedAt": "2026-09-15T03:19:22.729Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/HARNESS-OPT-20260915/plan.json",
+    "approved": true,
+    "approvalRef": "用户已明确按建议优化，实施设计与边界已记录；最终独立复核"
+  },
+  "verification": {
+    "status": "pending",
+    "evidence": [],
+    "stages": []
+  },
+  "review": {
+    "status": "pending",
+    "evidence": [],
+    "independent": false
+  },
+  "acceptance": {
+    "status": "pending",
+    "evidence": []
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "pending",
+    "evidence": []
+  },
+  "blocked": null,
+  "delivery": null,
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-09-15T03:18:03.445Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-09-15T03:18:03.844Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-09-15T03:18:05.001Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "DATABASE_DESIGN",
+      "at": "2026-09-15T03:19:22.352Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "DATABASE_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-09-15T03:19:24.575Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-09-15T03:19:24.963Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-09-15T03:18:03.445Z",
+  "updatedAt": "2026-09-15T03:19:25.334Z"
+}

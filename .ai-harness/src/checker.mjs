@@ -13,6 +13,7 @@ import { inspectManagedBlock, normalizeManagedBody } from "./managed-block.mjs";
 import { collectPlanErrors } from "./validator.mjs";
 import { collectScopeErrors } from "./scope.mjs";
 import { itemPolicyFiles } from "./policy-routing.mjs";
+import { assertArtifacts } from "./artifacts.mjs";
 import { loadConfig, loadPlan, loadWorkItem, validateWorkItem, workItemPaths } from "./workflow.mjs";
 
 function parseVersion(value) {
@@ -160,7 +161,7 @@ function stateRequiresCompletePlan(status) {
   return ["PLANNED", "IMPLEMENTING", "VERIFYING", "CODE_REVIEW", "READY_FOR_ACCEPTANCE", "DONE"].includes(status);
 }
 
-async function collectEvidenceErrors(root, item, plan) {
+export async function collectEvidenceErrors(root, item, plan) {
   const errors = [];
   const paths = await workItemPaths(root, item.id);
   let raw = "";
@@ -192,6 +193,7 @@ async function collectEvidenceErrors(root, item, plan) {
       errors.push(`evidence.jsonl:${index + 1} 结果状态无效。`);
     }
     if (byId.has(event.id)) errors.push(`evidence.jsonl 包含重复 ID：${event.id}`);
+    try { await assertArtifacts(root, item.id, event.artifacts); } catch (error) { errors.push(`${event.id}: ${error.code || "ARTIFACT_INVALID"}: ${error.message}`); }
     byId.set(event.id, event);
     events.push(event);
   }

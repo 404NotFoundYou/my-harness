@@ -237,15 +237,27 @@ for (const [type, flags, stages] of [
       await transitionWorkItem(root, id, "VERIFYING");
       for (const stage of stages) {
         const guide = await getWorkGuide(root, id);
-        assert.equal(guide.next.code, "record-verification");
-        assert.equal(guide.next.command.args[guide.next.command.args.indexOf("--stage") + 1], stage);
-        assert.ok(guide.next.command.args.includes("<ACTUAL_EVIDENCE>"));
         assert.equal(guide.next.requiresJudgment, true);
         const runBacked = ["reproduction", "regression"].includes(stage);
-        if (runBacked) assert.equal(guide.next.command.args[guide.next.command.args.indexOf("--command") + 1], command.id);
+        if (type === "BUGFIX") {
+          assert.equal(guide.next.code, "finish-bugfix");
+          const suggestedStages = guide.next.command.args.flatMap((arg, index, args) => arg === "--stage-evidence" ? [args[index + 1].split("=")[0]] : []);
+          assert.deepEqual(suggestedStages, stages.slice(stages.indexOf(stage)), "batch finish must retain every unverified stage, including browser");
+          if (runBacked) assert.ok(guide.next.command.args.includes(`${stage}=<MATCHING_COMMAND_ID>`));
+        } else {
+          assert.equal(guide.next.code, "record-verification");
+          assert.equal(guide.next.command.args[guide.next.command.args.indexOf("--stage") + 1], stage);
+          assert.ok(guide.next.command.args.includes("<ACTUAL_EVIDENCE>"));
+          if (runBacked) assert.equal(guide.next.command.args[guide.next.command.args.indexOf("--command") + 1], command.id);
+        }
         await recordResult(root, id, { kind: "verification", status: "pass", summary: `${stage} external fixture`, stage, commandRef: runBacked ? command.id : null });
       }
-      assert.equal((await getWorkGuide(root, id)).next.code, "record-documentation");
+      const next = (await getWorkGuide(root, id)).next;
+      if (type === "BUGFIX") {
+        assert.equal(next.code, "finish-bugfix");
+        assert.ok(next.command.args.includes("--documentation"));
+        assert.equal(next.command.args.includes("--stage-evidence"), false);
+      } else assert.equal(next.code, "record-documentation");
     } finally { await cleanup(root); }
   });
 }

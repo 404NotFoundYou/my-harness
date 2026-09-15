@@ -292,6 +292,43 @@ node .ai-harness/bin/harness.mjs transition --id <ID> --to ANSWERED --json
 
 结论状态为 `PROVEN`、`INFERRED`、`PROPOSAL` 或 `UNKNOWN`。除 `UNKNOWN` 外必须提供证据。
 
+### 验收项与检查对应
+
+从 `1.3.0` 起，结构化验证命令可添加 `acceptance` 数组，引用工作项验收条件按顺序生成的 `A1`、`A2` 等编号：
+
+```json
+{"command":"node","args":["--test","tests/validation.test.mjs"],"acceptance":["A1","A2"]}
+```
+
+该对象可放入 `begin --spec` 的 `verification` 数组，或作为 `--verify` 的 JSON 字符串。启用映射后，建项预检/计划批准要求所有验收项有对应检查且编号有效。映射参与计划签名，修改后需要重新验证。未提供映射的旧工作项保持原行为；`guide.coverage` 展示对应关系。Runtime 只校验声明与证据归属，测试断言能否保护业务意图仍需审查。
+
+### 验证产物
+
+在实际执行和阅读结果后，可通过原有 `record` 入口附加本地产物：
+
+```powershell
+node .ai-harness/bin/harness.mjs record --id ITER-001 --task T1 `
+  --kind verification --status pass --evidence "说明实际检查及其边界" `
+  --artifact .ai-harness/work-items/ITER-001/test-output.txt `
+  --artifact-source "实际执行工具或 CI 运行地址" --json
+```
+
+最多8个普通文件，每个最多16 MiB；需要来源说明。Runtime 将内容保存为工作项内按 SHA-256 命名的副本，证据保存 `version/path/sha256/bytes/source`。重新生成原文件不会改写已归档证据；副本丢失、越界或哈希变化会被验证/CI拒绝。路径不得经过链接或指向凭据/Git元数据。`source` 是调用方的来源声明，不是远端执行证明或独立复核凭证。产物也不替代既有复现/回归的真实命令要求。
+
+新可选字段要求使用 1.3.0 或更新的 Runtime 校验；历史记录不补写或重新解释。`run.command.timing` 分开记录准备、实际执行及证据准备，观测截至最终追加证据前，不包括进程启动和最后的持久化；完整 CLI 区间由客户端事件计时。原 `durationMs` 语义保持不变。
+
+### 锁诊断与恢复
+
+```powershell
+node .ai-harness/bin/harness.mjs lock-status --id ITER-001 --json
+# 仅当状态为 stale，使用上一步 owner.token 和实际中断原因
+node .ai-harness/bin/harness.mjs lock-recover --id ITER-001 --token '<owner.token>' --reason '实际中断原因' --json
+```
+
+新锁携带版本、主机、PID 和随机代次标识。恢复只针对本机进程已不存在且 token 匹配的锁；仅凭经过时间不回收，PID 已被复用也会保守拒绝。恢复先认领锁并保留排他性，验证状态、计划及事件/证据日志完整性，成功后才记录恢复事件并释放。正常释放先整体移走锁目录，清理中断留下的 `.tmp` 目录不阻塞后续工作。
+
+旧文件锁为 `legacy`；未知、存活和异地主机锁不能自动回收。本机制面向单机本地文件系统，不能据此证明共享盘或跨容器 PID 命名空间的所有权。遇 `LOCK_STATE_INCONSISTENT` 时保留原记录和认领锁，退出非零；不会拼接损坏日志、编造 pass 或自动修复部分写入。需先保留现场并从已验证备份/提交恢复完整控制面，再继续正常流程，不手工补造状态。恢复锁不等于业务操作、验证或验收已经完成。
+
 ## 5. 命令与退出码
 
 ```text
@@ -317,6 +354,8 @@ node .ai-harness/bin/harness.mjs check --ci --json
 ```
 
 其他 CI 平台调用相同命令即可。CI 是合并门禁，不替代客户端权限、代码托管分支保护或人工独立复核。
+
+Harness 源仓库另有 `source-tests.yml`：Windows/Linux 执行评测框架测试，Windows 执行 Runtime 回归；Linux Runtime 仍由标准工作流覆盖。源仓库专用工作流不会复制到目标项目，测试不会调用真实模型。
 
 CI 检出需保留完整 Git 历史（GitHub Actions 示例使用 `fetch-depth: 0`），以确定旧终态记录的真实归档提交。新工作项保存交付内容快照；历史范围不再授权新的修改，合法分析控制面单独处理。
 

@@ -27,6 +27,8 @@ import {
   loadWorkItem,
   recordResult,
   reopenWorkItem,
+  recoverWorkItemLock,
+  workItemLockStatus,
   setDatabaseDecision,
   transitionWorkItem,
   updateTaskStatus,
@@ -117,7 +119,9 @@ function helpText() {
   finish        普通任务：引用成功命令和实际审查/验收结论完成工作项
   start         创建工作项
   show          显示 state 和 plan
-  guide         只读任务引导：--id ID [--task T] [--context] [--context-since FILE]，汇总目标、证据与按需源码
+  guide         只读任务引导：--id ID [--task T] [--context] [--context-since FILE] [--brief]
+  lock-status   查看工作项锁所有者与是否失活：--id ID
+  lock-recover  恢复确定失活的新格式锁：--id ID --token TOKEN --reason TEXT
   reopen        返工并失效旧验证：--id ID --reason TEXT [--approval-ref REF]
   replan        保存旧计划版本后重新计划：--id ID --reason TEXT [--approval-ref REF]
   baseline      记录 Git/文档基线
@@ -152,7 +156,8 @@ function helpText() {
   BUGFIX 的 finish 另需必需阶段的 --stage-evidence，复现/回归另需 --stage-command；按原流水线顺序登记。
   复杂/高风险或需要逐步批准的工作仍使用 start 及细粒度命令。
 
-常用重复参数：--input、--acceptance、--non-goal、--evidence、--blocked-by、--writes、--verify、--docs、--command。`;
+record 可用 --artifact PATH（最多8项）及 --artifact-source TEXT 保存带哈希的产物副本。
+常用重复参数：--input、--acceptance、--non-goal、--evidence、--blocked-by、--writes、--verify、--docs、--command、--artifact。`;
 }
 
 async function projectRoot() {
@@ -301,8 +306,20 @@ export async function runCli(argv, io = { stdout: console.log, stderr: console.e
       taskId: one(parsed, "task"),
       includeContext: flag(parsed, "context"),
       contextSince: one(parsed, "context-since", { required: parsed.options["context-since"] !== undefined }),
+      brief: flag(parsed, "brief"),
     }));
     return 0;
+  }
+  if (command === "lock-status") {
+    emit(io, parsed, await workItemLockStatus(root, one(parsed, "id", { required: true })));
+    return 0;
+  }
+  if (command === "lock-recover") {
+    const result = await recoverWorkItemLock(root, one(parsed, "id", { required: true }), {
+      token: one(parsed, "token", { required: true }), reason: one(parsed, "reason", { required: true }),
+    });
+    emit(io, parsed, result);
+    return result.ok ? 0 : 1;
   }
   if (command === "reopen" || command === "replan") {
     const id = one(parsed, "id", { required: true });
@@ -416,6 +433,8 @@ export async function runCli(argv, io = { stdout: console.log, stderr: console.e
       independent: flag(parsed, "independent"),
       stage: one(parsed, "stage"),
       commandRef: one(parsed, "command"),
+      artifactPaths: many(parsed, "artifact"),
+      artifactSource: one(parsed, "artifact-source"),
     });
     emit(io, parsed, result);
     return 0;

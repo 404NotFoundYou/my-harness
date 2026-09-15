@@ -20,7 +20,8 @@ export function redact(value) {
   return String(value)
     .replace(/\b(Bearer)\s+[A-Za-z0-9._~+\/-]+=*/gi, "$1 [REDACTED]")
     .replace(/\b(ghp|github_pat|sk|pk_live|AKIA)[A-Za-z0-9_-]{12,}\b/g, "[REDACTED]")
-    .replace(/\b([A-Z][A-Z0-9_]*(?:TOKEN|SECRET|PASSWORD|API_KEY|PRIVATE_KEY)[A-Z0-9_]*)\s*[=:]\s*([^\s]+)/g, "$1=[REDACTED]")
+    .replace(/\b([A-Z][A-Z0-9_]*(?:TOKEN|SECRET|PASSWORD|API_KEY|PRIVATE_KEY)[A-Z0-9_]*)\s*[=:]\s*(?:"([^"\\]*(?:\\.[^"\\]*)*)"|'([^']*)'|([^\s"'\\]+))/g,
+      (_match, key, quoted, single) => `${key}=${quoted !== undefined ? '"[REDACTED]"' : single !== undefined ? "'[REDACTED]'" : "[REDACTED]"}`)
     .replace(/\beyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\b/g, "[REDACTED_JWT]");
 }
 
@@ -43,6 +44,7 @@ function redactedArgs(args) {
 }
 
 export async function runRecordedCommand(root, { id, taskId = null, command, args = [], checkId = null }) {
+  const enteredAt = Date.now();
   const item = await loadWorkItem(root, id);
   const plan = await loadPlan(root, id);
   if (checkId) {
@@ -136,6 +138,10 @@ export async function runRecordedCommand(root, { id, taskId = null, command, arg
     const latestItem = await readJson(paths.state);
     const latestPlan = await readJson(paths.plan);
     if ((latestItem.revision || 1) !== event.revision || planDigest(latestItem, latestPlan) !== definition || latestItem.status !== item.status) event.status = "fail";
+    const observedAt = Date.now();
+    event.command.timing = { preparationMs: startedAt - enteredAt, executionMs: endedAt - startedAt,
+      evidencePreparationMs: observedAt - endedAt, observedMs: observedAt - enteredAt,
+      through: "before-evidence-append", limitation: "不含进程启动、证据最终追加和状态保存；完整CLI区间由客户端事件计时。" };
     await appendJsonLine(paths.evidence, event);
     const taskSource = taskId ? latestPlan.tasks.find((task) => task.id === taskId)?.verificationSource : null;
     if (event.status !== "pass" || before.digest !== after.digest ||

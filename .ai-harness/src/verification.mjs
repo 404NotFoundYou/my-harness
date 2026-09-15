@@ -6,9 +6,26 @@ import { readJson, resolveProjectPath } from "./filesystem.mjs";
 import { invariant } from "./errors.mjs";
 import { sourceSnapshot, loadSnapshot } from "./snapshot.mjs";
 import { isRunBackedStage, requiredVerificationStages } from "./constants.mjs";
+import { assertArtifacts } from "./artifacts.mjs";
 
 export function checksFor(task) {
   return task.checks || compileChecks(task.verification);
+}
+
+export function acceptanceCoverage(item, plan) {
+  const checks = (plan?.tasks || []).flatMap(task => checksFor(task).map(check => ({ taskId: task.id, checkId: check.id, acceptance: check.acceptance || [] })));
+  const entries = item.input.acceptance.map((text, index) => ({ id: `A${index + 1}`, text,
+    checks: checks.filter(check => check.acceptance.includes(`A${index + 1}`)).map(({ taskId, checkId }) => ({ taskId, checkId })) }));
+  const mapped = checks.some(check => check.acceptance.length);
+  return { mode: mapped ? "explicit" : "unspecified", entries,
+    missing: mapped ? entries.filter(entry => !entry.checks.length).map(entry => entry.id) : [],
+    invalid: [...new Set(checks.flatMap(check => check.acceptance))].filter(id => !entries.some(entry => entry.id === id)),
+    note: "这是检查与验收的声明对应，不证明测试语义覆盖；仍需审查实际断言。" };
+}
+
+export function assertAcceptanceCoverage(item, plan) {
+  const coverage = acceptanceCoverage(item, plan);
+  invariant(!coverage.missing.length && !coverage.invalid.length, "ACCEPTANCE_MAPPING_INCOMPLETE", "启用验收映射后必须覆盖所有验收项，且不能引用不存在的编号。", coverage);
 }
 
 export function planDigest(item, plan) {
@@ -98,6 +115,7 @@ export async function verificationReport(root, item, plan, { taskId = null, snap
 }
 
 export async function assertVerification(root, item, plan, options = {}) {
+  assertAcceptanceCoverage(item, plan);
   const report = await verificationReport(root, item, plan, options);
   invariant(report.ok, "VERIFICATION_NOT_CURRENT", "计划中的验证尚未针对当前代码全部通过，或存在新的失败。", {
     missing: report.missing.map((check) => ({ taskId: check.taskId, checkId: check.id, command: check.command, args: check.args })),
@@ -106,6 +124,9 @@ export async function assertVerification(root, item, plan, options = {}) {
   for (const event of report.successful) {
     await loadSnapshot(root, event.command.source);
     await loadSnapshot(root, event.command.sourceAfter);
+  }
+  for (const event of await readEvidence(root, item.id)) {
+    if ((event.revision || 1) === (item.revision || 1) && event.status === "pass") await assertArtifacts(root, item.id, event.artifacts);
   }
   return report;
 }

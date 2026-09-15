@@ -1,0 +1,211 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 1,
+  "id": "ANALYSIS-HARNESS-OPT-20260915",
+  "type": "ANALYSIS",
+  "title": "AI Harness 后续优化调研",
+  "status": "ANSWERED",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/analysis.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户授权调研；仅只读检查与 ANALYSIS 控制面记录"
+  },
+  "input": {
+    "references": [
+      "用户请求：调研现有 AI Harness 工程如何进一步优化"
+    ],
+    "acceptance": [
+      "结合当前源码、实际测试及官方资料，区分已证实事实、建议和未知，给出有优先级的最小改进路线与验收条件"
+    ],
+    "nonGoals": [
+      "不修改产品代码、不启动付费模型评测、不部署发布"
+    ],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": null,
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "main@a5c1bee279f2e204724cfb34ad00287bb585b8ef；初始工作树干净；doctor 通过；Runtime 1.2.0；读取根契约、架构、策略、测试入口和评测协议"
+    ],
+    "completedAt": "2026-09-15T02:57:47.806Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "a5c1bee279f2e204724cfb34ad00287bb585b8ef",
+      "dirty": true,
+      "changedFiles": [
+        ".ai-harness/work-items/ANALYSIS-HARNESS-OPT-20260915/events.jsonl",
+        ".ai-harness/work-items/ANALYSIS-HARNESS-OPT-20260915/state.json"
+      ],
+      "fingerprints": {
+        ".ai-harness/work-items/ANALYSIS-HARNESS-OPT-20260915/events.jsonl": "3faa6e49472cbe02dd541905209013b818a51101ab64f66399dc208ad0c347c6",
+        ".ai-harness/work-items/ANALYSIS-HARNESS-OPT-20260915/state.json": "26a4d8e8ebb801dd4931bfcdb5df9fc51808a00392c585c85e48934520a1c0a7"
+      },
+      "source": {
+        "digest": "d9757a23f48542e1a3990d503a594328637428988ca8b50dbe0020bf0e2ff45c",
+        "document": ".ai-harness/work-items/ANALYSIS-HARNESS-OPT-20260915/snapshots/d9757a23f48542e1a3990d503a594328637428988ca8b50dbe0020bf0e2ff45c.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "pending",
+    "document": null,
+    "evidence": [],
+    "completedAt": null
+  },
+  "database": {
+    "status": "pending",
+    "document": null,
+    "evidence": [],
+    "completedAt": null,
+    "impact": "unknown"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/ANALYSIS-HARNESS-OPT-20260915/plan.json",
+    "approved": false,
+    "approvalRef": null
+  },
+  "verification": {
+    "status": "pending",
+    "evidence": [],
+    "stages": []
+  },
+  "review": {
+    "status": "pending",
+    "evidence": [],
+    "independent": false
+  },
+  "acceptance": {
+    "status": "pending",
+    "evidence": []
+  },
+  "analysis": {
+    "status": "pass",
+    "evidence": [
+      "fb0c6bf6-6891-4b6d-a074-d248a51441b8"
+    ],
+    "conclusions": [
+      {
+        "id": "e38494b5-c42c-46c7-9597-bc0581a13b20",
+        "status": "PROVEN",
+        "text": "当前 1.2.0 已有结构化输入、验证与源码/计划绑定、返工和收尾恢复、上下文增量读取。本次 Windows / Node 22.20.0 运行 Runtime 131/131、评测框架 8/8，均零失败零跳过；doctor 通过。",
+        "evidence": [
+          ".ai-harness/work-items/ANALYSIS-HARNESS-OPT-20260915/assessment.md",
+          "实际命令：node .ai-harness/tests/run.mjs；node --test benchmarks/tests/runner.test.mjs；node .ai-harness/bin/harness.mjs doctor --json"
+        ]
+      },
+      {
+        "id": "d4ad68c9-ee32-4ea1-9676-93e2a20d0a2f",
+        "status": "PROVEN",
+        "text": "Codex 评测驱动在模拟损坏 JSONL 或 turn.failed 后收到完成事件及退出码 0 时仍返回 completed:true。Claude/Gemini 驱动检查协议失败和损坏行；源仓库 CI 没有运行 benchmarks 框架测试。",
+        "evidence": [
+          ".ai-harness/work-items/ANALYSIS-HARNESS-OPT-20260915/probes.mjs",
+          "benchmarks/codex-driver.mjs:31,46,50,59；benchmarks/client-drivers.mjs:101；.github/workflows/ai-harness.yml:21"
+        ]
+      },
+      {
+        "id": "9ba2480d-04c5-46ce-b831-296459d5f29d",
+        "status": "PROVEN",
+        "text": "历史两轮共 18 个样本审计通过；额外扫描 18 份 CLI 日志均存在，损坏 JSON 行和 error/turn.failed 均为 0。旧版本复验同模型原流程完整交付 3/3、Harness 1/3，功能均 3/3；不能当成当前版本效果。",
+        "evidence": [
+          ".ai-harness/work-items/ANALYSIS-HARNESS-OPT-20260915/assessment.md",
+          "实际命令：node benchmarks/audit.mjs .ai-harness/work-items/MODEL-BENCHMARK-001/pilot；node benchmarks/audit.mjs .ai-harness/work-items/MODEL-BENCHMARK-001/followup；随后对各 result.json 同目录 events.jsonl 逐行解析统计"
+        ]
+      },
+      {
+        "id": "1ffacb21-d85f-4e8a-9e9e-8550d407558b",
+        "status": "PROVEN",
+        "text": "隔离子进程持锁后直接退出，锁所有者 PID 确认为已退出子进程；随后获取相同锁仍报 LOCK_TIMEOUT。现有 finish 恢复测试针对完整步骤之间的续跑。",
+        "evidence": [
+          ".ai-harness/work-items/ANALYSIS-HARNESS-OPT-20260915/probes.mjs",
+          ".ai-harness/src/filesystem.mjs:159；.ai-harness/tests/finish-resume.test.mjs:35"
+        ]
+      },
+      {
+        "id": "e7c6fa92-9430-4557-96f8-1ab2a4b8586b",
+        "status": "PROVEN",
+        "text": "显式传入 mjs/java/py/dart/vue/json 六个普通文件，上下文辅助仅返回 mjs，omitted 与 notReturned 均为空；当前支持列表限 JS/TS/Markdown。",
+        "evidence": [
+          ".ai-harness/work-items/ANALYSIS-HARNESS-OPT-20260915/probes.mjs",
+          ".ai-harness/src/context.mjs:9-11,35-36"
+        ]
+      },
+      {
+        "id": "89a4dfc1-3ba8-4511-8d99-607cb43003d0",
+        "status": "INFERRED",
+        "text": "现有 1.2.0 小型 Codex 记录约 114.8 秒，其中工具事件区间约 11.2 秒；减少模型往返可能比单独优化命令执行更有效。多文件证据/计划/状态依次写入也需要中断一致性验证；尚未量化这些推断。",
+        "evidence": [
+          ".ai-harness/work-items/HARNESS-USABILITY-001/client-verification.json",
+          ".ai-harness/src/workflow.mjs:487-535",
+          ".ai-harness/work-items/ANALYSIS-HARNESS-OPT-20260915/assessment.md"
+        ]
+      },
+      {
+        "id": "87d02a56-d8bf-4dc4-b31f-703743bfc511",
+        "status": "PROPOSAL",
+        "text": "先统一评测完成判定并补源仓库 CI，再修失效锁恢复与上下文遗漏；建立当前版本重复对照和环节耗时，依轨迹推进 BUGFIX 收尾建议、精简响应及验收与产物对应。保留零依赖和客户端/Runtime/评测三层边界。每项最小方案与验收标准见报告。",
+        "evidence": [
+          ".ai-harness/work-items/ANALYSIS-HARNESS-OPT-20260915/assessment.md",
+          "已读取 OpenAI agent-evals / AGENTS.md 文档、Anthropic context engineering / long-running harnesses / agent evals、LangGraph fault tolerance；访问日期 2026-09-15，完整链接见报告"
+        ]
+      },
+      {
+        "id": "c5336b67-b4dc-4290-bdcc-815f67ab842f",
+        "status": "UNKNOWN",
+        "text": "当前版本对真实任务的平均收益、尾部耗时和模型增强效果尚未建立；本次没有调用真实模型，没有验证其他系统、远端 CI、客户端当前登录状态或多文件写入中断后的恢复。",
+        "evidence": []
+      }
+    ],
+    "unknowns": [
+      "需后续固定版本、预算和独立验收的重复评测；多文件中断需额外故障注入。"
+    ]
+  },
+  "documentation": {
+    "status": "pending",
+    "evidence": []
+  },
+  "blocked": null,
+  "delivery": null,
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-09-15T02:57:46.861Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-09-15T02:57:47.224Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "ANALYZING",
+      "at": "2026-09-15T02:57:48.349Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "ANALYZING",
+      "to": "ANSWERED",
+      "at": "2026-09-15T03:12:47.510Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-09-15T02:57:46.861Z",
+  "updatedAt": "2026-09-15T03:12:47.510Z"
+}

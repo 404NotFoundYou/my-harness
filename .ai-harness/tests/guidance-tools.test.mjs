@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { spawnSync } from "node:child_process";
 import path from "node:path";
-import { beginWorkItem } from "../src/compact.mjs";
+import { beginWorkItem, finishWorkItem } from "../src/compact.mjs";
 import { getWorkGuide } from "../src/guide.mjs";
 import { runRecordedCommand } from "../src/evidence.mjs";
 import { readEvidence } from "../src/verification.mjs";
@@ -97,5 +97,27 @@ test("verified iterations offer an auditable finish and reopened tasks show the 
     assert.equal(reopened.tasks[0].status,"READY");
     assert.equal(reopened.next.taskTarget,"IN_PROGRESS");
     assert.ok(reopened.next.command.args.includes("task-update"));
+  } finally { await cleanup(root); }
+});
+
+test("brief BUGFIX guidance gives one finish action while preserving actual stage evidence", async () => {
+  const root = await createInstalledProject();
+  try {
+    await writeFile(path.join(root, "value.mjs"), "export const value = 1;\n");
+    await beginWorkItem(root, { id: "BUG-GUIDE", type: "BUGFIX", title: "keep reproduction and regression", references: ["fixture"], acceptance: ["module is valid"],
+      authorizationMode: "autonomous", authorizationSource: "fixture", risk: "low", approach: "fix bounded defect", databaseEvidence: "no persistence", writeScopes: ["value.mjs"],
+      verification: ["node --check value.mjs"], docsImpact: ["N/A: unchanged"], bug: { actual: "invalid module", expected: "valid module", reproduction: "load module" } });
+    assert.notEqual((await getWorkGuide(root, "BUG-GUIDE")).next.code, "finish-bugfix");
+    const command = await runRecordedCommand(root, { id: "BUG-GUIDE", taskId: "T1", checkId: "V1" });
+    const full = await getWorkGuide(root, "BUG-GUIDE"), brief = await getWorkGuide(root, "BUG-GUIDE", { brief: true });
+    assert.equal(brief.next.code, "finish-bugfix");
+    assert.equal(brief.shortcuts, undefined);
+    assert.ok(JSON.stringify(brief).length < JSON.stringify(full).length);
+    assert.ok(brief.next.command.args.includes("reproduction=<MATCHING_COMMAND_ID>"));
+    assert.ok(brief.next.command.args.includes("regression=<MATCHING_COMMAND_ID>"));
+    const verdicts = { verification: "fixture check only", review: "fixture review", documentation: "N/A: unchanged", acceptance: "fixture acceptance" };
+    await assert.rejects(() => finishWorkItem(root, "BUG-GUIDE", verdicts), { code: "VERIFICATION_STAGE_REQUIRED" });
+    await finishWorkItem(root, "BUG-GUIDE", { ...verdicts, stageEvidence: ["static", "sandbox", "reproduction", "regression"].map(stage => `${stage}=fixture evidence`),
+      stageCommands: [`reproduction=${command.id}`, `regression=${command.id}`] });
   } finally { await cleanup(root); }
 });

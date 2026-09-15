@@ -2,7 +2,6 @@ import {
   appendFile,
   lstat,
   mkdir,
-  open,
   readFile,
   realpath,
   rename,
@@ -14,8 +13,7 @@ import path from "node:path";
 import { randomUUID } from "node:crypto";
 import { HarnessError, invariant } from "./errors.mjs";
 
-const LOCK_RETRY_MS = 50;
-const LOCK_TIMEOUT_MS = 5000;
+export { withFileLock } from "./locking.mjs";
 
 export async function exists(target) {
   try {
@@ -150,41 +148,6 @@ export async function atomicWriteJson(target, value) {
 export async function appendJsonLine(target, value) {
   await mkdir(path.dirname(target), { recursive: true });
   await appendFile(target, `${JSON.stringify(value)}\n`, "utf8");
-}
-
-function delay(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-export async function withFileLock(lockPath, action, timeoutMs = LOCK_TIMEOUT_MS) {
-  await mkdir(path.dirname(lockPath), { recursive: true });
-  const startedAt = Date.now();
-  let handle;
-  while (!handle) {
-    try {
-      handle = await open(lockPath, "wx");
-    } catch (error) {
-      if (error.code !== "EEXIST") throw error;
-      if (Date.now() - startedAt >= timeoutMs) {
-        throw new HarnessError("LOCK_TIMEOUT", "等待工作项锁超时；未修改任何状态。", {
-          lockPath,
-          timeoutMs,
-        });
-      }
-      await delay(LOCK_RETRY_MS);
-    }
-  }
-
-  try {
-    await handle.writeFile(
-      JSON.stringify({ pid: process.pid, createdAt: new Date().toISOString() }),
-      "utf8",
-    );
-    return await action();
-  } finally {
-    await handle.close();
-    await rm(lockPath, { force: true });
-  }
 }
 
 export async function copyFileAtomic(source, target) {

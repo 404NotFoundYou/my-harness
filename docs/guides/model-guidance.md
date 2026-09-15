@@ -12,6 +12,8 @@ node .ai-harness/bin/harness.mjs guide --id ITER-001 --json
 node .ai-harness/bin/harness.mjs guide --id ITER-001 --task T1 --json
 # 需要相关源码/测试时才加入上下文
 node .ai-harness/bin/harness.mjs guide --id ITER-001 --context --json
+# 只保留目标、当前任务、唯一下一步、证据位置及验收对应
+node .ai-harness/bin/harness.mjs guide --id ITER-001 --brief --json
 ```
 
 `begin` 的返回值包含 `guide` 命令入口。原有命令继续可用，熟悉任务的模型可以直接推进；不要求每次操作前都调用引导。
@@ -29,7 +31,8 @@ node .ai-harness/bin/harness.mjs guide --id ITER-001 --context --json
 | `next.requiresJudgment` | 本步是否需要实际判断；不能照抄占位符直接提交 |
 | `next.requiresHumanApproval` / `requiresIndependentReview` | 需要真实批准或独立复核，不能自填通过来解锁 |
 | `context`（可选） | 明确实现、声明测试、公开文档及有限本地导入/调用方；附路径、哈希和截断标记 |
-| `shortcuts` | 普通已验证迭代的 `finish` 参数建议；仍须填写真实审查、文档和验收结论 |
+| `coverage` | `A1` 等验收项与声明检查的对应，未启用映射时为 unspecified；不证明断言充分 |
+| `shortcuts` | 普通已验证迭代/BUG 的 `finish` 参数建议；完整输出保留该兼容别名 |
 
 命令只是建议，不会自动执行，也不会创建证据或改变状态。任务范围、授权和实际结果仍以工作项及原命令校验为准。多个所有者的未完成任务必须显式选择，依赖未完成的任务不会被建议强行解锁。
 
@@ -52,15 +55,17 @@ node .ai-harness/bin/harness.mjs guide --id ITER-001 --context --json
 
 ## 失败和上下文恢复
 
-`guide --context` 最多返回8个文件、16000字符，单文件读取上限64 KiB，总读取上限256 KiB，相邻目录最多检查40个候选。它只识别字面本地导入，不展开通配写入范围，不是完整调用图；缺失与截断内容须按路径补读。
+`guide --context` 最多返回8个文件、16000字符，单文件读取上限64 KiB，总读取上限256 KiB，相邻目录最多检查40个候选。明确指定的普通 UTF-8 文本不受编程语言扩展名限制；自动依赖发现仍只识别 JS/TS 的字面本地导入与邻近调用方，不展开通配范围。二进制、敏感/元数据路径、不存在文件和超限均说明遗漏原因。缺失与截断内容须按路径补读。
 
 `1.2.0` 中，普通已验证迭代的主要 `next` 就是 `finish`；`shortcuts` 作为兼容别名保留。参数只列尚缺的实际结论，模型无需自己选择逐项状态转换。收尾中断后重新读取guide即可继续；失效证据和失败审查仍要求返工。
+
+`1.3.0` 将主收尾建议扩展到符合精简条件的 BUGFIX，列出尚缺的阶段说明及复现/回归命令引用。占位符必须替换为真实结果。`--brief` 省略重复别名和日志正文，保留唯一 `next`、命令证据 ID、覆盖声明和可定位的完整证据路径；默认输出保持兼容。
 
 可将上次完整输出或 `context.manifest` 存入本工作项控制目录，再用 `guide --id <ID> --context-since <文件> --json` 获取变化。哈希相同且上次完整的文件标记 `unchanged` 并省略正文，截断文件仍返回内容；`notReturned` 只表示本次未返回，不表示文件删除。指纹由客户端回传，不证明模型已阅读；guide不会写缓存或把省略视为验证通过。
 
 多项检查已在计划中明确时，可用 `run --id ITER-001 --task T1 --all --json` 顺序执行。每项仍独立做权限判断并记录证据；遇失败或拒绝即停止，`notRun` 明确列出其余未运行项。不能与 `--check` 或透传命令混用，也不猜测测试目录。
 
-任务仍为 `IN_PROGRESS` 时，修正实现或自测后可以直接重新验证，不必为每次失败重新打开整个工作项。实际需要 `reopen` 时，CLI会返回重置后的任务状态和下一步命令，避免把 `READY` 误当作可直接运行检查。只有普通已验证迭代才有 `finish` 快捷建议，高风险和未验证任务继续保留原门禁。
+任务仍为 `IN_PROGRESS` 时，修正实现或自测后可以直接重新验证，不必为每次失败重新打开整个工作项。实际需要 `reopen` 时，CLI会返回重置后的任务状态和下一步命令，避免把 `READY` 误当作可直接运行检查。普通已验证迭代和符合条件的 BUG 可有 `finish` 建议，高风险和未验证任务继续保留原门禁。
 
 - 命令失败时，优先查看引导中的错误和原始证据位置；修复根因后重新验证，不用无关成功命令覆盖失败。
 - 同一命令按任务和参数只展示最新一次结果。默认最多展示 5 条命令，额外数量由 `omittedCommands` 明示。

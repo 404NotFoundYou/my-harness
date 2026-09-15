@@ -20,6 +20,14 @@
     "command": {"type": ["object", "null"]},
     "commandRef": {"type": "string", "minLength": 1},
     "independent": {"type": "boolean"},
+    "artifacts": {
+      "type": "array", "minItems": 1, "maxItems": 8,
+      "items": {"type": "object", "required": ["version", "path", "sha256", "bytes", "source"], "properties": {
+        "version": {"const": 1}, "path": {"type": "string", "minLength": 1},
+        "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "bytes": {"type": "integer", "minimum": 0, "maximum": 16777216}, "source": {"type": "string", "minLength": 1}
+      }, "additionalProperties": false}
+    },
     "stage": {"type": ["string", "null"], "enum": ["static", "sandbox", "contract", "eval", "reproduction", "regression", "browser", null]}
   },
   "additionalProperties": true

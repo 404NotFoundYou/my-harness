@@ -2,7 +2,7 @@
 
 可复制到新项目或已有项目的仓库内 AI 开发 Runtime。普通任务默认自主推进，流程随风险增加：模型负责方案判断，Runtime 负责状态、权限和验证证据。
 
-- 当前版本：`1.2.0`
+- 当前版本：`1.3.0`
 - 运行要求：Node.js 20+、Git
 - 依赖：仅 Node.js 标准库，不修改目标项目依赖清单
 - 用户使用指南：[docs/guides/getting-started.md](docs/guides/getting-started.md)
@@ -15,6 +15,10 @@
 需要辅助时可使用 `guide --context` 获取有界源码上下文，使用 `run --all --task T1` 执行计划内检查；普通已验证迭代可从 `guide.shortcuts` 获得带证据ID的收尾建议。它们不新增门禁，也不代替实际审查和验收。
 
 `1.2.0` 新增 `begin --spec` 结构化任务输入；普通已验证迭代的 `guide.next` 直接建议收尾，`finish` 可从合法中间状态继续。新工作项按已记录的数据库影响加载策略，`guide --context-since` 可省略相同且完整的已知内容；旧终态记录保持原路由语义。客户端驱动覆盖 Codex、Claude、Gemini，实际可用性与验证范围按运行记录报告。
+
+`1.3.0` 增加 `lock-status` / `lock-recover`、明确文本文件的有界上下文及遗漏说明、BUGFIX 收尾建议和 `guide --brief`。验证检查可声明验收编号，`record --artifact` 可保存带哈希的产物副本。评测支持重复试次、同模型双组对照、原始协议审计及分段统计；源仓库专用 CI 覆盖评测框架和 Windows Runtime。旧工作项和统计继续兼容，真实模型收益按实际实验报告。
+
+新格式锁使用所有者目录，升级时应确保旧 CLI 已结束。旧文件锁、未知或异地主机锁保持拒绝自动回收；损坏状态或日志会保留现场并明确失败。恢复范围见[使用指南](docs/guides/usage.md#锁诊断与恢复)。
 
 ## 安装到目标项目
 

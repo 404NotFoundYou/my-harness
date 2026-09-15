@@ -1,0 +1,103 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "HARNESS-OPT-20260915",
+  "mode": "single",
+  "rationale": "主AI串行维护相互关联的CLI、状态与证据接口；独立上下文只读复核最终差异",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "实现优化并保持证据和历史兼容",
+      "module": "runtime",
+      "status": "IN_PROGRESS",
+      "attempt": 1,
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        ".ai-harness/src/**",
+        ".ai-harness/tests/**",
+        ".ai-harness/schemas/**",
+        ".ai-harness/manifest.json",
+        "benchmarks/**",
+        ".github/workflows/source-tests.yml",
+        "README.md",
+        "docs/guides/**",
+        "docs/architecture/overview.md"
+      ],
+      "verification": [
+        "node .ai-harness/tests/run.mjs",
+        "node --test benchmarks/tests/runner.test.mjs",
+        "node benchmarks/audit.mjs .ai-harness/work-items/MODEL-BENCHMARK-001/pilot",
+        "node benchmarks/audit.mjs .ai-harness/work-items/MODEL-BENCHMARK-001/followup",
+        "git diff --check"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            ".ai-harness/tests/run.mjs"
+          ]
+        },
+        {
+          "id": "V2",
+          "command": "node",
+          "args": [
+            "--test",
+            "benchmarks/tests/runner.test.mjs"
+          ]
+        },
+        {
+          "id": "V3",
+          "command": "node",
+          "args": [
+            "benchmarks/audit.mjs",
+            ".ai-harness/work-items/MODEL-BENCHMARK-001/pilot"
+          ]
+        },
+        {
+          "id": "V4",
+          "command": "node",
+          "args": [
+            "benchmarks/audit.mjs",
+            ".ai-harness/work-items/MODEL-BENCHMARK-001/followup"
+          ]
+        },
+        {
+          "id": "V5",
+          "command": "git",
+          "args": [
+            "diff",
+            "--check"
+          ]
+        }
+      ],
+      "docsImpact": [
+        "README.md",
+        "docs/guides/usage.md",
+        "docs/guides/model-guidance.md",
+        "docs/architecture/overview.md",
+        "benchmarks/README.md"
+      ],
+      "reviewBatch": "R1",
+      "risk": "high",
+      "owner": "primary-ai",
+      "verificationStatus": "pending",
+      "reviewStatus": "pending",
+      "evidence": [],
+      "deferralApproval": null
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "Runtime优化与评测完整差异",
+      "risk": "high",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": true
+    }
+  ],
+  "createdAt": "2026-09-15T03:19:23.091Z",
+  "updatedAt": "2026-09-15T03:19:25.333Z"
+}

@@ -99,7 +99,7 @@ function allowKnownSubcommand(executable, args) {
     if (normalizedArgs.length === 1 && ["--version", "-v"].includes(normalizedArgs[0])) return true;
     const script = normalizedArgs[0]?.replaceAll("\\", "/");
     if (script === ".ai-harness/bin/harness.mjs" || script?.endsWith("/.ai-harness/bin/harness.mjs")) {
-      return ["doctor", "check", "guide", "show", "list", "policies", "version", "help"].includes(normalizedArgs[1]);
+      return ["doctor", "check", "guide", "show", "list", "policies", "version", "help", "lock-status"].includes(normalizedArgs[1]);
     }
     return normalizedArgs[0] === "--test" || normalizedArgs[0] === "--check" || script === ".ai-harness/tests/run.mjs" || script?.endsWith("/.ai-harness/tests/run.mjs");
   }

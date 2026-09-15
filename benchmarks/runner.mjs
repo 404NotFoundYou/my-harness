@@ -6,6 +6,7 @@ import { lstat, mkdir, mkdtemp, readFile, readdir, readlink, realpath, rm, write
 import { installRuntime, initializeProject } from "../.ai-harness/src/installer.mjs";
 import { checkProject } from "../.ai-harness/src/checker.mjs";
 import { redact } from "../.ai-harness/src/evidence.mjs";
+import { trialStatistics } from "./statistics.mjs";
 
 export const budget = Object.freeze({ timeoutMs: 180000, maxToolCalls: 80, reasoning: "medium" });
 export const hash = value => createHash("sha256").update(value).digest("hex");
@@ -122,7 +123,7 @@ export function participantPrompt(task, group, runBudget = budget) {
     (group.harness ? "本组已安装并初始化Harness，请按AGENTS使用普通ITERATION路径。help查看参数；guide --context可集中读取局部上下文，run --all可顺序执行本任务已声明检查；实施中修正代码或自测后直接复验即可。guide的shortcuts可提供带证据ID的finish建议；提交真实检查与自查结论，最终check --ci。\n" : "按当前项目规范直接实施与验证。\n");
 }
 
-export async function runCase({ task, group, sourceRoot, outputDirectory, driver, runBudget = budget }) {
+export async function runCase({ task, group, sourceRoot, outputDirectory, driver, runBudget = budget, trial = 1 }) {
   await mkdir(outputDirectory, { recursive: true });
   const participant = await createParticipant(task, { sourceRoot, harness: group.harness });
   try {
@@ -152,7 +153,7 @@ export async function runCase({ task, group, sourceRoot, outputDirectory, driver
     }
     const grade = await gradeCandidate(task, implementation);
     const success = Boolean(run.completed && scope.ok && grade.ok && (!group.harness || workflow?.ok));
-    const result = { schemaVersion: 1, mode: run.mode, client: run.client || "codex", taskId: task.id, split: task.split, group: group.id, model: group.model,
+    const result = { schemaVersion: 1, trial, mode: run.mode, client: run.client || "codex", taskId: task.id, split: task.split, group: group.id, model: group.model,
       taskDigest: hash(JSON.stringify(task.files)), judgeDigest: hash(JSON.stringify(task.cases)), candidateDigest: hash(implementation), budget: runBudget,
       run, scope, workflow, grade, success, falseCompletion: Boolean(run.final?.completed && !success),
       falseFunctionalCompletion: Boolean(run.final?.completed && !grade.ok) };
@@ -161,7 +162,7 @@ export async function runCase({ task, group, sourceRoot, outputDirectory, driver
   } finally { await cleanupSandbox(participant.root); }
 }
 
-export function summarize(results) {
+export function summarize(results, { extended = false } = {}) {
   const modes = new Set(results.map(result => result.mode));
   if (new Set(results.map(result => result.client || "codex")).size !== 1) throw new Error("Different clients must be reported separately");
   if (modes.size !== 1 || !["real", "simulated"].includes([...modes][0])) throw new Error("Real and simulated results must not be mixed");
@@ -171,6 +172,7 @@ export function summarize(results) {
       falseCompletion: rows.filter(row => row.falseCompletion).length, timeouts: rows.filter(row => row.run.timedOut).length,
       durationMs: rows.reduce((sum, row) => sum + (row.run.durationMs || 0), 0),
       inputTokens: rows.every(row => row.run.usage) ? rows.reduce((sum,row)=>sum+row.run.usage.input_tokens,0) : null,
-      outputTokens: rows.every(row => row.run.usage) ? rows.reduce((sum,row)=>sum+row.run.usage.output_tokens,0) : null };
+      outputTokens: rows.every(row => row.run.usage) ? rows.reduce((sum,row)=>sum+row.run.usage.output_tokens,0) : null,
+      ...(extended ? { statistics: trialStatistics(rows) } : {}) };
   });
 }

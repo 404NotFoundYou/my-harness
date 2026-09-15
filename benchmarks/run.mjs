@@ -1,39 +1,28 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { mkdir } from "node:fs/promises";
-import { tasks } from "./tasks.mjs";
-import { budget, groups, hash, runCase, saveJson, summarize } from "./runner.mjs";
 import { clientDriver } from "./client-drivers.mjs";
-import { sourceSnapshot } from "../.ai-harness/src/snapshot.mjs";
+import { experimentPlan, runExperiment } from "./experiment.mjs";
 
-const options = Object.fromEntries(Array.from({length:(process.argv.length-2)/2},(_,i)=>[process.argv[2+i*2],process.argv[3+i*2]]));
-for(const key of ["--cli","--weak","--strong","--out"]) if(!options[key])throw new Error(`Missing ${key}`);
-const client=options["--client"] || "codex";
-const driver=clientDriver(client,options["--cli"]);
-const runBudget={...budget,reasoning:client==="gemini"?null:budget.reasoning};
-const outputDirectory=path.resolve(options["--out"]);
-await mkdir(outputDirectory); // Never replace an earlier experiment.
-const sourceRoot=path.resolve(path.dirname(fileURLToPath(import.meta.url)),"..");
-const source=await sourceSnapshot(sourceRoot);
-const matrix=groups(options["--weak"],options["--strong"]);
-await saveJson(path.join(outputDirectory,"protocol.json"),{schemaVersion:1,mode:"real",client,createdAt:new Date().toISOString(),budget:runBudget,groups:matrix,source:source.digest,
-  tasks:tasks.map(task=>({id:task.id,split:task.split,taskDigest:hash(JSON.stringify(task.files)),judgeDigest:hash(JSON.stringify(task.cases))})),
-  limitations:["模型名按现有CLI与服务配置记录，不能验证自定义服务实际后端权重。","单次三题先导不支持统计显著性或通用能力等价结论。","固定同一墙钟与工具预算；token为CLI用量，未换算货币费用。"]});
-const results=[];
-for(let index=0;index<tasks.length;index++){
-  for(let offset=0;offset<matrix.length;offset++){
-    const task=tasks[index],group=matrix[(index+offset)%matrix.length];
-    const directory=path.join(outputDirectory,`${task.id}-${group.id}`);
-    console.log(JSON.stringify({event:"started",task:task.id,group:group.id,model:group.model}));
-    const result=await runCase({task,group,sourceRoot,outputDirectory:directory,driver,runBudget});
-    results.push(result);
-    console.log(JSON.stringify({event:"finished",task:task.id,group:group.id,functional:result.grade.ok,success:result.success,timeout:result.run.timedOut,durationMs:result.run.durationMs}));
-    await saveJson(path.join(outputDirectory,"summary.json"),{mode:"real",complete:false,results:results.map(row=>({taskId:row.taskId,group:row.group,success:row.success,functionalPassed:row.grade.ok})),groups:summarize(results)});
+const options = {};
+const keys = ["--cli", "--weak", "--strong", "--out", "--client", "--comparison", "--repetitions", "--timeout-ms", "--max-tools", "--dry-run"];
+for (let index = 2; index < process.argv.length; index++) {
+  const key = process.argv[index];
+  if (!keys.includes(key) || Object.hasOwn(options, key)) throw new Error(`Unknown or repeated option: ${key}`);
+  if (key === "--dry-run") options[key] = true;
+  else {
+    const value = process.argv[++index];
+    if (!value || value.startsWith("--")) throw new Error(`Missing value: ${key}`);
+    options[key] = value;
   }
 }
-const sourceAfter=(await sourceSnapshot(sourceRoot)).digest;
-const complete=sourceAfter===source.digest;
-await saveJson(path.join(outputDirectory,"summary.json"),{mode:"real",complete,sourceBefore:source.digest,sourceAfter,
-  results:results.map(row=>({taskId:row.taskId,group:row.group,success:row.success,functionalPassed:row.grade.ok})),groups:summarize(results)});
-if(!complete)throw new Error("Harness source changed during the experiment; results must not be presented as a fixed-version comparison");
-console.log(JSON.stringify({event:"complete",groups:summarize(results)}));
+for (const key of ["--cli", "--weak", "--out"]) if (!options[key]) throw new Error(`Missing ${key}`);
+const plan = experimentPlan({ weak: options["--weak"], strong: options["--strong"], client: options["--client"], comparison: options["--comparison"],
+  repetitions: options["--repetitions"] === undefined ? undefined : Number(options["--repetitions"]),
+  timeoutMs: options["--timeout-ms"] === undefined ? undefined : Number(options["--timeout-ms"]),
+  maxToolCalls: options["--max-tools"] === undefined ? undefined : Number(options["--max-tools"]) });
+if (options["--dry-run"]) console.log(JSON.stringify({ ...plan, modelCalls: plan.schedule.length, dryRun: true }, null, 2));
+else {
+  const result = await runExperiment({ plan, sourceRoot: path.resolve(path.dirname(fileURLToPath(import.meta.url)), ".."), outputDirectory: path.resolve(options["--out"]),
+    driver: clientDriver(plan.client, options["--cli"]), onProgress: event => console.log(JSON.stringify(event)) });
+  console.log(JSON.stringify({ event: "complete", groups: result.groups }));
+}

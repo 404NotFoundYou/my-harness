@@ -25,3 +25,19 @@ test("context omits unchanged complete content but repeats changed or truncated 
     await assert.rejects(() => taskContext(root, item, null, { since: "context.json" }), { code: "INVALID_CONTEXT_MANIFEST" });
   } finally { await cleanup(root); }
 });
+
+test("explicit multilingual files are readable and every excluded or excess path is explained", async () => {
+  const root = await createInstalledProject();
+  try {
+    const files = ["Example.java", "value.py", "value.dart", "view.vue", "spec.json", "schema.sql", "config.yaml", "plain.txt", "excess.md"];
+    for (const file of files) await writeFile(path.join(root, file), "ordinary fixture\n");
+    await writeFile(path.join(root, "binary.bin"), Buffer.from([0, 1, 2]));
+    await writeFile(path.join(root, ".env"), "PRIVATE_FIXTURE=hidden");
+    const result = await taskContext(root, { input: { references: ["binary.bin", ".env", "missing.java", "src/**", ...files] } }, null);
+    assert.deepEqual(result.files.map(file => file.path), files.slice(0, 8));
+    assert.deepEqual(new Set(result.omitted.map(file => file.path)), new Set(["binary.bin", ".env", "missing.java", "src/**", "excess.md"]));
+    assert.ok(result.omitted.every(file => file.reason));
+    assert.equal(JSON.stringify(result).includes("PRIVATE_FIXTURE"), false);
+    assert.deepEqual(result.notReturned, []);
+  } finally { await cleanup(root); }
+});

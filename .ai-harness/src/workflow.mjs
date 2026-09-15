@@ -10,6 +10,7 @@ import {
   withFileLock,
 } from "./filesystem.mjs";
 import { getGitBaseline } from "./git.mjs";
+import { inspectLock, recoverLock } from "./locking.mjs";
 import { HarnessError, invariant } from "./errors.mjs";
 import {
   aggregateVerificationStatus,
@@ -26,7 +27,8 @@ import {
   WORK_TYPES,
 } from "./constants.mjs";
 import { createPlan, createReviewBatch, createTask, createWorkItem } from "./model.mjs";
-import { assertCommandEvidence, assertVerification, hasFailedReview, invalidateResults, planDigest, readEvidence } from "./verification.mjs";
+import { assertAcceptanceCoverage, assertCommandEvidence, assertVerification, hasFailedReview, invalidateResults, planDigest, readEvidence } from "./verification.mjs";
+import { captureArtifacts } from "./artifacts.mjs";
 import { saveSnapshot, sourceSnapshot } from "./snapshot.mjs";
 import { prepareDelivery } from "./scope.mjs";
 import { itemPolicyFiles, policyFilesFor } from "./policy-routing.mjs";
@@ -287,6 +289,7 @@ export async function approvePlan(root, id, approvalRef) {
   invariant(approvalRef?.trim(), "APPROVAL_REQUIRED", "批准计划必须提供授权引用。" );
   return mutatePlan(root, id, async (plan, item, paths) => {
     assertValidPlan(plan, id, { requireContent: true });
+    assertAcceptanceCoverage(item, plan);
     item.plan.approved = true;
     item.plan.approvalRef = approvalRef;
     await appendEvent(paths, id, "plan-approved", { approvalRef });
@@ -404,7 +407,8 @@ async function findEvidenceById(paths, evidenceId) {
   return null;
 }
 
-export async function recordResult(root, id, { kind, status, summary, taskId = null, independent = false, stage = null, commandRef = null }) {
+export async function recordResult(root, id, { kind, status, summary, taskId = null, independent = false, stage = null, commandRef = null, artifactPaths = [], artifactSource = null }) {
+  invariant(Array.isArray(artifactPaths), "ARTIFACT_INVALID", "artifactPaths 必须是路径数组。" );
   invariant(EVIDENCE_KINDS.filter((value) => value !== "command").includes(kind), "INVALID_EVIDENCE_KIND", `不支持的证据类型：${kind}`);
   invariant(RESULT_STATUSES.includes(status), "INVALID_RESULT_STATUS", `无效结果状态：${status}`);
   invariant(summary?.trim(), "EVIDENCE_REQUIRED", "证据摘要不能为空。" );
@@ -477,6 +481,7 @@ export async function recordResult(root, id, { kind, status, summary, taskId = n
     }
 
     const event = createEvidenceEvent({ id, taskId, kind, status, summary, independent, stage });
+    if (artifactPaths.length || artifactSource !== null) event.artifacts = await captureArtifacts(root, id, artifactPaths, artifactSource);
     event.revision = item.revision || 1;
     event.taskAttempt = task ? task.attempt || 1 : null;
     if (commandRef) event.commandRef = commandRef;
@@ -555,6 +560,38 @@ export async function validateWorkItem(root, id) {
   const item = await loadWorkItem(root, id);
   const plan = await loadPlan(root, id, { optional: true });
   return collectProgressErrors(root, item, plan);
+}
+
+export async function workItemLockStatus(root, id) {
+  const paths = await workItemPaths(root, id);
+  invariant(await exists(paths.state), "WORK_ITEM_NOT_FOUND", "工作项不存在。" );
+  return { id, ...await inspectLock(paths.lock) };
+}
+
+export async function recoverWorkItemLock(root, id, { token, reason }) {
+  invariant(reason?.trim(), "RECOVERY_REASON_REQUIRED", "恢复必须说明实际中断原因。" );
+  const paths = await workItemPaths(root, id);
+  invariant(await exists(paths.state), "WORK_ITEM_NOT_FOUND", "工作项不存在。" );
+  const recovered = await recoverLock(paths.lock, token, async owner => {
+    const errors = [];
+    try {
+      for (const file of [paths.events, paths.evidence]) {
+        const raw = await readFile(file, "utf8").catch(error => { if (error.code === "ENOENT") return ""; throw error; });
+        if (raw && !raw.endsWith("\n")) errors.push(`${path.basename(file)} 缺少完整行结束，保留原文件。`);
+        for (const line of raw.split(/\r?\n/).filter(line => line.trim())) {
+          const entry = JSON.parse(line);
+          if (!entry || entry.workItemId !== id || typeof entry.id !== "string") errors.push(`${path.basename(file)} 存在归属或结构异常。`);
+        }
+      }
+      const item = await loadWorkItem(root, id), plan = await loadPlan(root, id, { optional: true });
+      errors.push(...await collectProgressErrors(root, item, plan, { allowStale: true }));
+      const { collectEvidenceErrors } = await import("./checker.mjs");
+      errors.push(...await collectEvidenceErrors(root, item, plan));
+    } catch (error) { errors.push(`${error.code || "INVALID_STATE"}: ${error.message}`); }
+    invariant(errors.length === 0, "LOCK_STATE_INCONSISTENT", "控制面不完整，已保留原记录和恢复认领锁；没有追加事件或允许等待写入继续。", { errors });
+    await appendEvent(paths, id, "lock-recovered", { reason, owner });
+  });
+  return { id, recovered: recovered.recovered, owner: recovered.owner, ok: true, errors: [], note: "已恢复锁；未修改状态、计划或验证结论，仍需按 guide 核实当前源码和验证。" };
 }
 
 export async function reopenWorkItem(root, id, { reason, replan = false, approvalRef = null }) {

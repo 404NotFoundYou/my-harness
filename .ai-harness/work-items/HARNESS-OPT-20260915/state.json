@@ -1,0 +1,467 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 3,
+  "id": "HARNESS-OPT-20260915",
+  "type": "ITERATION",
+  "title": "优化评测可信性、恢复和任务交互",
+  "status": "DONE",
+  "flags": [
+    "api",
+    "database"
+  ],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/iteration.md",
+    ".ai-harness/policies/database.md",
+    ".ai-harness/policies/api.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户明确授权按调研建议优化现有工程"
+  },
+  "input": {
+    "references": [
+      ".ai-harness/work-items/ANALYSIS-HARNESS-OPT-20260915/assessment.md",
+      "用户授权：根据调研建议进行优化"
+    ],
+    "acceptance": [
+      "三个评测驱动拒绝异常完成且源仓库CI覆盖评测和Windows/Linux",
+      "失效锁可诊断并通过CLI安全恢复，存活和未知锁不被抢占，原有记录保留",
+      "明确文本文件有界读取并说明遗漏，BUGFIX收尾和精简引导保留所有门禁",
+      "支持固定任务重复对照与耗时统计，验收与实际证据可追溯，兼容历史记录"
+    ],
+    "nonGoals": [
+      "不执行收费模型对照、不提交推送、不发布、不引入外部数据库或依赖"
+    ],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": null,
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "main@a5c1bee；产品快照d9757a23。保留上一轮未提交ANALYSIS目录。上轮同一产品快照已实测131/131 Runtime、8/8框架，复现协议误报、失效锁及上下文遗漏。已读核心调用链和策略，本次不访问外部数据库。"
+    ],
+    "completedAt": "2026-09-15T03:18:04.447Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "a5c1bee279f2e204724cfb34ad00287bb585b8ef",
+      "dirty": true,
+      "changedFiles": [
+        ".ai-harness/work-items/ANALYSIS-HARNESS-OPT-20260915/assessment.md",
+        ".ai-harness/work-items/ANALYSIS-HARNESS-OPT-20260915/events.jsonl",
+        ".ai-harness/work-items/ANALYSIS-HARNESS-OPT-20260915/evidence.jsonl",
+        ".ai-harness/work-items/ANALYSIS-HARNESS-OPT-20260915/probes.mjs",
+        ".ai-harness/work-items/ANALYSIS-HARNESS-OPT-20260915/snapshots/d9757a23f48542e1a3990d503a594328637428988ca8b50dbe0020bf0e2ff45c.json",
+        ".ai-harness/work-items/ANALYSIS-HARNESS-OPT-20260915/state.json",
+        ".ai-harness/work-items/HARNESS-OPT-20260915/events.jsonl",
+        ".ai-harness/work-items/HARNESS-OPT-20260915/state.json"
+      ],
+      "fingerprints": {
+        ".ai-harness/work-items/ANALYSIS-HARNESS-OPT-20260915/assessment.md": "f3c4a5c2d6b2cad16648bed6d454ae45549eae4722c28e8b96307c168adbc5d5",
+        ".ai-harness/work-items/ANALYSIS-HARNESS-OPT-20260915/events.jsonl": "cc45a14fcb0ae3c8410b5552498087f0910268539e5f6fc3ede65e1b69efed7c",
+        ".ai-harness/work-items/ANALYSIS-HARNESS-OPT-20260915/evidence.jsonl": "6fff0af40cb2d29b9b954b677b1eefa57692fcf6c09360c18c4f2f988bb52e1c",
+        ".ai-harness/work-items/ANALYSIS-HARNESS-OPT-20260915/probes.mjs": "05dc75474e53be4e3bfb72e5b4d212af826291a53b2efd6948f810e4af4840dd",
+        ".ai-harness/work-items/ANALYSIS-HARNESS-OPT-20260915/snapshots/d9757a23f48542e1a3990d503a594328637428988ca8b50dbe0020bf0e2ff45c.json": "6230943a7f853bd809faf5d12273cb57e1ae5a8fcf0052f38f14c1464afe22cf",
+        ".ai-harness/work-items/ANALYSIS-HARNESS-OPT-20260915/state.json": "b45cd195339639757ca5dc9b8f67be2c6636b04292e64ba57c03bcb40bd0bf4f",
+        ".ai-harness/work-items/HARNESS-OPT-20260915/events.jsonl": "a8bd00e81e1529c553c0388b83d6ccb3f3d1a5628d8bc05c7f74c0acd962b71a",
+        ".ai-harness/work-items/HARNESS-OPT-20260915/state.json": "5fd2ae537b6dd8a72872e592ceb7596479edb270cf60e0a1178262acc349b08b"
+      },
+      "source": {
+        "digest": "d9757a23f48542e1a3990d503a594328637428988ca8b50dbe0020bf0e2ff45c",
+        "document": ".ai-harness/work-items/HARNESS-OPT-20260915/snapshots/d9757a23f48542e1a3990d503a594328637428988ca8b50dbe0020bf0e2ff45c.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": ".ai-harness/work-items/HARNESS-OPT-20260915/design.md",
+    "evidence": [
+      "复用既有门禁；明确评测异常、所有者锁、上下文和证据兼容设计及验收"
+    ],
+    "completedAt": "2026-09-15T03:19:21.627Z"
+  },
+  "database": {
+    "impact": "required",
+    "status": "complete",
+    "document": ".ai-harness/work-items/HARNESS-OPT-20260915/design.md",
+    "evidence": [
+      "新字段向后兼容；历史终态不迁移；回收只作用确定失活锁，产物按哈希校验；未运行环境单列"
+    ],
+    "completedAt": "2026-09-15T03:19:22.729Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/HARNESS-OPT-20260915/plan.json",
+    "approved": true,
+    "approvalRef": "用户授权范围内修正验证计划，保留完整Runtime/框架/历史审计回归及独立差异检查"
+  },
+  "verification": {
+    "status": "pass",
+    "evidence": [
+      "41f3f036-0dae-4cf0-b128-645d4ec85856"
+    ],
+    "stages": [],
+    "source": {
+      "digest": "a02edcf2d41105d11f7328a4b841cee589253833598037f6757eba16b3673ca0",
+      "document": ".ai-harness/work-items/HARNESS-OPT-20260915/snapshots/a02edcf2d41105d11f7328a4b841cee589253833598037f6757eba16b3673ca0.json"
+    }
+  },
+  "review": {
+    "status": "pass",
+    "evidence": [
+      "0e6d6f71-8832-4531-96d4-39654199f829"
+    ],
+    "independent": true,
+    "source": {
+      "digest": "a02edcf2d41105d11f7328a4b841cee589253833598037f6757eba16b3673ca0",
+      "document": ".ai-harness/work-items/HARNESS-OPT-20260915/snapshots/a02edcf2d41105d11f7328a4b841cee589253833598037f6757eba16b3673ca0.json"
+    }
+  },
+  "acceptance": {
+    "status": "pass",
+    "evidence": [
+      "2e70d47e-eda3-46de-a79b-39013d9693eb"
+    ],
+    "source": {
+      "digest": "a02edcf2d41105d11f7328a4b841cee589253833598037f6757eba16b3673ca0",
+      "document": ".ai-harness/work-items/HARNESS-OPT-20260915/snapshots/a02edcf2d41105d11f7328a4b841cee589253833598037f6757eba16b3673ca0.json"
+    }
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "pass",
+    "evidence": [
+      "d1acab5a-541d-4a60-b853-abb8c2ef2c46"
+    ]
+  },
+  "blocked": null,
+  "delivery": {
+    "source": {
+      "digest": "a02edcf2d41105d11f7328a4b841cee589253833598037f6757eba16b3673ca0",
+      "document": ".ai-harness/work-items/HARNESS-OPT-20260915/snapshots/a02edcf2d41105d11f7328a4b841cee589253833598037f6757eba16b3673ca0.json"
+    },
+    "baseline": {
+      "digest": "d9757a23f48542e1a3990d503a594328637428988ca8b50dbe0020bf0e2ff45c",
+      "document": ".ai-harness/work-items/HARNESS-OPT-20260915/snapshots/d9757a23f48542e1a3990d503a594328637428988ca8b50dbe0020bf0e2ff45c.json"
+    },
+    "baselineAt": "2026-09-15T03:18:04.447Z",
+    "ownedChanges": [
+      {
+        "path": ".ai-harness/manifest.json",
+        "before": "100644:5dd196d64eea787e3c2f9df4d72d9ebf504c94ae",
+        "after": "100644:ea6e3d8412fe193c2eb40e69899bee768052012b"
+      },
+      {
+        "path": ".ai-harness/schemas/begin-spec.schema.json",
+        "before": "100644:78436c09f165bbbfc2ed88ed8c5fef9f6d6a05aa",
+        "after": "100644:1b9c5c681f4d3a09c6d2458582533e3bb61884a1"
+      },
+      {
+        "path": ".ai-harness/schemas/evidence.schema.json",
+        "before": "100644:45e4a1bb9a688a74ada23fc726507b90b820fe33",
+        "after": "100644:914ccb1cb5299be4994f1ecb14d64a37ae8596d5"
+      },
+      {
+        "path": ".ai-harness/schemas/plan.schema.json",
+        "before": "100644:27c820ad1796629643b0bd5564ed66ae1f2829e6",
+        "after": "100644:b9c96687fbd11416ea01040373e2e25ed27b4033"
+      },
+      {
+        "path": ".ai-harness/src/artifacts.mjs",
+        "before": null,
+        "after": "100644:832d5563bddfccea487464f3a8565c0ab0a081d7"
+      },
+      {
+        "path": ".ai-harness/src/checker.mjs",
+        "before": "100644:2ba0180d8e4577ca816359e19cd99d2b058c245f",
+        "after": "100644:2896d34964d76169c6375a38e6817db7907dbf81"
+      },
+      {
+        "path": ".ai-harness/src/cli.mjs",
+        "before": "100644:20084a272e478b786f4e09cba9fcaf4259efe4b6",
+        "after": "100644:30e64abc21b3b3452b5432623f3026b415477a5a"
+      },
+      {
+        "path": ".ai-harness/src/commands.mjs",
+        "before": "100644:867e6eb6395a2b3b8bb3404aea5064ca4f20534c",
+        "after": "100644:7a653fa9fd2e2832883dbdf43424479b7157c664"
+      },
+      {
+        "path": ".ai-harness/src/compact.mjs",
+        "before": "100644:e6422cfe37bac4c873648aa0e4eeda09a90e4090",
+        "after": "100644:fc22c6616a7c7bcdb201e4399f36834ce5a63693"
+      },
+      {
+        "path": ".ai-harness/src/context.mjs",
+        "before": "100644:ed20759c6d7a37ae603534f798c951409d1be0ba",
+        "after": "100644:f3a5e307ec48fbbae657001062b9837574977490"
+      },
+      {
+        "path": ".ai-harness/src/evidence.mjs",
+        "before": "100644:6e8d9910409066befc73c7a4b8fa8ac674c4ace9",
+        "after": "100644:bbb7915acd9582987bfa3edaf86d40a0f92b9250"
+      },
+      {
+        "path": ".ai-harness/src/filesystem.mjs",
+        "before": "100644:b52d6b634f27c4b6e52514369f4c0a9b7862484f",
+        "after": "100644:76f74fa0cc99a910bd0cb4629c5cdec89df44533"
+      },
+      {
+        "path": ".ai-harness/src/guide.mjs",
+        "before": "100644:a6f1ac8a3c6456b3998458baf41a1dac589a4ced",
+        "after": "100644:9f88bba40507b5ee0cbd54ac3b4bccd514ebb491"
+      },
+      {
+        "path": ".ai-harness/src/input.mjs",
+        "before": "100644:00522cc472089af3a28aa97f745e0d92fdc845ec",
+        "after": "100644:1f59c75fcc68c83892c4f7bfb6713732b12194b3"
+      },
+      {
+        "path": ".ai-harness/src/locking.mjs",
+        "before": null,
+        "after": "100644:3c056579425b186740c7896a06c2a3c1daa9f9a8"
+      },
+      {
+        "path": ".ai-harness/src/policy.mjs",
+        "before": "100644:77a9e9b1c377742d020134bf13a8288995baa4f1",
+        "after": "100644:600c91090215a9ece4835ea3c983af4a2e077160"
+      },
+      {
+        "path": ".ai-harness/src/verification.mjs",
+        "before": "100644:4f31663275b7d35a5b4da92ca9bc81df175227af",
+        "after": "100644:78f3a4226294b0dc71004a27d345f92a0d645fb4"
+      },
+      {
+        "path": ".ai-harness/src/workflow.mjs",
+        "before": "100644:ea2bc21315f8d7a68b07d29a3c3b5d4238068b8a",
+        "after": "100644:63b0aec1c1ef08bb9d68024922f06e17e0270340"
+      },
+      {
+        "path": ".ai-harness/tests/acceptance-artifacts.test.mjs",
+        "before": null,
+        "after": "100644:4a595755ab1263fcafc1f0e9046df2aadb79824d"
+      },
+      {
+        "path": ".ai-harness/tests/context-delta.test.mjs",
+        "before": "100644:99c5016ce0f2dd2419e85be5f6f5512e2160f9d8",
+        "after": "100644:0a49fb045999a61c791bf0539f5698470419b497"
+      },
+      {
+        "path": ".ai-harness/tests/guidance-tools.test.mjs",
+        "before": "100644:65b85f2fba1ac7201b9dbb4f212fcd7722e7cb8a",
+        "after": "100644:4b58edaab045cdb71f4f871b4c887e577b5641d7"
+      },
+      {
+        "path": ".ai-harness/tests/guide.test.mjs",
+        "before": "100644:f516033c2ab5e2eec98275d2e0a6638c45fd11fb",
+        "after": "100644:846a74e5db5466ad55e90cb5c24bf758de54076e"
+      },
+      {
+        "path": ".ai-harness/tests/locking.test.mjs",
+        "before": null,
+        "after": "100644:5b394dc4974a4bec6d7b4be6163cf006c906fad7"
+      },
+      {
+        "path": ".github/workflows/source-tests.yml",
+        "before": null,
+        "after": "100644:67279b9b99141c2207456544cd7a8f4c68de86ce"
+      },
+      {
+        "path": "README.md",
+        "before": "100644:aa5d861b2a25eb166a799e898439cb9dd05553f2",
+        "after": "100644:259766b97fe8289864346c3978b60c127fd630d9"
+      },
+      {
+        "path": "benchmarks/README.md",
+        "before": "100644:723a88943e7971ea3df7f7a9e71102db7c75344e",
+        "after": "100644:2e814375df921c750f534cc664d5358410541ca8"
+      },
+      {
+        "path": "benchmarks/audit.mjs",
+        "before": "100644:012afb8f6c476cfdbd52d03208b8630f1c1f6df2",
+        "after": "100644:37aa03819d76a58a938c346f353845613f791f3d"
+      },
+      {
+        "path": "benchmarks/client-drivers.mjs",
+        "before": "100644:1e7f5178cde3b2c539bee137b1962be66cc087b4",
+        "after": "100644:5542776a736686ee5d444218ae9abeb82cd08f5c"
+      },
+      {
+        "path": "benchmarks/codex-driver.mjs",
+        "before": "100644:874c30ce426209507d8b9dba8cdff90c5372850b",
+        "after": "100644:5a54afa7a5c6b9634c83b0b67693eba0eccbc702"
+      },
+      {
+        "path": "benchmarks/experiment.mjs",
+        "before": null,
+        "after": "100644:022c2e6f262fe34bc6af61650e12e17300275f70"
+      },
+      {
+        "path": "benchmarks/protocol.mjs",
+        "before": null,
+        "after": "100644:80eb846325b505013d4f9627224ad246205af382"
+      },
+      {
+        "path": "benchmarks/run.mjs",
+        "before": "100644:d4fed88bab593dafb1f9e1fcdba5a7c8f4377ed2",
+        "after": "100644:e915489045a27dfa121329253a932844569a21ee"
+      },
+      {
+        "path": "benchmarks/runner.mjs",
+        "before": "100644:238c3fb7ed5e442ac129178f44df5bb9bae54a7e",
+        "after": "100644:403de3d16ec226ad47182d95819531495b006ea0"
+      },
+      {
+        "path": "benchmarks/statistics.mjs",
+        "before": null,
+        "after": "100644:5149bad18028feeb8af7012ae870e7f680b688c3"
+      },
+      {
+        "path": "benchmarks/tests/runner.test.mjs",
+        "before": "100644:5e203413102f9024feb6d27953741ef72b8be157",
+        "after": "100644:c0073ff0f6ce520a3a111b4e14d4cf226f8180d6"
+      },
+      {
+        "path": "benchmarks/timing.mjs",
+        "before": "100644:e75586135dc748374370734b6c532c6cc26da2e2",
+        "after": "100644:e844ff37be3c814cf434d206e13d123cb8d2b809"
+      },
+      {
+        "path": "docs/architecture/overview.md",
+        "before": "100644:5384124389b920de29d80dbf34f1813ba45c1def",
+        "after": "100644:c9bc9ada589a100c14fe25e3d8ec5a2c2660621a"
+      },
+      {
+        "path": "docs/guides/model-guidance.md",
+        "before": "100644:d25c67b23799283e114dc1d9115b357c0140522d",
+        "after": "100644:dd5ec855573bead05866094d184f661bd5310016"
+      },
+      {
+        "path": "docs/guides/usage.md",
+        "before": "100644:11a5441f8ea9787f21c0378d5874f5cc09fa64c1",
+        "after": "100644:5b949285f7aca3bcd4f7e225f4b87078ab63da6a"
+      }
+    ],
+    "planDigest": "9bc61279ccbc04900cd5789f3f4e66d9b9f53b1857f0614376712c6226515880",
+    "at": "2026-09-15T04:14:08.536Z",
+    "head": "a5c1bee279f2e204724cfb34ad00287bb585b8ef"
+  },
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-09-15T03:18:03.445Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-09-15T03:18:03.844Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-09-15T03:18:05.001Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "DATABASE_DESIGN",
+      "at": "2026-09-15T03:19:22.352Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "DATABASE_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-09-15T03:19:24.575Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-09-15T03:19:24.963Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-09-15T03:42:43.989Z",
+      "reason": "旧评测协议审计作为benchmark框架的兼容回归；移除命令策略不允许的独立node脚本检查，使用有断言的正式测试，不扩大执行权限",
+      "action": "replan",
+      "revision": 2
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-09-15T03:42:45.347Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-09-15T03:42:45.727Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-09-15T04:07:31.373Z",
+      "reason": "验证基线校准：旧BUGFIX引导断言更新为保留所有未验证阶段的统一收尾；Runtime不执行Git，实际差异检查由独立复核和宿主只读命令完成，计划只保留可执行测试入口",
+      "action": "replan",
+      "revision": 3
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-09-15T04:07:32.744Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-09-15T04:07:33.157Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "VERIFYING",
+      "at": "2026-09-15T04:14:01.909Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "VERIFYING",
+      "to": "CODE_REVIEW",
+      "at": "2026-09-15T04:14:03.912Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "CODE_REVIEW",
+      "to": "READY_FOR_ACCEPTANCE",
+      "at": "2026-09-15T04:14:05.474Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "READY_FOR_ACCEPTANCE",
+      "to": "DONE",
+      "at": "2026-09-15T04:14:08.753Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-09-15T03:18:03.445Z",
+  "updatedAt": "2026-09-15T04:14:08.753Z"
+}

@@ -9,7 +9,8 @@ export function commandName(command) {
 export function parseCommand(value) {
   if (typeof value === "object" && value !== null) {
     invariant(typeof value.command === "string" && value.command.trim() && Array.isArray(value.args) && value.args.every((arg) => typeof arg === "string"), "INVALID_VERIFICATION_COMMAND", "验证声明需要 command 和字符串 args 数组。" );
-    return { command: value.command, args: [...value.args] };
+    if (value.acceptance !== undefined) invariant(Array.isArray(value.acceptance) && value.acceptance.length > 0 && value.acceptance.every(id => typeof id === "string" && /^A[1-9]\d*$/.test(id)) && new Set(value.acceptance).size === value.acceptance.length, "INVALID_ACCEPTANCE_MAPPING", "acceptance 需要不重复的验收编号数组，例如 [A1]。" );
+    return { command: value.command, args: [...value.args], ...(value.acceptance === undefined ? {} : { acceptance: [...value.acceptance] }) };
   }
   invariant(typeof value === "string" && value.trim(), "INVALID_VERIFICATION_COMMAND", "验证必须声明实际命令。" );
   if (value.trimStart().startsWith("{")) {

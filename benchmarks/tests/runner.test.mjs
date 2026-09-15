@@ -1,13 +1,16 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import path from "node:path";
+import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
-import { mkdtemp, readFile, readdir, rm, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { tasks } from "../tasks.mjs";
 import { budget, cleanupSandbox, createParticipant, gradeCandidate, groups, inspectChanges, parseGrade, participantPrompt, runCase, summarize } from "../runner.mjs";
-import { createToolTiming } from "../timing.mjs";
-import { clientArguments, clientDriver, createClientEventReader } from "../client-drivers.mjs";
+import { createToolTiming, toolCategory } from "../timing.mjs";
+import { clientArguments, clientDriver, createClientEventReader, readProtocolTranscript } from "../client-drivers.mjs";
+import { experimentPlan, runExperiment } from "../experiment.mjs";
+import { auditExperiment } from "../audit.mjs";
 const sourceRoot=path.resolve(path.dirname(fileURLToPath(import.meta.url)),"../..");
 
 test("timing merges overlapping tools and labels remaining time without calling it inference",()=>{
@@ -129,5 +132,162 @@ test("a simulated driver exercises grading and false completion without becoming
     assert.equal(path.dirname(resolved),path.resolve(tmpdir()));
     assert.ok(path.basename(resolved).startsWith("ai-harness-bench-test-"));
     await rm(resolved,{recursive:true,force:true});
+  }
+});
+
+test("every client rejects broken or failed protocols instead of trusting a later completion", async () => {
+  const directory = await mkdtemp(path.join(tmpdir(), "ai-harness-protocol-test-"));
+  try {
+    for (const client of ["codex", "claude", "gemini"]) {
+      for (const scenario of ["normal", "warning", "redacted-final", "quoted-final", "broken", "null", "fatal", "failed-result", "invalid-final", "missing-terminal", "exit-failure"]) {
+        const output = path.join(directory, `${client}-${scenario}`);
+        await mkdir(output);
+        const final = scenario === "invalid-final" ? { completed: true } : { completed: true,
+          summary: scenario === "redacted-final" ? "fixture API_TOKEN=synthetic_value" : scenario === "quoted-final" ? "fixture API_TOKEN='synthetic value'" : "synthetic only", tests: [] };
+        const terminal = client === "codex" ? { type: "turn.completed", usage: { input_tokens: 0, output_tokens: 0 } }
+          : client === "claude" ? { type: "result", subtype: "success", structured_output: final } : { type: "result", status: "success", response: JSON.stringify(final) };
+        const failed = client === "codex" ? { type: "turn.failed" } : client === "claude" ? { type: "result", subtype: "error" } : { type: "result", status: "error" };
+        const prefix = scenario === "broken" ? ["broken-json"] : scenario === "null" ? ["null"]
+          : scenario === "fatal" ? [JSON.stringify({ type: "error", message: "synthetic failure" })]
+          : scenario === "warning" ? [JSON.stringify({ type: "error", severity: "warning", message: "synthetic warning" })]
+          : scenario === "failed-result" ? [JSON.stringify(failed)] : [];
+        const lines = [...prefix, ...(scenario === "missing-terminal" ? [] : [JSON.stringify(terminal)])];
+        const shim = path.join(output, "synthetic.mjs");
+        await writeFile(shim, `import { writeFile } from "node:fs/promises"; process.stdin.resume();\n${client === "codex" ? `await writeFile(process.argv[process.argv.indexOf("-o")+1], ${JSON.stringify(JSON.stringify(final))});\n` : ""}for (const line of ${JSON.stringify(lines)}) console.log(line); process.exitCode=${scenario === "exit-failure" ? 1 : 0};\n`);
+        const result = await clientDriver(client, shim)({ root: directory, model: "synthetic", prompt: "No model calls", budget: { timeoutMs: 5000, maxToolCalls: 5 }, outputDirectory: output });
+        assert.equal(result.completed, ["normal", "warning", "redacted-final", "quoted-final"].includes(scenario), `${client}: ${scenario}`);
+        if (["redacted-final", "quoted-final"].includes(scenario)) {
+          const transcript = await readFile(path.join(output, "events.jsonl"), "utf8");
+          const storedFinal = await readFile(path.join(output, "final.json"), "utf8");
+          assert.equal(transcript.includes("synthetic_value"), false);
+          assert.equal(storedFinal.includes("synthetic_value"), false);
+          assert.equal(transcript.includes("synthetic value"), false);
+          const reconstructed = readProtocolTranscript(client, transcript, storedFinal);
+          assert.equal(reconstructed.unparsedLines, 0);
+          assert.deepEqual(reconstructed.final, result.final);
+        }
+        if (["broken", "null"].includes(scenario)) assert.equal(result.unparsedLines, 1);
+        if (scenario === "warning") assert.equal(result.warnings.length, 1);
+        if (["fatal", "failed-result"].includes(scenario)) assert.ok(result.errors.length > 0);
+      }
+    }
+  } finally {
+    assert.equal(path.dirname(path.resolve(directory)), path.resolve(tmpdir()));
+    assert.ok(path.basename(directory).startsWith("ai-harness-protocol-test-"));
+    await rm(directory, { recursive: true, force: true });
+  }
+});
+
+test("repeated paired trials preserve independent outputs and remain explicitly simulated", async () => {
+  const directory = await mkdtemp(path.join(tmpdir(), "ai-harness-experiment-test-"));
+  try {
+    const plan = experimentPlan({ weak: "synthetic", comparison: "paired", repetitions: 2, timeoutMs: 4000 });
+    assert.equal(plan.schedule.length, 12);
+    assert.equal(new Set(plan.schedule.map(entry => entry.directory)).size, 12);
+    assert.equal(experimentPlan({ weak: "w", strong: "s" }).schedule.length, 9);
+    assert.throws(() => experimentPlan({ weak: "w", comparison: "paired", repetitions: 0 }));
+    const outputDirectory = path.join(directory, "run");
+    let calls = 0;
+    const result = await runExperiment({ plan, sourceRoot, outputDirectory, mode: "simulated", driver: async ({ root, outputDirectory }) => {
+      calls++;
+      const specification = await readFile(path.join(root, "TASK.md"), "utf8");
+      const task = tasks.find(task => task.files["TASK.md"] === specification);
+      await writeFile(path.join(root, task.entry), task.reference);
+      await writeFile(path.join(outputDirectory, "events.jsonl"), '{"type":"synthetic"}\n');
+      return { mode: "simulated", client: "codex", completed: true, final: { completed: true, summary: "synthetic", tests: [] }, durationMs: calls, usage: null };
+    } });
+    assert.equal(calls, 12);
+    assert.equal(result.complete, true);
+    assert.deepEqual(result.notRun, []);
+    assert.ok(result.groups.every(group => group.samples === 6 && group.statistics.sharedDelivery.passed === 6 && group.inputTokens === null));
+    assert.equal(result.groups.find(group => group.group === "weak-harness").statistics.fullDelivery.passed, 0);
+    const audited = await auditExperiment(outputDirectory);
+    assert.equal(audited.mode, "simulated");
+    assert.equal(audited.samples, 12);
+    // 只在此临时单元夹具中构造 real 协议形状，验证审计不信任自报字段；没有模型调用。
+    const protocol = JSON.parse(await readFile(path.join(outputDirectory, "protocol.json"), "utf8"));
+    protocol.mode = "real";
+    await writeFile(path.join(outputDirectory, "protocol.json"), JSON.stringify(protocol));
+    const summary = JSON.parse(await readFile(path.join(outputDirectory, "summary.json"), "utf8"));
+    summary.mode = "real";
+    await writeFile(path.join(outputDirectory, "summary.json"), JSON.stringify(summary));
+    for (const entry of plan.schedule) {
+      const folder = path.join(outputDirectory, entry.directory);
+      const row = JSON.parse(await readFile(path.join(folder, "result.json"), "utf8"));
+      row.mode = "real";
+      Object.assign(row.run, { mode: "real", exitCode: 0, error: null, errors: [], warnings: [], unparsedLines: 0, turnCompleted: true, protocolSuccess: true });
+      await writeFile(path.join(folder, "result.json"), JSON.stringify(row));
+      await writeFile(path.join(folder, "final.json"), JSON.stringify(row.run.final));
+      await writeFile(path.join(folder, "events.jsonl"), '{"type":"turn.completed"}\n');
+    }
+    assert.equal((await auditExperiment(outputDirectory)).valid, true);
+    const firstLog = path.join(outputDirectory, plan.schedule[0].directory, "events.jsonl");
+    await writeFile(firstLog, "");
+    await assert.rejects(() => auditExperiment(outputDirectory), /raw protocol/);
+    await writeFile(firstLog, '{"type":"turn.completed"}\n');
+    summary.results[0].success = !summary.results[0].success;
+    await writeFile(path.join(outputDirectory, "summary.json"), JSON.stringify(summary));
+    await assert.rejects(() => auditExperiment(outputDirectory));
+    const broken = path.join(directory, "interrupted");
+    await assert.rejects(() => runExperiment({ plan, sourceRoot, outputDirectory: broken, mode: "simulated", driver: async () => { throw new Error("fixture unavailable"); } }));
+    const incomplete = JSON.parse(await readFile(path.join(broken, "summary.json"), "utf8"));
+    assert.equal(incomplete.complete, false);
+    assert.equal(incomplete.notRun.length, 12);
+    await assert.rejects(() => auditExperiment(broken));
+    await assert.rejects(() => runExperiment({ plan, sourceRoot, outputDirectory, driver: async () => assert.fail("must not overwrite") }), { code: "EEXIST" });
+  } finally {
+    assert.equal(path.dirname(directory), path.resolve(tmpdir()));
+    assert.ok(path.basename(directory).startsWith("ai-harness-experiment-test-"));
+    await rm(directory, { recursive: true, force: true });
+  }
+});
+
+test("dry-run reveals the frozen call budget without invoking a client or writing an experiment", async () => {
+  const directory = await mkdtemp(path.join(tmpdir(), "ai-harness-experiment-test-"));
+  try {
+    const output = path.join(directory, "unused");
+    const result = spawnSync(process.execPath, [path.join(sourceRoot, "benchmarks/run.mjs"), "--cli", "not-installed", "--weak", "fixture", "--comparison", "paired", "--repetitions", "5", "--out", output, "--dry-run"], { shell: false, windowsHide: true, encoding: "utf8", timeout: 5000 });
+    assert.equal(result.status, 0, result.stderr);
+    assert.equal(JSON.parse(result.stdout).modelCalls, 30);
+    assert.deepEqual(await readdir(directory), []);
+  } finally { await rm(directory, { recursive: true, force: true }); }
+});
+
+test("historical nine-sample protocols retain their original statistics and evidence", async () => {
+  for (const round of ["pilot", "followup"]) {
+    const result = await auditExperiment(path.join(sourceRoot, ".ai-harness/work-items/MODEL-BENCHMARK-001", round));
+    assert.equal(result.samples, 9);
+    assert.equal(result.mode, "real");
+    assert.equal(result.groups.find(group => group.group === "weak-baseline").completed, 3);
+    assert.equal(result.groups.find(group => group.group === "weak-harness").completed, 1);
+  }
+});
+
+test("timing categories merge overlapping intervals and statistics retain unknown measurements", () => {
+  const timing = createToolTiming();
+  timing.start("one", 0, toolCategory("command_execution", "node .ai-harness/bin/harness.mjs run --id X"));
+  timing.start("two", 5, "verification"); timing.end("one", 10); timing.end("two", 15);
+  assert.deepEqual(timing.summarize(20).categories.verification, { calls: 2, activeMs: 15 });
+  const base = { mode: "simulated", group: "weak-baseline", grade: { ok: true }, scope: { ok: true }, success: true, run: { completed: true, durationMs: 10, usage: null } };
+  const rows = [base, { ...base, success: false, run: { completed: false, timedOut: true, durationMs: 30, usage: null } }, { ...base, run: { completed: true, durationMs: undefined, usage: null } }];
+  const statistics = summarize(rows, { extended: true })[0].statistics;
+  assert.deepEqual(statistics.latency, { observed: 2, unknown: 1, medianMs: 20, p95Ms: 29 });
+  assert.equal(statistics.fullDelivery.rate, 2 / 3);
+  assert.ok(statistics.fullDelivery.interval95[0] < 2 / 3 && statistics.fullDelivery.interval95[1] > 2 / 3);
+  assert.equal(statistics.usageSamples, 0);
+  const invalid = summarize([{ ...base, run: { completed: false, final: null, protocolSuccess: true, errors: [], usage: null } }], { extended: true })[0].statistics;
+  assert.equal(invalid.protocolFailures, 1);
+  assert.equal(invalid.invalidFinals, 1);
+});
+
+test("raw protocol reconstruction retains terminal failures and malformed content blocks", () => {
+  for (const client of ["claude", "gemini"]) {
+    const final = { completed: true, summary: "synthetic", tests: [] };
+    const success = client === "claude" ? { type: "result", subtype: "success", structured_output: final } : { type: "result", status: "success", response: JSON.stringify(final) };
+    const failure = client === "claude" ? { type: "result", subtype: "error" } : { type: "result", status: "error" };
+    assert.equal(readProtocolTranscript(client, "").protocolSuccess, false);
+    assert.equal(readProtocolTranscript(client, [failure, success].map(event => JSON.stringify(event)).join("\n")).protocolSuccess, false);
+    assert.equal(readProtocolTranscript(client, JSON.stringify(success)).protocolSuccess, true);
+    if (client === "claude") assert.equal(readProtocolTranscript(client, [ { type: "assistant", message: { content: [null] } }, success ].map(event => JSON.stringify(event)).join("\n")).protocolSuccess, false);
   }
 });

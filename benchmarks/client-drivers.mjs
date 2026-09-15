@@ -2,17 +2,9 @@ import path from "node:path";
 import { spawn, spawnSync } from "node:child_process";
 import { writeFile } from "node:fs/promises";
 import { redact } from "../.ai-harness/src/evidence.mjs";
-import { codexDriver } from "./codex-driver.mjs";
-import { createToolTiming } from "./timing.mjs";
-
-const responseSchema = { type: "object", properties: { completed: { type: "boolean" }, summary: { type: "string" }, tests: { type: "array", items: { type: "string" } } }, required: ["completed", "summary", "tests"], additionalProperties: false };
-
-function parseFinal(text) {
-  try {
-    const value = typeof text === "string" ? JSON.parse(text.trim().replace(/^```(?:json)?\s*\n([\s\S]*?)\n```$/, "$1")) : text;
-    return value && typeof value.completed === "boolean" && typeof value.summary === "string" && Array.isArray(value.tests) && value.tests.every(entry=>typeof entry === "string") ? value : null;
-  } catch { return null; }
-}
+import { codexDriver, codexProtocol } from "./codex-driver.mjs";
+import { createToolTiming, toolCategory } from "./timing.mjs";
+import { completedRun, parseFinal, redactProtocolValue, responseSchema } from "./protocol.mjs";
 
 export function clientArguments(client, model, budget) {
   if (client === "claude") {
@@ -31,24 +23,28 @@ export function createClientEventReader(client, timing) {
   const warnings = [];
   return {
     accept(event, at) {
+      event = redactProtocolValue(event);
+      if (!event || Array.isArray(event) || typeof event.type !== "string") { errors.push("Invalid client event"); return; }
       if (client === "claude") {
         const block = event.type === "stream_event" && event.event?.type === "content_block_start" ? event.event.content_block : null;
         const content = event.message?.content || [];
         for (const part of [...(block ? [block] : []), ...(Array.isArray(content) ? content : [])]) {
-          if (part.type === "tool_use" && typeof part.id === "string") { tools.add(part.id); timing.start(part.id, at); }
+          if (!part || typeof part !== "object" || Array.isArray(part)) { errors.push("Invalid Claude content block"); continue; }
+          if (part.type === "tool_use" && typeof part.id === "string") { tools.add(part.id); timing.start(part.id, at, toolCategory(part.name, part.input?.command)); }
           if (part.type === "tool_result") timing.end(part.tool_use_id, at);
         }
         if (event.type === "result") result = event;
       } else {
-        if (event.type === "tool_use") { if (typeof event.tool_id === "string") tools.add(event.tool_id); timing.start(event.tool_id, at); answer = ""; }
+        if (event.type === "tool_use") { if (typeof event.tool_id === "string") tools.add(event.tool_id); timing.start(event.tool_id, at, toolCategory(event.tool_name, event.parameters?.command)); answer = ""; }
         if (event.type === "tool_result") timing.end(event.tool_id, at);
         if (event.type === "message" && event.role === "assistant" && typeof event.content === "string") answer = event.delta ? answer + event.content : event.content;
         if (event.type === "result") result = event;
       }
       if (event.type === "error") {
         const severity = event.severity || event.error?.severity || event.level;
-        (severity === "warning" ? warnings : errors).push(redact(JSON.stringify(event)));
+        (severity === "warning" ? warnings : errors).push(JSON.stringify(event));
       }
+      if (event.type === "result" && (client === "claude" ? event.subtype !== "success" || event.is_error : event.status !== "success")) errors.push(JSON.stringify(event));
     },
     get toolCalls() { return tools.size; },
     finish() {
@@ -76,7 +72,9 @@ export function clientDriver(client, cli) {
       const started = Date.now(), startedAt = new Date(started).toISOString();
       const timing = createToolTiming(), reader = createClientEventReader(client, timing);
       const child = spawn(script ? process.execPath : cli, script ? [cli, ...args] : args, { cwd: root, shell: false, windowsHide: true, stdio: ["pipe", "pipe", "pipe"] });
-      let stdout = "", stderr = "", pending = "", timedOut = false, toolLimit = false, error = null, unparsedLines = 0;
+      child.stdout.setEncoding("utf8"); child.stderr.setEncoding("utf8");
+      let stderr = "", pending = "", timedOut = false, toolLimit = false, error = null, unparsedLines = 0;
+      const protocolLines = [];
       const stop = () => {
         if (child.exitCode !== null || !child.pid) return;
         if (process.platform === "win32") spawnSync("taskkill", ["/PID", String(child.pid), "/T", "/F"], { windowsHide: true, stdio: "ignore" });
@@ -85,11 +83,14 @@ export function clientDriver(client, cli) {
       const timer = setTimeout(() => { timedOut = true; stop(); }, budget.timeoutMs);
       const line = raw => {
         if (!raw.trim()) return;
-        let event; try { event = JSON.parse(raw); } catch { unparsedLines++; return; }
+        let event; try { event = JSON.parse(raw); } catch { unparsedLines++; protocolLines.push("! malformed JSONL"); return; }
+        if (!event || Array.isArray(event) || typeof event.type !== "string") { unparsedLines++; protocolLines.push("! invalid event structure"); return; }
+        event = redactProtocolValue(event);
+        protocolLines.push(JSON.stringify(event));
         reader.accept(event, Date.now()-started);
         if (reader.toolCalls >= budget.maxToolCalls) { toolLimit = true; stop(); }
       };
-      child.stdout.on("data", chunk => { stdout += chunk; pending += chunk; const lines = pending.split(/\r?\n/); pending = lines.pop(); for (const value of lines) line(value); });
+      child.stdout.on("data", chunk => { pending += chunk; const lines = pending.split(/\r?\n/); pending = lines.pop(); for (const value of lines) line(value); });
       child.stderr.on("data", chunk => { stderr += chunk; });
       child.stdin.on("error", failure => { error ||= redact(failure.message); });
       child.once("error", failure => { error = redact(failure.message); });
@@ -98,8 +99,8 @@ export function clientDriver(client, cli) {
         const durationMs = Date.now()-started;
         const response = reader.finish();
         resolve({ mode: "real", client, startedAt, durationMs, exitCode, timedOut, toolLimit, error, toolCalls: reader.toolCalls, timing: timing.summarize(durationMs), unparsedLines, ...response,
-          completed: exitCode === 0 && !timedOut && !toolLimit && !error && unparsedLines === 0 && response.protocolSuccess && response.final?.completed === true,
-          stdout: redact(stdout), stderr: redact(stderr), executionPolicy: client === "claude" ? "dontAsk with explicit tool allowlist; no OS sandbox claim" : "sandbox and auto_edit; interactive permission refusals are failures" });
+          completed: completedRun({ exitCode, timedOut, toolLimit, error, unparsedLines, ...response }, response.final),
+          stdout: protocolLines.join("\n") + (protocolLines.length ? "\n" : ""), stderr: redact(stderr), executionPolicy: client === "claude" ? "dontAsk with explicit tool allowlist; no OS sandbox claim" : "sandbox and auto_edit; interactive permission refusals are failures" });
       });
       child.stdin.end(prompt);
     });
@@ -108,4 +109,20 @@ export function clientDriver(client, cli) {
     if (result.final) await writeFile(path.join(outputDirectory, "final.json"), JSON.stringify(result.final, null, 2) + "\n");
     return { ...result, stdout: undefined, stderr: undefined };
   };
+}
+
+export function readProtocolTranscript(client, transcript, finalText = null) {
+  const events = [];
+  let unparsedLines = 0;
+  for (const line of transcript.split(/\r?\n/).filter(line => line.trim())) {
+    let event;
+    try { event = JSON.parse(line); } catch { unparsedLines++; continue; }
+    if (!event || Array.isArray(event) || typeof event.type !== "string") { unparsedLines++; continue; }
+    events.push(event);
+  }
+  if (client === "codex") return { ...codexProtocol(events), final: parseFinal(finalText), unparsedLines };
+  if (!["claude", "gemini"].includes(client)) throw new Error(`Unsupported client: ${client}`);
+  const reader = createClientEventReader(client, createToolTiming());
+  for (const event of events) reader.accept(event, 0);
+  return { ...reader.finish(), unparsedLines };
 }

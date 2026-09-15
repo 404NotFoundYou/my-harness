@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "HARNESS-OPT-20260915",
+  "mode": "single",
+  "rationale": "主AI串行维护相互关联的CLI、状态与证据接口；独立上下文只读复核最终差异",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "实现优化并保持证据和历史兼容",
+      "module": "runtime",
+      "status": "COMPLETED",
+      "attempt": 1,
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        ".ai-harness/src/**",
+        ".ai-harness/tests/**",
+        ".ai-harness/schemas/**",
+        ".ai-harness/manifest.json",
+        "benchmarks/**",
+        ".github/workflows/source-tests.yml",
+        "README.md",
+        "docs/guides/**",
+        "docs/architecture/overview.md"
+      ],
+      "verification": [
+        "node .ai-harness/tests/run.mjs",
+        "node --test benchmarks/tests/runner.test.mjs"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            ".ai-harness/tests/run.mjs"
+          ]
+        },
+        {
+          "id": "V2",
+          "command": "node",
+          "args": [
+            "--test",
+            "benchmarks/tests/runner.test.mjs"
+          ]
+        }
+      ],
+      "docsImpact": [
+        "README.md",
+        "docs/guides/usage.md",
+        "docs/guides/model-guidance.md",
+        "docs/architecture/overview.md",
+        "benchmarks/README.md"
+      ],
+      "reviewBatch": "R1",
+      "risk": "high",
+      "owner": "primary-ai",
+      "verificationStatus": "pass",
+      "reviewStatus": "pass",
+      "evidence": [
+        "9100e1d9-2deb-4bf0-8a3b-006698f4f815",
+        "c5afc969-827b-4628-a2b9-61d94fd46b88"
+      ],
+      "deferralApproval": null,
+      "verificationSource": {
+        "digest": "a02edcf2d41105d11f7328a4b841cee589253833598037f6757eba16b3673ca0",
+        "document": ".ai-harness/work-items/HARNESS-OPT-20260915/snapshots/a02edcf2d41105d11f7328a4b841cee589253833598037f6757eba16b3673ca0.json"
+      },
+      "reviewSource": {
+        "digest": "a02edcf2d41105d11f7328a4b841cee589253833598037f6757eba16b3673ca0",
+        "document": ".ai-harness/work-items/HARNESS-OPT-20260915/snapshots/a02edcf2d41105d11f7328a4b841cee589253833598037f6757eba16b3673ca0.json"
+      }
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "Runtime优化与评测完整差异",
+      "risk": "high",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": true
+    }
+  ],
+  "createdAt": "2026-09-15T03:19:23.091Z",
+  "updatedAt": "2026-09-15T04:14:01.482Z",
+  "revision": 3
+}

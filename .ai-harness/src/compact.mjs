@@ -6,7 +6,7 @@ import { invariant } from "./errors.mjs";
 import { exists, resolveProjectPath } from "./filesystem.mjs";
 import { createPlan, createReviewBatch, createTask, createWorkItem } from "./model.mjs";
 import { assertValidPlan, assertValidWorkItem } from "./validator.mjs";
-import { assertCommandEvidence, assertVerification, hasFailedReview, matchingChecks, readEvidence, verificationReport } from "./verification.mjs";
+import { assertAcceptanceCoverage, assertCommandEvidence, assertVerification, hasFailedReview, matchingChecks, readEvidence, verificationReport } from "./verification.mjs";
 import { loadSnapshot } from "./snapshot.mjs";
 import { assertCompactEligible, completionRequirements, completionSourcesCurrent } from "./completion.mjs";
 import { normalizeDocumentation } from "./input.mjs";
@@ -46,6 +46,7 @@ export async function beginWorkItem(root, options) {
   preview.tasks.push(createTask(task));
   preview.reviewBatches.push({ ...createReviewBatch(batch), taskIds: [task.id] });
   assertValidPlan(preview, options.id, { requireContent: true });
+  assertAcceptanceCoverage(createWorkItem(options), preview);
   const health = await doctorProject(root);
   invariant(health.ok, "DOCTOR_FAILED", "Runtime 检查失败，未创建工作项。", { errors: health.errors });
   invariant(health.details.repository.commit, "GIT_COMMIT_REQUIRED", "精简入口需要已有 Git 提交以记录基线。" );
