@@ -6,7 +6,7 @@
 
 ```powershell
 # 不调用模型的框架测试
-node --test benchmarks/tests/runner.test.mjs benchmarks/tests/multifile.test.mjs
+node --test benchmarks/tests/runner.test.mjs benchmarks/tests/multifile.test.mjs benchmarks/tests/resume.test.mjs
 
 # 真实调用；复用现有 Codex CLI 登录，运行前应取得模型调用授权
 node benchmarks/run.mjs --cli 'D:/Program Files/nodejs/node_global/node_modules/@openai/codex/bin/codex.js' --weak gpt-5.6-luna --strong gpt-5.6-sol --out .ai-harness/work-items/MODEL-BENCHMARK-001/pilot
@@ -26,7 +26,7 @@ node benchmarks/run.mjs --cli '<CLI路径>' --weak '<模型标识>' --comparison
 
 ## 多文件工程题集
 
-从 `1.5.0` 起可显式选择 `--suite project`。默认 `core` 保持原三题和协议版本2，不自动增加调用次数。project目前只有一个开发题 `archive-pagination`，使用协议版本3；它是按公开规格构造的工程BUG夹具，不来自生产事故记录，也不能单独代表真实仓库任务的整体难度。
+从 `1.5.0` 起可显式选择 `--suite project`。默认 `core` 保持原三题，不自动增加调用次数。1.5.0的core/project分别使用协议版本2/3；1.6.0新建实验统一使用版本4，旧协议保留审计。project目前只有一个开发题 `archive-pagination`，它是按公开规格构造的工程BUG夹具，不来自生产事故记录，也不能单独代表真实仓库任务的整体难度。
 
 题目要求协同修复 `src/repository.mjs` 的归档筛选、稳定排序和输入不可变，以及 `src/pagination.mjs` 的排他游标、分页大小和末页游标。固定 `src/caller.mjs`、`src/limits.mjs`、原公共测试与规格只读；另可新增 `test/extra.test.mjs`。共有12个隐藏验收，覆盖调用方及两个模块的直接契约，完整参考修复通过、只修任一模块均不足。Harness组使用BUGFIX，保留复现、根因及static/sandbox/reproduction/regression阶段，复现和回归引用真实命令。
 
@@ -51,9 +51,27 @@ Codex与Claude请求medium推理档；Gemini CLI没有对应参数，因此记�
 
 接口依据：[Codex事件流](https://learn.chatgpt.com/docs/non-interactive-mode)、[Claude非交互模式](https://code.claude.com/docs/en/headless)、[Gemini非交互模式](https://geminicli.com/docs/cli/headless/)。驱动存在不等于已验证本机登录、沙箱和真实任务；具体环境检查与实跑记录保存在对应工作项中。
 
-输出目录必须不存在，避免覆盖旧实验。保存协议/源码/任务哈希、prompt、脱敏JSON事件和stderr、结构化自报结论、候选代码、退出码、耗时、工具数和用量、文件范围检查、Harness工作项记录、隐藏用例结果及统计。`summary.complete` 仅在计划内全部试次执行完且源版本未变化时为true；失败样本仍参与统计，异常中断保留不完整 summary 和 notRun。模型功能通过、正常完成、流程终态、误称完成分别统计。
+首次运行的输出目录必须不存在，避免覆盖旧实验；协议v4可通过下述 `--resume` 继续。保存协议/源码/任务哈希、prompt、脱敏JSON事件和stderr、结构化自报结论、候选代码、退出码、耗时、工具数和用量、文件范围检查、Harness工作项记录、隐藏用例结果及统计。`summary.complete` 仅在计划内全部试次都有可信结果且源版本未变化时为true；失败样本仍参与统计。模型功能通过、正常完成、流程终态、误称完成分别统计。
 
-协议版本2/3的审计重建完整试次集合，从原始事件日志重算客户端协议状态，并核对 Codex 最终文件、逐条摘要和聚合统计；空日志、未解决终态失败、损坏 JSONL 或非法最终结构不能支持完成。正常警告会保留。版本1的历史九样本记录沿用原统计格式，不改写历史事实。模拟驱动实验始终标注 simulated，测试夹具不作为真实模型效果证据。
+## 实验续跑与中断记录
+
+1.6.0新实验使用协议v4。续跑时使用原参数、原输出目录和原源码，只增加 `--resume`；真实调用仍须已有对应费用授权：
+
+```powershell
+node benchmarks/run.mjs --cli '<CLI实际文件路径>' --weak '<原模型标识>' --suite project --comparison paired --repetitions 1 --out .ai-harness/work-items/<工作项>/project-comparison --resume
+```
+
+恢复先核对源码、完整计划、题目/判定器、客户端/模型/预算、运行模式及驱动指纹，再验证所有已有试次。任一处漂移、损坏、缺失完成结果、候选/协议不一致或pending已有目录时，在新调用前失败。旧v1/v2/v3没有启动记录，只支持原审计，不能推断历史调用或补造状态来续跑。初始化protocol/执行记录不完整的目录也明确拒绝恢复。
+
+`execution.json` 按冻结schedule保存pending→started→completed或interrupted。started在调用驱动前原子登记；因此它表示可能已调用。completed表示有可信结果，包含模型失败样本，恢复时不重复调用。started有完整结果时复用共同审计并恢复completed；只有确实缺少结果时才保留interrupted及未知用量，不自动重试。其他pending可继续执行。若仍存在interrupted，最终输出 `incomplete` 且CLI退出非零；完整审计仍拒绝把它视为完成实验。
+
+摘要丢失或损坏可由可信执行记录及结果重建。`notRun`只列pending，`interrupted`单独列出中断试次及usage:null；`progress`按组给出scheduled/completed/interrupted/pending/usageUnknown。groups统计只基于已完成结果，其通过率不能解释为全部计划的通过率。`--resume`与`--dry-run`不能共用，避免将全计划调用数误报为剩余调用数。
+
+每个目录一次只允许一个执行者。活锁、异机或未知锁拒绝续跑；同机确定已退出的所有者可在完整只读校验后恢复锁，再获取独占锁重新校验。仅凭经过时间或PID复用不回收。协议、执行记录、结果和摘要使用同目录临时文件原子替换；这保证进程中断边界的完整可见性，没有fsync/断电持久性或恰好调用一次的承诺。发生未确认调用时保留未知比重复调用更保守；孤儿临时工作区不参与续跑。
+
+`--cli`应指向实际存在的二进制或Node入口文件，记录realpath、文件SHA-256和Node版本，并在试次前后重验。API的真实驱动需显式提供该身份；模拟默认使用函数源码SHA-256，也可声明固定模拟指纹。入口指纹不覆盖加载的全部依赖、函数闭包、全局客户端配置或远端模型别名实现，不能据此证明完整运行环境一致。输出目录放在工作项控制面或源码目录外，避免实验产物本身造成源码漂移。
+
+协议版本2/3/4的审计重建完整试次集合，从原始事件日志重算客户端协议状态，并核对 Codex 最终文件、逐条摘要和聚合统计；v4另校验执行记录、协议/结果原字节哈希及试次源码快照。空日志、未解决终态失败、损坏 JSONL 或非法最终结构不能支持完成。正常警告会保留。版本1的历史九样本记录沿用原统计格式，不改写历史事实。模拟驱动实验始终标注 simulated，测试夹具不作为真实模型效果证据。
 
 持久化协议按字段递归脱敏并保持 JSON 结构，最终结果使用相同规范；无法解析的行保留明确失败标记和数量，原始敏感正文不落盘。审计使用这份结构化脱敏记录，不宣称逐字保存客户端原始字节流。
 

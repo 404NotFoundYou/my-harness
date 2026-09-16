@@ -83,7 +83,7 @@ test("candidate collection preserves BOM and CRLF bytes and does not hide unexpe
 test("project selection is explicit and dry-run budgets preserve the default core experiment",async()=>{
   assert.equal(experimentPlan({weak:"w",strong:"s"}).schedule.length,9);
   const plan=experimentPlan({weak:"w",comparison:"paired",suite:"project"});
-  assert.equal(plan.schemaVersion,3);
+  assert.equal(plan.schemaVersion,4);
   assert.equal(plan.schedule.length,2);
   assert.equal(plan.suite,"project");
   assert.ok(plan.schedule.every(entry=>entry.taskId===task.id));
@@ -246,6 +246,9 @@ test("a simulated project experiment completes real BUGFIX gates and audits ever
     // Synthetic wire fixtures exercise the real-mode audit path without any model call.
     savedSummary.mode="real";
     const realProtocol=JSON.parse(originalProtocol);
+    // Keep the archived v3 protocol audit independent of v4 resume state.
+    realProtocol.schemaVersion=3;
+    delete realProtocol.driverIdentity;
     realProtocol.mode="real";
     await writeFile(protocolPath,JSON.stringify(realProtocol));
     await writeFile(summaryPath,JSON.stringify(savedSummary));

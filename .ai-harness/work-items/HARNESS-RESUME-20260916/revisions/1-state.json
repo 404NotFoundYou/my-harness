@@ -1,0 +1,169 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 1,
+  "id": "HARNESS-RESUME-20260916",
+  "type": "ITERATION",
+  "title": "实现实验断点续跑和原子结果保存",
+  "status": "IMPLEMENTING",
+  "flags": [
+    "api",
+    "database"
+  ],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/iteration.md",
+    ".ai-harness/policies/database.md",
+    ".ai-harness/policies/api.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户确认实现续跑优化；本会话提交推送和CI核验授权持续有效"
+  },
+  "input": {
+    "references": [
+      "用户ok接受ANALYSIS-NEXT-20260916首项：实验断点续跑与可靠保存"
+    ],
+    "acceptance": [
+      "已完成试次含失败样本不重复调用，只运行确定未启动试次；启动但无结果保留中断及未知用量，绝不默默重试",
+      "原子保存协议/试次状态/结果/摘要，单写者与失活锁恢复受校验；源码/题库/模型预算/驱动身份漂移或损坏拒绝，摘要可从真实证据重建",
+      "模拟中断和独立审查、旧协议审计及完整回归通过，check --ci后提交推送并核验Windows/Ubuntu CI"
+    ],
+    "nonGoals": [
+      "不运行真实付费模型，不自动重试未知调用，不做CI性能优化，不修改旧实验记录"
+    ],
+    "version": "1.6.0"
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": null,
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "main@800ed3e，Runtime1.5.0，初始仅上轮ANALYSIS记录未提交；doctor通过。已读experiment/runner/audit/run及drivers/任务契约、atomicWriteJson和locking调用链。现有v2/v3协议与v1历史审计，未持久化started状态。"
+    ],
+    "completedAt": "2026-09-16T01:25:01.657Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "800ed3e619255fceff7e8ab08b45ee49df0ba962",
+      "dirty": true,
+      "changedFiles": [
+        ".ai-harness/work-items/ANALYSIS-NEXT-20260916/assessment.md",
+        ".ai-harness/work-items/ANALYSIS-NEXT-20260916/events.jsonl",
+        ".ai-harness/work-items/ANALYSIS-NEXT-20260916/evidence.jsonl",
+        ".ai-harness/work-items/ANALYSIS-NEXT-20260916/snapshots/2d1a75682bd6d620d2e289170aa1add9165a1fc50cc78052c6afd6d014685738.json",
+        ".ai-harness/work-items/ANALYSIS-NEXT-20260916/state.json",
+        ".ai-harness/work-items/HARNESS-RESUME-20260916/events.jsonl",
+        ".ai-harness/work-items/HARNESS-RESUME-20260916/state.json"
+      ],
+      "fingerprints": {
+        ".ai-harness/work-items/ANALYSIS-NEXT-20260916/assessment.md": "35bc4f8610c266746ee20a0f0e9d967cf5764b4b12cdc0b33f597b26da75586e",
+        ".ai-harness/work-items/ANALYSIS-NEXT-20260916/events.jsonl": "343d63f2294a327bcf2e4cdc592cb2a6fe9b57d7680e668b7dd957dac9abde75",
+        ".ai-harness/work-items/ANALYSIS-NEXT-20260916/evidence.jsonl": "3981ca75f4da1d7d1ee8f7e3ef209b96f5d6d6faa859b821ca0d4b3000f586a8",
+        ".ai-harness/work-items/ANALYSIS-NEXT-20260916/snapshots/2d1a75682bd6d620d2e289170aa1add9165a1fc50cc78052c6afd6d014685738.json": "ca2cfd4010fed3f8d266bfb039d381240e085ac75c2fccbfdedb854b3e1e3520",
+        ".ai-harness/work-items/ANALYSIS-NEXT-20260916/state.json": "1330dd84b2e7a9b0024cca7827bc4b3d2d806e34b3cf8690e8b7bf2893a915a0",
+        ".ai-harness/work-items/HARNESS-RESUME-20260916/events.jsonl": "1e69e0c10f6178bd11bf0a22ef688ebea1d556b88b87858bf684e5a4f588803b",
+        ".ai-harness/work-items/HARNESS-RESUME-20260916/state.json": "78232194ffc4ddbad5e8a081e7dbb6af684a5478d5273e0cb86d20b59f7d8712"
+      },
+      "source": {
+        "digest": "2d1a75682bd6d620d2e289170aa1add9165a1fc50cc78052c6afd6d014685738",
+        "document": ".ai-harness/work-items/HARNESS-RESUME-20260916/snapshots/2d1a75682bd6d620d2e289170aa1add9165a1fc50cc78052c6afd6d014685738.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": ".ai-harness/work-items/HARNESS-RESUME-20260916/design.md",
+    "evidence": [
+      "冻结v4协议、原子ledger、完整预检、未知调用不重试、分组进度可见；独立方案复核补充锁重获取后重验及每项结束源码检查。"
+    ],
+    "completedAt": "2026-09-16T01:28:17.499Z"
+  },
+  "database": {
+    "impact": "required",
+    "status": "complete",
+    "document": ".ai-harness/work-items/HARNESS-RESUME-20260916/design.md",
+    "evidence": [
+      "ledger状态和原字节哈希约束、同目录原子替换与已测试锁机制复用；旧v1-v3只读审计不迁移，无外部数据库/生产数据。"
+    ],
+    "completedAt": "2026-09-16T01:28:17.749Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/HARNESS-RESUME-20260916/plan.json",
+    "approved": true,
+    "approvalRef": "用户ok授权续跑优化，设计及独立复核边界已记录。"
+  },
+  "verification": {
+    "status": "pending",
+    "evidence": [],
+    "stages": []
+  },
+  "review": {
+    "status": "pending",
+    "evidence": [],
+    "independent": false
+  },
+  "acceptance": {
+    "status": "pending",
+    "evidence": []
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "pending",
+    "evidence": []
+  },
+  "blocked": null,
+  "delivery": null,
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-09-16T01:25:01.323Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-09-16T01:25:01.405Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-09-16T01:25:01.874Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "DATABASE_DESIGN",
+      "at": "2026-09-16T01:28:17.668Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "DATABASE_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-09-16T01:28:18.238Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-09-16T01:28:18.325Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-09-16T01:25:01.323Z",
+  "updatedAt": "2026-09-16T01:45:32.396Z"
+}

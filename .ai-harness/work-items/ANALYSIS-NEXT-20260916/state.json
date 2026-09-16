@@ -1,0 +1,171 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 1,
+  "id": "ANALYSIS-NEXT-20260916",
+  "type": "ANALYSIS",
+  "title": "评估1.5.0后的优化方向",
+  "status": "ANSWERED",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/analysis.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户授权相关只读调查与必要分析控制面记录"
+  },
+  "input": {
+    "references": [
+      "用户询问下一步优化方向；main@800ed3e和当前1.5.0源码"
+    ],
+    "acceptance": [
+      "给出证据支持的下一轮优先级、最小范围、验收和未知边界"
+    ],
+    "nonGoals": [
+      "本轮仅咨询，不实现产品改动、不运行付费模型、不提交推送分析记录"
+    ],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": null,
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "main@800ed3e，Runtime1.5.0，初始工作区干净；doctor通过。读取experiment/runner/run、README、安装扫描与测试夹具，并通过GitHub API核对上轮Windows Runtime时间10:05:38至10:12:06、结论success。"
+    ],
+    "completedAt": "2026-09-16T01:19:56.980Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "800ed3e619255fceff7e8ab08b45ee49df0ba962",
+      "dirty": true,
+      "changedFiles": [
+        ".ai-harness/work-items/ANALYSIS-NEXT-20260916/events.jsonl",
+        ".ai-harness/work-items/ANALYSIS-NEXT-20260916/state.json"
+      ],
+      "fingerprints": {
+        ".ai-harness/work-items/ANALYSIS-NEXT-20260916/events.jsonl": "9f9642f2e204e366e4cc113dc341b0ffb994dc27a5f4b96feeef0cf0f1e7b131",
+        ".ai-harness/work-items/ANALYSIS-NEXT-20260916/state.json": "cb4938f4160ad99661664748aa6ebd2637fd4535e8154525f0c7ffd773aa32d6"
+      },
+      "source": {
+        "digest": "2d1a75682bd6d620d2e289170aa1add9165a1fc50cc78052c6afd6d014685738",
+        "document": ".ai-harness/work-items/ANALYSIS-NEXT-20260916/snapshots/2d1a75682bd6d620d2e289170aa1add9165a1fc50cc78052c6afd6d014685738.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "pending",
+    "document": null,
+    "evidence": [],
+    "completedAt": null
+  },
+  "database": {
+    "status": "pending",
+    "document": null,
+    "evidence": [],
+    "completedAt": null,
+    "impact": "unknown"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/ANALYSIS-NEXT-20260916/plan.json",
+    "approved": false,
+    "approvalRef": null
+  },
+  "verification": {
+    "status": "pending",
+    "evidence": [],
+    "stages": []
+  },
+  "review": {
+    "status": "pending",
+    "evidence": [],
+    "independent": false
+  },
+  "acceptance": {
+    "status": "pending",
+    "evidence": []
+  },
+  "analysis": {
+    "status": "pass",
+    "evidence": [
+      "b07a0f88-054d-44fb-9341-dd0fd406c575"
+    ],
+    "conclusions": [
+      {
+        "id": "0a9b0761-ef49-437a-8225-278c3d6cdc18",
+        "status": "PROVEN",
+        "text": "1.5.0仍无实验续跑入口；已有notRun但未持久化started状态，saveJson直接writeFile。",
+        "evidence": [
+          "benchmarks/experiment.mjs:29-51；benchmarks/runner.mjs:36-38；当前源码只读核实。"
+        ]
+      },
+      {
+        "id": "63d2d9e1-0443-410e-a753-336114250dea",
+        "status": "INFERRED",
+        "text": "中断可能发生在模型调用已启动但结果未保存的边界，单凭notRun重试可能重复调用；具体崩溃故障本轮未注入。",
+        "evidence": [
+          "runExperiment与runCase调用顺序和持久化边界；assessment.md。"
+        ]
+      },
+      {
+        "id": "285fabd6-45e4-4b97-bc18-cab66b505c3a",
+        "status": "PROVEN",
+        "text": "提交800ed3e的Windows Runtime成功步骤耗时388秒，但当前没有分段性能数据，尚不能确认热点。",
+        "evidence": [
+          "本轮GitHub API读取运行34955978247步骤时间10:05:38至10:12:06；installer和tests/helpers源代码。"
+        ]
+      },
+      {
+        "id": "2a59c2e4-fc31-42fc-95a8-191f46e025ae",
+        "status": "PROPOSAL",
+        "text": "优先显式续跑、原子试次记录和单写者保护；之后冻结新增题集做经授权的同模型真实对照，再按测量优化CI。近期只做本地迭代时可将CI profiling提前。",
+        "evidence": [
+          "assessment.md中的优先级前提、最小实现和中断/漂移/未知用量验收。"
+        ]
+      }
+    ],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "pending",
+    "evidence": []
+  },
+  "blocked": null,
+  "delivery": null,
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-09-16T01:19:56.653Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-09-16T01:19:56.739Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "ANALYZING",
+      "at": "2026-09-16T01:19:57.185Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "ANALYZING",
+      "to": "ANSWERED",
+      "at": "2026-09-16T01:19:57.988Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-09-16T01:19:56.653Z",
+  "updatedAt": "2026-09-16T01:19:57.988Z"
+}

@@ -7,6 +7,8 @@ import { installRuntime, initializeProject } from "../.ai-harness/src/installer.
 import { checkProject } from "../.ai-harness/src/checker.mjs";
 import { loadPlan, loadWorkItem } from "../.ai-harness/src/workflow.mjs";
 import { redact } from "../.ai-harness/src/evidence.mjs";
+import { atomicWriteJson } from "../.ai-harness/src/filesystem.mjs";
+import { sourceSnapshot } from "../.ai-harness/src/snapshot.mjs";
 import { trialStatistics } from "./statistics.mjs";
 import { projectWorkflowContract, taskManifest, writableFilesFor } from "./task-contract.mjs";
 import { candidateDigest, collectCandidate, validateCandidate } from "./candidates.mjs";
@@ -34,8 +36,7 @@ export async function cleanupSandbox(root) {
 }
 
 export async function saveJson(file, value) {
-  await mkdir(path.dirname(file), { recursive: true });
-  await writeFile(file, JSON.stringify(value, null, 2) + "\n");
+  await atomicWriteJson(file,value);
 }
 
 function git(root, args) {
@@ -154,13 +155,13 @@ export function participantPrompt(task, group, runBudget = budget) {
     (group.harness ? "本组已安装并初始化Harness，请按AGENTS使用普通ITERATION路径。help查看参数；guide --context可集中读取局部上下文，run --all可顺序执行本任务已声明检查；实施中修正代码或自测后直接复验即可。guide的shortcuts可提供带证据ID的finish建议；提交真实检查与自查结论，最终check --ci。\n" : "按当前项目规范直接实施与验证。\n");
 }
 
-export async function runCase({ task, group, sourceRoot, outputDirectory, driver, runBudget = budget, trial = 1 }) {
-  await mkdir(outputDirectory, { recursive: true });
+export async function runCase({ task, group, sourceRoot, outputDirectory, driver, runBudget = budget, trial = 1, execution = null, beforePublish = null }) {
+  await mkdir(outputDirectory);
   const participant = await createParticipant(task, { sourceRoot, harness: group.harness });
   try {
     const prompt = participantPrompt(task, group, runBudget);
     await writeFile(path.join(outputDirectory, "prompt.txt"), prompt);
-    const run = await driver({ root: participant.root, model: group.model, prompt, budget: runBudget, outputDirectory });
+    const run = await driver({ root: participant.root, model: group.model, prompt, budget: {...runBudget}, outputDirectory });
     const scope = await inspectChanges(participant, task, group.harness);
     let implementation;
     if (task.writableFiles === undefined) {
@@ -206,6 +207,8 @@ export async function runCase({ task, group, sourceRoot, outputDirectory, driver
       taskDigest: hash(JSON.stringify(task.files)), judgeDigest: hash(JSON.stringify(task.cases)), candidateDigest: task.writableFiles === undefined ? hash(implementation) : candidateDigest(task,implementation), budget: runBudget,
       run, scope, workflow, grade, success, falseCompletion: Boolean(run.final?.completed && !success),
       falseFunctionalCompletion: Boolean(run.final?.completed && !grade.ok) };
+    if(execution)result.execution={...execution,sourceAfter:(await sourceSnapshot(sourceRoot)).digest};
+    if(beforePublish)await beforePublish();
     await saveJson(path.join(outputDirectory, "result.json"), result);
     return result;
   } finally { await cleanupSandbox(participant.root); }

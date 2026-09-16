@@ -1,10 +1,14 @@
 import path from "node:path";
-import { mkdir } from "node:fs/promises";
+import { mkdir, readFile, realpath } from "node:fs/promises";
 import assert from "node:assert/strict";
 import { taskManifest, tasksForSuite } from "./task-contract.mjs";
-import { budget, groups, runCase, saveJson, summarize } from "./runner.mjs";
+import { budget, groups, hash, runCase, saveJson } from "./runner.mjs";
 import { sourceSnapshot } from "../.ai-harness/src/snapshot.mjs";
 import { redact } from "../.ai-harness/src/evidence.mjs";
+import { resolveProjectPath } from "../.ai-harness/src/filesystem.mjs";
+import { inspectLock, recoverLock, withFileLock } from "../.ai-harness/src/locking.mjs";
+import { readExperimentFile } from "./audit-trial.mjs";
+import { executionSummary, initialExecution, readExecution } from "./execution.mjs";
 
 export function experimentPlan({ weak, strong, client = "codex", comparison = "reference", repetitions = 1, timeoutMs = budget.timeoutMs, maxToolCalls = budget.maxToolCalls, suite = "core" }) {
   const tasks=tasksForSuite(suite);
@@ -18,39 +22,109 @@ export function experimentPlan({ weak, strong, client = "codex", comparison = "r
     const group = matrix[(index + trial - 1 + offset) % matrix.length];
     schedule.push({ taskId: tasks[index].id, group: group.id, trial, directory: `${tasks[index].id}-${group.id}${repetitions > 1 ? `-trial-${trial}` : ""}` });
   }
-  return { schemaVersion: suite === "core" ? 2 : 3, ...(suite === "core" ? {} : {suite}), client, comparison, repetitions, groups: matrix, budget: { timeoutMs, maxToolCalls, reasoning: client === "gemini" ? null : budget.reasoning }, schedule };
+  return { schemaVersion: 4, suite, client, comparison, repetitions, groups: matrix, budget: { timeoutMs, maxToolCalls, reasoning: client === "gemini" ? null : budget.reasoning }, schedule };
 }
 
-export async function runExperiment({ plan, sourceRoot, outputDirectory, driver, mode = "real", onProgress = () => {} }) {
-  if (!["real", "simulated"].includes(mode)) throw new Error("Invalid experiment mode");
+export async function cliIdentity(cli) {
+  const entry=await realpath(cli);
+  return {kind:"cli",entry,sha256:hash(await readFile(entry)),nodeVersion:process.version};
+}
+
+function checkedIdentity(mode, driver, identity) {
+  const value=identity ?? (mode === "simulated" ? {kind:"simulated",fingerprint:hash(driver.toString())} : null);
+  assert.ok(value&&typeof value === "object"&&!Array.isArray(value),"A real experiment needs its CLI identity");
+  if(mode === "simulated"){
+    assert.deepEqual(Object.keys(value).sort(),["fingerprint","kind"],"Invalid simulated driver identity");
+    assert.equal(value.kind,"simulated");
+    assert.match(value.fingerprint,/^[a-f0-9]{64}$/);
+  }else{
+    assert.deepEqual(Object.keys(value).sort(),["entry","kind","nodeVersion","sha256"],"Invalid CLI identity");
+    assert.equal(value.kind,"cli");
+    assert.ok(typeof value.entry === "string"&&path.isAbsolute(value.entry));
+    assert.match(value.sha256,/^[a-f0-9]{64}$/);
+    assert.equal(typeof value.nodeVersion,"string");
+  }
+  return structuredClone(value);
+}
+
+export async function runExperiment({ plan, sourceRoot, outputDirectory, driver, mode = "real", onProgress = () => {}, resume = false, driverIdentity = null }) {
+  assert.ok(["real","simulated"].includes(mode),"Invalid experiment mode");
+  assert.equal(typeof resume,"boolean","resume must be a boolean");
   const expected=experimentPlan({weak:plan.groups.find(group=>group.id==="weak-baseline")?.model,strong:plan.groups.find(group=>group.id==="strong-reference")?.model,client:plan.client,comparison:plan.comparison,repetitions:plan.repetitions,timeoutMs:plan.budget.timeoutMs,maxToolCalls:plan.budget.maxToolCalls,suite:plan.suite});
   assert.deepEqual(plan,expected,"Experiment plan differs from the declared task suite");
+  plan=expected;
+  if(!resume)await mkdir(outputDirectory);
+  outputDirectory=await realpath(outputDirectory);
+  const identity=checkedIdentity(mode,driver,driverIdentity);
+  const source=(await sourceSnapshot(sourceRoot)).digest;
   const tasks=tasksForSuite(plan.suite);
-  await mkdir(outputDirectory); // 已有实验不可覆盖。
-  const source = (await sourceSnapshot(sourceRoot)).digest;
-  await saveJson(path.join(outputDirectory, "protocol.json"), { ...plan, mode, source, createdAt: new Date().toISOString(),
-    tasks: tasks.map(taskManifest) });
-  const results = [];
-  async function summary(complete, error = null) {
-    const sourceAfter = (await sourceSnapshot(sourceRoot)).digest;
-    const value = { mode, complete: complete && sourceAfter === source, sourceBefore: source, sourceAfter, error,
-      results: results.map(row => ({ taskId: row.taskId, group: row.group, trial: row.trial, success: row.success, functionalPassed: row.grade.ok })),
-      notRun: plan.schedule.slice(results.length), groups: results.length ? summarize(results, { extended: true }) : [] };
-    await saveJson(path.join(outputDirectory, "summary.json"), value);
-    return value;
+  const frozen={...plan,mode,source,tasks:tasks.map(taskManifest),driverIdentity:identity};
+  const lock=await resolveProjectPath(outputDirectory,".experiment.lock",{forWrite:true});
+  const save=async(file,value)=>saveJson(await resolveProjectPath(outputDirectory,file,{forWrite:true}),value);
+  const assertSource=async()=>{
+    assert.equal((await sourceSnapshot(sourceRoot)).digest,source,"Harness source changed during the experiment");
+    if(mode === "real")assert.deepEqual(await cliIdentity(identity.entry),identity,"CLI identity changed during the experiment");
+  };
+  async function load(){
+    await assertSource();
+    const protocol=JSON.parse((await readExperimentFile(outputDirectory,"protocol.json")).toString("utf8"));
+    assert.equal(protocol.schemaVersion,4,"Only protocol v4 can resume; historical experiments are read-only");
+    const {createdAt,...stored}=protocol;
+    assert.ok(typeof createdAt === "string"&&Number.isFinite(Date.parse(createdAt)),"Invalid protocol creation time");
+    assert.deepEqual(stored,frozen,"Frozen protocol, source or driver differs");
+    return {protocol,...await readExecution(outputDirectory,protocol)};
   }
-  try {
-    for (const entry of plan.schedule) {
-      const task = tasks.find(task => task.id === entry.taskId), group = plan.groups.find(group => group.id === entry.group);
-      onProgress({ event: "started", ...entry, model: group.model });
-      const result = await runCase({ task, group, trial: entry.trial, sourceRoot, outputDirectory: path.join(outputDirectory, entry.directory), driver, runBudget: plan.budget });
-      if (result.mode !== mode) throw new Error("Driver mode differs from the experiment protocol");
-      results.push(result);
-      onProgress({ event: "finished", ...entry, functional: result.grade.ok, success: result.success, timeout: result.run.timedOut, durationMs: result.run.durationMs });
-      await summary(false);
+  if(resume){
+    const owner=await inspectLock(lock);
+    if(owner.status === "stale")await recoverLock(lock,owner.owner.token,load);
+  }
+  return withFileLock(lock,async()=>{
+    if(!resume){
+      await save("protocol.json",{...frozen,createdAt:new Date().toISOString()});
+      const bytes=await readExperimentFile(outputDirectory,"protocol.json");
+      await save("execution.json",initialExecution(JSON.parse(bytes.toString("utf8")),bytes));
     }
-    const result = await summary(true);
-    if (!result.complete) throw new Error("Harness source changed during the experiment");
-    return result;
-  } catch (error) { await summary(false, redact(error.message)); throw error; }
+    // Re-read under the acquired lock, including after stale-owner recovery.
+    const loaded=await load(),protocol=loaded.protocol;
+    if(loaded.changed)await save("execution.json",loaded.ledger);
+    let ledger=loaded.ledger,rows=loaded.rows;
+    async function summary(error=null){
+      const value=executionSummary(protocol,ledger,rows,(await sourceSnapshot(sourceRoot)).digest,error);
+      await save("summary.json",value);
+      return value;
+    }
+    await summary();
+    try{
+      onProgress({event:"ready",resume,remaining:ledger.trials.filter(state=>state.status === "pending").length});
+      for(const [index,entry]of protocol.schedule.entries()){
+        if(ledger.trials[index].status !== "pending")continue;
+        await assertSource();
+        const destination=await resolveProjectPath(outputDirectory,entry.directory,{forWrite:true});
+        ledger.trials[index]={directory:entry.directory,status:"started",startedAt:new Date().toISOString()};
+        await save("execution.json",ledger);
+        const task=tasks.find(task=>task.id===entry.taskId),group=protocol.groups.find(group=>group.id===entry.group);
+        onProgress({event:"started",...entry,model:group.model});
+        await runCase({task,group,trial:entry.trial,sourceRoot,outputDirectory:destination,driver,runBudget:{...protocol.budget},execution:{protocolSha256:ledger.protocolSha256,sourceBefore:source},beforePublish:assertSource});
+        await assertSource();
+        const current=await readExecution(outputDirectory,protocol);
+        ledger=current.ledger;rows=current.rows;
+        await save("execution.json",ledger);
+        const result=rows.find(row=>row.taskId===entry.taskId&&row.group===entry.group&&row.trial===entry.trial);
+        onProgress({event:"finished",...entry,functional:result.grade.ok,success:result.success,timeout:result.run.timedOut,durationMs:result.run.durationMs});
+        await summary();
+      }
+      await assertSource();
+      return summary();
+    }catch(error){
+      try{
+        const current=await readExecution(outputDirectory,protocol);
+        ledger=current.ledger;rows=current.rows;
+        if(current.changed)await save("execution.json",ledger);
+        await summary(redact(error.message));
+      }catch(recoveryError){
+        throw new AggregateError([error,recoveryError],`Experiment failed and evidence could not be reconciled: ${redact(error.message)}; ${redact(recoveryError.message)}`);
+      }
+      throw error;
+    }
+  },0);
 }

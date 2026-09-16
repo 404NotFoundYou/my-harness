@@ -1,0 +1,1 @@
+{"schemaVersion":1,"id":"b07a0f88-054d-44fb-9341-dd0fd406c575","workItemId":"ANALYSIS-NEXT-20260916","taskId":null,"kind":"analysis","status":"pass","summary":"完成1.5.0源码与历史CI事实复核，给出续跑/可靠保存、真实对照和CI分段提速的优先级及验收；区分已确认机制、推断故障风险和待测收益。只读产品，无本轮模型实验。","timestamp":"2026-09-16T01:19:57.909Z","command":null,"independent":false,"stage":null,"revision":1,"taskAttempt":null}

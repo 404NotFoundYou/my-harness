@@ -121,7 +121,7 @@ test("all groups share contracts and budgets, while hidden cases and references 
 test("a simulated driver exercises grading and false completion without becoming a real model result",async()=>{
   const output=await mkdtemp(path.join(tmpdir(),"ai-harness-bench-test-"));
   try{
-    const row=await runCase({task:tasks[0],group:groups("weak","strong")[0],sourceRoot,outputDirectory:output,
+    const row=await runCase({task:tasks[0],group:groups("weak","strong")[0],sourceRoot,outputDirectory:path.join(output,"case"),
       driver:async()=>({mode:"simulated",completed:true,final:{completed:true},durationMs:1,usage:null})});
     assert.equal(row.falseFunctionalCompletion,true);
     assert.equal(row.success,false);
@@ -206,6 +206,10 @@ test("repeated paired trials preserve independent outputs and remain explicitly 
     assert.equal(audited.samples, 12);
     // 只在此临时单元夹具中构造 real 协议形状，验证审计不信任自报字段；没有模型调用。
     const protocol = JSON.parse(await readFile(path.join(outputDirectory, "protocol.json"), "utf8"));
+    // Preserve explicit v2 compatibility coverage; v4 ledger checks have their own tests.
+    protocol.schemaVersion=2;
+    delete protocol.suite;
+    delete protocol.driverIdentity;
     protocol.mode = "real";
     await writeFile(path.join(outputDirectory, "protocol.json"), JSON.stringify(protocol));
     const summary = JSON.parse(await readFile(path.join(outputDirectory, "summary.json"), "utf8"));
@@ -232,7 +236,8 @@ test("repeated paired trials preserve independent outputs and remain explicitly 
     await assert.rejects(() => runExperiment({ plan, sourceRoot, outputDirectory: broken, mode: "simulated", driver: async () => { throw new Error("fixture unavailable"); } }));
     const incomplete = JSON.parse(await readFile(path.join(broken, "summary.json"), "utf8"));
     assert.equal(incomplete.complete, false);
-    assert.equal(incomplete.notRun.length, 12);
+    assert.equal(incomplete.notRun.length, 11);
+    assert.equal(incomplete.interrupted.length, 1);
     await assert.rejects(() => auditExperiment(broken));
     await assert.rejects(() => runExperiment({ plan, sourceRoot, outputDirectory, driver: async () => assert.fail("must not overwrite") }), { code: "EEXIST" });
   } finally {
