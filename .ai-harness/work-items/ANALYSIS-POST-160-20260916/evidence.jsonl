@@ -1,0 +1,1 @@
+{"schemaVersion":1,"id":"032b51e2-466e-4676-a65a-0fb69758cc31","workItemId":"ANALYSIS-POST-160-20260916","taskId":null,"kind":"analysis","status":"pass","summary":"已复核1.6.0源码与对应CI耗时，给出性能画像/热点优化、真实效果对照、只读状态预览三项方向，说明顺序前提与未知收益，详见assessment.md。","timestamp":"2026-09-16T02:30:22.707Z","command":null,"independent":false,"stage":null,"revision":1,"taskAttempt":null}

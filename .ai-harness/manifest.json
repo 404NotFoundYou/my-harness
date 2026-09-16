@@ -1,6 +1,6 @@
 {
   "name": "ai-harness-runtime",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "integrityVersion": 1,
   "schemaVersion": 1,
   "minimumNodeVersion": "20.0.0",

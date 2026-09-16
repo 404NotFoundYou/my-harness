@@ -1,0 +1,171 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 1,
+  "id": "ANALYSIS-POST-160-20260916",
+  "type": "ANALYSIS",
+  "title": "评估1.6.0之后的性能与效果优化方向",
+  "status": "ANSWERED",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/analysis.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户授权技术咨询及相关只读检查，允许分析控制面记录"
+  },
+  "input": {
+    "references": [
+      "用户询问还有进一步优化方向；当前main@2df067e、Runtime1.6.0"
+    ],
+    "acceptance": [
+      "按当前源码与CI事实给出下一轮优先级、收益假设及可验证的最小范围"
+    ],
+    "nonGoals": [
+      "本轮不修改产品、不执行新模型实验、不提交推送分析记录"
+    ],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": null,
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "main@2df067e，初始工作区干净；doctor通过。读取当前续跑/审计/安装/测试准备/统计与CLI入口；本轮GitHub API复核运行35046146418：Windows评测108秒、Runtime325秒，均success。"
+    ],
+    "completedAt": "2026-09-16T02:30:21.792Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "2df067e216f20db04e4c57c7d65977c707fac1de",
+      "dirty": true,
+      "changedFiles": [
+        ".ai-harness/work-items/ANALYSIS-POST-160-20260916/events.jsonl",
+        ".ai-harness/work-items/ANALYSIS-POST-160-20260916/state.json"
+      ],
+      "fingerprints": {
+        ".ai-harness/work-items/ANALYSIS-POST-160-20260916/events.jsonl": "3df34f2fdc63b1a7c21e3b8ce446dbbe3da6efac0d37e4cafbdc9a7ea7426c7e",
+        ".ai-harness/work-items/ANALYSIS-POST-160-20260916/state.json": "e75f888188cb50977ae6f1d7a69f9230ac137eb83a1550218e64389d0c944568"
+      },
+      "source": {
+        "digest": "10a416ee54ce2a0dd5f0532c3b3f3557d186e58c07fdc2c5359547e4373bf09a",
+        "document": ".ai-harness/work-items/ANALYSIS-POST-160-20260916/snapshots/10a416ee54ce2a0dd5f0532c3b3f3557d186e58c07fdc2c5359547e4373bf09a.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "pending",
+    "document": null,
+    "evidence": [],
+    "completedAt": null
+  },
+  "database": {
+    "status": "pending",
+    "document": null,
+    "evidence": [],
+    "completedAt": null,
+    "impact": "unknown"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/ANALYSIS-POST-160-20260916/plan.json",
+    "approved": false,
+    "approvalRef": null
+  },
+  "verification": {
+    "status": "pending",
+    "evidence": [],
+    "stages": []
+  },
+  "review": {
+    "status": "pending",
+    "evidence": [],
+    "independent": false
+  },
+  "acceptance": {
+    "status": "pending",
+    "evidence": []
+  },
+  "analysis": {
+    "status": "pass",
+    "evidence": [
+      "032b51e2-466e-4676-a65a-0fb69758cc31"
+    ],
+    "conclusions": [
+      {
+        "id": "669cfce8-bfbe-4e3e-b809-c9141d7572c9",
+        "status": "PROVEN",
+        "text": "1.6.0当前提交对应Windows评测108秒、Runtime325秒；源码存在安装后置过滤历史目录和测试反复安装/建仓。",
+        "evidence": [
+          "本轮GitHub API运行35046146418；installer.mjs:138/172及tests/helpers.mjs。"
+        ]
+      },
+      {
+        "id": "39dc5c0d-1d6f-4fd9-afde-af73d3335ecd",
+        "status": "INFERRED",
+        "text": "连续n个试次后反复readExecution会对已完成试次执行三角数量的审计，规模增大可能带来开销；实际占比未知。",
+        "evidence": [
+          "benchmarks/experiment.mjs每项结束readExecution；execution.mjs循环中的auditTrial。"
+        ]
+      },
+      {
+        "id": "2a8425e5-6e68-480c-8920-6dd9a8f41fb4",
+        "status": "PROPOSAL",
+        "text": "下一轮代码优化先做性能画像，按实测热点只优化1至2处，保留全量验证和篡改检测；之后可补只读实验状态/剩余调用预览。",
+        "evidence": [
+          "assessment.md的热点候选、约束和前后对照验收。"
+        ]
+      },
+      {
+        "id": "4aeb257b-c8f1-49ab-8d62-65806e10e231",
+        "status": "UNKNOWN",
+        "text": "新增工程题和恢复能力对真实模型交付/耗时/Token的净收益尚无本轮真实实验数据。",
+        "evidence": [
+          "HARNESS-RESUME-20260916/verification.md明确模拟边界；本轮仅只读咨询。"
+        ]
+      }
+    ],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "pending",
+    "evidence": []
+  },
+  "blocked": null,
+  "delivery": null,
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-09-16T02:30:21.458Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-09-16T02:30:21.548Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "ANALYZING",
+      "at": "2026-09-16T02:30:22.011Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "ANALYZING",
+      "to": "ANSWERED",
+      "at": "2026-09-16T02:30:22.790Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-09-16T02:30:21.458Z",
+  "updatedAt": "2026-09-16T02:30:22.790Z"
+}

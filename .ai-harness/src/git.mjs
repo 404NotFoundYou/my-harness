@@ -2,7 +2,7 @@ import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import { exists } from "./filesystem.mjs";
-import { HarnessError } from "./errors.mjs";
+import { HarnessError, invariant } from "./errors.mjs";
 
 export function gitResult(root, args, { input = undefined, allowFailure = false } = {}) {
   const result = spawnSync("git", args, {
@@ -25,6 +25,22 @@ function text(result) {
   return (result.stdout || "").trim();
 }
 
+export function worktreeStatus(root) {
+  const result=gitResult(root,["--no-optional-locks","status","--porcelain=v1","-z","--untracked-files=all","--no-renames","--ignore-submodules=none"]);
+  const staged=new Set(),modified=new Set(),untracked=new Set();
+  for(const entry of result.stdout.split("\0").filter(Boolean)){
+    const status=entry.slice(0,2),file=entry.slice(3);
+    invariant(entry[2] === " "&&file&&(status === "??"||(/^[ MADTU]{2}$/.test(status)&&status !== "  ")),
+      "INVALID_GIT_STATUS", "Git 未返回预期的无重命名 porcelain 状态。" );
+    if(status === "??")untracked.add(file);
+    else{
+      if(status[0] !== " ")staged.add(file);
+      if(status[1] !== " ")modified.add(file);
+    }
+  }
+  return {staged:[...staged],modified:[...modified],untracked:[...untracked]};
+}
+
 export async function getGitBaseline(root) {
   const isGit = await exists(`${root}/.git`);
   if (!isGit) {
@@ -39,17 +55,9 @@ export async function getGitBaseline(root) {
 
   const branchResult = git(root, ["symbolic-ref", "--quiet", "--short", "HEAD"]);
   const commitResult = git(root, ["rev-parse", "--verify", "HEAD"]);
-  const unstagedResult = gitResult(root, ["diff", "--name-only", "-z", "--no-renames", "--ignore-submodules=none"]);
-  const stagedResult = gitResult(root, ["diff", "--cached", "--name-only", "-z", "--no-renames"]);
-  const untrackedResult = gitResult(root, ["ls-files", "--others", "--exclude-standard", "-z"]);
+  const status=worktreeStatus(root);
   const changedFiles = new Set();
-  for (const result of [unstagedResult, stagedResult, untrackedResult]) {
-    if (result.status === 0) {
-      for (const file of paths(result)) {
-        changedFiles.add(file.replaceAll("\\", "/"));
-      }
-    }
-  }
+  for(const file of [...status.modified,...status.staged,...status.untracked])changedFiles.add(file.replaceAll("\\", "/"));
 
   const fingerprints = {};
   for (const file of changedFiles) {
@@ -84,14 +92,8 @@ export async function changedFilesSince(root, commit) {
       warning: `无法读取 ${commit}...HEAD 差异：${(result.stderr || "").trim()}`,
     };
   }
-  const unstaged = gitResult(root, ["diff", "--name-only", "-z", "--no-renames", "--ignore-submodules=none"]);
-  const staged = gitResult(root, ["diff", "--cached", "--name-only", "-z", "--no-renames"]);
-  const untracked = gitResult(root, ["ls-files", "--others", "--exclude-standard", "-z"]);
+  const status=worktreeStatus(root);
   const files = new Set(paths(result));
-  for (const extra of [unstaged, staged, untracked]) {
-    if (extra.status === 0) {
-      for (const file of paths(extra)) files.add(file);
-    }
-  }
+  for(const file of [...status.modified,...status.staged,...status.untracked])files.add(file.replaceAll("\\", "/"));
   return { files: [...files].map((file) => file.replaceAll("\\", "/")).sort(), warning: null };
 }

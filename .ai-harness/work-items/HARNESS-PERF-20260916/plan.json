@@ -1,0 +1,159 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "HARNESS-PERF-20260916",
+  "mode": "single",
+  "rationale": "单主AI测量、实施同一验证性能目标，独立上下文复核状态/路径等边界。",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "测量并消除已确认的验证重复开销",
+      "module": "runtime",
+      "status": "COMPLETED",
+      "attempt": 1,
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        ".ai-harness/src/git.mjs",
+        ".ai-harness/src/snapshot.mjs",
+        ".ai-harness/src/installer.mjs",
+        ".ai-harness/tests/git-state.test.mjs",
+        ".ai-harness/tests/installer.test.mjs",
+        ".ai-harness/manifest.json",
+        "README.md"
+      ],
+      "verification": [
+        "{\"command\":\"node\",\"args\":[\"--test\",\".ai-harness/work-items/HARNESS-PERF-20260916/profile.test.mjs\"],\"timeoutMs\":180000}",
+        "{\"command\":\"node\",\"args\":[\"--test\",\".ai-harness/tests/git-state.test.mjs\"],\"timeoutMs\":180000}",
+        "{\"command\":\"node\",\"args\":[\"--test\",\".ai-harness/tests/reliability.test.mjs\"],\"timeoutMs\":180000}",
+        "{\"command\":\"node\",\"args\":[\"--test\",\".ai-harness/tests/installer.test.mjs\"],\"timeoutMs\":120000}",
+        "{\"command\":\"node\",\"args\":[\"--test\",\".ai-harness/tests/acceptance-artifacts.test.mjs\",\".ai-harness/tests/bugfix-pipeline.test.mjs\",\".ai-harness/tests/checker.test.mjs\",\".ai-harness/tests/cli.test.mjs\",\".ai-harness/tests/command-execution.test.mjs\",\".ai-harness/tests/compact.test.mjs\",\".ai-harness/tests/context-delta.test.mjs\",\".ai-harness/tests/filesystem.test.mjs\",\".ai-harness/tests/finish-resume.test.mjs\",\".ai-harness/tests/guidance-tools.test.mjs\",\".ai-harness/tests/guide.test.mjs\",\".ai-harness/tests/installer-checkout.test.mjs\",\".ai-harness/tests/locking.test.mjs\",\".ai-harness/tests/managed-block.test.mjs\",\".ai-harness/tests/output.test.mjs\",\".ai-harness/tests/policy.test.mjs\",\".ai-harness/tests/root-alias.test.mjs\",\".ai-harness/tests/snapshot.test.mjs\",\".ai-harness/tests/spec-input.test.mjs\",\".ai-harness/tests/timeout.test.mjs\",\".ai-harness/tests/validator.test.mjs\",\".ai-harness/tests/verification-pipeline.test.mjs\",\".ai-harness/tests/workflow.test.mjs\"],\"timeoutMs\":180000}",
+        "{\"command\":\"node\",\"args\":[\"--test\",\"benchmarks/tests/runner.test.mjs\",\"benchmarks/tests/multifile.test.mjs\",\"benchmarks/tests/resume.test.mjs\"],\"timeoutMs\":240000}",
+        "{\"args\":[\"--test\",\".ai-harness/work-items/HARNESS-PERF-20260916/compare-profile.test.mjs\"],\"command\":\"node\",\"timeoutMs\":300000}"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            "--test",
+            ".ai-harness/work-items/HARNESS-PERF-20260916/profile.test.mjs"
+          ],
+          "timeoutMs": 180000
+        },
+        {
+          "id": "V2",
+          "command": "node",
+          "args": [
+            "--test",
+            ".ai-harness/tests/git-state.test.mjs"
+          ],
+          "timeoutMs": 180000
+        },
+        {
+          "id": "V3",
+          "command": "node",
+          "args": [
+            "--test",
+            ".ai-harness/tests/reliability.test.mjs"
+          ],
+          "timeoutMs": 180000
+        },
+        {
+          "id": "V4",
+          "command": "node",
+          "args": [
+            "--test",
+            ".ai-harness/tests/installer.test.mjs"
+          ],
+          "timeoutMs": 120000
+        },
+        {
+          "id": "V5",
+          "command": "node",
+          "args": [
+            "--test",
+            ".ai-harness/tests/acceptance-artifacts.test.mjs",
+            ".ai-harness/tests/bugfix-pipeline.test.mjs",
+            ".ai-harness/tests/checker.test.mjs",
+            ".ai-harness/tests/cli.test.mjs",
+            ".ai-harness/tests/command-execution.test.mjs",
+            ".ai-harness/tests/compact.test.mjs",
+            ".ai-harness/tests/context-delta.test.mjs",
+            ".ai-harness/tests/filesystem.test.mjs",
+            ".ai-harness/tests/finish-resume.test.mjs",
+            ".ai-harness/tests/guidance-tools.test.mjs",
+            ".ai-harness/tests/guide.test.mjs",
+            ".ai-harness/tests/installer-checkout.test.mjs",
+            ".ai-harness/tests/locking.test.mjs",
+            ".ai-harness/tests/managed-block.test.mjs",
+            ".ai-harness/tests/output.test.mjs",
+            ".ai-harness/tests/policy.test.mjs",
+            ".ai-harness/tests/root-alias.test.mjs",
+            ".ai-harness/tests/snapshot.test.mjs",
+            ".ai-harness/tests/spec-input.test.mjs",
+            ".ai-harness/tests/timeout.test.mjs",
+            ".ai-harness/tests/validator.test.mjs",
+            ".ai-harness/tests/verification-pipeline.test.mjs",
+            ".ai-harness/tests/workflow.test.mjs"
+          ],
+          "timeoutMs": 180000
+        },
+        {
+          "id": "V6",
+          "command": "node",
+          "args": [
+            "--test",
+            "benchmarks/tests/runner.test.mjs",
+            "benchmarks/tests/multifile.test.mjs",
+            "benchmarks/tests/resume.test.mjs"
+          ],
+          "timeoutMs": 240000
+        },
+        {
+          "id": "V7",
+          "command": "node",
+          "args": [
+            "--test",
+            ".ai-harness/work-items/HARNESS-PERF-20260916/compare-profile.test.mjs"
+          ],
+          "timeoutMs": 300000
+        }
+      ],
+      "docsImpact": [
+        "README.md"
+      ],
+      "reviewBatch": "R1",
+      "risk": "high",
+      "owner": "primary-ai",
+      "verificationStatus": "pass",
+      "reviewStatus": "pass",
+      "evidence": [
+        "35a8c84d-8a9a-40bb-86f8-465e0fb7ff01",
+        "23c7493b-7172-4b1e-900a-442a2e51bc35"
+      ],
+      "deferralApproval": null,
+      "verificationSource": {
+        "digest": "1b3954d3ce3d904d082d34bc1505b221ac4196c1eebd76608d58b368220cbcf6",
+        "document": ".ai-harness/work-items/HARNESS-PERF-20260916/snapshots/1b3954d3ce3d904d082d34bc1505b221ac4196c1eebd76608d58b368220cbcf6.json"
+      },
+      "reviewSource": {
+        "digest": "1b3954d3ce3d904d082d34bc1505b221ac4196c1eebd76608d58b368220cbcf6",
+        "document": ".ai-harness/work-items/HARNESS-PERF-20260916/snapshots/1b3954d3ce3d904d082d34bc1505b221ac4196c1eebd76608d58b368220cbcf6.json"
+      }
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "验证性能与状态等价独立复核",
+      "risk": "high",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": true
+    }
+  ],
+  "createdAt": "2026-09-16T02:41:27.910Z",
+  "updatedAt": "2026-09-16T03:10:51.748Z",
+  "revision": 2
+}

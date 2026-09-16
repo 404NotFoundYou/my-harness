@@ -1,0 +1,161 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 1,
+  "id": "HARNESS-PERF-20260916",
+  "type": "ITERATION",
+  "title": "测量并优化验证链路重复开销",
+  "status": "IMPLEMENTING",
+  "flags": [
+    "api"
+  ],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/iteration.md",
+    ".ai-harness/policies/api.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户确认性能优化；会话中提交推送和远端CI授权持续有效"
+  },
+  "input": {
+    "references": [
+      "用户好的继续，接受ANALYSIS-POST-160-20260916首项性能画像与热点优化"
+    ],
+    "acceptance": [
+      "先测完整工作流及安装/Git/快照/审计，记录多次耗时和调用次数；只优化实际证据支持的热点并保留前后结果",
+      "文件清单、Git状态、源码快照和证据校验语义不变，路径/删除/重命名/子模块/用户修改等回归及完整测试通过",
+      "独立复核和check --ci通过后提交推送，核验Windows/Ubuntu CI；性能结论限定观测环境，不宣称未经验证的普遍加速"
+    ],
+    "nonGoals": [
+      "不运行付费模型，不删除历史证据或跳过测试，不新增状态预览或并发编排"
+    ],
+    "version": "1.6.1"
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": null,
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "main@2df067e，Runtime1.6.0，仅上轮ANALYSIS记录未提交；doctor通过。读取installer列表与调用方、Git基线/快照、测试准备、完整工作流及实验审计代码；当前没有性能热点归因，先进行隔离测量。"
+    ],
+    "completedAt": "2026-09-16T02:41:27.151Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "2df067e216f20db04e4c57c7d65977c707fac1de",
+      "dirty": true,
+      "changedFiles": [
+        ".ai-harness/work-items/ANALYSIS-POST-160-20260916/assessment.md",
+        ".ai-harness/work-items/ANALYSIS-POST-160-20260916/events.jsonl",
+        ".ai-harness/work-items/ANALYSIS-POST-160-20260916/evidence.jsonl",
+        ".ai-harness/work-items/ANALYSIS-POST-160-20260916/snapshots/10a416ee54ce2a0dd5f0532c3b3f3557d186e58c07fdc2c5359547e4373bf09a.json",
+        ".ai-harness/work-items/ANALYSIS-POST-160-20260916/state.json",
+        ".ai-harness/work-items/HARNESS-PERF-20260916/events.jsonl",
+        ".ai-harness/work-items/HARNESS-PERF-20260916/state.json"
+      ],
+      "fingerprints": {
+        ".ai-harness/work-items/ANALYSIS-POST-160-20260916/assessment.md": "2965dc4b9a95373ab6433243a3018170826804cbc006a39c2f831f7744749590",
+        ".ai-harness/work-items/ANALYSIS-POST-160-20260916/events.jsonl": "47576643ac26685f5b39e6640767b6185e1c5d7de833f30676439490cf6c9a03",
+        ".ai-harness/work-items/ANALYSIS-POST-160-20260916/evidence.jsonl": "e37e045127f5b33e9ab92adf17a85411be096ab053ff993ad8ccbfc32d7b0f53",
+        ".ai-harness/work-items/ANALYSIS-POST-160-20260916/snapshots/10a416ee54ce2a0dd5f0532c3b3f3557d186e58c07fdc2c5359547e4373bf09a.json": "ddb79cdc4b3c6707f857946ce181327e0452f662b5521f46026e275d6387816c",
+        ".ai-harness/work-items/ANALYSIS-POST-160-20260916/state.json": "b4dd7dc118c22fa2ecc26a92e07f0ac016962e05ef8b17fe8afa718e9ccb3552",
+        ".ai-harness/work-items/HARNESS-PERF-20260916/events.jsonl": "62cc3e988373258617d3780c6501347ed4a6e67c9e72b2f70fc5c3a64d6397cf",
+        ".ai-harness/work-items/HARNESS-PERF-20260916/state.json": "926e549ba5b6da57bea089a44c541d5167ec05a9eb1b50257bcd673121d03434"
+      },
+      "source": {
+        "digest": "10a416ee54ce2a0dd5f0532c3b3f3557d186e58c07fdc2c5359547e4373bf09a",
+        "document": ".ai-harness/work-items/HARNESS-PERF-20260916/snapshots/10a416ee54ce2a0dd5f0532c3b3f3557d186e58c07fdc2c5359547e4373bf09a.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": ".ai-harness/work-items/HARNESS-PERF-20260916/design.md",
+    "evidence": [
+      "先以隔离固定工作流测量5次耗时/调用数，再选Git状态或安装列表等一个主热点；不改变证据语义或跨命令缓存。"
+    ],
+    "completedAt": "2026-09-16T02:41:27.744Z"
+  },
+  "database": {
+    "impact": "none",
+    "status": "not-applicable",
+    "document": null,
+    "evidence": [
+      "预定只优化确定性文件/进程读取，Git基线与源码快照字段和哈希不变；不新增或迁移持久化格式，无外部数据库。"
+    ],
+    "completedAt": "2026-09-16T02:41:27.829Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/HARNESS-PERF-20260916/plan.json",
+    "approved": true,
+    "approvalRef": "用户确认性能优化；先测后改，既有授权内自主选择小范围热点，独立高风险复核。"
+  },
+  "verification": {
+    "status": "pending",
+    "evidence": [],
+    "stages": []
+  },
+  "review": {
+    "status": "pending",
+    "evidence": [],
+    "independent": false
+  },
+  "acceptance": {
+    "status": "pending",
+    "evidence": []
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "pending",
+    "evidence": []
+  },
+  "blocked": null,
+  "delivery": null,
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-09-16T02:41:26.823Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-09-16T02:41:26.908Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-09-16T02:41:27.367Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-09-16T02:41:28.333Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-09-16T02:41:28.418Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-09-16T02:41:26.823Z",
+  "updatedAt": "2026-09-16T02:41:28.504Z"
+}

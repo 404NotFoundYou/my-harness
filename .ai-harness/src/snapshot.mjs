@@ -2,7 +2,7 @@ import path from "node:path";
 import { createHash } from "node:crypto";
 import { lstat, readlink, realpath } from "node:fs/promises";
 import { atomicWriteJson, normalizeRelativePath, readJson, resolveProjectPath } from "./filesystem.mjs";
-import { gitResult } from "./git.mjs";
+import { gitResult, worktreeStatus } from "./git.mjs";
 import { invariant } from "./errors.mjs";
 
 function hash(value) { return createHash("sha256").update(value).digest("hex"); }
@@ -30,10 +30,9 @@ export async function sourceSnapshot(root) {
     invariant(match && match[3] === "0", "UNMERGED_SOURCE", "代码快照包含未解决的合并冲突。" );
     if (!controlPath(match[4], config.workItemsDirectory)) files[match[4]] = `${match[1]}:${match[2]}`;
   }
-  const modified = gitResult(root, ["diff", "--name-only", "-z", "--no-renames", "--ignore-submodules=none"]).stdout.split("\0").filter(Boolean);
-  const untracked = gitResult(root, ["ls-files", "--others", "--exclude-standard", "-z"]).stdout.split("\0").filter(Boolean);
+  const {modified,untracked}=worktreeStatus(root);
   const regular = [];
-  const fileMode = gitResult(root, ["config", "--bool", "core.filemode"], { allowFailure: true }).stdout.trim() !== "false";
+  let fileMode;
   for (const file of [...new Set([...modified, ...untracked])].sort()) {
     if (controlPath(file, config.workItemsDirectory)) continue;
     const absolute = await resolveProjectPath(root, file);
@@ -48,6 +47,7 @@ export async function sourceSnapshot(root) {
       files[file] = `120000:${oid}`;
     } else {
       invariant(info.isFile(), "UNSUPPORTED_SOURCE_FILE", `不能对非普通文件建立代码快照：${file}`);
+      if(fileMode === undefined)fileMode=gitResult(root, ["config", "--bool", "core.filemode"], { allowFailure: true }).stdout.trim() !== "false";
       regular.push({ file, mode: fileMode ? (info.mode & 0o111 ? "100755" : "100644") : (files[file]?.split(":")[0] || "100644") });
     }
   }
