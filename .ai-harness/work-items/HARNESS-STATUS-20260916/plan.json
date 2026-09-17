@@ -1,0 +1,141 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "HARNESS-STATUS-20260916",
+  "mode": "single",
+  "rationale": "主AI串行实现只读状态入口及校验复用，独立上下文复核竞争/漂移/无副作用边界。",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "实现只读实验诊断与续跑预览",
+      "module": "benchmarks",
+      "status": "COMPLETED",
+      "attempt": 1,
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        "benchmarks/status.mjs",
+        "benchmarks/execution.mjs",
+        "benchmarks/experiment.mjs",
+        "benchmarks/tests/status.test.mjs",
+        "benchmarks/README.md",
+        "README.md",
+        ".ai-harness/manifest.json",
+        ".github/workflows/source-tests.yml"
+      ],
+      "verification": [
+        "{\"timeoutMs\":180000,\"command\":\"node\",\"args\":[\"--test\",\"benchmarks/tests/status.test.mjs\"]}",
+        "{\"timeoutMs\":240000,\"command\":\"node\",\"args\":[\"--test\",\"benchmarks/tests/runner.test.mjs\",\"benchmarks/tests/multifile.test.mjs\",\"benchmarks/tests/resume.test.mjs\"]}",
+        "{\"timeoutMs\":180000,\"command\":\"node\",\"args\":[\"--test\",\".ai-harness/tests/reliability.test.mjs\"]}",
+        "{\"timeoutMs\":120000,\"command\":\"node\",\"args\":[\"--test\",\".ai-harness/tests/installer.test.mjs\"]}",
+        "{\"timeoutMs\":180000,\"command\":\"node\",\"args\":[\"--test\",\".ai-harness/tests/acceptance-artifacts.test.mjs\",\".ai-harness/tests/bugfix-pipeline.test.mjs\",\".ai-harness/tests/checker.test.mjs\",\".ai-harness/tests/cli.test.mjs\",\".ai-harness/tests/command-execution.test.mjs\",\".ai-harness/tests/compact.test.mjs\",\".ai-harness/tests/context-delta.test.mjs\",\".ai-harness/tests/filesystem.test.mjs\",\".ai-harness/tests/finish-resume.test.mjs\",\".ai-harness/tests/git-state.test.mjs\",\".ai-harness/tests/guidance-tools.test.mjs\",\".ai-harness/tests/guide.test.mjs\",\".ai-harness/tests/installer-checkout.test.mjs\",\".ai-harness/tests/locking.test.mjs\",\".ai-harness/tests/managed-block.test.mjs\",\".ai-harness/tests/output.test.mjs\",\".ai-harness/tests/policy.test.mjs\",\".ai-harness/tests/root-alias.test.mjs\",\".ai-harness/tests/snapshot.test.mjs\",\".ai-harness/tests/spec-input.test.mjs\",\".ai-harness/tests/timeout.test.mjs\",\".ai-harness/tests/validator.test.mjs\",\".ai-harness/tests/verification-pipeline.test.mjs\",\".ai-harness/tests/workflow.test.mjs\"]}"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            "--test",
+            "benchmarks/tests/status.test.mjs"
+          ],
+          "timeoutMs": 180000
+        },
+        {
+          "id": "V2",
+          "command": "node",
+          "args": [
+            "--test",
+            "benchmarks/tests/runner.test.mjs",
+            "benchmarks/tests/multifile.test.mjs",
+            "benchmarks/tests/resume.test.mjs"
+          ],
+          "timeoutMs": 240000
+        },
+        {
+          "id": "V3",
+          "command": "node",
+          "args": [
+            "--test",
+            ".ai-harness/tests/reliability.test.mjs"
+          ],
+          "timeoutMs": 180000
+        },
+        {
+          "id": "V4",
+          "command": "node",
+          "args": [
+            "--test",
+            ".ai-harness/tests/installer.test.mjs"
+          ],
+          "timeoutMs": 120000
+        },
+        {
+          "id": "V5",
+          "command": "node",
+          "args": [
+            "--test",
+            ".ai-harness/tests/acceptance-artifacts.test.mjs",
+            ".ai-harness/tests/bugfix-pipeline.test.mjs",
+            ".ai-harness/tests/checker.test.mjs",
+            ".ai-harness/tests/cli.test.mjs",
+            ".ai-harness/tests/command-execution.test.mjs",
+            ".ai-harness/tests/compact.test.mjs",
+            ".ai-harness/tests/context-delta.test.mjs",
+            ".ai-harness/tests/filesystem.test.mjs",
+            ".ai-harness/tests/finish-resume.test.mjs",
+            ".ai-harness/tests/git-state.test.mjs",
+            ".ai-harness/tests/guidance-tools.test.mjs",
+            ".ai-harness/tests/guide.test.mjs",
+            ".ai-harness/tests/installer-checkout.test.mjs",
+            ".ai-harness/tests/locking.test.mjs",
+            ".ai-harness/tests/managed-block.test.mjs",
+            ".ai-harness/tests/output.test.mjs",
+            ".ai-harness/tests/policy.test.mjs",
+            ".ai-harness/tests/root-alias.test.mjs",
+            ".ai-harness/tests/snapshot.test.mjs",
+            ".ai-harness/tests/spec-input.test.mjs",
+            ".ai-harness/tests/timeout.test.mjs",
+            ".ai-harness/tests/validator.test.mjs",
+            ".ai-harness/tests/verification-pipeline.test.mjs",
+            ".ai-harness/tests/workflow.test.mjs"
+          ],
+          "timeoutMs": 180000
+        }
+      ],
+      "docsImpact": [
+        "README.md",
+        "benchmarks/README.md"
+      ],
+      "reviewBatch": "R1",
+      "risk": "high",
+      "owner": "primary-ai",
+      "verificationStatus": "pass",
+      "reviewStatus": "pass",
+      "evidence": [
+        "ed78b6ac-7a82-4e96-ac13-e15a9afdb69a",
+        "1d3dc015-d7e6-4490-8fcd-0bc6dff0bace"
+      ],
+      "deferralApproval": null,
+      "verificationSource": {
+        "digest": "27b2dae8e518eb8e2f35b77af5b50fd4d0172e851e6f39efd4a62fca6af5188b",
+        "document": ".ai-harness/work-items/HARNESS-STATUS-20260916/snapshots/27b2dae8e518eb8e2f35b77af5b50fd4d0172e851e6f39efd4a62fca6af5188b.json"
+      },
+      "reviewSource": {
+        "digest": "27b2dae8e518eb8e2f35b77af5b50fd4d0172e851e6f39efd4a62fca6af5188b",
+        "document": ".ai-harness/work-items/HARNESS-STATUS-20260916/snapshots/27b2dae8e518eb8e2f35b77af5b50fd4d0172e851e6f39efd4a62fca6af5188b.json"
+      }
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "只读状态与可信预览独立复核",
+      "risk": "high",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": true
+    }
+  ],
+  "createdAt": "2026-09-16T09:21:02.957Z",
+  "updatedAt": "2026-09-17T01:14:10.451Z"
+}

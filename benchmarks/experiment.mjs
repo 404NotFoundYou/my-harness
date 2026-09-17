@@ -47,6 +47,16 @@ function checkedIdentity(mode, driver, identity) {
   return structuredClone(value);
 }
 
+export function validateExperimentProtocol(protocol) {
+  assert.equal(protocol.schemaVersion,4,"Only protocol v4 can resume; historical experiments are read-only");
+  assert.ok(["real","simulated"].includes(protocol.mode),"Invalid experiment mode");
+  assert.match(protocol.source,/^[a-f0-9]{64}$/,"Invalid source digest");
+  const {createdAt,...stored}=protocol;
+  assert.ok(typeof createdAt === "string"&&Number.isFinite(Date.parse(createdAt)),"Invalid protocol creation time");
+  const plan=experimentPlan({weak:protocol.groups.find(group=>group.id==="weak-baseline")?.model,strong:protocol.groups.find(group=>group.id==="strong-reference")?.model,client:protocol.client,comparison:protocol.comparison,repetitions:protocol.repetitions,timeoutMs:protocol.budget.timeoutMs,maxToolCalls:protocol.budget.maxToolCalls,suite:protocol.suite});
+  assert.deepEqual(stored,{...plan,mode:protocol.mode,source:protocol.source,tasks:tasksForSuite(plan.suite).map(taskManifest),driverIdentity:checkedIdentity(protocol.mode,null,protocol.driverIdentity)},"Invalid frozen protocol");
+}
+
 export async function runExperiment({ plan, sourceRoot, outputDirectory, driver, mode = "real", onProgress = () => {}, resume = false, driverIdentity = null }) {
   assert.ok(["real","simulated"].includes(mode),"Invalid experiment mode");
   assert.equal(typeof resume,"boolean","resume must be a boolean");
@@ -68,9 +78,8 @@ export async function runExperiment({ plan, sourceRoot, outputDirectory, driver,
   async function load(){
     await assertSource();
     const protocol=JSON.parse((await readExperimentFile(outputDirectory,"protocol.json")).toString("utf8"));
-    assert.equal(protocol.schemaVersion,4,"Only protocol v4 can resume; historical experiments are read-only");
+    validateExperimentProtocol(protocol);
     const {createdAt,...stored}=protocol;
-    assert.ok(typeof createdAt === "string"&&Number.isFinite(Date.parse(createdAt)),"Invalid protocol creation time");
     assert.deepEqual(stored,frozen,"Frozen protocol, source or driver differs");
     return {protocol,...await readExecution(outputDirectory,protocol)};
   }

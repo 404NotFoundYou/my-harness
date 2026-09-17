@@ -9,7 +9,7 @@ export function initialExecution(protocol, protocolBytes) {
   return {schemaVersion:1,protocolSha256:hash(protocolBytes),trials:protocol.schedule.map(entry=>({directory:entry.directory,status:"pending"}))};
 }
 
-export async function readExecution(directory, protocol) {
+export async function readExecutionLedger(directory, protocol) {
   assert.equal(protocol.schemaVersion,4,"Only protocol v4 can resume");
   const protocolBytes=await readExperimentFile(directory,"protocol.json");
   assert.deepEqual(JSON.parse(protocolBytes.toString("utf8")),protocol,"Protocol changed while loading");
@@ -19,14 +19,22 @@ export async function readExecution(directory, protocol) {
   assert.equal(ledger.protocolSha256,hash(protocolBytes),"Protocol hash differs from execution ledger");
   assert.ok(Array.isArray(ledger.trials),"Invalid execution trials");
   assert.deepEqual(ledger.trials.map(row=>row.directory),protocol.schedule.map(row=>row.directory),"Execution trials differ from frozen schedule");
-  const tasks=tasksForSuite(protocol.suite),rows=[],before=JSON.stringify(ledger);
-  for (const [index,state] of ledger.trials.entries()) {
-    const entry=protocol.schedule[index];
+  for (const state of ledger.trials) {
     assert.ok(["pending","started","completed","interrupted"].includes(state.status),"Invalid execution trial status");
     const keys=["directory","status",...(state.status === "pending" ? [] : ["startedAt"]),...(state.status === "completed" ? ["resultSha256"] : []),...(state.status === "interrupted" ? ["reason"] : [])].sort();
     assert.deepEqual(Object.keys(state).sort(),keys,"Invalid execution trial fields");
     if(state.status !== "pending")assert.ok(typeof state.startedAt === "string"&&Number.isFinite(Date.parse(state.startedAt)),"Invalid execution start time");
     if(state.status === "interrupted")assert.equal(state.reason,"result-unavailable","Invalid interruption reason");
+    if(state.status === "completed")assert.match(state.resultSha256,/^[a-f0-9]{64}$/, "Invalid result hash");
+  }
+  return ledger;
+}
+
+export async function readExecution(directory, protocol) {
+  const ledger=await readExecutionLedger(directory,protocol);
+  const tasks=tasksForSuite(protocol.suite),rows=[],before=JSON.stringify(ledger);
+  for (const [index,state] of ledger.trials.entries()) {
+    const entry=protocol.schedule[index];
     const trialPath=await resolveProjectPath(directory,entry.directory,{forWrite:true});
     const info=await lstat(trialPath).catch(error=>{if(error.code === "ENOENT")return null;throw error;});
     if(state.status === "pending"){

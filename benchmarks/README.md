@@ -6,7 +6,7 @@
 
 ```powershell
 # 不调用模型的框架测试
-node --test benchmarks/tests/runner.test.mjs benchmarks/tests/multifile.test.mjs benchmarks/tests/resume.test.mjs
+node --test benchmarks/tests/runner.test.mjs benchmarks/tests/multifile.test.mjs benchmarks/tests/resume.test.mjs benchmarks/tests/status.test.mjs
 
 # 真实调用；复用现有 Codex CLI 登录，运行前应取得模型调用授权
 node benchmarks/run.mjs --cli 'D:/Program Files/nodejs/node_global/node_modules/@openai/codex/bin/codex.js' --weak gpt-5.6-luna --strong gpt-5.6-sol --out .ai-harness/work-items/MODEL-BENCHMARK-001/pilot
@@ -52,6 +52,26 @@ Codex与Claude请求medium推理档；Gemini CLI没有对应参数，因此记�
 接口依据：[Codex事件流](https://learn.chatgpt.com/docs/non-interactive-mode)、[Claude非交互模式](https://code.claude.com/docs/en/headless)、[Gemini非交互模式](https://geminicli.com/docs/cli/headless/)。驱动存在不等于已验证本机登录、沙箱和真实任务；具体环境检查与实跑记录保存在对应工作项中。
 
 首次运行的输出目录必须不存在，避免覆盖旧实验；协议v4可通过下述 `--resume` 继续。保存协议/源码/任务哈希、prompt、脱敏JSON事件和stderr、结构化自报结论、候选代码、退出码、耗时、工具数和用量、文件范围检查、Harness工作项记录、隐藏用例结果及统计。`summary.complete` 仅在计划内全部试次都有可信结果且源版本未变化时为true；失败样本仍参与统计。模型功能通过、正常完成、流程终态、误称完成分别统计。
+
+## 只读实验状态与续跑预览
+
+1.7.0提供独立状态入口，从冻结协议读取模型、题集和预算，无需重新填写实验参数：
+
+```powershell
+node benchmarks/status.mjs --out .ai-harness/work-items/<工作项>/project-comparison
+# 可选：只读取明确指定的CLI入口指纹，不执行CLI、不检查登录
+node benchmarks/status.mjs --out .ai-harness/work-items/<工作项>/project-comparison --cli '<CLI实际文件路径>'
+```
+
+输出JSON：`observed`保留磁盘中的pending/started/completed/interrupted计数；`recoveryPreview`是在内存中按实际续跑规则核验后推导的状态，`needed`表示started需要登记恢复结果。列表最多展示20项，`omittedTrials`说明省略数量，计数覆盖完整计划。`integrity`表示记录校验结果，源码/身份由`source`和`driver`单独说明；`blockers`列出未满足条件。报告不输出候选正文，字符串递归脱敏。
+
+默认身份为`unverified`，不会根据协议中自报的外部CLI路径读取文件。API `inspectExperiment({sourceRoot, outputDirectory, cliPath?, driverIdentity?})`还允许为模拟实验传入`driverIdentity`，标记`basis: caller-declared`；该值只表示调用方声明，不能证明真实客户端或函数闭包一致。
+
+仅在记录完整、源码与显式身份匹配、读取稳定且锁为free或本机stale时，`resume.canResume`为true，并提供`remainingCalls`（仅pending）；否则为null。started有可信结果可预览为completed，确实缺结果则预览为interrupted，不自动重试。因此`remainingCalls: 0`不等于`recoveryPreview.complete: true`，completed也可能包含功能失败样本。
+
+状态检查不创建目录或锁、不回收失活锁、不补写ledger或summary、不启动模型。stale仅标记`lockRecoveryRequired`；active、foreign、unknown、changed或legacy锁只做结构观察，`recoveryPreview`为null。前后复查协议/ledger原字节、锁代次、源码和显式身份；观察到变化便撤销可续跑结论。读取结束后的变化仍须由实际`--resume`获取锁后重新核验，`validationRequiredOnExecution`始终为true，预览不提供执行授权或未来调用数保证。
+
+摘要缺失或损坏不妨碍可信v4记录的预览；损坏证据和内部链接明确拒绝。旧v1/v2/v3返回`unsupported`，仍使用原审计。CLI退出码0表示得到可续跑观察，2表示锁、漂移、身份未确认或旧协议阻塞，1表示参数、实验文件缺失或证据损坏。模拟及合成CLI测试不代表实际模型客户端已验证。
 
 ## 实验续跑与中断记录
 

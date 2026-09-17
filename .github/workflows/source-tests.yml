@@ -20,7 +20,7 @@ jobs:
         with:
           node-version: "20"
       - name: Benchmark framework tests (no model calls)
-        run: node --test benchmarks/tests/runner.test.mjs benchmarks/tests/multifile.test.mjs benchmarks/tests/resume.test.mjs
+        run: node --test benchmarks/tests/runner.test.mjs benchmarks/tests/multifile.test.mjs benchmarks/tests/resume.test.mjs benchmarks/tests/status.test.mjs
       - name: Windows runtime compatibility
         if: runner.os == 'Windows'
         run: node .ai-harness/tests/run.mjs

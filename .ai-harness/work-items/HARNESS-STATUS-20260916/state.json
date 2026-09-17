@@ -1,0 +1,250 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 1,
+  "id": "HARNESS-STATUS-20260916",
+  "type": "ITERATION",
+  "title": "增加只读实验状态与续跑预览",
+  "status": "DONE",
+  "flags": [
+    "api"
+  ],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/iteration.md",
+    ".ai-harness/policies/api.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户持续授权继续优化；已有提交推送和远端CI核验授权持续有效"
+  },
+  "input": {
+    "references": [
+      "用户好能继续优化吗；沿用ANALYSIS-POST-160-20260916的只读实验状态和剩余调用预览方向"
+    ],
+    "acceptance": [
+      "只读入口展示冻结配置、已完成/启动中/中断/待执行数量、恢复预期及阻塞原因，不创建锁、不回收锁、不改写实验文件、不启动客户端",
+      "复用协议/ledger/结果校验，活跃或变化中的实验不宣称可立即续跑，损坏/漂移/未验证身份明确阻塞，旧协议不伪装成可恢复",
+      "只读与并发/异常回归、完整回归、独立复核和check --ci通过后提交推送，核验Windows/Ubuntu CI"
+    ],
+    "nonGoals": [
+      "不调用付费模型，不自动修复状态，不增加重试/实际执行入口，不改实验协议版本或旧统计"
+    ],
+    "version": "1.7.0"
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": null,
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "main@1d2b357，Runtime1.6.1，工作区干净，doctor通过；读取run/experiment/execution/audit-trial/protocol/locking及sourceSnapshot与直接测试。已有resume执行和初始dry-run，无独立只读状态入口。"
+    ],
+    "completedAt": "2026-09-16T09:21:02.261Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "1d2b3571370dd1517ee958411ae0ccff58896b76",
+      "dirty": true,
+      "changedFiles": [
+        ".ai-harness/work-items/HARNESS-STATUS-20260916/events.jsonl",
+        ".ai-harness/work-items/HARNESS-STATUS-20260916/state.json"
+      ],
+      "fingerprints": {
+        ".ai-harness/work-items/HARNESS-STATUS-20260916/events.jsonl": "f8c99d9251ee323c1da1fa4398bfd0e459932ee1e93ee9bc7b6d991df14f4a86",
+        ".ai-harness/work-items/HARNESS-STATUS-20260916/state.json": "b4d3903110fb94550be8162b8737e726b575c63768556d68c7fb9cf7c3cf08d4"
+      },
+      "source": {
+        "digest": "1b3954d3ce3d904d082d34bc1505b221ac4196c1eebd76608d58b368220cbcf6",
+        "document": ".ai-harness/work-items/HARNESS-STATUS-20260916/snapshots/1b3954d3ce3d904d082d34bc1505b221ac4196c1eebd76608d58b368220cbcf6.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": ".ai-harness/work-items/HARNESS-STATUS-20260916/design.md",
+    "evidence": [
+      "独立只读入口，共享冻结协议/ledger校验；活跃观察与磁盘/预期恢复状态分开，任何未确认条件撤销ready和剩余调用结论。"
+    ],
+    "completedAt": "2026-09-16T09:21:02.792Z"
+  },
+  "database": {
+    "impact": "none",
+    "status": "not-applicable",
+    "document": null,
+    "evidence": [
+      "只读派生报告和提取共用校验函数，不新增或改写实验记录字段、哈希、协议或数据库。"
+    ],
+    "completedAt": "2026-09-16T09:21:02.875Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/HARNESS-STATUS-20260916/plan.json",
+    "approved": true,
+    "approvalRef": "用户持续继续优化授权，按既有建议实现只读入口，保留执行/费用边界。"
+  },
+  "verification": {
+    "status": "pass",
+    "evidence": [
+      "f5aa679b-c770-4057-bae1-cd10d7a661e9"
+    ],
+    "stages": [],
+    "source": {
+      "digest": "27b2dae8e518eb8e2f35b77af5b50fd4d0172e851e6f39efd4a62fca6af5188b",
+      "document": ".ai-harness/work-items/HARNESS-STATUS-20260916/snapshots/27b2dae8e518eb8e2f35b77af5b50fd4d0172e851e6f39efd4a62fca6af5188b.json"
+    }
+  },
+  "review": {
+    "status": "pass",
+    "evidence": [
+      "0346d1e3-aa02-4d9e-ba04-77f7f337f264"
+    ],
+    "independent": true,
+    "source": {
+      "digest": "27b2dae8e518eb8e2f35b77af5b50fd4d0172e851e6f39efd4a62fca6af5188b",
+      "document": ".ai-harness/work-items/HARNESS-STATUS-20260916/snapshots/27b2dae8e518eb8e2f35b77af5b50fd4d0172e851e6f39efd4a62fca6af5188b.json"
+    }
+  },
+  "acceptance": {
+    "status": "pass",
+    "evidence": [
+      "0b8e2bf0-9ae5-4073-a264-01707ef69c1f"
+    ],
+    "source": {
+      "digest": "27b2dae8e518eb8e2f35b77af5b50fd4d0172e851e6f39efd4a62fca6af5188b",
+      "document": ".ai-harness/work-items/HARNESS-STATUS-20260916/snapshots/27b2dae8e518eb8e2f35b77af5b50fd4d0172e851e6f39efd4a62fca6af5188b.json"
+    }
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "pass",
+    "evidence": [
+      "a529cc36-55cd-45d5-99a1-4a2708968e0f"
+    ]
+  },
+  "blocked": null,
+  "delivery": {
+    "source": {
+      "digest": "27b2dae8e518eb8e2f35b77af5b50fd4d0172e851e6f39efd4a62fca6af5188b",
+      "document": ".ai-harness/work-items/HARNESS-STATUS-20260916/snapshots/27b2dae8e518eb8e2f35b77af5b50fd4d0172e851e6f39efd4a62fca6af5188b.json"
+    },
+    "baseline": {
+      "digest": "1b3954d3ce3d904d082d34bc1505b221ac4196c1eebd76608d58b368220cbcf6",
+      "document": ".ai-harness/work-items/HARNESS-STATUS-20260916/snapshots/1b3954d3ce3d904d082d34bc1505b221ac4196c1eebd76608d58b368220cbcf6.json"
+    },
+    "baselineAt": "2026-09-16T09:21:02.261Z",
+    "ownedChanges": [
+      {
+        "path": ".ai-harness/manifest.json",
+        "before": "100644:78f3314e59fbd3e8225522c0dcf46e8692a060c9",
+        "after": "100644:bad14c042890247ee39505cc89b3d014e797fcb2"
+      },
+      {
+        "path": ".github/workflows/source-tests.yml",
+        "before": "100644:ce18fd33c363718bdbf1f2c49c08397912f73419",
+        "after": "100644:aaa150b35340e13ae294ea79f1d2d68706a0d8d8"
+      },
+      {
+        "path": "README.md",
+        "before": "100644:65b85eec2e1ee95c324a2e948ee1145639ea37cf",
+        "after": "100644:e76a70026901064adcb386a89792e644f5075f06"
+      },
+      {
+        "path": "benchmarks/README.md",
+        "before": "100644:0776ba145e14f4e4d7275c4d70e0bf4f8e53a15d",
+        "after": "100644:35f742a65e016aa2d37e5d8636dd1774782b4f80"
+      },
+      {
+        "path": "benchmarks/execution.mjs",
+        "before": "100644:94b166d192b5fa142eff25eded8682da5a8bfe5b",
+        "after": "100644:8f05fe79f10eb231008721004b7168d5139aed33"
+      },
+      {
+        "path": "benchmarks/experiment.mjs",
+        "before": "100644:9f4db499eb772549dddecd1118b731d20163b5eb",
+        "after": "100644:875307ca4bbd5607ee07686ecb90f16aa0ba4ff7"
+      },
+      {
+        "path": "benchmarks/status.mjs",
+        "before": null,
+        "after": "100644:eb42b62b74d4ca01060194081d323133df93d434"
+      },
+      {
+        "path": "benchmarks/tests/status.test.mjs",
+        "before": null,
+        "after": "100644:84aac688201f566e6a1b8ddaf8c107e38058b541"
+      }
+    ],
+    "planDigest": "565e3445da71463de621e8bd75b3828d8c625a5401c677d59c1522e95884bc18",
+    "at": "2026-09-17T01:14:13.613Z",
+    "head": "1d2b3571370dd1517ee958411ae0ccff58896b76"
+  },
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-09-16T09:21:01.998Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-09-16T09:21:02.083Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-09-16T09:21:02.423Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-09-16T09:21:03.366Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-09-16T09:21:03.451Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "VERIFYING",
+      "at": "2026-09-17T01:14:10.540Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "VERIFYING",
+      "to": "CODE_REVIEW",
+      "at": "2026-09-17T01:14:11.264Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "CODE_REVIEW",
+      "to": "READY_FOR_ACCEPTANCE",
+      "at": "2026-09-17T01:14:11.894Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "READY_FOR_ACCEPTANCE",
+      "to": "DONE",
+      "at": "2026-09-17T01:14:13.709Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-09-16T09:21:01.998Z",
+  "updatedAt": "2026-09-17T01:14:13.709Z"
+}
