@@ -67,9 +67,13 @@ export async function createParticipant(task, { sourceRoot, harness }) {
       await mkdir(path.dirname(path.join(root, relative)), { recursive: true });
       await writeFile(path.join(root, relative), content);
     }
-    await writeFile(path.join(root, "AGENTS.md"), task.type === "BUGFIX"
+    const instructions = task.type === "BUGFIX"
       ? "使用简体中文。完成TASK.md中的已授权BUGFIX，先复现再修复并回归，保留实际/期望、根因和失败证据。必要可逆实现自主推进。范围以TASK.md为准；不安装依赖、不使用网络、不提交Git、不修改登录配置。未完成必须如实说明。\n"
-      : "使用简体中文。完成TASK.md中的已授权普通迭代，必要可逆实现自主推进。范围以TASK.md为准；不安装依赖、不使用网络、不提交Git、不修改登录配置。公共验证通过后核对规格，未完成必须如实说明。\n");
+      : "使用简体中文。完成TASK.md中的已授权普通迭代，必要可逆实现自主推进。范围以TASK.md为准；不安装依赖、不使用网络、不提交Git、不修改登录配置。公共验证通过后核对规格，未完成必须如实说明。\n";
+    const guidance = harness && task.writableFiles === undefined
+      ? `先在项目相对路径${beginSpecPath}只填写risk和approach；保留预填的writeScopes、verification及docsImpact的N/A理由。用项目相对路径运行node .ai-harness/bin/harness.mjs begin --spec ${beginSpecPath} --json，再用guide查看缺失事项。\n`
+      : "";
+    await writeFile(path.join(root, "AGENTS.md"), instructions + guidance);
     git(root, ["init"]);
     git(root, ["config", "user.name", "Harness Benchmark"]);
     git(root, ["config", "user.email", "benchmark@example.invalid"]);
@@ -153,7 +157,7 @@ export function participantPrompt(task, group, runBudget = budget) {
   return `请在当前临时项目完成TASK.md中的迭代，先读规格、实现、src/caller.mjs和公共测试，然后实现并验证。\n` +
     `只有${task.entry}和新增test/extra.test.mjs可写（Harness组另可通过CLI维护工作项控制面）。不要修改原有测试或规格，不安装依赖、不访问网络、不提交Git。无需询问已授权的实现选择。\n` +
     `预算${runBudget.timeoutMs / 1000}秒、${runBudget.maxToolCalls}次工具调用；到期如实报告未完成。最终按结构化格式报告completed、summary和实际运行的tests。\n` +
-    (group.harness ? `本组已安装并初始化Harness。${beginSpecPath}已预填公开写入范围和公共验证命令；请根据实际方案填写risk(low/medium)与approach，再运行node .ai-harness/bin/harness.mjs begin --spec ${beginSpecPath} --json。创建后用guide --id ${task.id}-iteration --task T1 --json查看缺失事项，用run --all执行计划检查；按实际结果完成finish和check --ci。\n` : "按当前项目规范直接实施与验证。\n");
+    (group.harness ? `本组已安装并初始化Harness。${beginSpecPath}已预填公开写入范围和公共验证命令；请根据实际方案填写risk(low/medium)与approach，再运行node .ai-harness/bin/harness.mjs begin --spec ${beginSpecPath} --json。创建后用guide --id ${task.id}-iteration --task T1 --json查看缺失事项，用run --all执行计划检查；实际finish和check --ci均通过后立即返回结构化最终结果，未完成如实报告。\n` : "按当前项目规范直接实施与验证。\n");
 }
 
 export async function runCase({ task, group, sourceRoot, outputDirectory, driver, runBudget = budget, trial = 1, execution = null, beforePublish = null }) {

@@ -1,0 +1,140 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "HARNESS-GUIDANCE-20260917",
+  "mode": "single",
+  "rationale": "一个局部评测工作流说明优化，先对历史拒绝和终态证据建回归，再全套验证与独立复核。",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "收紧core Harness入口AGENTS与提示",
+      "module": "benchmarks",
+      "status": "COMPLETED",
+      "attempt": 1,
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        "benchmarks/runner.mjs",
+        "benchmarks/tests/spec-guidance.test.mjs",
+        "benchmarks/README.md",
+        "README.md",
+        ".ai-harness/manifest.json"
+      ],
+      "verification": [
+        "{\"command\":\"node\",\"args\":[\"--test\",\"benchmarks/tests/spec-guidance.test.mjs\"],\"timeoutMs\":180000}",
+        "{\"command\":\"node\",\"args\":[\"--test\",\"benchmarks/tests/runner.test.mjs\",\"benchmarks/tests/multifile.test.mjs\",\"benchmarks/tests/resume.test.mjs\",\"benchmarks/tests/status.test.mjs\",\"benchmarks/tests/report.test.mjs\"],\"timeoutMs\":240000}",
+        "{\"command\":\"node\",\"args\":[\"--test\",\".ai-harness/tests/reliability.test.mjs\"],\"timeoutMs\":180000}",
+        "{\"command\":\"node\",\"args\":[\"--test\",\".ai-harness/tests/installer.test.mjs\"],\"timeoutMs\":120000}",
+        "{\"command\":\"node\",\"args\":[\"--test\",\".ai-harness/tests/acceptance-artifacts.test.mjs\",\".ai-harness/tests/bugfix-pipeline.test.mjs\",\".ai-harness/tests/checker.test.mjs\",\".ai-harness/tests/cli.test.mjs\",\".ai-harness/tests/command-execution.test.mjs\",\".ai-harness/tests/compact.test.mjs\",\".ai-harness/tests/context-delta.test.mjs\",\".ai-harness/tests/filesystem.test.mjs\",\".ai-harness/tests/finish-resume.test.mjs\",\".ai-harness/tests/git-state.test.mjs\",\".ai-harness/tests/guidance-tools.test.mjs\",\".ai-harness/tests/guide.test.mjs\",\".ai-harness/tests/installer-checkout.test.mjs\",\".ai-harness/tests/locking.test.mjs\",\".ai-harness/tests/managed-block.test.mjs\",\".ai-harness/tests/output.test.mjs\",\".ai-harness/tests/policy.test.mjs\",\".ai-harness/tests/root-alias.test.mjs\",\".ai-harness/tests/snapshot.test.mjs\",\".ai-harness/tests/spec-input.test.mjs\",\".ai-harness/tests/timeout.test.mjs\",\".ai-harness/tests/validator.test.mjs\",\".ai-harness/tests/verification-pipeline.test.mjs\",\".ai-harness/tests/workflow.test.mjs\"],\"timeoutMs\":180000}"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            "--test",
+            "benchmarks/tests/spec-guidance.test.mjs"
+          ],
+          "timeoutMs": 180000
+        },
+        {
+          "id": "V2",
+          "command": "node",
+          "args": [
+            "--test",
+            "benchmarks/tests/runner.test.mjs",
+            "benchmarks/tests/multifile.test.mjs",
+            "benchmarks/tests/resume.test.mjs",
+            "benchmarks/tests/status.test.mjs",
+            "benchmarks/tests/report.test.mjs"
+          ],
+          "timeoutMs": 240000
+        },
+        {
+          "id": "V3",
+          "command": "node",
+          "args": [
+            "--test",
+            ".ai-harness/tests/reliability.test.mjs"
+          ],
+          "timeoutMs": 180000
+        },
+        {
+          "id": "V4",
+          "command": "node",
+          "args": [
+            "--test",
+            ".ai-harness/tests/installer.test.mjs"
+          ],
+          "timeoutMs": 120000
+        },
+        {
+          "id": "V5",
+          "command": "node",
+          "args": [
+            "--test",
+            ".ai-harness/tests/acceptance-artifacts.test.mjs",
+            ".ai-harness/tests/bugfix-pipeline.test.mjs",
+            ".ai-harness/tests/checker.test.mjs",
+            ".ai-harness/tests/cli.test.mjs",
+            ".ai-harness/tests/command-execution.test.mjs",
+            ".ai-harness/tests/compact.test.mjs",
+            ".ai-harness/tests/context-delta.test.mjs",
+            ".ai-harness/tests/filesystem.test.mjs",
+            ".ai-harness/tests/finish-resume.test.mjs",
+            ".ai-harness/tests/git-state.test.mjs",
+            ".ai-harness/tests/guidance-tools.test.mjs",
+            ".ai-harness/tests/guide.test.mjs",
+            ".ai-harness/tests/installer-checkout.test.mjs",
+            ".ai-harness/tests/locking.test.mjs",
+            ".ai-harness/tests/managed-block.test.mjs",
+            ".ai-harness/tests/output.test.mjs",
+            ".ai-harness/tests/policy.test.mjs",
+            ".ai-harness/tests/root-alias.test.mjs",
+            ".ai-harness/tests/snapshot.test.mjs",
+            ".ai-harness/tests/spec-input.test.mjs",
+            ".ai-harness/tests/timeout.test.mjs",
+            ".ai-harness/tests/validator.test.mjs",
+            ".ai-harness/tests/verification-pipeline.test.mjs",
+            ".ai-harness/tests/workflow.test.mjs"
+          ],
+          "timeoutMs": 180000
+        }
+      ],
+      "docsImpact": [
+        "README.md",
+        "benchmarks/README.md"
+      ],
+      "reviewBatch": "R1",
+      "risk": "high",
+      "owner": "primary-ai",
+      "verificationStatus": "pass",
+      "reviewStatus": "pass",
+      "evidence": [
+        "2e7bfaa0-f50d-497a-b595-4b819383e8dd",
+        "e8b83197-c350-422b-b327-e4da2fb4c662"
+      ],
+      "deferralApproval": null,
+      "verificationSource": {
+        "digest": "7c5ba6aa3e3efc73f81981b467fcc583ea1a5843ea6be4d321ac40fbe66ce5c1",
+        "document": ".ai-harness/work-items/HARNESS-GUIDANCE-20260917/snapshots/7c5ba6aa3e3efc73f81981b467fcc583ea1a5843ea6be4d321ac40fbe66ce5c1.json"
+      },
+      "reviewSource": {
+        "digest": "7c5ba6aa3e3efc73f81981b467fcc583ea1a5843ea6be4d321ac40fbe66ce5c1",
+        "document": ".ai-harness/work-items/HARNESS-GUIDANCE-20260917/snapshots/7c5ba6aa3e3efc73f81981b467fcc583ea1a5843ea6be4d321ac40fbe66ce5c1.json"
+      }
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "评测公平性和终态边界独立复核",
+      "risk": "high",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": true
+    }
+  ],
+  "createdAt": "2026-09-17T05:57:12.030Z",
+  "updatedAt": "2026-09-17T06:05:44.815Z"
+}

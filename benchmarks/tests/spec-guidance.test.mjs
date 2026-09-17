@@ -29,6 +29,11 @@ test("core Harness group gets exact public paths/checks while risk and approach 
       const manifest=taskManifest(task);
       const row=await runCase({task,group:groups("fixture","reference")[1],sourceRoot,outputDirectory:path.join(directory,task.id),
         driver:async({root,outputDirectory})=>{
+          const instructions=await readFile(path.join(root,"AGENTS.md"),"utf8");
+          assert.match(instructions,/benchmark-begin-spec\.json/);
+          assert.match(instructions,/risk.*approach/);
+          assert.match(instructions,/项目相对路径/);
+          assert.match(instructions,/保留.*docsImpact/);
           const spec=await read(path.join(root,specPath));
           assert.equal(spec.schemaVersion,1);
           assert.equal(spec.id,`${task.id}-iteration`);
@@ -46,6 +51,7 @@ test("core Harness group gets exact public paths/checks while risk and approach 
       assert.equal(row.scope.ok,true);
       assert.deepEqual(taskManifest(task),manifest);
       assert.match(participantPrompt(task,groups("fixture","reference")[1]),/begin --spec/);
+      assert.match(participantPrompt(task,groups("fixture","reference")[1]),/finish.*check --ci.*最终/);
     }
   }finally{await cleanup(directory);}
 });
@@ -88,6 +94,7 @@ test("baseline and project participants retain their current prompts and have no
     ]){
       await runCase({task,group,sourceRoot,outputDirectory:path.join(directory,name),driver:async({root,outputDirectory})=>{
         await assert.rejects(()=>readFile(path.join(root,specPath)),{code:"ENOENT"});
+        assert.doesNotMatch(await readFile(path.join(root,"AGENTS.md"),"utf8"),/benchmark-begin-spec\.json/);
         assert.doesNotMatch(participantPrompt(task,group),/benchmark-begin-spec\.json/);
         if(task.writableFiles){for(const [file,content]of Object.entries(task.reference))await writeFile(path.join(root,file),content);}
         else await writeFile(path.join(root,task.entry),task.reference);

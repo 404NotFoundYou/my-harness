@@ -2,7 +2,7 @@
 
 可复制到新项目或已有项目的仓库内 AI 开发 Runtime。普通任务默认自主推进，流程随风险增加：模型负责方案判断，Runtime 负责状态、权限和验证证据。
 
-- 当前版本：`1.9.0`
+- 当前版本：`1.9.1`
 - 运行要求：Node.js 20+、Git
 - 依赖：仅 Node.js 标准库，不修改目标项目依赖清单
 - 用户使用指南：[docs/guides/getting-started.md](docs/guides/getting-started.md)
@@ -23,6 +23,8 @@
 `1.8.0` 新增 `node benchmarks/report.mjs --out <已完成v4实验目录> [--format json|markdown]`，只读比较同题同轮次的 baseline 与 Harness 结果、耗时及已知用量，保留失败和未知值；不调用模型。详见[实验收益对照](benchmarks/README.md#只读实验收益对照)。
 
 `1.9.0` 为固定core评测中的Harness组准备结构化 `begin --spec` 输入，公开范围和验证命令由代码准确填写，风险及实施方案仍由参试模型判断。历史题目、判定器、预算与旧实验审计保持，详见[评测任务入口](benchmarks/README.md#core-harness任务入口)。模拟回归不代表真实模型收益。
+
+`1.9.1` 在core Harness组的固定基线规则中明确结构化输入的项目相对路径、只填写判断字段及完成后的终态时序。上一轮真实对照中三题功能通过但完整交付均超时；本次只验证提示边界，未运行新模型实验。
 
 新格式锁使用所有者目录，升级时应确保旧 CLI 已结束。旧文件锁、未知或异地主机锁保持拒绝自动回收；损坏状态或日志会保留现场并明确失败。恢复范围见[使用指南](docs/guides/usage.md#锁诊断与恢复)。
 

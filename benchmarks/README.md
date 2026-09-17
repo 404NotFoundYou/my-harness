@@ -28,6 +28,8 @@ node benchmarks/run.mjs --cli '<CLI路径>' --weak '<模型标识>' --comparison
 
 1.9.0仅对core题的Harness组，在参与者的固定Git基线建立后，生成`.ai-harness/work-items/benchmark-begin-spec.json`供`begin --spec`读取。它只从公开任务文件预填任务ID、授权来源、允许修改的入口与可选自测文件、公共测试命令和无数据库依据；`risk`与`approach`为空，参试模型须按实际任务填写，未填写时Runtime拒绝创建工作项。创建后仍用原`guide`、`run --all`与`finish`登记真实验证和收尾；不会自动将功能通过视作工作项完成。
 
+1.9.1把core Harness组的结构化入口提示写入固定基线`AGENTS.md`：使用项目相对路径，仅填写`risk`和`approach`，保留公开预填字段及`docsImpact`的N/A理由。提示也要求真实`finish`与`check --ci`通过后尽快返回结构化最终答复；如果客户端到时未正常完成，仍算超时，不能由工作项DONE自报替代。普通baseline和project题规则不变；这是评测引导变化，尚无真实模型收益结论。
+
 输入文件不是`state.json`、`plan.json`或执行证据，不能替代CLI维护控制面。原流程组和project题的提示与输入保持原样；core题的公开规格、隐藏用例、判定器、预算及已完成实验的审计语义不变。本地模拟用例验证了占位字段拒绝、结构化输入成功到DONE及两组隔离，但并不证明较弱模型在180秒内会完成流程；真实复测需要新的模型费用授权。
 
 ## 多文件工程题集
