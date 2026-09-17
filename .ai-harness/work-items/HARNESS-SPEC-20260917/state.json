@@ -1,0 +1,400 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 1,
+  "id": "HARNESS-SPEC-20260917",
+  "type": "ITERATION",
+  "title": "为core评测Harness组提供确定性begin规格输入",
+  "status": "DONE",
+  "flags": [
+    "api"
+  ],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/iteration.md",
+    ".ai-harness/policies/api.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户继续授权本次确定性引导优化；仅产品代码及模拟回归可逆范围内实施"
+  },
+  "input": {
+    "references": [
+      "用户在真实双组试跑结果及下一步建议后回复“号继续”，授权实施任务声明与收尾引导的最小改动"
+    ],
+    "acceptance": [
+      "Harness core参与者获得由公开任务合同确定性生成的begin --spec输入，精确独立路径数组和单条公共验证命令；risk与approach需模型填写，普通baseline与project题不改变",
+      "冻结任务内容/隐藏判定/预算及既有协议保持，历史v4真实实验仍可审计；合成回归覆盖错误声明拒绝和合法begin/验证/收尾",
+      "相关及完整Runtime回归、独立高风险审查、check --ci通过；未获新的费用授权不运行真实模型"
+    ],
+    "nonGoals": [
+      "不更改隐藏测试、预算、模型或原流程组，不预填模型的实现方案/根因，不重新运行付费实验或提交真实模型产物"
+    ],
+    "version": "1.9.0"
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": null,
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "main@36a8f05，Runtime1.8.0。四个历史分析/真实实验工作项为未提交控制面，产品文件干净；已读取runner participantPrompt/createParticipant/runCase/inspectChanges、begin-spec schema/loadBeginSpec、紧凑begin/finish和报告证明。旧v4真实实验冻结源码2571a42d...，保存并只读审计。"
+    ],
+    "completedAt": "2026-09-17T03:20:48.127Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "36a8f05d3fbdbef8d698e29f627523edbbb69053",
+      "dirty": true,
+      "changedFiles": [
+        ".ai-harness/work-items/ANALYSIS-EFFECT-PREP-20260917/events.jsonl",
+        ".ai-harness/work-items/ANALYSIS-EFFECT-PREP-20260917/evidence.jsonl",
+        ".ai-harness/work-items/ANALYSIS-EFFECT-PREP-20260917/proposal.md",
+        ".ai-harness/work-items/ANALYSIS-EFFECT-PREP-20260917/snapshots/2571a42dacd7f88223f8b2ff9cbbd511914b336aae7b4374830bce5f1c769098.json",
+        ".ai-harness/work-items/ANALYSIS-EFFECT-PREP-20260917/state.json",
+        ".ai-harness/work-items/ANALYSIS-NEXT-170-20260917/assessment.md",
+        ".ai-harness/work-items/ANALYSIS-NEXT-170-20260917/events.jsonl",
+        ".ai-harness/work-items/ANALYSIS-NEXT-170-20260917/evidence.jsonl",
+        ".ai-harness/work-items/ANALYSIS-NEXT-170-20260917/snapshots/27b2dae8e518eb8e2f35b77af5b50fd4d0172e851e6f39efd4a62fca6af5188b.json",
+        ".ai-harness/work-items/ANALYSIS-NEXT-170-20260917/state.json",
+        ".ai-harness/work-items/ANALYSIS-NEXT-180-20260917/events.jsonl",
+        ".ai-harness/work-items/ANALYSIS-NEXT-180-20260917/evidence.jsonl",
+        ".ai-harness/work-items/ANALYSIS-NEXT-180-20260917/snapshots/2571a42dacd7f88223f8b2ff9cbbd511914b336aae7b4374830bce5f1c769098.json",
+        ".ai-harness/work-items/ANALYSIS-NEXT-180-20260917/state.json",
+        ".ai-harness/work-items/HARNESS-SPEC-20260917/events.jsonl",
+        ".ai-harness/work-items/HARNESS-SPEC-20260917/state.json",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/allocation-weak-baseline/candidate.mjs",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/allocation-weak-baseline/events.jsonl",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/allocation-weak-baseline/extra.test.mjs",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/allocation-weak-baseline/final.json",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/allocation-weak-baseline/prompt.txt",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/allocation-weak-baseline/response.schema.json",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/allocation-weak-baseline/result.json",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/allocation-weak-baseline/stderr.txt",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/allocation-weak-harness/candidate.mjs",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/allocation-weak-harness/events.jsonl",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/allocation-weak-harness/extra.test.mjs",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/allocation-weak-harness/final.json",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/allocation-weak-harness/prompt.txt",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/allocation-weak-harness/response.schema.json",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/allocation-weak-harness/result.json",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/allocation-weak-harness/stderr.txt",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/allocation-weak-harness/work-items/allocation-iteration/events.jsonl",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/allocation-weak-harness/work-items/allocation-iteration/evidence.jsonl",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/allocation-weak-harness/work-items/allocation-iteration/plan.json",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/allocation-weak-harness/work-items/allocation-iteration/state.json",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/csv-weak-baseline/candidate.mjs",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/csv-weak-baseline/events.jsonl",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/csv-weak-baseline/extra.test.mjs",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/csv-weak-baseline/final.json",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/csv-weak-baseline/prompt.txt",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/csv-weak-baseline/response.schema.json",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/csv-weak-baseline/result.json",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/csv-weak-baseline/stderr.txt",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/csv-weak-harness/candidate.mjs",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/csv-weak-harness/events.jsonl",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/csv-weak-harness/extra.test.mjs",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/csv-weak-harness/final.json",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/csv-weak-harness/prompt.txt",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/csv-weak-harness/response.schema.json",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/csv-weak-harness/result.json",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/csv-weak-harness/stderr.txt",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/csv-weak-harness/work-items/csv-iteration/events.jsonl",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/csv-weak-harness/work-items/csv-iteration/evidence.jsonl",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/csv-weak-harness/work-items/csv-iteration/plan.json",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/csv-weak-harness/work-items/csv-iteration/state.json",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/events-weak-baseline/candidate.mjs",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/events-weak-baseline/events.jsonl",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/events-weak-baseline/extra.test.mjs",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/events-weak-baseline/final.json",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/events-weak-baseline/prompt.txt",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/events-weak-baseline/response.schema.json",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/events-weak-baseline/result.json",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/events-weak-baseline/stderr.txt",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/events-weak-harness/candidate.mjs",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/events-weak-harness/events.jsonl",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/events-weak-harness/final.json",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/events-weak-harness/prompt.txt",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/events-weak-harness/response.schema.json",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/events-weak-harness/result.json",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/events-weak-harness/stderr.txt",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/events-weak-harness/work-items/reconcile-iteration/events.jsonl",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/events-weak-harness/work-items/reconcile-iteration/plan.json",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/events-weak-harness/work-items/reconcile-iteration/state.json",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/execution.json",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/protocol.json",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/summary.json",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/events.jsonl",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/evidence.jsonl",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/findings.md",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/snapshots/2571a42dacd7f88223f8b2ff9cbbd511914b336aae7b4374830bce5f1c769098.json",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/state.json"
+      ],
+      "fingerprints": {
+        ".ai-harness/work-items/ANALYSIS-EFFECT-PREP-20260917/events.jsonl": "e26471078f08fdecda3b40cb50d04c54146a39e693616ed02bf5aa3d8457a48c",
+        ".ai-harness/work-items/ANALYSIS-EFFECT-PREP-20260917/evidence.jsonl": "f3ad37660780a6bed7ead6c46c5c0ae56e1dfa96bf45de5c8e1362a1c9476ec7",
+        ".ai-harness/work-items/ANALYSIS-EFFECT-PREP-20260917/proposal.md": "6082a4137bda3f678302df663bdce45c530f86ff9d01134507a16fe444533222",
+        ".ai-harness/work-items/ANALYSIS-EFFECT-PREP-20260917/snapshots/2571a42dacd7f88223f8b2ff9cbbd511914b336aae7b4374830bce5f1c769098.json": "b2f674eb5ab272eb75a918d3824ae7baa3f2879a18d30d8e0d1cb014f48aa10e",
+        ".ai-harness/work-items/ANALYSIS-EFFECT-PREP-20260917/state.json": "a8692d9b0774897748ee3e04924816393f38aeec8b8825ed05ca822fb84656e9",
+        ".ai-harness/work-items/ANALYSIS-NEXT-170-20260917/assessment.md": "8926136047cdf9216f42fcb6c8183bcade9788ff960ef27d15d1aec5555e09a0",
+        ".ai-harness/work-items/ANALYSIS-NEXT-170-20260917/events.jsonl": "d5ce1c74169b140e306afbc546fedb67f8bfee22d509fa4dd9665e01dfd82f13",
+        ".ai-harness/work-items/ANALYSIS-NEXT-170-20260917/evidence.jsonl": "9d04b1c7a34da2bfc3c092eea4892b905209ef1c0a6c00992958e30ecc347bad",
+        ".ai-harness/work-items/ANALYSIS-NEXT-170-20260917/snapshots/27b2dae8e518eb8e2f35b77af5b50fd4d0172e851e6f39efd4a62fca6af5188b.json": "a42486cc9e120deafdb10532fd3e24d07d4987095b74b51de02adfea5dda75c4",
+        ".ai-harness/work-items/ANALYSIS-NEXT-170-20260917/state.json": "950dec538564a862475b0f916f00f3bdf31ba2a947c1e5d54e5a4f9d8cf213c3",
+        ".ai-harness/work-items/ANALYSIS-NEXT-180-20260917/events.jsonl": "6e837ad46c52b8fb4dc981b18b6817dbe05c90554fd76c027d977f05a8813bc2",
+        ".ai-harness/work-items/ANALYSIS-NEXT-180-20260917/evidence.jsonl": "5c7ab73afe50f6628195f91ef7a1c58f279583f1bc2e74ae628133c2a77732e9",
+        ".ai-harness/work-items/ANALYSIS-NEXT-180-20260917/snapshots/2571a42dacd7f88223f8b2ff9cbbd511914b336aae7b4374830bce5f1c769098.json": "b2f674eb5ab272eb75a918d3824ae7baa3f2879a18d30d8e0d1cb014f48aa10e",
+        ".ai-harness/work-items/ANALYSIS-NEXT-180-20260917/state.json": "6cddf031f87e64441ddcb4916901fb2667af641cfed0a70568b65857623252b3",
+        ".ai-harness/work-items/HARNESS-SPEC-20260917/events.jsonl": "bfd16f6f574ce9fb94ea9a698a1a010a4eaac2afd9e62e714a1c1f3fafa8c7f6",
+        ".ai-harness/work-items/HARNESS-SPEC-20260917/state.json": "2d9bf04e3626fd5944a16b412db00f2f137ab2baf23f38359ebc790a798b1878",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/allocation-weak-baseline/candidate.mjs": "981127464597d9314a70a1996f69451e10ba0892e526cba31081e2115e0d8995",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/allocation-weak-baseline/events.jsonl": "4ee3527fbac344be841d8f47750ddcb1ac837997bcefb21a76d2c3ae9b07f506",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/allocation-weak-baseline/extra.test.mjs": "83a6d900e110d045b4e16aecba9dc015f5f5c377b0c0434479cbf885e013ce7f",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/allocation-weak-baseline/final.json": "96fbbfa94ac585f38973532ff28445bc19f0fc479aefe8b35cf5299b4c34e93c",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/allocation-weak-baseline/prompt.txt": "27ff51c6bde09937e8648367e14baa4f8d79722a83285da1b0caf26d8423d2ed",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/allocation-weak-baseline/response.schema.json": "0ea7ebf09e2cba466c4e994a921bb61d44439ada24de46c082443dd76e697779",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/allocation-weak-baseline/result.json": "2b5f5095215b0dea777f80cde142b6c693ec3459a8cd6635b8fed66dc9277eac",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/allocation-weak-baseline/stderr.txt": "5c4a86963a2e28c34976818f889eb8d503451f2389338c5d4ddd860cdd9b0822",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/allocation-weak-harness/candidate.mjs": "780b3a43cebd8dc870d7dd7c85414c710339befaec1366672bdfc62bc7e2e64d",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/allocation-weak-harness/events.jsonl": "c915d22a2026a2d6830b674d997aa43311206f2b776b694d69f65f758efe4dfd",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/allocation-weak-harness/extra.test.mjs": "53fc4fb1369ccc61e4f94e47fff8efa79a751f9fd468c1d3be12847accb5d0ce",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/allocation-weak-harness/final.json": "38e0b9de817f645c4bec37c0d4a3e58baecccb040f5718dc069a72c7385a0bed",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/allocation-weak-harness/prompt.txt": "83d4a687cdbb15e63c06eb53507fb5428cf7e1a2235f32ff032fa37558640871",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/allocation-weak-harness/response.schema.json": "0ea7ebf09e2cba466c4e994a921bb61d44439ada24de46c082443dd76e697779",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/allocation-weak-harness/result.json": "7d6fe5cbc0ccc120469d02461fd0edd2000f8efccb2adfb4d69083cc721fdaf6",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/allocation-weak-harness/stderr.txt": "18f9eabcf37cd8deb53a0675fb2b574ca380b483f1264c4c4151d62952f4dfe9",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/allocation-weak-harness/work-items/allocation-iteration/events.jsonl": "0fc1443ddd5965866c8739b40992a4c4af496d9bb1db2b153d382e7be0b46e18",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/allocation-weak-harness/work-items/allocation-iteration/evidence.jsonl": "43860242fe6cd0726836501f9bc8b0d22e41c399dfae8cc2cdab9e70b142b396",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/allocation-weak-harness/work-items/allocation-iteration/plan.json": "be0339221615c8a09d6ad7f9c84c850d515c6d9513e5ae911a4d58a95602db51",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/allocation-weak-harness/work-items/allocation-iteration/state.json": "40debe94e9384a5ee8f6aacff72c5fef9335b624733daca559950d6796f2ac71",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/csv-weak-baseline/candidate.mjs": "97b5a467119c21a9a682003f34b50686dbadd45ec11b139d7bb6869ba36d3841",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/csv-weak-baseline/events.jsonl": "c30fa9c1f7f78d43a936f8d42f763738dac283062b36d1833bfb60c558a4c6d9",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/csv-weak-baseline/extra.test.mjs": "fc1d74e53f71505228e38893aa72d93f60c1196328cfae261d9ef2e6a7e9b128",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/csv-weak-baseline/final.json": "7ba0000082d8796d1aaa3b68794806bcad135d941513aed28de26f16a0ba11d9",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/csv-weak-baseline/prompt.txt": "7357332ed3fed71cfbd405845edbe8c8f87a7cca7f4410cc7be4caa9c3f56f89",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/csv-weak-baseline/response.schema.json": "0ea7ebf09e2cba466c4e994a921bb61d44439ada24de46c082443dd76e697779",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/csv-weak-baseline/result.json": "0b09636f223a8d2152c84bfade5b479ed6aa742d1ff0f17ae5ce69e9196107f3",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/csv-weak-baseline/stderr.txt": "8e783b73798d039f9dc81adf7f3cf4e075b944bc87a35af5e26689169462915b",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/csv-weak-harness/candidate.mjs": "11468ea90d71168a5e4a57f532246e0df6308c6e78eb74e248deec48639281a1",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/csv-weak-harness/events.jsonl": "d829c968362e2622ea48b774bbbb72b22bba31a4fa316dbeb13b9339f8d7638a",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/csv-weak-harness/extra.test.mjs": "495ce4692394e59cf40369288797927c3853f845454d01da1c76983e13ab7b14",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/csv-weak-harness/final.json": "38e0b9de817f645c4bec37c0d4a3e58baecccb040f5718dc069a72c7385a0bed",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/csv-weak-harness/prompt.txt": "d98c6f307b560b1abb5adb47f47dd2ca06ddbab3aed571f0bf25b7d968e368a7",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/csv-weak-harness/response.schema.json": "0ea7ebf09e2cba466c4e994a921bb61d44439ada24de46c082443dd76e697779",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/csv-weak-harness/result.json": "d081be68a8f54bdca768fdbd696ee6d014a3af6347cba508465e15a93e642dbe",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/csv-weak-harness/stderr.txt": "b1e520e88322909e8a412a29c7430a5ed2dafba8c74c24dc54374b3673891e39",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/csv-weak-harness/work-items/csv-iteration/events.jsonl": "4b3541e64541956f2ec1463312464c74df61cb6ab8aa71df83baf7843fb50845",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/csv-weak-harness/work-items/csv-iteration/evidence.jsonl": "6c8ad0c5dfc99ecf1002a3a15cdc89daabc6800565fd69beeff0ca65ceb6f0b5",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/csv-weak-harness/work-items/csv-iteration/plan.json": "8427fdb2a60640f7d23b3b726dc22b4b8a54fc9083dd9389fdf51e8ddb1fb8fc",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/csv-weak-harness/work-items/csv-iteration/state.json": "9564c2d63609d87b28f7eae20b332e66fc408718245e5fc7eabc0634ae79afb6",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/events-weak-baseline/candidate.mjs": "e71bb0270a9e5864c77c0b31b489602c38dedc8d71bac3044dbe7df877ab1e4f",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/events-weak-baseline/events.jsonl": "34767f1440a63093f18728536bd695d5b790925a4de2ec553795a165a161496e",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/events-weak-baseline/extra.test.mjs": "708ceee3fbd792111cb27398d8aef0d13610d5128afc11bdcd126f92252bcfc1",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/events-weak-baseline/final.json": "38e0b9de817f645c4bec37c0d4a3e58baecccb040f5718dc069a72c7385a0bed",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/events-weak-baseline/prompt.txt": "7365ae6049a6db54caaefe702675bbf0c99041d92e179c70cf16d4d9efbb5fc6",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/events-weak-baseline/response.schema.json": "0ea7ebf09e2cba466c4e994a921bb61d44439ada24de46c082443dd76e697779",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/events-weak-baseline/result.json": "783232ebacc6b862aa7d74e9771486f1cd0464df62b11e8d75ea5995f7c602a7",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/events-weak-baseline/stderr.txt": "c07a41bd7c9b43c717daabb006049552ff0dd602301e9c936d7411467cde7ada",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/events-weak-harness/candidate.mjs": "033e356666be01c5f7f5f885bb91b2bd51768db10dfbc17f86be1dbffc0a4c0f",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/events-weak-harness/events.jsonl": "3137e0d4f656e8602b5c853a041104a9ff38692bdf0c6b9a5df13ad084d710e7",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/events-weak-harness/final.json": "38e0b9de817f645c4bec37c0d4a3e58baecccb040f5718dc069a72c7385a0bed",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/events-weak-harness/prompt.txt": "247677e25c2380e1dce736c87947dd3c8edc7a8d1a97e9dae30022c8919e33fc",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/events-weak-harness/response.schema.json": "0ea7ebf09e2cba466c4e994a921bb61d44439ada24de46c082443dd76e697779",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/events-weak-harness/result.json": "0e645ef544164cc0b8f54ca491017b751002483d627d294a82a894b825834c8a",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/events-weak-harness/stderr.txt": "b36a82be05b3fb5743a2e1b689ddf18188c2850a5224876ac2cf85e27ed39bcf",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/events-weak-harness/work-items/reconcile-iteration/events.jsonl": "f0854474c044f912e6b35aee997e6fce1b2aed7e503aed5d240b2db63fe460e8",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/events-weak-harness/work-items/reconcile-iteration/plan.json": "006493cb2ab5616beea65b816779e39b9a647f3432f1f0f8e1f35a8c84edefc9",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/events-weak-harness/work-items/reconcile-iteration/state.json": "50c9fe53dd81645a219be999e11fae61f1146666aa991afec22c82d1a21a19a7",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/execution.json": "d3b6cc660d233e6166d304520012bf6d687c79647871d2b16bb74ee6cd859cba",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/protocol.json": "6400a19a1ef6309318c3e39e350e2d9b3855eb78c3b3072344bc86f5c7689acc",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/core-paired-v4/summary.json": "60deafa3cda04631b3762d76ea9a9051ca1f1fe77cb5d6168b616230282543f8",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/events.jsonl": "843108ff761e37d95f47fb75e0c9ce6af5311f0b2ec2b1350b048fcea1028d6f",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/evidence.jsonl": "58a9a62004282859ed2dc9d11587e4bf9bfdb8c6333a5feda1fa9d876bed9687",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/findings.md": "0c4db4836cab179f205d6b2c3d7f2b4be2b740d7eb6a8163663c78db6c182ac8",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/snapshots/2571a42dacd7f88223f8b2ff9cbbd511914b336aae7b4374830bce5f1c769098.json": "b2f674eb5ab272eb75a918d3824ae7baa3f2879a18d30d8e0d1cb014f48aa10e",
+        ".ai-harness/work-items/MODEL-EFFECT-180-20260917/state.json": "8042a282bf6898880ae8928483eafc173ba7de74f8a06855f53a790d9836a8d3"
+      },
+      "source": {
+        "digest": "2571a42dacd7f88223f8b2ff9cbbd511914b336aae7b4374830bce5f1c769098",
+        "document": ".ai-harness/work-items/HARNESS-SPEC-20260917/snapshots/2571a42dacd7f88223f8b2ff9cbbd511914b336aae7b4374830bce5f1c769098.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": ".ai-harness/work-items/HARNESS-SPEC-20260917/design.md",
+    "evidence": [
+      "已确认既有结构化CLI/schema、runner参与者基线与scope、真实拒绝码；方案只改core Harness公开字段预填，风险/方案留模型填写，版本及历史审计保持。"
+    ],
+    "completedAt": "2026-09-17T03:22:15.335Z"
+  },
+  "database": {
+    "impact": "none",
+    "status": "not-applicable",
+    "document": null,
+    "evidence": [
+      "仅固定评测参与者的任务输入与提示，不涉及数据库、持久化协议或生产数据。"
+    ],
+    "completedAt": "2026-09-17T03:22:15.421Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/HARNESS-SPEC-20260917/plan.json",
+    "approved": true,
+    "approvalRef": "用户授权继续优化；方案、无数据库影响、确定性字段和独立审查门禁已固定"
+  },
+  "verification": {
+    "status": "pass",
+    "evidence": [
+      "97216aae-7d52-4ebd-a8fb-5becf7f727e5"
+    ],
+    "stages": [],
+    "source": {
+      "digest": "801b2197749622595b7cb8e9b211af722655ad928fea29ed3174b6d646a84402",
+      "document": ".ai-harness/work-items/HARNESS-SPEC-20260917/snapshots/801b2197749622595b7cb8e9b211af722655ad928fea29ed3174b6d646a84402.json"
+    }
+  },
+  "review": {
+    "status": "pass",
+    "evidence": [
+      "b7e670d6-cb4b-40f8-a0d9-e6b07bc66dc9"
+    ],
+    "independent": true,
+    "source": {
+      "digest": "801b2197749622595b7cb8e9b211af722655ad928fea29ed3174b6d646a84402",
+      "document": ".ai-harness/work-items/HARNESS-SPEC-20260917/snapshots/801b2197749622595b7cb8e9b211af722655ad928fea29ed3174b6d646a84402.json"
+    }
+  },
+  "acceptance": {
+    "status": "pass",
+    "evidence": [
+      "27f75858-1b69-421e-80bc-b971baa561a4"
+    ],
+    "source": {
+      "digest": "801b2197749622595b7cb8e9b211af722655ad928fea29ed3174b6d646a84402",
+      "document": ".ai-harness/work-items/HARNESS-SPEC-20260917/snapshots/801b2197749622595b7cb8e9b211af722655ad928fea29ed3174b6d646a84402.json"
+    }
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "pass",
+    "evidence": [
+      "423a8528-ae1a-4b36-8097-c77411b11ab4"
+    ]
+  },
+  "blocked": null,
+  "delivery": {
+    "source": {
+      "digest": "801b2197749622595b7cb8e9b211af722655ad928fea29ed3174b6d646a84402",
+      "document": ".ai-harness/work-items/HARNESS-SPEC-20260917/snapshots/801b2197749622595b7cb8e9b211af722655ad928fea29ed3174b6d646a84402.json"
+    },
+    "baseline": {
+      "digest": "2571a42dacd7f88223f8b2ff9cbbd511914b336aae7b4374830bce5f1c769098",
+      "document": ".ai-harness/work-items/HARNESS-SPEC-20260917/snapshots/2571a42dacd7f88223f8b2ff9cbbd511914b336aae7b4374830bce5f1c769098.json"
+    },
+    "baselineAt": "2026-09-17T03:20:48.127Z",
+    "ownedChanges": [
+      {
+        "path": ".ai-harness/manifest.json",
+        "before": "100644:c710608ed4757e1d36c4943fccb61e12e875532b",
+        "after": "100644:813fcf3cd52f31f39bb9493b863eaa6c2fb74160"
+      },
+      {
+        "path": ".github/workflows/source-tests.yml",
+        "before": "100644:eb344cf0df859b7b1a77f4ed3268bad551fc8265",
+        "after": "100644:f5b3b650cb95364848ffe2955dd0085f12a0a651"
+      },
+      {
+        "path": "README.md",
+        "before": "100644:d7188e92633793f2727d86cdb4b7997250de45c1",
+        "after": "100644:d65df63987f64628708d3c06b5321239553883c1"
+      },
+      {
+        "path": "benchmarks/README.md",
+        "before": "100644:0f7a1441083cb4bfb64d2aca4b40b5473662d85c",
+        "after": "100644:6029d239a19e16810476ee094155e74a7d1bc0e6"
+      },
+      {
+        "path": "benchmarks/runner.mjs",
+        "before": "100644:54d552c313ae55f72cdcb0111052f66de3ba606c",
+        "after": "100644:6f64ef402ac37e545389b24e01cfbb8ea94b9c64"
+      },
+      {
+        "path": "benchmarks/tests/spec-guidance.test.mjs",
+        "before": null,
+        "after": "100644:c3c4d6910a76a23e9bf39851cbe9b29b64bf0be6"
+      }
+    ],
+    "planDigest": "00e63c0a1af18facde7f3bd557596336b7399b68902c9d945021e16832750d22",
+    "at": "2026-09-17T03:30:41.963Z",
+    "head": "36a8f05d3fbdbef8d698e29f627523edbbb69053"
+  },
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-09-17T03:20:47.837Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-09-17T03:20:47.924Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-09-17T03:20:48.287Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-09-17T03:22:15.861Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-09-17T03:22:15.946Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "VERIFYING",
+      "at": "2026-09-17T03:30:38.775Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "VERIFYING",
+      "to": "CODE_REVIEW",
+      "at": "2026-09-17T03:30:39.503Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "CODE_REVIEW",
+      "to": "READY_FOR_ACCEPTANCE",
+      "at": "2026-09-17T03:30:40.165Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "READY_FOR_ACCEPTANCE",
+      "to": "DONE",
+      "at": "2026-09-17T03:30:42.078Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-09-17T03:20:47.837Z",
+  "updatedAt": "2026-09-17T03:30:42.078Z"
+}

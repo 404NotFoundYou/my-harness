@@ -20,6 +20,7 @@ export const groups = (weak, strong) => [
   { id: "weak-harness", model: weak, harness: true },
   { id: "strong-reference", model: strong, harness: false },
 ];
+const beginSpecPath = ".ai-harness/work-items/benchmark-begin-spec.json";
 const ownedDirectories = new Set();
 
 async function temporary(prefix) {
@@ -152,13 +153,20 @@ export function participantPrompt(task, group, runBudget = budget) {
   return `请在当前临时项目完成TASK.md中的迭代，先读规格、实现、src/caller.mjs和公共测试，然后实现并验证。\n` +
     `只有${task.entry}和新增test/extra.test.mjs可写（Harness组另可通过CLI维护工作项控制面）。不要修改原有测试或规格，不安装依赖、不访问网络、不提交Git。无需询问已授权的实现选择。\n` +
     `预算${runBudget.timeoutMs / 1000}秒、${runBudget.maxToolCalls}次工具调用；到期如实报告未完成。最终按结构化格式报告completed、summary和实际运行的tests。\n` +
-    (group.harness ? "本组已安装并初始化Harness，请按AGENTS使用普通ITERATION路径。help查看参数；guide --context可集中读取局部上下文，run --all可顺序执行本任务已声明检查；实施中修正代码或自测后直接复验即可。guide的shortcuts可提供带证据ID的finish建议；提交真实检查与自查结论，最终check --ci。\n" : "按当前项目规范直接实施与验证。\n");
+    (group.harness ? `本组已安装并初始化Harness。${beginSpecPath}已预填公开写入范围和公共验证命令；请根据实际方案填写risk(low/medium)与approach，再运行node .ai-harness/bin/harness.mjs begin --spec ${beginSpecPath} --json。创建后用guide --id ${task.id}-iteration --task T1 --json查看缺失事项，用run --all执行计划检查；按实际结果完成finish和check --ci。\n` : "按当前项目规范直接实施与验证。\n");
 }
 
 export async function runCase({ task, group, sourceRoot, outputDirectory, driver, runBudget = budget, trial = 1, execution = null, beforePublish = null }) {
   await mkdir(outputDirectory);
   const participant = await createParticipant(task, { sourceRoot, harness: group.harness });
   try {
+    if(group.harness&&task.writableFiles===undefined){
+      const spec={schemaVersion:1,id:`${task.id}-iteration`,type:"ITERATION",title:`完成${task.id}固定迭代`,references:["TASK.md"],
+        acceptance:["保持TASK.md的公开契约并通过test/public.test.mjs"],authorizationSource:"TASK.md中的已授权固定任务",
+        risk:"",approach:"",databaseEvidence:"TASK.md明确无数据库影响",writeScopes:[task.entry,"test/extra.test.mjs"],
+        verification:[{command:"node",args:["--test","test/public.test.mjs"]}],docsImpact:["N/A: 固定公开规格与文档不变"]};
+      await writeFile(path.join(participant.root,beginSpecPath),JSON.stringify(spec,null,2)+"\n",{flag:"wx"});
+    }
     const prompt = participantPrompt(task, group, runBudget);
     await writeFile(path.join(outputDirectory, "prompt.txt"), prompt);
     const run = await driver({ root: participant.root, model: group.model, prompt, budget: {...runBudget}, outputDirectory });

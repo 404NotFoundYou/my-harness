@@ -6,7 +6,7 @@
 
 ```powershell
 # 不调用模型的框架测试
-node --test benchmarks/tests/runner.test.mjs benchmarks/tests/multifile.test.mjs benchmarks/tests/resume.test.mjs benchmarks/tests/status.test.mjs benchmarks/tests/report.test.mjs
+node --test benchmarks/tests/runner.test.mjs benchmarks/tests/multifile.test.mjs benchmarks/tests/resume.test.mjs benchmarks/tests/status.test.mjs benchmarks/tests/report.test.mjs benchmarks/tests/spec-guidance.test.mjs
 
 # 真实调用；复用现有 Codex CLI 登录，运行前应取得模型调用授权
 node benchmarks/run.mjs --cli 'D:/Program Files/nodejs/node_global/node_modules/@openai/codex/bin/codex.js' --weak gpt-5.6-luna --strong gpt-5.6-sol --out .ai-harness/work-items/MODEL-BENCHMARK-001/pilot
@@ -23,6 +23,12 @@ node benchmarks/run.mjs --cli '<CLI路径>' --weak '<模型标识>' --comparison
 ```
 
 正式执行前确认费用授权，再使用同一参数去掉 `--dry-run`。`paired` 为两组，`reference` 为原三组且要求 `--strong`；默认重复1次，可设1–100次。三个固定题、两组、重复5次共30个独立会话。每个试次使用新临时仓库，目录包含 trial 编号，顺序按题目与轮次轮换；预算在运行前冻结。重复试次不是失败后的自动重试，不遗漏失败样本。真实仓库任务仍需后续独立题集，原三题的适用范围没有扩大。
+
+## Core Harness任务入口
+
+1.9.0仅对core题的Harness组，在参与者的固定Git基线建立后，生成`.ai-harness/work-items/benchmark-begin-spec.json`供`begin --spec`读取。它只从公开任务文件预填任务ID、授权来源、允许修改的入口与可选自测文件、公共测试命令和无数据库依据；`risk`与`approach`为空，参试模型须按实际任务填写，未填写时Runtime拒绝创建工作项。创建后仍用原`guide`、`run --all`与`finish`登记真实验证和收尾；不会自动将功能通过视作工作项完成。
+
+输入文件不是`state.json`、`plan.json`或执行证据，不能替代CLI维护控制面。原流程组和project题的提示与输入保持原样；core题的公开规格、隐藏用例、判定器、预算及已完成实验的审计语义不变。本地模拟用例验证了占位字段拒绝、结构化输入成功到DONE及两组隔离，但并不证明较弱模型在180秒内会完成流程；真实复测需要新的模型费用授权。
 
 ## 多文件工程题集
 
