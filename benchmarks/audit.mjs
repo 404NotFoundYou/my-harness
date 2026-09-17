@@ -8,8 +8,8 @@ import { experimentPlan } from "./experiment.mjs";
 import { auditTrial } from "./audit-trial.mjs";
 import { executionSummary, readExecution } from "./execution.mjs";
 
-export async function auditExperiment(directory) {
-  const read = async file => JSON.parse(await readFile(path.join(directory, file), "utf8"));
+export async function auditExperiment(directory, { readEvidence } = {}) {
+  const read = async file => JSON.parse(readEvidence ? (await readEvidence(file)).toString("utf8") : await readFile(path.join(directory, file), "utf8"));
   const protocol = await read("protocol.json");
   const summary = await read("summary.json");
   assert.ok([1, 2, 3, 4].includes(protocol.schemaVersion));
@@ -40,7 +40,7 @@ export async function auditExperiment(directory) {
     assert.equal(definition?.taskDigest, hash(JSON.stringify(task.files)));
     assert.equal(definition?.judgeDigest, hash(JSON.stringify(task.cases)));
     for (const group of protocol.groups) for (let trial = 1; trial <= (extended ? protocol.repetitions : 1); trial++) {
-      rows.push(await auditTrial(directory,protocol,task,group,trial));
+      rows.push(await auditTrial(directory,protocol,task,group,trial,undefined,readEvidence));
     }
   }
   assert.equal(summary.results.length, rows.length);
@@ -52,7 +52,7 @@ export async function auditExperiment(directory) {
   const expected = summarize(rows, { extended }).sort((a,b)=>a.group.localeCompare(b.group));
   assert.deepEqual([...summary.groups].sort((a,b)=>a.group.localeCompare(b.group)), expected);
   if(resumable){
-    const recovered=await readExecution(directory,protocol);
+    const recovered=await readExecution(directory,protocol,{readEvidence});
     assert.equal(recovered.changed,false,"Execution ledger needs resume reconciliation");
     assert.deepEqual(summary,executionSummary(protocol,recovered.ledger,recovered.rows,protocol.source),"Summary differs from execution ledger");
   }

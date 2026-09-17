@@ -6,7 +6,7 @@
 
 ```powershell
 # 不调用模型的框架测试
-node --test benchmarks/tests/runner.test.mjs benchmarks/tests/multifile.test.mjs benchmarks/tests/resume.test.mjs benchmarks/tests/status.test.mjs
+node --test benchmarks/tests/runner.test.mjs benchmarks/tests/multifile.test.mjs benchmarks/tests/resume.test.mjs benchmarks/tests/status.test.mjs benchmarks/tests/report.test.mjs
 
 # 真实调用；复用现有 Codex CLI 登录，运行前应取得模型调用授权
 node benchmarks/run.mjs --cli 'D:/Program Files/nodejs/node_global/node_modules/@openai/codex/bin/codex.js' --weak gpt-5.6-luna --strong gpt-5.6-sol --out .ai-harness/work-items/MODEL-BENCHMARK-001/pilot
@@ -72,6 +72,23 @@ node benchmarks/status.mjs --out .ai-harness/work-items/<工作项>/project-comp
 状态检查不创建目录或锁、不回收失活锁、不补写ledger或summary、不启动模型。stale仅标记`lockRecoveryRequired`；active、foreign、unknown、changed或legacy锁只做结构观察，`recoveryPreview`为null。前后复查协议/ledger原字节、锁代次、源码和显式身份；观察到变化便撤销可续跑结论。读取结束后的变化仍须由实际`--resume`获取锁后重新核验，`validationRequiredOnExecution`始终为true，预览不提供执行授权或未来调用数保证。
 
 摘要缺失或损坏不妨碍可信v4记录的预览；损坏证据和内部链接明确拒绝。旧v1/v2/v3返回`unsupported`，仍使用原审计。CLI退出码0表示得到可续跑观察，2表示锁、漂移、身份未确认或旧协议阻塞，1表示参数、实验文件缺失或证据损坏。模拟及合成CLI测试不代表实际模型客户端已验证。
+
+## 只读实验收益对照
+
+1.8.0 对单个已完成、完整审计通过的 v4 实验生成 JSON 或 Markdown 报告，无需再次填写模型、题集、预算或 CLI 路径：
+
+```powershell
+node benchmarks/report.mjs --out .ai-harness/work-items/<工作项>/project-comparison
+node benchmarks/report.mjs --out .ai-harness/work-items/<工作项>/project-comparison --format markdown
+```
+
+按冻结的 taskId/trial 将 weak-baseline 与 weak-harness 配对；reference 实验的 strong-reference 仍经完整审计，但不进入弱模型配对分母。功能通过、两组相同条件的共同交付、额外包含 Harness 流程门禁的完整交付分别计数。逐题列出结果相对路径、可观察的失败条件、度量与差值。失败条件可能重叠，不代表模型或网络根因；模拟结果始终标为 simulated，不能当作真实模型收益。
+
+差值方向统一为 Harness 减 baseline，先计算每对差值再取中位数；Markdown逐题展示耗时、工具次数及Token差值。每项度量分别列出有效与未知配对；缺失 Token 或耗时不按零计算。超时/工具预算截断及截断标志未知单独标记，观测区间更短不等于实际完成更快；工具分类活跃时间可能重叠，不相加。相同任务的重复试次不作为独立任务证明通用能力或因果效果。
+
+入口通过与现有审计共享的严格证据读取器读取并前后核对所有实际用到的文件及锁；缺文件、链接、损坏、未完成、变化中的实验和非法度量都不会生成半份配对报告。仅允许 free 或本机 stale 锁，检查不创建或回收锁，不写实验文件、不读取协议自报的外部 CLI、不执行客户端。审计证明记录内部一致性，不验证当前客户端或报告返回后的文件状态。
+
+CLI 默认输出 JSON；`--format markdown` 使用同一脱敏报告模型并转义可渲染的用户字段。退出码 0 表示报告成功，2 表示未完成、旧协议、锁或并发变化，1 表示参数或证据无效。旧 v1-v3 仍可使用原审计路径；本报告不对其重建缺失的历史信息。真实参试模型的收益需另行授权运行并验证。
 
 ## 实验续跑与中断记录
 

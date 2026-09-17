@@ -15,11 +15,11 @@ export async function readExperimentFile(root, relative) {
   return readFile(absolute);
 }
 
-export async function auditTrial(directory, protocol, task, group, trial, resultText) {
+export async function auditTrial(directory, protocol, task, group, trial, resultText, readEvidence) {
   const extended=protocol.schemaVersion>=2;
   const project=protocol.schemaVersion===3||(protocol.schemaVersion===4&&protocol.suite==="project");
   const folder=`${task.id}-${group.id}${extended&&protocol.repetitions>1?`-trial-${trial}`:""}`;
-  const raw=file=>protocol.schemaVersion===4?readExperimentFile(directory,file):readFile(path.join(directory,file));
+  const raw=readEvidence || (file=>protocol.schemaVersion===4?readExperimentFile(directory,file):readFile(path.join(directory,file)));
   const read=async file=>JSON.parse((await raw(file)).toString("utf8"));
   const definition=protocol.tasks.find(entry=>entry.id===task.id);
   const row = JSON.parse(resultText ?? (await raw(`${folder}/result.json`)).toString("utf8"));

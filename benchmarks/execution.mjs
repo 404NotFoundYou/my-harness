@@ -9,11 +9,11 @@ export function initialExecution(protocol, protocolBytes) {
   return {schemaVersion:1,protocolSha256:hash(protocolBytes),trials:protocol.schedule.map(entry=>({directory:entry.directory,status:"pending"}))};
 }
 
-export async function readExecutionLedger(directory, protocol) {
+export async function readExecutionLedger(directory, protocol, {readEvidence=file=>readExperimentFile(directory,file)} = {}) {
   assert.equal(protocol.schemaVersion,4,"Only protocol v4 can resume");
-  const protocolBytes=await readExperimentFile(directory,"protocol.json");
+  const protocolBytes=await readEvidence("protocol.json");
   assert.deepEqual(JSON.parse(protocolBytes.toString("utf8")),protocol,"Protocol changed while loading");
-  const ledger=JSON.parse((await readExperimentFile(directory,"execution.json")).toString("utf8"));
+  const ledger=JSON.parse((await readEvidence("execution.json")).toString("utf8"));
   assert.deepEqual(Object.keys(ledger).sort(),["protocolSha256","schemaVersion","trials"],"Invalid execution ledger");
   assert.equal(ledger.schemaVersion,1,"Invalid execution ledger version");
   assert.equal(ledger.protocolSha256,hash(protocolBytes),"Protocol hash differs from execution ledger");
@@ -30,8 +30,8 @@ export async function readExecutionLedger(directory, protocol) {
   return ledger;
 }
 
-export async function readExecution(directory, protocol) {
-  const ledger=await readExecutionLedger(directory,protocol);
+export async function readExecution(directory, protocol, {readEvidence=file=>readExperimentFile(directory,file)} = {}) {
+  const ledger=await readExecutionLedger(directory,protocol,{readEvidence});
   const tasks=tasksForSuite(protocol.suite),rows=[],before=JSON.stringify(ledger);
   for (const [index,state] of ledger.trials.entries()) {
     const entry=protocol.schedule[index];
@@ -42,7 +42,7 @@ export async function readExecution(directory, protocol) {
       continue;
     }
     if(info)assert.ok(info.isDirectory()&&!info.isSymbolicLink(),"Invalid trial directory");
-    const bytes=await readExperimentFile(directory,`${entry.directory}/result.json`).catch(error=>{if(error.code === "ENOENT")return null;throw error;});
+    const bytes=await readEvidence(`${entry.directory}/result.json`).catch(error=>{if(error.code === "ENOENT")return null;throw error;});
     if(state.status === "interrupted"){
       assert.equal(bytes,null,"Interrupted trial gained an unexpected result");
       continue;
@@ -52,7 +52,7 @@ export async function readExecution(directory, protocol) {
       assert.equal(state.resultSha256,hash(bytes),"Completed trial result hash differs");
     }
     if(bytes){
-      rows.push(await auditTrial(directory,protocol,tasks.find(task=>task.id===entry.taskId),protocol.groups.find(group=>group.id===entry.group),entry.trial,bytes.toString("utf8")));
+      rows.push(await auditTrial(directory,protocol,tasks.find(task=>task.id===entry.taskId),protocol.groups.find(group=>group.id===entry.group),entry.trial,bytes.toString("utf8"),readEvidence));
       state.status="completed";
       state.resultSha256=hash(bytes);
     }else{
