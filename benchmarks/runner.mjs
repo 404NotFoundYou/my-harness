@@ -32,8 +32,17 @@ async function temporary(prefix) {
 export async function cleanupSandbox(root) {
   const resolved = await realpath(root);
   if (!ownedDirectories.has(resolved) || path.dirname(resolved) !== await realpath(tmpdir())) throw new Error("Refusing cleanup outside a created temporary directory");
-  await rm(resolved, { recursive: true, force: true });
-  ownedDirectories.delete(resolved);
+  // Git can still be retiring a pack directory during sandbox cleanup.
+  for(let attempt=0;attempt<3;attempt++){
+    try{
+      await rm(resolved,{recursive:true,force:true});
+      ownedDirectories.delete(resolved);
+      return;
+    }catch(error){
+      if(error.code!=="ENOTEMPTY"||attempt===2)throw error;
+      await new Promise(resolve=>setTimeout(resolve,50*(attempt+1)));
+    }
+  }
 }
 
 export async function saveJson(file, value) {

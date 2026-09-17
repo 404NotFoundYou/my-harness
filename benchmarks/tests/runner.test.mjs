@@ -2,8 +2,10 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
+import { syncBuiltinESMExports } from "node:module";
 import { fileURLToPath } from "node:url";
-import { mkdir, mkdtemp, readFile, readdir, rm, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, readdir, realpath, rm, writeFile } from "node:fs/promises";
+import fsPromises from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { tasks } from "../tasks.mjs";
 import { budget, cleanupSandbox, createParticipant, gradeCandidate, groups, inspectChanges, parseGrade, participantPrompt, runCase, summarize } from "../runner.mjs";
@@ -115,6 +117,47 @@ test("all groups share contracts and budgets, while hidden cases and references 
       await writeFile(path.join(participant.root,"TASK.md"),"weakened task");
       assert.deepEqual((await inspectChanges(participant,tasks[0],group.harness)).violations,["TASK.md"]);
     }finally{await cleanupSandbox(participant.root);}
+  }
+});
+
+test("a transient Git pack ENOTEMPTY must not lose an owned participant after valid work",async(t)=>{
+  const participant=await createParticipant(tasks[0],{sourceRoot,harness:false});
+  const target=await realpath(participant.root),original=fsPromises.rm;
+  let calls=0,cleaned=false;
+  t.mock.method(fsPromises,"rm",async(file,options)=>{
+    if(path.resolve(String(file))===target&&++calls===1){const error=new Error("transient pack directory race");error.code="ENOTEMPTY";throw error;}
+    return original(file,options);
+  });syncBuiltinESMExports();
+  try{
+    await cleanupSandbox(participant.root);
+    cleaned=true;
+    assert.equal(calls,2);
+    await assert.rejects(()=>realpath(target),{code:"ENOENT"});
+  }finally{
+    t.mock.restoreAll();syncBuiltinESMExports();
+    if(!cleaned)await cleanupSandbox(participant.root);
+  }
+});
+
+test("persistent cleanup failures stay visible and an unowned directory is never removed",async(t)=>{
+  const participant=await createParticipant(tasks[0],{sourceRoot,harness:false});
+  const target=await realpath(participant.root),other=await mkdtemp(path.join(tmpdir(),"ai-harness-not-owned-")),original=fsPromises.rm;
+  let calls=0;
+  t.mock.method(fsPromises,"rm",async(file,options)=>{
+    if(path.resolve(String(file))===target){calls++;const error=new Error("persistent pack directory race");error.code="ENOTEMPTY";throw error;}
+    return original(file,options);
+  });syncBuiltinESMExports();
+  try{
+    await assert.rejects(()=>cleanupSandbox(participant.root),{code:"ENOTEMPTY"});
+    assert.equal(calls,3);
+    await assert.rejects(()=>cleanupSandbox(other),/Refusing cleanup outside/);
+    assert.equal(calls,3);
+    assert.equal(await realpath(target),target);
+  }finally{
+    t.mock.restoreAll();syncBuiltinESMExports();
+    await cleanupSandbox(participant.root);
+    assert.equal(path.dirname(other),path.resolve(tmpdir()));
+    await rm(other,{recursive:true,force:true});
   }
 });
 
