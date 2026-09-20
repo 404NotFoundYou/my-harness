@@ -16,7 +16,7 @@ import {
 } from "./constants.mjs";
 import { HarnessError, invariant } from "./errors.mjs";
 import { resolveProjectPath } from "./filesystem.mjs";
-import { assertVerification, assertVerificationStages } from "./verification.mjs";
+import { assertAnalysisCommandEvidence, assertVerification, assertVerificationStages, readEvidence } from "./verification.mjs";
 import { loadSnapshot, sourceSnapshot } from "./snapshot.mjs";
 import { compileChecks } from "./commands.mjs";
 
@@ -446,9 +446,16 @@ export async function assertTransitionGates(root, item, plan, target) {
     for (const conclusion of item.analysis.conclusions) {
       invariant(CONCLUSION_STATUSES.includes(conclusion.status), "ANALYSIS_STATUS_INVALID", "分析结论状态无效。", { conclusion });
       invariant(conclusion.text?.trim(), "ANALYSIS_TEXT_REQUIRED", "分析结论不能为空。" );
+      invariant(conclusion.commands === undefined || (nonEmptyStrings(conclusion.commands) && new Set(conclusion.commands).size === conclusion.commands.length),
+        "ANALYSIS_COMMANDS_INVALID", "分析结论的命令证据必须是非空且不重复的 ID。" );
       if (conclusion.status !== "UNKNOWN") {
-        invariant(nonEmptyStrings(conclusion.evidence), "ANALYSIS_EVIDENCE_REQUIRED", `${conclusion.status} 结论缺少证据。`);
+        invariant(nonEmptyStrings(conclusion.evidence) || nonEmptyStrings(conclusion.commands), "ANALYSIS_EVIDENCE_REQUIRED", `${conclusion.status} 结论缺少文本或命令证据。`);
       }
+    }
+    const commands = item.analysis.conclusions.flatMap((conclusion) => conclusion.commands || []);
+    if (commands.length) {
+      const [events, snapshot] = await Promise.all([readEvidence(root, item.id), sourceSnapshot(root)]);
+      for (const commandId of commands) await assertAnalysisCommandEvidence(root, item, commandId, { events, snapshot });
     }
   }
 }

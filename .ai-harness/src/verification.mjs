@@ -78,6 +78,25 @@ export function hasFailedReview(events, item, task = null) {
     (!task || (event.taskAttempt || 1) === (task.attempt || 1)));
 }
 
+export async function assertAnalysisCommandEvidence(root, item, commandId, { snapshot = null, events = null } = {}) {
+  invariant(item.type === "ANALYSIS" && ["ANALYZING", "ANSWERED"].includes(item.status), "ANALYSIS_COMMAND_WRONG_STAGE", "分析命令证据只属于 ANALYZING 或 ANSWERED 工作项。" );
+  const current = snapshot || await sourceSnapshot(root);
+  const evidence = events || await readEvidence(root, item.id);
+  const index = evidence.findIndex((candidate) => candidate.id === commandId);
+  const event = evidence[index];
+  const command = event?.command;
+  const subsequentFailure = command && evidence.slice(index + 1).some((later) => later.kind === "command" && later.status !== "pass" &&
+    (later.revision || 1) === (item.revision || 1) && !later.taskId && later.command && commandEvidenceKey(later.command) === commandEvidenceKey(command));
+  invariant(event?.kind === "command" && event.workItemId === item.id && !event.taskId && event.status === "pass" &&
+    (event.revision || 1) === (item.revision || 1) && command?.exitCode === 0 && command.failureReason === null &&
+    command.policy?.decision === "allow" && command.policy?.rule === "analysis-read-only" && !command.timedOut && !command.spawnError && !command.signal &&
+    command.source?.digest === current.digest && command.sourceAfter?.digest === current.digest && !subsequentFailure,
+  "ANALYSIS_COMMAND_EVIDENCE_INVALID", "分析命令证据必须属于当前修订、通过 allow 策略、未改变源码且没有同命令的随后失败。" );
+  await loadSnapshot(root, command.source);
+  await loadSnapshot(root, command.sourceAfter);
+  return event;
+}
+
 function stageIsCurrent(item, entry, current, digest, events) {
   const latest = events.findLast((event) => event.kind === "verification" && !event.taskId &&
     event.stage === entry?.stage && (event.revision || 1) === (item.revision || 1));

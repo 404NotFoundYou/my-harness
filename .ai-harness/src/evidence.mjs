@@ -5,7 +5,7 @@ import { realpath } from "node:fs/promises";
 import path from "node:path";
 import { appendJsonLine, atomicWriteJson, readJson, resolveProjectPath, withFileLock, writeFileAtomic } from "./filesystem.mjs";
 import { HarnessError, invariant } from "./errors.mjs";
-import { classifyCommand } from "./policy.mjs";
+import { classifyAnalysisCommand, classifyCommand } from "./policy.mjs";
 import { isValidCheckTimeoutMs, resolveCommandLaunch } from "./commands.mjs";
 import { sourceSnapshot, saveSnapshot } from "./snapshot.mjs";
 import { checksFor, invalidateResults, matchingChecks, planDigest } from "./verification.mjs";
@@ -49,14 +49,18 @@ export async function runRecordedCommand(root, { id, taskId = null, command, arg
   const enteredAt = Date.now();
   root = await realpath(root);
   const item = await loadWorkItem(root, id);
-  const plan = await loadPlan(root, id);
+  const analysisItem = item.type === "ANALYSIS";
+  const analysisMode = analysisItem && item.status === "ANALYZING";
+  const plan = await loadPlan(root, id, { optional: analysisItem });
   let checkTimeoutMs;
   if (checkId) {
+    invariant(!analysisItem, "ANALYSIS_CHECK_NOT_ALLOWED", "ANALYSIS 命令不能引用开发计划检查。" );
     const matches = plan.tasks.filter((task) => !taskId || task.id === taskId).flatMap((task) => checksFor(task).filter((check) => check.id === checkId));
     invariant(matches.length === 1, "CHECK_NOT_FOUND", "检查 ID 不存在或不唯一，请同时指定任务。" );
     ({ command, args, timeoutMs: checkTimeoutMs } = matches[0]);
   }
-  invariant(item.status === "IMPLEMENTING" || item.status === "VERIFYING", "WRONG_STAGE", "受控命令只允许在 IMPLEMENTING 或 VERIFYING 阶段运行。" );
+  invariant(analysisMode || item.status === "IMPLEMENTING" || item.status === "VERIFYING", "WRONG_STAGE", "受控命令只允许在 ANALYZING、IMPLEMENTING 或 VERIFYING 阶段运行。" );
+  invariant(!analysisMode || (!taskId && !checkId), "ANALYSIS_COMMAND_SCOPE", "ANALYSIS 命令不能绑定开发任务或计划检查。" );
   invariant(typeof command === "string" && command.trim() && Array.isArray(args) && args.every((arg) => typeof arg === "string"), "INVALID_COMMAND", "命令和参数必须是字符串数组。" );
   invariant(item.status !== "IMPLEMENTING" || taskId, "TASK_REQUIRED", "IMPLEMENTING 阶段运行命令必须绑定任务。" );
   if (taskId) {
@@ -70,7 +74,7 @@ export async function runRecordedCommand(root, { id, taskId = null, command, arg
   const outputLimitBytes = config.maxCommandOutputBytes === undefined ? 16 * 1024 * 1024 : config.maxCommandOutputBytes;
   invariant(Number.isInteger(outputLimitBytes) && outputLimitBytes > 0 && outputLimitBytes <= 64 * 1024 * 1024,
     "INVALID_COMMAND_OUTPUT_LIMIT", "maxCommandOutputBytes 必须是 1 到 67108864 之间的整数。" );
-  const classification = classifyCommand(command, args, config);
+  const classification = analysisMode ? classifyAnalysisCommand(command, args, config) : classifyCommand(command, args, config);
   if (classification.decision !== "allow") {
     throw new HarnessError(
       classification.decision === "deny" ? "COMMAND_DENIED" : "COMMAND_REQUIRES_APPROVAL",
@@ -82,7 +86,7 @@ export async function runRecordedCommand(root, { id, taskId = null, command, arg
   const paths = await workItemPaths(root, id);
   const before = await sourceSnapshot(root);
   const source = await saveSnapshot(root, paths.directory, before);
-  const definition = planDigest(item, plan);
+  const definition = analysisMode ? null : planDigest(item, plan);
   const startedAt = Date.now();
   let launch = null;
   let result;
@@ -124,8 +128,8 @@ export async function runRecordedCommand(root, { id, taskId = null, command, arg
       executable: redact(command),
       args: redactedArgs(args),
       launch: launch ? { executable: redact(launch.command), args: redactedArgs(launch.args) } : null,
-      checkIds: matchingChecks(plan, taskId, command, args, checkTimeoutMs),
-      planDigest: definition,
+      checkIds: analysisMode ? [] : matchingChecks(plan, taskId, command, args, checkTimeoutMs),
+      ...(definition ? { planDigest: definition } : {}),
       source,
       sourceAfter,
       cwd: ".",
@@ -160,8 +164,8 @@ export async function runRecordedCommand(root, { id, taskId = null, command, arg
   }
   await withFileLock(paths.lock, async () => {
     const latestItem = await readJson(paths.state);
-    const latestPlan = await readJson(paths.plan);
-    if ((latestItem.revision || 1) !== event.revision || planDigest(latestItem, latestPlan) !== definition || latestItem.status !== item.status) {
+    const latestPlan = analysisMode ? null : await readJson(paths.plan);
+    if ((latestItem.revision || 1) !== event.revision || (!analysisMode && planDigest(latestItem, latestPlan) !== definition) || latestItem.status !== item.status) {
       event.status = "fail";
       event.command.failureReason ||= "work-changed";
     }
@@ -171,9 +175,9 @@ export async function runRecordedCommand(root, { id, taskId = null, command, arg
       through: "before-evidence-append", limitation: "不含进程启动、证据最终追加和状态保存；完整CLI区间由客户端事件计时。" };
     await appendJsonLine(paths.evidence, event);
     const taskSource = taskId ? latestPlan.tasks.find((task) => task.id === taskId)?.verificationSource : null;
-    if (event.status !== "pass" || before.digest !== after.digest ||
+    if (!analysisMode && (event.status !== "pass" || before.digest !== after.digest ||
       (latestItem.verification.source && latestItem.verification.source.digest !== before.digest) ||
-      (taskSource && taskSource.digest !== before.digest)) {
+      (taskSource && taskSource.digest !== before.digest))) {
       invalidateResults(latestItem, latestPlan, taskId);
       await atomicWriteJson(paths.plan, latestPlan);
       await atomicWriteJson(paths.state, latestItem);

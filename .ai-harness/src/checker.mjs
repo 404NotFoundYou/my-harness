@@ -16,6 +16,13 @@ import { itemPolicyFiles } from "./policy-routing.mjs";
 import { assertArtifacts } from "./artifacts.mjs";
 import { loadConfig, loadPlan, loadWorkItem, validateWorkItem, workItemPaths } from "./workflow.mjs";
 
+const CHANGED_FILES_PREVIEW_LIMIT = 50;
+
+function pathWithin(file, directory) {
+  const prefix = String(directory || "").replaceAll("\\", "/").replace(/^\.\//, "").replace(/\/$/, "");
+  return Boolean(prefix) && (file === prefix || file.startsWith(`${prefix}/`));
+}
+
 function parseVersion(value) {
   return String(value)
     .replace(/^v/, "")
@@ -138,13 +145,21 @@ export async function doctorProject(root, { requireInitialized = true } = {}) {
     }
   }
 
-  const repository = await getGitBaseline(root);
+  const repository = await getGitBaseline(root, { includeFingerprints: false });
+  const changedFileCount = repository.changedFiles.length;
+  const controlChangedFiles = repository.changedFiles.filter((file) => pathWithin(file, config?.workItemsDirectory));
+  const productChangedFiles = repository.changedFiles.filter((file) => !pathWithin(file, config?.workItemsDirectory));
+  const changedFiles = [...productChangedFiles, ...controlChangedFiles];
   details.repository = {
     isGit: repository.isGit,
     branch: repository.branch,
     commit: repository.commit,
     dirty: repository.dirty,
-    changedFiles: repository.changedFiles,
+    changedFiles: changedFiles.slice(0, CHANGED_FILES_PREVIEW_LIMIT),
+    changedFileCount,
+    changedFilesOmitted: Math.max(0, changedFileCount - CHANGED_FILES_PREVIEW_LIMIT),
+    productChangedFileCount: productChangedFiles.length,
+    controlChangedFileCount: controlChangedFiles.length,
   };
   if (config?.requireGit && !repository.isGit) errors.push("config.json 要求 Git，但项目不是 Git 仓库。" );
   return { ok: errors.length === 0, errors, warnings, details };

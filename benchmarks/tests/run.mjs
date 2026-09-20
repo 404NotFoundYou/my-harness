@@ -17,5 +17,5 @@ const result = spawnSync(process.execPath, ["--test", ...files], {
   timeout: 10 * 60 * 1000,
 });
 
-if (result.error) console.error(`Runtime tests failed to run: ${result.error.message}`);
+if (result.error) console.error(`Benchmark tests failed to run: ${result.error.message}`);
 process.exitCode = typeof result.status === "number" ? result.status : 1;

@@ -96,7 +96,10 @@ test("analysis uses evidence statuses and ends at ANSWERED without development g
       authorizationSource: "read-only question",
     });
     await transitionWorkItem(root, "ANALYSIS-1", "BASELINING");
-    await completeBaseline(root, "ANALYSIS-1", { evidence: ["current checkout inspected"] });
+    const baseline = await completeBaseline(root, "ANALYSIS-1", { evidence: ["current checkout inspected"] });
+    assert.deepEqual(baseline.baseline.repository.changedFiles, []);
+    assert.deepEqual(baseline.baseline.repository.fingerprints, {});
+    assert.equal(baseline.baseline.repository.dirty, false);
     await transitionWorkItem(root, "ANALYSIS-1", "ANALYZING");
     await addAnalysisConclusion(root, "ANALYSIS-1", { status: "PROVEN", text: "runtime is installed", evidence: [".ai-harness/manifest.json"] });
     await addAnalysisConclusion(root, "ANALYSIS-1", { status: "UNKNOWN", text: "production deployment is unknown", evidence: [], unknown: "no production access" });

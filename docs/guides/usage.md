@@ -197,7 +197,7 @@ node .ai-harness/bin/harness.mjs start --id ANALYSIS-001 --type ANALYSIS --title
   --authorization approval-required --authorization-source "只读询问" --json
 ```
 
-`ANALYSIS` 只允许控制面状态写入，不创建开发计划。
+`ANALYSIS` 只允许控制面状态写入，不创建开发计划。在 `ANALYZING` 阶段可用不带 `--task` 的 `run` 记录专用只读白名单内的命令：当前 Node 的 `--version`/`-v`、`node --check <单文件>`，以及通过精确 `.ai-harness/bin/harness.mjs` 相对入口调用的 Runtime 只读子命令。测试、构建、格式化、伪装脚本、配置追加 executable 及其他可能写入文件或产生外部副作用的命令会被拒绝；源码前后快照仍作为纵深校验，但 Runtime 不是操作系统沙箱。
 
 ## 3. 开发型状态流
 
@@ -286,13 +286,14 @@ node .ai-harness/bin/harness.mjs check --ci --json
 node .ai-harness/bin/harness.mjs transition --id <ID> --to BASELINING --json
 node .ai-harness/bin/harness.mjs baseline --id <ID> --evidence "检出代码、配置、Schema 和测试入口" --json
 node .ai-harness/bin/harness.mjs transition --id <ID> --to ANALYZING --json
-node .ai-harness/bin/harness.mjs analysis-add --id <ID> --status PROVEN --conclusion "已证实结论" --evidence "文件:行或命令结果" --json
+node .ai-harness/bin/harness.mjs run --id <ID> --json -- node --version
+node .ai-harness/bin/harness.mjs analysis-add --id <ID> --status PROVEN --conclusion "已证实结论" --command <COMMAND_ID> --evidence "文件:行" --json
 node .ai-harness/bin/harness.mjs analysis-add --id <ID> --status UNKNOWN --conclusion "无法确认事项" --unknown "不可访问的环境或证据" --json
 node .ai-harness/bin/harness.mjs record --id <ID> --kind analysis --status pass --evidence "回答已区分事实、推断、建议和未知" --json
 node .ai-harness/bin/harness.mjs transition --id <ID> --to ANSWERED --json
 ```
 
-结论状态为 `PROVEN`、`INFERRED`、`PROPOSAL` 或 `UNKNOWN`。除 `UNKNOWN` 外必须提供证据。
+结论状态为 `PROVEN`、`INFERRED`、`PROPOSAL` 或 `UNKNOWN`。除 `UNKNOWN` 外必须提供至少一条文本证据或当前通过的命令 ID；`--command` 可重复。命令证据必须属于本分析项当前修订、通过 ANALYSIS 只读策略、退出码为 0、前后源码一致且没有同命令的随后失败。
 
 ### 验收项与检查对应
 

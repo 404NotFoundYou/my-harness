@@ -157,3 +157,33 @@ export function classifyCommand(command, args = [], config = {}) {
   }
   return { decision: "allow", rule: "verified-command", reason: "命令属于允许的构建、检查或测试范围。" };
 }
+
+const ANALYSIS_RUNTIME_COMMANDS = new Set(["doctor", "check", "guide", "show", "list", "policies", "version", "help", "lock-status"]);
+
+function runtimeNodeCommand(command, platform) {
+  const windows = platform === "win32";
+  const pathApi = windows ? path.win32 : path.posix;
+  const explicit = pathApi.isAbsolute(command) || command.includes("/") || (windows && command.includes("\\"));
+  if (!explicit) return windows ? ["node", "node.exe"].includes(command.toLowerCase()) : command === "node";
+  const actual = pathApi.normalize(command);
+  const expected = pathApi.normalize(process.execPath);
+  return windows ? actual.toLowerCase() === expected.toLowerCase() : actual === expected;
+}
+
+function analysisReadOnlyCommand(command, args, platform) {
+  if (!runtimeNodeCommand(command, platform)) return false;
+  const normalizedArgs = args.map((arg) => arg.toLowerCase());
+  if (normalizedArgs.length === 1 && ["--version", "-v"].includes(normalizedArgs[0])) return true;
+  if (normalizedArgs.length === 2 && normalizedArgs[0] === "--check" && normalizedArgs[1] && !normalizedArgs[1].startsWith("-")) return true;
+  const script = (platform === "win32" ? args[0]?.replaceAll("\\", "/") : args[0])?.replace(/^\.\//, "");
+  return script === ".ai-harness/bin/harness.mjs" && ANALYSIS_RUNTIME_COMMANDS.has(normalizedArgs[1]);
+}
+
+export function classifyAnalysisCommand(command, args = [], config = {}, { platform = process.platform } = {}) {
+  const classification = classifyCommand(command, args, config);
+  if (classification.decision !== "allow") return classification;
+  if (analysisReadOnlyCommand(command, args, platform)) {
+    return { decision: "allow", rule: "analysis-read-only", reason: "命令属于 ANALYSIS 明确只读的查询或静态检查范围。" };
+  }
+  return { decision: "deny", rule: "analysis-write-capable", reason: "ANALYSIS 不执行测试、构建、格式化或其他可能写入文件及产生外部副作用的命令。" };
+}

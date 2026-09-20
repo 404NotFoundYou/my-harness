@@ -12,15 +12,22 @@ jobs:
   source-tests:
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        include:
+          - os: ubuntu-latest
+            node-version: "20"
+          - os: ubuntu-latest
+            node-version: "22"
+          - os: windows-latest
+            node-version: "20"
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: ${{ matrix.node-version }}
       - name: Benchmark framework tests (no model calls)
-        run: node --test benchmarks/tests/runner.test.mjs benchmarks/tests/multifile.test.mjs benchmarks/tests/resume.test.mjs benchmarks/tests/status.test.mjs benchmarks/tests/report.test.mjs benchmarks/tests/spec-guidance.test.mjs
+        run: node benchmarks/tests/run.mjs
       - name: Windows runtime compatibility
         if: runner.os == 'Windows'
         run: node .ai-harness/tests/run.mjs

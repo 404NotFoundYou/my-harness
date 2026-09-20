@@ -1,0 +1,168 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "ITER-RUNTIME-OPT-20260920",
+  "mode": "single",
+  "rationale": "两个顺序任务共享最终发布与回归边界，先稳定Runtime契约再调整测试CI",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "修复控制面输出与ANALYSIS命令证据",
+      "module": "runtime",
+      "status": "COMPLETED",
+      "attempt": 1,
+      "blockedBy": [],
+      "blocks": [
+        "T2"
+      ],
+      "writeScopes": [
+        ".ai-harness/src/git.mjs",
+        ".ai-harness/src/checker.mjs",
+        ".ai-harness/src/workflow.mjs",
+        ".ai-harness/src/evidence.mjs",
+        ".ai-harness/src/verification.mjs",
+        ".ai-harness/src/validator.mjs",
+        ".ai-harness/src/cli.mjs",
+        ".ai-harness/src/guide.mjs",
+        ".ai-harness/tests/git-state.test.mjs",
+        ".ai-harness/tests/checker.test.mjs",
+        ".ai-harness/tests/workflow.test.mjs",
+        ".ai-harness/tests/cli.test.mjs",
+        ".ai-harness/tests/guide.test.mjs",
+        ".ai-harness/tests/analysis-command.test.mjs",
+        ".ai-harness/manifest.json",
+        "README.md",
+        "docs/guides/usage.md",
+        ".ai-harness/policies/analysis.md",
+        ".ai-harness/templates/instructions/AGENTS.md"
+      ],
+      "verification": [
+        "node --test .ai-harness/tests/git-state.test.mjs .ai-harness/tests/checker.test.mjs .ai-harness/tests/workflow.test.mjs .ai-harness/tests/cli.test.mjs .ai-harness/tests/guide.test.mjs .ai-harness/tests/analysis-command.test.mjs"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            "--test",
+            ".ai-harness/tests/git-state.test.mjs",
+            ".ai-harness/tests/checker.test.mjs",
+            ".ai-harness/tests/workflow.test.mjs",
+            ".ai-harness/tests/cli.test.mjs",
+            ".ai-harness/tests/guide.test.mjs",
+            ".ai-harness/tests/analysis-command.test.mjs"
+          ]
+        }
+      ],
+      "docsImpact": [
+        "README.md",
+        "docs/guides/usage.md",
+        ".ai-harness/policies/analysis.md",
+        ".ai-harness/templates/instructions/AGENTS.md"
+      ],
+      "reviewBatch": "R1",
+      "risk": "high",
+      "owner": "primary-ai",
+      "verificationStatus": "pass",
+      "reviewStatus": "pass",
+      "evidence": [
+        "2c8497ff-ce56-4049-a436-342e4e828071",
+        "833b836e-e9ca-4d9d-a6cb-5d8c29215a59"
+      ],
+      "deferralApproval": null,
+      "verificationSource": {
+        "digest": "9a7ddf38a4dea4c512e71c17c82ec0520dc3b52899c6952b6dfc1a7d344fff3c",
+        "document": ".ai-harness/work-items/ITER-RUNTIME-OPT-20260920/snapshots/9a7ddf38a4dea4c512e71c17c82ec0520dc3b52899c6952b6dfc1a7d344fff3c.json"
+      },
+      "reviewSource": {
+        "digest": "9a7ddf38a4dea4c512e71c17c82ec0520dc3b52899c6952b6dfc1a7d344fff3c",
+        "document": ".ai-harness/work-items/ITER-RUNTIME-OPT-20260920/snapshots/9a7ddf38a4dea4c512e71c17c82ec0520dc3b52899c6952b6dfc1a7d344fff3c.json"
+      }
+    },
+    {
+      "id": "T2",
+      "title": "优化测试夹具CI与ADR编号",
+      "module": "engineering",
+      "status": "COMPLETED",
+      "attempt": 1,
+      "blockedBy": [
+        "T1"
+      ],
+      "blocks": [],
+      "writeScopes": [
+        ".ai-harness/tests/helpers.mjs",
+        ".ai-harness/tests/helpers-fixture.test.mjs",
+        ".ai-harness/tests/run.mjs",
+        "benchmarks/tests/run.mjs",
+        "benchmarks/README.md",
+        ".github/workflows/source-tests.yml",
+        ".github/workflows/ai-harness.yml",
+        "docs/architecture/decisions/0004-adaptive-execution.md",
+        "docs/architecture/decisions/0008-adaptive-execution.md",
+        "docs/architecture/overview.md"
+      ],
+      "verification": [
+        "node .ai-harness/tests/run.mjs",
+        "node --test benchmarks/tests/runner.test.mjs benchmarks/tests/multifile.test.mjs benchmarks/tests/resume.test.mjs benchmarks/tests/status.test.mjs benchmarks/tests/report.test.mjs benchmarks/tests/spec-guidance.test.mjs"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            ".ai-harness/tests/run.mjs"
+          ]
+        },
+        {
+          "id": "V2",
+          "command": "node",
+          "args": [
+            "--test",
+            "benchmarks/tests/runner.test.mjs",
+            "benchmarks/tests/multifile.test.mjs",
+            "benchmarks/tests/resume.test.mjs",
+            "benchmarks/tests/status.test.mjs",
+            "benchmarks/tests/report.test.mjs",
+            "benchmarks/tests/spec-guidance.test.mjs"
+          ]
+        }
+      ],
+      "docsImpact": [
+        "benchmarks/README.md",
+        "docs/architecture/decisions/0008-adaptive-execution.md",
+        "docs/architecture/overview.md"
+      ],
+      "reviewBatch": "R1",
+      "risk": "medium",
+      "owner": "primary-ai",
+      "verificationStatus": "pass",
+      "reviewStatus": "pass",
+      "evidence": [
+        "4ff928f0-54b1-476f-b9dd-dcbf353a33f2",
+        "d5a0dd9c-3bc4-4043-b5c3-354575c2d080"
+      ],
+      "deferralApproval": null,
+      "verificationSource": {
+        "digest": "cf73a8b27960b0223a3d72564b49f729992762df349e3d1d3d731a8fd80a2ebc",
+        "document": ".ai-harness/work-items/ITER-RUNTIME-OPT-20260920/snapshots/cf73a8b27960b0223a3d72564b49f729992762df349e3d1d3d731a8fd80a2ebc.json"
+      },
+      "reviewSource": {
+        "digest": "cf73a8b27960b0223a3d72564b49f729992762df349e3d1d3d731a8fd80a2ebc",
+        "document": ".ai-harness/work-items/ITER-RUNTIME-OPT-20260920/snapshots/cf73a8b27960b0223a3d72564b49f729992762df349e3d1d3d731a8fd80a2ebc.json"
+      }
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "Runtime公共契约与工程验证",
+      "risk": "high",
+      "taskIds": [
+        "T1",
+        "T2"
+      ],
+      "independentRequired": true
+    }
+  ],
+  "createdAt": "2026-09-20T08:38:13.713Z",
+  "updatedAt": "2026-09-20T08:59:59.803Z"
+}

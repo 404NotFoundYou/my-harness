@@ -39,7 +39,7 @@ CLAUDE.md / GEMINI.md        # 已有客户端规则/导入 + 可选托管块
 - `validator`：结构、依赖图、状态历史、数据库顺序和完成条件校验。
 - `workflow`：创建工作项、更新阶段数据、转换状态和任务状态。
 - `policy`：deny-first 命令分类和可执行边界。
-- `evidence`：执行允许命令、脱敏和追加证据；`checker` 复核证据 ID、类型、任务和最新状态的一致性。
+- `evidence`：执行允许命令、脱敏和追加证据；开发命令绑定计划，ANALYSIS 仅执行专用只读白名单并绑定当前源码；`checker` 复核证据 ID、类型、任务和最新状态的一致性。
 - `artifacts`：为显式附件保存按内容哈希命名的工作项副本，验证大小、归属及内容；来源声明不等于外部执行认证。
 - `managed-block`：渲染、解析和校验规则文件中的版本化托管块，统一 LF/CRLF 哈希语义。
 - `installer`：从标准载荷合并或移除托管规则，预检安装/卸载计划，备份已有文件并在写入失败时回滚。
@@ -68,7 +68,7 @@ CLAUDE.md / GEMINI.md        # 已有客户端规则/导入 + 可选托管块
 
 状态机只服务于 `NON_TRIVIAL` 工作。`TRIVIAL_READONLY` 直接检查并回答，`TRIVIAL_EDIT` 直接完成单文件机械修改和一个最窄验证，两者都不产生控制面状态。边界与升级条件见 [ADR-0002](decisions/0002-trivial-task-fast-path.md)。
 
-普通非琐碎迭代/BUG 默认通过 `begin → run → finish → check --ci` 使用同一状态机，模型只提交需要判断的方案、风险、审查与验收结论，由代码完成机械状态推进。复杂或高风险任务继续使用完整命令，详见 [ADR-0004](decisions/0004-adaptive-execution.md)。
+普通非琐碎迭代/BUG 默认通过 `begin → run → finish → check --ci` 使用同一状态机，模型只提交需要判断的方案、风险、审查与验收结论，由代码完成机械状态推进。复杂或高风险任务继续使用完整命令，详见 [ADR-0008](decisions/0008-adaptive-execution.md)。
 
 开发型工作在数据库设计前增加 `SOLUTION_DESIGN`，用于梳理业务流程、领域边界、接口和查询/写入草案；`PLANNED` 专指数据库决策后的任务执行计划。
 

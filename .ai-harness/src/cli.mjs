@@ -134,12 +134,12 @@ function helpText() {
   plan-approve  批准计划
   task-update   推进任务状态
   record        记录验证、审查、验收、文档或分析结果（流水线用 --stage；reproduction/regression 用 --command 引用 run 证据）
-  analysis-add  增加带状态的分析结论
+  analysis-add  增加带状态的分析结论（可用 --command 引用 ANALYSIS run）
   transition    推进工作项状态
 
 命令：
   guard -- <command...>          只判定 allow/ask/deny
-  run --id ID [--task T] -- ...  仅执行 allow 命令并记录证据
+  run --id ID [--task T] -- ...  仅执行 allow 命令并记录证据；ANALYZING 不带 task
   run --id ID --task T --all    顺序执行本任务已声明检查，遇失败停止并列出未运行项
 
 普通任务：
@@ -444,6 +444,7 @@ export async function runCli(argv, io = { stdout: console.log, stderr: console.e
       status: one(parsed, "status", { required: true }).toUpperCase(),
       text: one(parsed, "conclusion", { required: true }),
       evidence: many(parsed, "evidence"),
+      commandRefs: many(parsed, "command"),
       unknown: one(parsed, "unknown"),
     });
     emit(io, parsed, result);

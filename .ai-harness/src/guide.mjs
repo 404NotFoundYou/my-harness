@@ -183,7 +183,7 @@ function nextAction(item, plan, task, commands, verification, reviewFailed) {
       : { ...record("acceptance", [], [item.authorization.mode === "autonomous" ? "按已授权验收逐项核实结果；未验证项不能记为通过。" : "需要有权验收人的实际结论。"]), requiresHumanApproval: item.authorization.mode !== "autonomous" };
   }
   if (item.status === "ANALYZING") {
-    if (item.analysis.conclusions.length === 0) return action("analyze-evidence", "先回答用户问题并区分已证实、推断、建议与未知。", work("analysis-add", "--status", "<PROVEN|INFERRED|PROPOSAL|UNKNOWN>", "--conclusion", "<CONCLUSION>", "--evidence", "<SOURCE>"), ["读取与问题有关的入口、调用方和实际配置；不能修改产品文件。"]);
+    if (item.analysis.conclusions.length === 0) return action("analyze-evidence", "先回答用户问题并区分已证实、推断、建议与未知。", work("analysis-add", "--status", "<PROVEN|INFERRED|PROPOSAL|UNKNOWN>", "--conclusion", "<CONCLUSION>", "--evidence", "<SOURCE>"), ["读取与问题有关的入口、调用方和实际配置；需要命令证据时先用 run --id <ID> 执行 allow 命令，再以 --command <ID> 引用；不能修改产品文件。"]);
     return item.analysis.status === "pass" ? transition("ANSWERED") : record("analysis", [], ["结论是否完整回答问题，证据与不可访问范围是否清楚。"]);
   }
   return action("inspect-state", "当前状态没有可确定的下一步，请先检查实际状态与证据。", work("show"));
@@ -199,7 +199,7 @@ export async function getWorkGuide(root, id, { taskId = null, includeContext = f
   const task = selectTask(item, plan, taskId);
   const paths = await workItemPaths(root, id);
   const [evidence, history, repository] = await Promise.all([
-    readEvents(paths.evidence, id), readEvents(paths.events, id), getGitBaseline(root),
+    readEvents(paths.evidence, id), readEvents(paths.events, id), getGitBaseline(root, { includeFingerprints: false }),
   ]);
   const commands = latestCommands(evidence, history, task?.id ?? null);
   const verification = plan && ["IMPLEMENTING", "VERIFYING", "CODE_REVIEW", "READY_FOR_ACCEPTANCE"].includes(item.status)

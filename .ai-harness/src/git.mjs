@@ -41,7 +41,14 @@ export function worktreeStatus(root) {
   return {staged:[...staged],modified:[...modified],untracked:[...untracked]};
 }
 
-export async function getGitBaseline(root) {
+function excludedPath(file, prefixes) {
+  return prefixes.some((prefix) => file === prefix || file.startsWith(`${prefix}/`));
+}
+
+export async function getGitBaseline(root, { includeFingerprints = true, excludePaths = [] } = {}) {
+  invariant(typeof includeFingerprints === "boolean" && Array.isArray(excludePaths) && excludePaths.every((entry) => typeof entry === "string"),
+    "INVALID_GIT_OPTIONS", "Git 基线选项无效。" );
+  const excluded = excludePaths.map((entry) => entry.replaceAll("\\", "/").replace(/^\.\//, "").replace(/\/$/, "")).filter(Boolean);
   const isGit = await exists(`${root}/.git`);
   if (!isGit) {
     return {
@@ -57,12 +64,13 @@ export async function getGitBaseline(root) {
   const commitResult = git(root, ["rev-parse", "--verify", "HEAD"]);
   const status=worktreeStatus(root);
   const changedFiles = new Set();
-  for(const file of [...status.modified,...status.staged,...status.untracked])changedFiles.add(file.replaceAll("\\", "/"));
+  for(const file of [...status.modified,...status.staged,...status.untracked]){
+    const normalized=file.replaceAll("\\", "/");
+    if(!excludedPath(normalized,excluded))changedFiles.add(normalized);
+  }
 
   const fingerprints = {};
-  for (const file of changedFiles) {
-    fingerprints[file] = await fileFingerprint(root, file);
-  }
+  if(includeFingerprints)for(const file of changedFiles)fingerprints[file]=await fileFingerprint(root,file);
   return {
     isGit: true,
     branch: branchResult.status === 0 ? text(branchResult) : null,

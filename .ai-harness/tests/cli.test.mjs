@@ -79,6 +79,24 @@ test("CLI guard uses stable allow, ask and deny exit codes", () => {
   assert.equal(runCli(sourceEntrypoint, sourceRoot, ["guard", "--", "git", "reset", "--hard"], 3).status, 3);
 });
 
+test("installed CLI records and binds ANALYSIS command evidence", async () => {
+  const root = await createInstalledProject();
+  try {
+    const entrypoint = path.join(root, ".ai-harness/bin/harness.mjs");
+    const id = "ANALYSIS-CLI";
+    runCli(entrypoint, root, ["start", "--id", id, "--type", "ANALYSIS", "--title", "inspect runtime", "--input", "user question", "--acceptance", "answer is evidenced", "--authorization", "approval-required", "--authorization-source", "read-only question", "--json"]);
+    runCli(entrypoint, root, ["transition", "--id", id, "--to", "BASELINING", "--json"]);
+    runCli(entrypoint, root, ["baseline", "--id", id, "--evidence", "current checkout", "--json"]);
+    runCli(entrypoint, root, ["transition", "--id", id, "--to", "ANALYZING", "--json"]);
+    const command = jsonOutput(runCli(entrypoint, root, ["run", "--id", id, "--json", "--", process.execPath, "--version"]));
+    const conclusion = jsonOutput(runCli(entrypoint, root, ["analysis-add", "--id", id, "--status", "PROVEN", "--conclusion", "runtime responds", "--command", command.id, "--json"]));
+    assert.deepEqual(conclusion.commands, [command.id]);
+    runCli(entrypoint, root, ["record", "--id", id, "--kind", "analysis", "--status", "pass", "--evidence", "answer is complete", "--json"]);
+    runCli(entrypoint, root, ["transition", "--id", id, "--to", "ANSWERED", "--json"]);
+    assert.equal(jsonOutput(runCli(entrypoint, root, ["check", "--ci", "--json"])).ok, true);
+  } finally { await cleanup(root); }
+});
+
 test("CLI requires confirmation and uninstalls only from an independent source", async () => {
   const target = await mkdtemp(path.join(tmpdir(), "ai-harness-cli-uninstall-"));
   try {

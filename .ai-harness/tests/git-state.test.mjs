@@ -163,3 +163,16 @@ test("metadata and snapshots use bounded Git queries without reusing stale obser
     assert.equal(changed.files["tracked.txt"],`100644:${oid(root,"tracked.txt")}`);
   }finally{t.mock.restoreAll();syncBuiltinESMExports();await cleanup(root);}
 });
+
+test("baseline metadata can exclude control paths without reading fingerprints",async()=>{
+  const root=await fixture();
+  try{
+    await mkdir(path.join(root,".ai-harness/work-items/CONTROL"),{recursive:true});
+    await writeFile(path.join(root,".ai-harness/work-items/CONTROL/state.json"),"control\n");
+    await writeFile(path.join(root,"product.txt"),"product\n");
+    const state=await getGitBaseline(root,{includeFingerprints:false,excludePaths:[".ai-harness/work-items"]});
+    assert.deepEqual(state.changedFiles,["product.txt"]);
+    assert.deepEqual(state.fingerprints,{});
+    assert.equal(state.dirty,true);
+  }finally{await cleanup(root);}
+});

@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { mkdtemp, readFile, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { checkProject, doctorProject } from "../src/checker.mjs";
@@ -21,6 +21,28 @@ test("doctor reports a concise Git summary without baseline fingerprints", async
     const result = await doctorProject(root);
     assert.equal(result.ok, true);
     assert.equal(result.details.repository.isGit, true);
+    assert.equal("fingerprints" in result.details.repository, false);
+  } finally {
+    await cleanup(root);
+  }
+});
+
+test("doctor bounds dirty path output while retaining exact totals", async () => {
+  const root = await createInstalledProject();
+  try {
+    const control = path.join(root, ".ai-harness/work-items/NOISE");
+    await mkdir(control, { recursive: true });
+    for (let index = 0; index < 60; index += 1) await writeFile(path.join(control, `${String(index).padStart(2, "0")}.txt`), "control\n");
+    await writeFile(path.join(root, "product-change.txt"), "product\n");
+    const result = await doctorProject(root);
+    assert.equal(result.ok, true);
+    assert.equal(result.details.repository.dirty, true);
+    assert.equal(result.details.repository.changedFileCount, 61);
+    assert.equal(result.details.repository.changedFiles.length, 50);
+    assert.equal(result.details.repository.changedFilesOmitted, 11);
+    assert.equal(result.details.repository.productChangedFileCount, 1);
+    assert.equal(result.details.repository.controlChangedFileCount, 60);
+    assert.equal(result.details.repository.changedFiles[0], "product-change.txt");
     assert.equal("fingerprints" in result.details.repository, false);
   } finally {
     await cleanup(root);

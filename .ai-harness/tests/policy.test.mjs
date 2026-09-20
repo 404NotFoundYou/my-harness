@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { classifyCommand } from "../src/policy.mjs";
+import { classifyAnalysisCommand, classifyCommand } from "../src/policy.mjs";
 import { redact } from "../src/evidence.mjs";
 
 test("parse failure and nested shells are denied", () => {
@@ -38,4 +38,30 @@ test("evidence redacts common credentials", () => {
   assert.doesNotMatch(value, /super-secret-value/);
   assert.doesNotMatch(value, /ghp_abcdefghijklmnopqrstuvwxyz/);
   assert.match(value, /REDACTED/);
+});
+
+test("ANALYSIS allows only deterministic read-only command forms", () => {
+  assert.equal(classifyAnalysisCommand("node", ["--version"]).decision, "allow");
+  assert.equal(classifyAnalysisCommand("node", ["--check", "sample.mjs"]).decision, "allow");
+  assert.equal(classifyAnalysisCommand("node", [".ai-harness/bin/harness.mjs", "doctor", "--json"]).decision, "allow");
+  assert.equal(classifyAnalysisCommand("node", ["./.ai-harness/bin/harness.mjs", "check", "--json"]).decision, "allow");
+  for (const [command, args] of [
+    ["node", ["--test", "sample.test.mjs"]],
+    ["node", ["evil/.ai-harness/bin/harness.mjs", "doctor"]],
+    ["node", [".AI-HARNESS/bin/harness.mjs", "doctor"]],
+    ["npm", ["test"]],
+    ["npm", ["--version"]],
+    ["prettier", ["--write", "sample.mjs"]],
+    ["dart", ["format", "lib"]],
+  ]) {
+    const result = classifyAnalysisCommand(command, args);
+    assert.equal(result.decision, "deny", JSON.stringify({ command, args, result }));
+    assert.equal(result.rule, "analysis-write-capable");
+  }
+  assert.equal(classifyAnalysisCommand("npm", ["install", "left-pad"]).decision, "ask");
+  assert.equal(classifyAnalysisCommand("custom-writer", ["--version"], { additionalAllowExecutables: ["custom-writer"] }).decision, "deny");
+  assert.equal(classifyAnalysisCommand("NODE", ["--version"], {}, { platform: "linux" }).decision, "deny");
+  assert.equal(classifyAnalysisCommand("node", [String.raw`.ai-harness\bin\harness.mjs`, "doctor"], {}, { platform: "linux" }).decision, "deny");
+  assert.equal(classifyAnalysisCommand("NODE", ["--version"], {}, { platform: "win32" }).decision, "allow");
+  assert.equal(classifyAnalysisCommand("node", [String.raw`.ai-harness\bin\harness.mjs`, "doctor"], {}, { platform: "win32" }).decision, "allow");
 });

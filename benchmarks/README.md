@@ -6,7 +6,7 @@
 
 ```powershell
 # 不调用模型的框架测试
-node --test benchmarks/tests/runner.test.mjs benchmarks/tests/multifile.test.mjs benchmarks/tests/resume.test.mjs benchmarks/tests/status.test.mjs benchmarks/tests/report.test.mjs benchmarks/tests/spec-guidance.test.mjs
+node benchmarks/tests/run.mjs
 
 # 真实调用；复用现有 Codex CLI 登录，运行前应取得模型调用授权
 node benchmarks/run.mjs --cli 'D:/Program Files/nodejs/node_global/node_modules/@openai/codex/bin/codex.js' --weak gpt-5.6-luna --strong gpt-5.6-sol --out .ai-harness/work-items/MODEL-BENCHMARK-001/pilot

@@ -27,7 +27,7 @@ import {
   WORK_TYPES,
 } from "./constants.mjs";
 import { createPlan, createReviewBatch, createTask, createWorkItem } from "./model.mjs";
-import { assertAcceptanceCoverage, assertCommandEvidence, assertVerification, hasFailedReview, invalidateResults, planDigest, readEvidence } from "./verification.mjs";
+import { assertAcceptanceCoverage, assertAnalysisCommandEvidence, assertCommandEvidence, assertVerification, hasFailedReview, invalidateResults, planDigest, readEvidence } from "./verification.mjs";
 import { captureArtifacts } from "./artifacts.mjs";
 import { saveSnapshot, sourceSnapshot } from "./snapshot.mjs";
 import { prepareDelivery } from "./scope.mjs";
@@ -161,8 +161,8 @@ async function mutatePlan(root, id, mutator) {
 export async function completeBaseline(root, id, { evidence, document = null }) {
   invariant(Array.isArray(evidence) && evidence.length > 0, "EVIDENCE_REQUIRED", "基线至少需要一条证据。" );
   if (document) await resolveProjectPath(root, document, { mustExist: true });
-  const repository = await getGitBaseline(root);
   const config = await loadConfig(root);
+  const repository = await getGitBaseline(root, { includeFingerprints: false, excludePaths: [config.workItemsDirectory] });
   invariant(!config.requireGit || repository.isGit, "GIT_REQUIRED", "项目配置要求 Git，但当前目录不是 Git 仓库。" );
   return mutateWorkItem(root, id, async (item, paths) => {
     invariant(item.status === "BASELINING", "WRONG_STAGE", "只能在 BASELINING 阶段完成基线。" );
@@ -311,7 +311,7 @@ export async function transitionWorkItem(root, id, target, reason = null) {
       const baseline = await saveSnapshot(root, paths.directory, delivery.baseline);
       item.integrityVersion = 1;
       item.revision ||= 1;
-      item.delivery = { source: await saveSnapshot(root, paths.directory, current), baseline, baselineAt: delivery.baselineAt, ownedChanges: delivery.ownedChanges, planDigest: planDigest(item, plan), at: nowIso(), head: (await getGitBaseline(root)).commit };
+      item.delivery = { source: await saveSnapshot(root, paths.directory, current), baseline, baselineAt: delivery.baselineAt, ownedChanges: delivery.ownedChanges, planDigest: planDigest(item, plan), at: nowIso(), head: (await getGitBaseline(root, { includeFingerprints: false })).commit };
     }
     if (target === "BLOCKED") {
       item.blocked = { from, reason, at: nowIso() };
@@ -542,13 +542,20 @@ export async function recordResult(root, id, { kind, status, summary, taskId = n
   });
 }
 
-export async function addAnalysisConclusion(root, id, { status, text, evidence = [], unknown = null }) {
+export async function addAnalysisConclusion(root, id, { status, text, evidence = [], commandRefs = [], unknown = null }) {
   return mutateWorkItem(root, id, async (item, paths) => {
     invariant(item.type === "ANALYSIS" && item.status === "ANALYZING", "WRONG_STAGE", "分析结论只能在 ANALYZING 阶段记录。" );
     invariant(["PROVEN", "INFERRED", "PROPOSAL", "UNKNOWN"].includes(status), "INVALID_CONCLUSION_STATUS", `无效结论状态：${status}`);
     invariant(text?.trim(), "CONCLUSION_REQUIRED", "结论不能为空。" );
-    invariant(status === "UNKNOWN" || (Array.isArray(evidence) && evidence.length > 0), "EVIDENCE_REQUIRED", `${status} 结论必须提供证据。`);
-    const conclusion = { id: randomUUID(), status, text, evidence };
+    invariant(Array.isArray(evidence) && evidence.every((entry) => typeof entry === "string" && entry.trim()), "INVALID_ANALYSIS_EVIDENCE", "分析文本证据必须是非空字符串数组。" );
+    invariant(Array.isArray(commandRefs) && commandRefs.every((entry) => typeof entry === "string" && entry.trim()), "INVALID_ANALYSIS_COMMANDS", "分析命令证据必须是非空 ID 数组。" );
+    const commands = [...new Set(commandRefs)];
+    invariant(status === "UNKNOWN" || evidence.length > 0 || commands.length > 0, "EVIDENCE_REQUIRED", `${status} 结论必须提供文本或命令证据。`);
+    if (commands.length) {
+      const [events, snapshot] = await Promise.all([readEvidence(root, id), sourceSnapshot(root)]);
+      for (const commandId of commands) await assertAnalysisCommandEvidence(root, item, commandId, { events, snapshot });
+    }
+    const conclusion = { id: randomUUID(), status, text, evidence, ...(commands.length ? { commands } : {}) };
     item.analysis.conclusions.push(conclusion);
     if (unknown?.trim()) item.analysis.unknowns.push(unknown);
     await appendEvent(paths, id, "analysis-conclusion-added", { conclusion });
