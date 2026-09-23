@@ -80,7 +80,7 @@ export async function createParticipant(task, { sourceRoot, harness }) {
       ? "使用简体中文。完成TASK.md中的已授权BUGFIX，先复现再修复并回归，保留实际/期望、根因和失败证据。必要可逆实现自主推进。范围以TASK.md为准；不安装依赖、不使用网络、不提交Git、不修改登录配置。未完成必须如实说明。\n"
       : "使用简体中文。完成TASK.md中的已授权普通迭代，必要可逆实现自主推进。范围以TASK.md为准；不安装依赖、不使用网络、不提交Git、不修改登录配置。公共验证通过后核对规格，未完成必须如实说明。\n";
     const guidance = harness && task.writableFiles === undefined
-      ? `先在项目相对路径${beginSpecPath}只填写risk和approach；保留预填的writeScopes、verification及docsImpact的N/A理由。用项目相对路径运行node .ai-harness/bin/harness.mjs begin --spec ${beginSpecPath} --json，再用guide查看缺失事项。\n`
+      ? `不要修改项目相对路径${beginSpecPath}；它已预填writeScopes、verification及docsImpact的N/A理由。判断risk和approach后，运行node .ai-harness/bin/harness.mjs begin --spec ${beginSpecPath} --risk <low或medium> --approach "<实际方案>" --json。创建后用guide --id ${task.id}-iteration --task T1 --brief --json；先完成实现和必要额外测试，最后运行run --all。计划检查通过后不要再修改产品文件，立即finish并check --ci。\n`
       : "";
     await writeFile(path.join(root, "AGENTS.md"), instructions + guidance);
     git(root, ["init"]);
@@ -105,6 +105,12 @@ export async function inspectChanges(participant, task, harness) {
   const writable = writableFilesFor(task);
   const violations = changes.filter(change => !writable.includes(change.path) && change.path !== "test/extra.test.mjs" &&
     !(harness && change.path.startsWith(".ai-harness/work-items/"))).map(change => change.path);
+  if (participant.frozenBeginSpec) {
+    const absolute = path.join(participant.root, participant.frozenBeginSpec.path);
+    const info = await lstat(absolute).catch(() => null);
+    const currentHash = info?.isFile() && !info.isSymbolicLink() ? hash(await readFile(absolute)) : null;
+    if (currentHash !== participant.frozenBeginSpec.sha256) violations.push(`${participant.frozenBeginSpec.path} changed`);
+  }
   if (git(participant.root, ["rev-parse", "HEAD"]) !== participant.head) violations.push("Git HEAD changed");
   return { ok: violations.length === 0, changes, violations };
 }
@@ -166,7 +172,7 @@ export function participantPrompt(task, group, runBudget = budget) {
   return `请在当前临时项目完成TASK.md中的迭代，先读规格、实现、src/caller.mjs和公共测试，然后实现并验证。\n` +
     `只有${task.entry}和新增test/extra.test.mjs可写（Harness组另可通过CLI维护工作项控制面）。不要修改原有测试或规格，不安装依赖、不访问网络、不提交Git。无需询问已授权的实现选择。\n` +
     `预算${runBudget.timeoutMs / 1000}秒、${runBudget.maxToolCalls}次工具调用；到期如实报告未完成。最终按结构化格式报告completed、summary和实际运行的tests。\n` +
-    (group.harness ? `本组已安装并初始化Harness。${beginSpecPath}已预填公开写入范围和公共验证命令；请根据实际方案填写risk(low/medium)与approach，再运行node .ai-harness/bin/harness.mjs begin --spec ${beginSpecPath} --json。创建后用guide --id ${task.id}-iteration --task T1 --json查看缺失事项，用run --all执行计划检查；实际finish和check --ci均通过后立即返回结构化最终结果，未完成如实报告。\n` : "按当前项目规范直接实施与验证。\n");
+    (group.harness ? `本组已安装并初始化Harness。${beginSpecPath}已预填公开写入范围和公共验证命令，不要编辑该JSON；根据实际方案判断risk(low/medium)与approach后，通过node .ai-harness/bin/harness.mjs begin --spec ${beginSpecPath} --risk <low或medium> --approach "<实际方案>" --json提交。创建后用guide --id ${task.id}-iteration --task T1 --brief --json查看缺失事项；先完成实现和必要额外测试，最后用run --id ${task.id}-iteration --all --json执行全部计划检查。检查通过后不要再修改产品文件，立即按guide的finish模板收尾并执行check --ci；两者均通过后返回结构化最终结果，未完成如实报告。\n` : "按当前项目规范直接实施与验证。\n");
 }
 
 export async function runCase({ task, group, sourceRoot, outputDirectory, driver, runBudget = budget, trial = 1, execution = null, beforePublish = null }) {
@@ -178,7 +184,9 @@ export async function runCase({ task, group, sourceRoot, outputDirectory, driver
         acceptance:["保持TASK.md的公开契约并通过test/public.test.mjs"],authorizationSource:"TASK.md中的已授权固定任务",
         risk:"",approach:"",databaseEvidence:"TASK.md明确无数据库影响",writeScopes:[task.entry,"test/extra.test.mjs"],
         verification:[{command:"node",args:["--test","test/public.test.mjs"]}],docsImpact:["N/A: 固定公开规格与文档不变"]};
-      await writeFile(path.join(participant.root,beginSpecPath),JSON.stringify(spec,null,2)+"\n",{flag:"wx"});
+      const content=JSON.stringify(spec,null,2)+"\n";
+      await writeFile(path.join(participant.root,beginSpecPath),content,{flag:"wx"});
+      participant.frozenBeginSpec={path:beginSpecPath,sha256:hash(content)};
     }
     const prompt = participantPrompt(task, group, runBudget);
     await writeFile(path.join(outputDirectory, "prompt.txt"), prompt);

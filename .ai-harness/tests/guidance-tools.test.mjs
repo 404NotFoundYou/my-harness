@@ -39,7 +39,7 @@ test("batch checks retain every result and expose checks left unrun after failur
   const root = await fixture(["node --check src/code.mjs", "node --check src/broken.mjs", "node --check src/later.mjs"]);
   try {
     assert.ok((await getWorkGuide(root,"TOOLS")).next.command.args.includes("--all"));
-    const failed = cli(root, ["run", "--task", "T1", "--all"], 1);
+    const failed = cli(root, ["run", "--all"], 1);
     assert.deepEqual(failed.commands.map(entry => entry.status), ["pass", "fail"]);
     assert.deepEqual(failed.notRun, ["V3"]);
     assert.equal((await readEvidence(root, "TOOLS")).filter(event=>event.kind==="command").length,2);
@@ -92,7 +92,11 @@ test("verified iterations offer an auditable finish and reopened tasks show the 
     assert.deepEqual(guide.shortcuts[0],guide.next);
     assert.equal(guide.evidence.commands[0].id,event.id);
     await writeFile(path.join(root,"src/code.mjs"),"export const value = 2;\n");
-    assert.deepEqual((await getWorkGuide(root,"TOOLS")).shortcuts,[]);
+    const stale = await getWorkGuide(root,"TOOLS");
+    assert.deepEqual(stale.shortcuts,[]);
+    assert.deepEqual(stale.next.command, { executable: "node", args: [".ai-harness/bin/harness.mjs", "run", "--id", "TOOLS", "--task", "T1", "--check", "V1", "--json"] });
+    assert.ok(stale.next.needs.some(value => value.includes("最后一次源码修改后")));
+    assert.ok(stale.next.needs.some(value => value.includes("不要继续修改产品文件")));
     const reopened=cli(root,["reopen","--reason","explicit whole-task recovery"]);
     assert.equal(reopened.tasks[0].status,"READY");
     assert.equal(reopened.next.taskTarget,"IN_PROGRESS");

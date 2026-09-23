@@ -142,9 +142,22 @@ export async function verificationReport(root, item, plan, { taskId = null, snap
 export async function assertVerification(root, item, plan, options = {}) {
   assertAcceptanceCoverage(item, plan);
   const report = await verificationReport(root, item, plan, options);
+  const taskIds = [...new Set([
+    ...(options.taskId ? [options.taskId] : []),
+    ...report.missing.map((check) => check.taskId),
+    ...report.failed.map((event) => event.taskId),
+  ].filter(Boolean))];
+  const recoveryTask = taskIds.length === 1 ? plan.tasks.find((task) => task.id === taskIds[0]) : null;
+  const canRun = recoveryTask && ((item.status === "IMPLEMENTING" && recoveryTask.status === "IN_PROGRESS") ||
+    (item.status === "VERIFYING" && recoveryTask.status === "COMPLETED"));
+  const next = canRun ? {
+    executable: "node",
+    args: [".ai-harness/bin/harness.mjs", "run", "--id", item.id, "--task", recoveryTask.id, "--all", "--json"],
+  } : null;
   invariant(report.ok, "VERIFICATION_NOT_CURRENT", "计划中的验证尚未针对当前代码全部通过，或存在新的失败。", {
     missing: report.missing.map((check) => ({ taskId: check.taskId, checkId: check.id, command: check.command, args: check.args })),
     failed: report.failed.map((event) => event.id),
+    ...(next ? { next } : {}),
   });
   for (const event of report.successful) {
     await loadSnapshot(root, event.command.source);

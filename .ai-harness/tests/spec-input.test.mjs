@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import path from "node:path";
-import { writeFile } from "node:fs/promises";
+import { mkdir, writeFile } from "node:fs/promises";
 import { spawnSync } from "node:child_process";
 import { cleanup, createInstalledProject } from "./helpers.mjs";
 import { beginWorkItem } from "../src/compact.mjs";
@@ -33,14 +33,51 @@ test("structured input preserves arrays, Unicode and literal comma paths without
   } finally { await cleanup(root); }
 });
 
+test("CLI judgment parameters fill only empty spec fields through literal Windows-safe arguments", async () => {
+  const root = await createInstalledProject();
+  try {
+    const directory = path.join(root, "输入 目录");
+    const relative = path.join("输入 目录", "task,定义.json");
+    await mkdir(directory);
+    await writeFile(path.join(root, relative), "\uFEFF" + JSON.stringify({
+      ...definition,
+      id: "SPEC-JUDGMENT",
+      title: "结构化判断",
+      risk: "",
+      approach: "",
+      writeScopes: ["src/值,副本.mjs"],
+    }));
+    const approach = "沿用现有入口，保留 PowerShell 参数数组";
+    const result = spawnSync(process.execPath, [
+      ".ai-harness/bin/harness.mjs", "begin", "--spec", relative,
+      "--risk", "medium", "--approach", approach, "--json",
+    ], { cwd: root, shell: false, windowsHide: true, encoding: "utf8" });
+    assert.equal(result.status, 0, result.stderr);
+    const plan = await loadPlan(root, "SPEC-JUDGMENT");
+    assert.equal(plan.rationale, approach);
+    assert.equal(plan.tasks[0].risk, "medium");
+    assert.deepEqual(plan.tasks[0].writeScopes, ["src/值,副本.mjs"]);
+  } finally { await cleanup(root); }
+});
+
 test("spec and legacy definition options cannot silently override each other", async () => {
   const root = await createInstalledProject();
   try {
     await writeFile(path.join(root, "task.json"), JSON.stringify(definition));
-    const result = spawnSync(process.execPath, [".ai-harness/bin/harness.mjs", "begin", "--spec", "task.json", "--id", "OTHER", "--json"], { cwd: root, shell: false, windowsHide: true, encoding: "utf8" });
-    assert.equal(result.status, 1);
-    assert.equal(JSON.parse(result.stderr).code, "SPEC_OPTION_CONFLICT");
-    assert.equal(await exists(path.join(root, ".ai-harness/work-items/SPEC")), false);
+    for (const [extra, code] of [
+      [["--id", "OTHER"], "SPEC_OPTION_CONFLICT"],
+      [["--risk", "low"], "SPEC_JUDGMENT_CONFLICT"],
+      [["--approach", definition.approach], "SPEC_JUDGMENT_CONFLICT"],
+    ]) {
+      const result = spawnSync(process.execPath, [".ai-harness/bin/harness.mjs", "begin", "--spec", "task.json", ...extra, "--json"], { cwd: root, shell: false, windowsHide: true, encoding: "utf8" });
+      assert.equal(result.status, 1);
+      assert.equal(JSON.parse(result.stderr).code, code);
+      assert.equal(await exists(path.join(root, ".ai-harness/work-items/SPEC")), false);
+    }
+    await writeFile(path.join(root, "task.json"), JSON.stringify({ ...definition, risk: "", approach: "" }));
+    const incomplete = spawnSync(process.execPath, [".ai-harness/bin/harness.mjs", "begin", "--spec", "task.json", "--risk", "low", "--json"], { cwd: root, shell: false, windowsHide: true, encoding: "utf8" });
+    assert.equal(incomplete.status, 1);
+    assert.equal(JSON.parse(incomplete.stderr).code, "INVALID_BEGIN_SPEC");
   } finally { await cleanup(root); }
 });
 

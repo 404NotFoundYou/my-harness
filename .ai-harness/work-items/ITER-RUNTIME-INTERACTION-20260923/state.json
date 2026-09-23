@@ -1,0 +1,315 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 3,
+  "id": "ITER-RUNTIME-INTERACTION-20260923",
+  "type": "ITERATION",
+  "title": "Runtime 1.11.0 交互摩擦优化",
+  "status": "DONE",
+  "flags": [
+    "api"
+  ],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/iteration.md",
+    ".ai-harness/policies/api.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户在有效 benchmark 结论和 1.11.0 有界范围后明确回复继续，授权本地实现与验证；不含模型调用、提交或推送。"
+  },
+  "input": {
+    "references": [
+      "有效 core-paired-v4 benchmark 显示 Harness 功能正确但共同交付 0/3；实施已确认的五项有界 CLI 与 benchmark 引导改进，不扩建超时、状态机、自治层或模型调用。"
+    ],
+    "acceptance": [
+      "begin spec 可安全补空 judgment 且拒绝覆盖；单可执行任务 run --all 可推断且歧义失败；finish 命令帮助无副作用；过期验证给出参数数组恢复命令并强化 guide；benchmark Harness 固定题使用新路径；相关意图测试、Runtime 全量、benchmark 全量、doctor、独立审查、check --ci 与 git diff --check 均通过。"
+    ],
+    "nonGoals": [],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": null,
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "2026-09-23 基线：main 与 origin/main 均为 79c1775d3d3e0bc149e3e705a068bcb27b855ad5；Runtime doctor 为 1.10.0 且无错误/警告；工作树 productChangedFileCount=0，仅有 648 个既有或当前工作项控制面文件，禁止改动无关工作项目录；不启动模型调用、不提交、不推送。"
+    ],
+    "completedAt": "2026-09-23T07:12:44.583Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "79c1775d3d3e0bc149e3e705a068bcb27b855ad5",
+      "dirty": false,
+      "changedFiles": [],
+      "fingerprints": {},
+      "source": {
+        "digest": "39a54a59f5f9b60cd490fd82f00d358467d3d2f45c8d95447f9b968dd0c37276",
+        "document": ".ai-harness/work-items/ITER-RUNTIME-INTERACTION-20260923/snapshots/39a54a59f5f9b60cd490fd82f00d358467d3d2f45c8d95447f9b968dd0c37276.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": ".ai-harness/work-items/ITER-RUNTIME-INTERACTION-20260923/design.md",
+    "evidence": [
+      "设计将 benchmark 已证实的五类交互浪费映射到现有 CLI/input/guide/verification 边界；保持权限、状态机、快照、预算及旧显式路径兼容。"
+    ],
+    "completedAt": "2026-09-23T07:26:05.145Z"
+  },
+  "database": {
+    "impact": "none",
+    "status": "not-applicable",
+    "document": null,
+    "evidence": [
+      "仅修改本地 CLI 参数解析、任务选择、错误/引导文本、benchmark 提示、版本、测试和文档；无 Schema、持久化、查询、迁移、事务或生产数据路径。"
+    ],
+    "completedAt": "2026-09-23T07:26:05.226Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/ITER-RUNTIME-INTERACTION-20260923/plan.json",
+    "approved": true,
+    "approvalRef": "授权范围不变；计划只移除 Runtime 无法执行的 git 只读检查，该检查将在宿主直接执行并如实报告。"
+  },
+  "verification": {
+    "status": "pass",
+    "evidence": [
+      "6dc87dfb-10b5-4817-a8d2-5bf1b7b6a18d"
+    ],
+    "stages": [],
+    "source": {
+      "digest": "1ddfeaad7afc463576bf9903587318b59b0ba1cba902bc15068c07c0e24922c8",
+      "document": ".ai-harness/work-items/ITER-RUNTIME-INTERACTION-20260923/snapshots/1ddfeaad7afc463576bf9903587318b59b0ba1cba902bc15068c07c0e24922c8.json"
+    }
+  },
+  "review": {
+    "status": "pass",
+    "evidence": [
+      "aa037008-4fe9-45b9-b15e-5dd4a3de2a15"
+    ],
+    "independent": true,
+    "source": {
+      "digest": "1ddfeaad7afc463576bf9903587318b59b0ba1cba902bc15068c07c0e24922c8",
+      "document": ".ai-harness/work-items/ITER-RUNTIME-INTERACTION-20260923/snapshots/1ddfeaad7afc463576bf9903587318b59b0ba1cba902bc15068c07c0e24922c8.json"
+    }
+  },
+  "acceptance": {
+    "status": "pass",
+    "evidence": [
+      "e4d7bbd6-75f4-4743-85af-b4f696d18d9c"
+    ],
+    "source": {
+      "digest": "1ddfeaad7afc463576bf9903587318b59b0ba1cba902bc15068c07c0e24922c8",
+      "document": ".ai-harness/work-items/ITER-RUNTIME-INTERACTION-20260923/snapshots/1ddfeaad7afc463576bf9903587318b59b0ba1cba902bc15068c07c0e24922c8.json"
+    }
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "pass",
+    "evidence": [
+      "ed2c0130-bbc9-4b56-93f6-1b1ad13186bd"
+    ]
+  },
+  "blocked": null,
+  "delivery": {
+    "source": {
+      "digest": "1ddfeaad7afc463576bf9903587318b59b0ba1cba902bc15068c07c0e24922c8",
+      "document": ".ai-harness/work-items/ITER-RUNTIME-INTERACTION-20260923/snapshots/1ddfeaad7afc463576bf9903587318b59b0ba1cba902bc15068c07c0e24922c8.json"
+    },
+    "baseline": {
+      "digest": "39a54a59f5f9b60cd490fd82f00d358467d3d2f45c8d95447f9b968dd0c37276",
+      "document": ".ai-harness/work-items/ITER-RUNTIME-INTERACTION-20260923/snapshots/39a54a59f5f9b60cd490fd82f00d358467d3d2f45c8d95447f9b968dd0c37276.json"
+    },
+    "baselineAt": "2026-09-23T07:12:44.583Z",
+    "ownedChanges": [
+      {
+        "path": ".ai-harness/manifest.json",
+        "before": "100644:25650d51a12970c6261bc1eb1ac00621cb50868f",
+        "after": "100644:c1fb7073e5ce9692aed7b33324c8d5f210983579"
+      },
+      {
+        "path": ".ai-harness/schemas/begin-spec.schema.json",
+        "before": "100644:763d8c418106bad5113f1e7d0552829ccecfe72d",
+        "after": "100644:66963827b18820c473566b4c94716a7ee870673e"
+      },
+      {
+        "path": ".ai-harness/src/cli.mjs",
+        "before": "100644:e2c5387551c86e68c4496ecc23fe979b978e0dba",
+        "after": "100644:1a892ff256a22b982b86eacb3fe94eb6363c60be"
+      },
+      {
+        "path": ".ai-harness/src/guide.mjs",
+        "before": "100644:250f61c652ce5866b18f7506b9ecd60612636d8f",
+        "after": "100644:7a4a19adb1f580df4a97afc717a02ff3ced177f1"
+      },
+      {
+        "path": ".ai-harness/src/input.mjs",
+        "before": "100644:40ab41f3a77fe64d69b0f9f2027fc9cffac9f5d7",
+        "after": "100644:ae4a063d2d04ef339b603e91fb1ea74664f84b8d"
+      },
+      {
+        "path": ".ai-harness/src/verification.mjs",
+        "before": "100644:53cb96748eb06c7a0e7235028a391d50a1d41eee",
+        "after": "100644:e166740c5be2d64e2d83a34b8104d7f7eef4bf0c"
+      },
+      {
+        "path": ".ai-harness/tests/cli.test.mjs",
+        "before": "100644:b364d5f6643b2108b792906f269c869290aa7a18",
+        "after": "100644:b4ca5321feeeba27d57c50f493b34f59a096e866"
+      },
+      {
+        "path": ".ai-harness/tests/compact.test.mjs",
+        "before": "100644:958f01d83921ab7a5b4654eda73968db3fc716f5",
+        "after": "100644:b4f5c9c49a4f06e55cc5b41b5bfd646312ac48ed"
+      },
+      {
+        "path": ".ai-harness/tests/guidance-tools.test.mjs",
+        "before": "100644:4b58edaab045cdb71f4f871b4c887e577b5641d7",
+        "after": "100644:d545d01a7bb930087db6fffeb3812f0c942fe692"
+      },
+      {
+        "path": ".ai-harness/tests/spec-input.test.mjs",
+        "before": "100644:22c357d11788cd35ae10c853e2037d185e3d202d",
+        "after": "100644:569d07e7f5732c92935d9bb5bfd1f874fa51d818"
+      },
+      {
+        "path": "README.md",
+        "before": "100644:bec31c2699f2b6def71b5f1f52056414b3c24be8",
+        "after": "100644:601e7a32e83c71610fa32065f4abc990594e13c4"
+      },
+      {
+        "path": "benchmarks/README.md",
+        "before": "100644:0e5a626fe486795fe3994343d8563de0d3da2bb4",
+        "after": "100644:3add40d44b1528c8d2de8404766240a797256e74"
+      },
+      {
+        "path": "benchmarks/runner.mjs",
+        "before": "100644:4633665b6c5270d7047008a092593d0fd8b796ac",
+        "after": "100644:c2ad12b9e0343244726621fd5b29fced672377ce"
+      },
+      {
+        "path": "benchmarks/tests/spec-guidance.test.mjs",
+        "before": "100644:92e93757814d488476e6e6c0c1b46eb2b75cf173",
+        "after": "100644:de036027775781e5425f964078432420f78e2ce4"
+      },
+      {
+        "path": "docs/guides/usage.md",
+        "before": "100644:7d1570f1fdf3b632b26d237a82bab1bba176b904",
+        "after": "100644:37a80d8b224fdb09e1311254cee60ad3a6a05b37"
+      }
+    ],
+    "planDigest": "f03afa4e1b70b05db576c80a582cd528c0dbcd3d6986fee348093a555de2addd",
+    "at": "2026-09-23T08:15:21.118Z",
+    "head": "79c1775d3d3e0bc149e3e705a068bcb27b855ad5"
+  },
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-09-23T07:12:18.965Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-09-23T07:12:44.375Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-09-23T07:20:58.802Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-09-23T07:26:57.771Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-09-23T07:26:57.850Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-09-23T07:41:53.455Z",
+      "reason": "benchmark 聚合脚本被 Runtime 验证命令策略判为 ask；改为聚合器实际发现的六个显式 node --test 文件，保持同一测试集合与 10 分钟预算。",
+      "action": "replan",
+      "revision": 2
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-09-23T07:42:25.275Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-09-23T07:42:25.356Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-09-23T07:46:50.774Z",
+      "reason": "git diff --check 被 Runtime 作为未知 git 可执行文件判为 ask；不使用嵌套 shell 绕过，计划仅保留可由 Runtime 真实记录的 V1-V5，git diff --check 作为授权范围内宿主只读收尾检查单独执行。",
+      "action": "replan",
+      "revision": 3
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-09-23T07:46:51.155Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-09-23T07:46:51.234Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "VERIFYING",
+      "at": "2026-09-23T08:15:17.640Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "VERIFYING",
+      "to": "CODE_REVIEW",
+      "at": "2026-09-23T08:15:18.435Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "CODE_REVIEW",
+      "to": "READY_FOR_ACCEPTANCE",
+      "at": "2026-09-23T08:15:19.135Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "READY_FOR_ACCEPTANCE",
+      "to": "DONE",
+      "at": "2026-09-23T08:15:21.243Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-09-23T07:12:18.965Z",
+  "updatedAt": "2026-09-23T08:15:21.243Z"
+}

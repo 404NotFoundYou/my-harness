@@ -86,7 +86,7 @@ function nextAction(item, plan, task, commands, verification, reviewFailed) {
     ["RESULT_STATUS: 根据实际结果选择 pass/fail；documentation 可用 not-applicable。", "ACTUAL_EVIDENCE: 说明观察、证据来源及未验证范围。", ...needs]);
   const run = (extra = []) => action("implement-and-verify", "在计划范围内完成修改并执行能发现目标错误的验证；不从计划中的字符串猜测 shell 参数。",
     work("run", ...extra).concat(["--", "<EXECUTABLE>", "<ARGUMENTS...>"]),
-    ["先读取相关实现、调用方和现有测试；可用 guide --context 一次读取本项有界上下文。", "执行 task.verification 中适用的命令；失败时根据实际错误修复根因，再验证。", "当前任务仍为 IN_PROGRESS 时，修正实现或自测后直接重新 run；不必为每次失败 reopen。进入后续审查/验收后需修改，或需要整体返工时再 reopen。"]);
+    ["先读取相关实现、调用方和现有测试；可用 guide --context 一次读取本项有界上下文。", "先完成本轮全部源码修改和必要自测；最后一次源码修改后再执行 task.verification 中适用的命令。", "计划检查通过后不要继续修改产品文件；若仍需修改，完成后必须重新验证。", "失败时根据实际错误修复根因，再验证。当前任务仍为 IN_PROGRESS 时不必为每次失败 reopen；进入后续审查/验收后需修改，或需要整体返工时再 reopen。"]);
   const failed = commands.filter((command) => !commandPassed(command));
   const passed = commands.filter(commandPassed);
   const reopen = () => ({ ...action("reopen-work", "审查失败或代码验证失效，返回实现并撤销旧结果。",

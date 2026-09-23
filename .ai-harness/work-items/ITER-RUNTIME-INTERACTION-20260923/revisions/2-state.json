@@ -1,0 +1,161 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 2,
+  "id": "ITER-RUNTIME-INTERACTION-20260923",
+  "type": "ITERATION",
+  "title": "Runtime 1.11.0 交互摩擦优化",
+  "status": "IMPLEMENTING",
+  "flags": [
+    "api"
+  ],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/iteration.md",
+    ".ai-harness/policies/api.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户在有效 benchmark 结论和 1.11.0 有界范围后明确回复继续，授权本地实现与验证；不含模型调用、提交或推送。"
+  },
+  "input": {
+    "references": [
+      "有效 core-paired-v4 benchmark 显示 Harness 功能正确但共同交付 0/3；实施已确认的五项有界 CLI 与 benchmark 引导改进，不扩建超时、状态机、自治层或模型调用。"
+    ],
+    "acceptance": [
+      "begin spec 可安全补空 judgment 且拒绝覆盖；单可执行任务 run --all 可推断且歧义失败；finish 命令帮助无副作用；过期验证给出参数数组恢复命令并强化 guide；benchmark Harness 固定题使用新路径；相关意图测试、Runtime 全量、benchmark 全量、doctor、独立审查、check --ci 与 git diff --check 均通过。"
+    ],
+    "nonGoals": [],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": null,
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "2026-09-23 基线：main 与 origin/main 均为 79c1775d3d3e0bc149e3e705a068bcb27b855ad5；Runtime doctor 为 1.10.0 且无错误/警告；工作树 productChangedFileCount=0，仅有 648 个既有或当前工作项控制面文件，禁止改动无关工作项目录；不启动模型调用、不提交、不推送。"
+    ],
+    "completedAt": "2026-09-23T07:12:44.583Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "79c1775d3d3e0bc149e3e705a068bcb27b855ad5",
+      "dirty": false,
+      "changedFiles": [],
+      "fingerprints": {},
+      "source": {
+        "digest": "39a54a59f5f9b60cd490fd82f00d358467d3d2f45c8d95447f9b968dd0c37276",
+        "document": ".ai-harness/work-items/ITER-RUNTIME-INTERACTION-20260923/snapshots/39a54a59f5f9b60cd490fd82f00d358467d3d2f45c8d95447f9b968dd0c37276.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": ".ai-harness/work-items/ITER-RUNTIME-INTERACTION-20260923/design.md",
+    "evidence": [
+      "设计将 benchmark 已证实的五类交互浪费映射到现有 CLI/input/guide/verification 边界；保持权限、状态机、快照、预算及旧显式路径兼容。"
+    ],
+    "completedAt": "2026-09-23T07:26:05.145Z"
+  },
+  "database": {
+    "impact": "none",
+    "status": "not-applicable",
+    "document": null,
+    "evidence": [
+      "仅修改本地 CLI 参数解析、任务选择、错误/引导文本、benchmark 提示、版本、测试和文档；无 Schema、持久化、查询、迁移、事务或生产数据路径。"
+    ],
+    "completedAt": "2026-09-23T07:26:05.226Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/ITER-RUNTIME-INTERACTION-20260923/plan.json",
+    "approved": true,
+    "approvalRef": "用户授权范围不变；仅将被策略拒绝的 benchmark 聚合脚本等价展开为其实际发现的六个测试文件。"
+  },
+  "verification": {
+    "status": "pending",
+    "evidence": [],
+    "stages": []
+  },
+  "review": {
+    "status": "pending",
+    "evidence": [],
+    "independent": false
+  },
+  "acceptance": {
+    "status": "pending",
+    "evidence": []
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "pending",
+    "evidence": []
+  },
+  "blocked": null,
+  "delivery": null,
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-09-23T07:12:18.965Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-09-23T07:12:44.375Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-09-23T07:20:58.802Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-09-23T07:26:57.771Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-09-23T07:26:57.850Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-09-23T07:41:53.455Z",
+      "reason": "benchmark 聚合脚本被 Runtime 验证命令策略判为 ask；改为聚合器实际发现的六个显式 node --test 文件，保持同一测试集合与 10 分钟预算。",
+      "action": "replan",
+      "revision": 2
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-09-23T07:42:25.275Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-09-23T07:42:25.356Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-09-23T07:12:18.965Z",
+  "updatedAt": "2026-09-23T07:42:25.438Z"
+}

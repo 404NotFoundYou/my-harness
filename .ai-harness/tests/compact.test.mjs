@@ -6,7 +6,7 @@ import { beginWorkItem, finishWorkItem } from "../src/compact.mjs";
 import { checkProject } from "../src/checker.mjs";
 import { runRecordedCommand } from "../src/evidence.mjs";
 import { exists } from "../src/filesystem.mjs";
-import { loadPlan, loadWorkItem, recordResult, updateTaskStatus, workItemPaths } from "../src/workflow.mjs";
+import { loadPlan, loadWorkItem, recordResult, transitionWorkItem, updateTaskStatus, workItemPaths } from "../src/workflow.mjs";
 import { cleanup, createInstalledProject } from "./helpers.mjs";
 
 function options(overrides = {}) {
@@ -163,6 +163,56 @@ test("repeating a successful check does not invalidate identical current evidenc
     await cleanup(root);
   }
 });
+
+test("stale compact verification returns the exact current-task recovery command", async () => {
+  const root = await createInstalledProject();
+  try {
+    await beginWorkItem(root, options());
+    const command = await run(root);
+    await writeFile(path.join(root, "feature.test.mjs"), "export const changedAfterVerification = true;\n");
+    await assert.rejects(() => finishWorkItem(root, "COMPACT-1", results([command.id])), (error) => {
+      assert.equal(error.code, "VERIFICATION_NOT_CURRENT");
+      assert.deepEqual(error.details.next, {
+        executable: "node",
+        args: [".ai-harness/bin/harness.mjs", "run", "--id", "COMPACT-1", "--task", "T1", "--all", "--json"],
+      });
+      return true;
+    });
+  } finally {
+    await cleanup(root);
+  }
+});
+
+for (const target of ["CODE_REVIEW", "READY_FOR_ACCEPTANCE"]) {
+  test(`stale compact verification does not suggest an illegal run command from ${target}`, async () => {
+    const root = await createInstalledProject();
+    try {
+      await beginWorkItem(root, options());
+      const command = await run(root);
+      await recordResult(root, "COMPACT-1", { taskId: "T1", kind: "verification", status: "pass", summary: `command ${command.id}` });
+      await updateTaskStatus(root, "COMPACT-1", "T1", "IMPLEMENTED");
+      await updateTaskStatus(root, "COMPACT-1", "T1", "IN_REVIEW");
+      await recordResult(root, "COMPACT-1", { taskId: "T1", kind: "review", status: "pass", summary: "task review passed" });
+      await updateTaskStatus(root, "COMPACT-1", "T1", "COMPLETED");
+      await transitionWorkItem(root, "COMPACT-1", "VERIFYING");
+      await recordResult(root, "COMPACT-1", { kind: "verification", status: "pass", summary: "current checks passed" });
+      await recordResult(root, "COMPACT-1", { kind: "documentation", status: "not-applicable", summary: "N/A: fixture docs unchanged" });
+      await transitionWorkItem(root, "COMPACT-1", "CODE_REVIEW");
+      if (target === "READY_FOR_ACCEPTANCE") {
+        await recordResult(root, "COMPACT-1", { kind: "review", status: "pass", summary: "final review passed" });
+        await transitionWorkItem(root, "COMPACT-1", "READY_FOR_ACCEPTANCE");
+      }
+      await writeFile(path.join(root, "feature.test.mjs"), `export const changedIn${target} = true;\n`);
+      await assert.rejects(() => finishWorkItem(root, "COMPACT-1", results([command.id])), (error) => {
+        assert.equal(error.code, "VERIFICATION_NOT_CURRENT");
+        assert.equal(Object.hasOwn(error.details, "next"), false);
+        return true;
+      });
+    } finally {
+      await cleanup(root);
+    }
+  });
+}
 
 test("rework requires a new command run rather than recycling the previous attempt", async () => {
   const root = await createInstalledProject();

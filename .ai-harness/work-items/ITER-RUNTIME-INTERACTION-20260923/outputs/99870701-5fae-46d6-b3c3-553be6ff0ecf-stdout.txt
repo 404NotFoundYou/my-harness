@@ -1,0 +1,430 @@
+TAP version 13
+# Subtest: the project judge needs both repaired modules and preserves fixed callers and dependencies
+ok 1 - the project judge needs both repaired modules and preserves fixed callers and dependencies
+  ---
+  duration_ms: 239.6967
+  type: 'test'
+  ...
+# Subtest: candidate manifests reject ambiguous states and task paths cannot authorize read-only overlays
+ok 2 - candidate manifests reject ambiguous states and task paths cannot authorize read-only overlays
+  ---
+  duration_ms: 1.3948
+  type: 'test'
+  ...
+# Subtest: candidate collection preserves BOM and CRLF bytes and does not hide unexpected IO errors
+ok 3 - candidate collection preserves BOM and CRLF bytes and does not hide unexpected IO errors
+  ---
+  duration_ms: 345.2623
+  type: 'test'
+  ...
+# Subtest: project selection is explicit and dry-run budgets preserve the default core experiment
+ok 4 - project selection is explicit and dry-run budgets preserve the default core experiment
+  ---
+  duration_ms: 94.897
+  type: 'test'
+  ...
+# Subtest: only declared implementation files are writable and project prompts require BUGFIX
+ok 5 - only declared implementation files are writable and project prompts require BUGFIX
+  ---
+  duration_ms: 1728.412
+  type: 'test'
+  ...
+# Subtest: collection fails on missing, non-file, invalid UTF-8 and parent junction candidates
+ok 6 - collection fails on missing, non-file, invalid UTF-8 and parent junction candidates
+  ---
+  duration_ms: 1559.5649
+  type: 'test'
+  ...
+# Subtest: passing code cannot substitute ITERATION or an unrelated BUGFIX for the project workflow
+ok 7 - passing code cannot substitute ITERATION or an unrelated BUGFIX for the project workflow
+  ---
+  duration_ms: 16256.7887
+  type: 'test'
+  ...
+# Subtest: a simulated project experiment completes real BUGFIX gates and audits every candidate file
+ok 8 - a simulated project experiment completes real BUGFIX gates and audits every candidate file
+  ---
+  duration_ms: 12219.2128
+  type: 'test'
+  ...
+# Subtest: paired reports align rotated schedules and distinguish functional from full delivery
+ok 9 - paired reports align rotated schedules and distinguish functional from full delivery
+  ---
+  duration_ms: 10967.7932
+  type: 'test'
+  ...
+# Subtest: each metric keeps its own coverage and missing usage never becomes a zero saving
+ok 10 - each metric keeps its own coverage and missing usage never becomes a zero saving
+  ---
+  duration_ms: 226.5596
+  type: 'test'
+  ...
+# Subtest: corrupt results and missing summaries cannot produce a partial comparison
+ok 11 - corrupt results and missing summaries cannot produce a partial comparison
+  ---
+  duration_ms: 195.9708
+  type: 'test'
+  ...
+# Subtest: unfinished and historical experiments stay blocked even when results are present
+ok 12 - unfinished and historical experiments stay blocked even when results are present
+  ---
+  duration_ms: 112.3711
+  type: 'test'
+  ...
+# Subtest: active locks block reports without touching the writer or reading its results
+ok 13 - active locks block reports without touching the writer or reading its results
+  ---
+  duration_ms: 53.1825
+  type: 'test'
+  ...
+# Subtest: changes to candidate bytes revoke reports even when the execution ledger does not change
+ok 14 - changes to candidate bytes revoke reports even when the execution ledger does not change
+  ---
+  duration_ms: 89.0717
+  type: 'test'
+  ...
+# Subtest: invalid measurements are rejected rather than coerced to zero or leaked in diagnostics
+ok 15 - invalid measurements are rejected rather than coerced to zero or leaked in diagnostics
+  ---
+  duration_ms: 895.5324
+  type: 'test'
+  ...
+# Subtest: absent simulation truncation flags remain unknown rather than claiming an uncensored run
+ok 16 - absent simulation truncation flags remain unknown rather than claiming an uncensored run
+  ---
+  duration_ms: 137.9368
+  type: 'test'
+  ...
+# Subtest: confirmed truncation wins over an unknown flag within and across paired trials
+ok 17 - confirmed truncation wins over an unknown flag within and across paired trials
+  ---
+  duration_ms: 295.4418
+  type: 'test'
+  ...
+# Subtest: a reference group is audited but excluded from weak-model pairing
+ok 18 - a reference group is audited but excluded from weak-model pairing
+  ---
+  duration_ms: 8246.7213
+  type: 'test'
+  ...
+# Subtest: a failed audit that races a ledger change is concurrent, not persistent corruption
+ok 19 - a failed audit that races a ledger change is concurrent, not persistent corruption
+  ---
+  duration_ms: 34.9161
+  type: 'test'
+  ...
+# Subtest: linked trial evidence and unknown locks cannot be reported as trustworthy
+ok 20 - linked trial evidence and unknown locks cannot be reported as trustworthy
+  ---
+  duration_ms: 56.5931
+  type: 'test'
+  ...
+# Subtest: CLI emits redacted JSON or escaped Markdown without writing or invoking a client
+ok 21 - CLI emits redacted JSON or escaped Markdown without writing or invoking a client
+  ---
+  duration_ms: 6566.1126
+  type: 'test'
+  ...
+# Subtest: completed trials including failed deliveries are audited and never called again
+ok 22 - completed trials including failed deliveries are audited and never called again
+  ---
+  duration_ms: 7050.1315
+  type: 'test'
+  ...
+# Subtest: a stopped driver stays interrupted while resume runs only untouched trials
+ok 23 - a stopped driver stays interrupted while resume runs only untouched trials
+  ---
+  duration_ms: 7404.1847
+  type: 'test'
+  ...
+# Subtest: callbacks cannot change approved models or budgets by mutating caller-owned objects
+ok 24 - callbacks cannot change approved models or budgets by mutating caller-owned objects
+  ---
+  duration_ms: 6415.6751
+  type: 'test'
+  ...
+# Subtest: a stop before the first claim and a lost summary can be resumed without new identities
+ok 25 - a stop before the first claim and a lost summary can be resumed without new identities
+  ---
+  duration_ms: 8181.5609
+  type: 'test'
+  ...
+# Subtest: resume validates the entire stored experiment before spending any pending call
+ok 26 - resume validates the entire stored experiment before spending any pending call
+  ---
+  duration_ms: 5047.811
+  type: 'test'
+  ...
+# Subtest: concurrent resume is refused while the existing driver owns the experiment
+ok 27 - concurrent resume is refused while the existing driver owns the experiment
+  ---
+  duration_ms: 4970.1559
+  type: 'test'
+  ...
+# Subtest: source drift is rejected before resume can launch another trial
+ok 28 - source drift is rejected before resume can launch another trial
+  ---
+  duration_ms: 2571.5116
+  type: 'test'
+  ...
+# Subtest: source changes during a call cannot become trusted completed evidence
+ok 29 - source changes during a call cannot become trusted completed evidence
+  ---
+  duration_ms: 2837.7079
+  type: 'test'
+  ...
+# Subtest: a changed CLI identity cannot publish a reusable result even if its entry is restored
+ok 30 - a changed CLI identity cannot publish a reusable result even if its entry is restored
+  ---
+  duration_ms: 5743.7697
+  type: 'test'
+  ...
+# Subtest: historical or partially initialized experiments and linked evidence are never resumed
+ok 31 - historical or partially initialized experiments and linked evidence are never resumed
+  ---
+  duration_ms: 2160.7944
+  type: 'test'
+  ...
+# Subtest: atomic JSON publication preserves the old record when replacement fails
+ok 32 - atomic JSON publication preserves the old record when replacement fails
+  ---
+  duration_ms: 11.7224
+  type: 'test'
+  ...
+# Subtest: a process crash after result publication recovers its dead lock and reuses the result
+ok 33 - a process crash after result publication recovers its dead lock and reuses the result
+  ---
+  duration_ms: 5784.0779
+  type: 'test'
+  ...
+# Subtest: resume cannot be combined with a fresh-plan dry-run
+ok 34 - resume cannot be combined with a fresh-plan dry-run
+  ---
+  duration_ms: 75.4563
+  type: 'test'
+  ...
+# Subtest: timing merges overlapping tools and labels remaining time without calling it inference
+ok 35 - timing merges overlapping tools and labels remaining time without calling it inference
+  ---
+  duration_ms: 1.4412
+  type: 'test'
+  ...
+# Subtest: synthetic Claude and Gemini streams require terminal success and preserve tool timing
+ok 36 - synthetic Claude and Gemini streams require terminal success and preserve tool timing
+  ---
+  duration_ms: 1.8223
+  type: 'test'
+  ...
+# Subtest: synthetic fatal errors cannot be hidden by a later success, while explicit warnings remain visible
+ok 37 - synthetic fatal errors cannot be hidden by a later success, while explicit warnings remain visible
+  ---
+  duration_ms: 0.5979
+  type: 'test'
+  ...
+# Subtest: a synthetic CLI process with corrupt JSONL cannot claim complete despite exit zero
+ok 38 - a synthetic CLI process with corrupt JSONL cannot claim complete despite exit zero
+  ---
+  duration_ms: 72.6861
+  type: 'test'
+  ...
+# Subtest: hidden judges accept all reference contracts and reject incomplete implementations
+ok 39 - hidden judges accept all reference contracts and reject incomplete implementations
+  ---
+  duration_ms: 404.4571
+  type: 'test'
+  ...
+# Subtest: exit zero, missing or duplicate tests cannot impersonate a completed acceptance run
+ok 40 - exit zero, missing or duplicate tests cannot impersonate a completed acceptance run
+  ---
+  duration_ms: 65.7283
+  type: 'test'
+  ...
+# Subtest: all groups share contracts and budgets, while hidden cases and references stay outside participant files
+ok 41 - all groups share contracts and budgets, while hidden cases and references stay outside participant files
+  ---
+  duration_ms: 2526.7916
+  type: 'test'
+  ...
+# Subtest: a transient Git pack ENOTEMPTY must not lose an owned participant after valid work
+ok 42 - a transient Git pack ENOTEMPTY must not lose an owned participant after valid work
+  ---
+  duration_ms: 404.5605
+  type: 'test'
+  ...
+# Subtest: persistent cleanup failures stay visible and an unowned directory is never removed
+ok 43 - persistent cleanup failures stay visible and an unowned directory is never removed
+  ---
+  duration_ms: 496.7762
+  type: 'test'
+  ...
+# Subtest: a simulated driver exercises grading and false completion without becoming a real model result
+ok 44 - a simulated driver exercises grading and false completion without becoming a real model result
+  ---
+  duration_ms: 482.1917
+  type: 'test'
+  ...
+# Subtest: every client rejects broken or failed protocols instead of trusting a later completion
+ok 45 - every client rejects broken or failed protocols instead of trusting a later completion
+  ---
+  duration_ms: 2261.1713
+  type: 'test'
+  ...
+# Subtest: repeated paired trials preserve independent outputs and remain explicitly simulated
+ok 46 - repeated paired trials preserve independent outputs and remain explicitly simulated
+  ---
+  duration_ms: 31022.6648
+  type: 'test'
+  ...
+# Subtest: dry-run reveals the frozen call budget without invoking a client or writing an experiment
+ok 47 - dry-run reveals the frozen call budget without invoking a client or writing an experiment
+  ---
+  duration_ms: 87.4593
+  type: 'test'
+  ...
+# Subtest: historical nine-sample protocols retain their original statistics and evidence
+ok 48 - historical nine-sample protocols retain their original statistics and evidence
+  ---
+  duration_ms: 16.8537
+  type: 'test'
+  ...
+# Subtest: installed evidence retains exact bytes through Git add and fresh CRLF checkouts
+ok 49 - installed evidence retains exact bytes through Git add and fresh CRLF checkouts
+  ---
+  duration_ms: 1719.0984
+  type: 'test'
+  ...
+# Subtest: timing categories merge overlapping intervals and statistics retain unknown measurements
+ok 50 - timing categories merge overlapping intervals and statistics retain unknown measurements
+  ---
+  duration_ms: 0.6512
+  type: 'test'
+  ...
+# Subtest: raw protocol reconstruction retains terminal failures and malformed content blocks
+ok 51 - raw protocol reconstruction retains terminal failures and malformed content blocks
+  ---
+  duration_ms: 0.3995
+  type: 'test'
+  ...
+# Subtest: core Harness group gets exact public paths/checks while risk and approach remain model judgments
+ok 52 - core Harness group gets exact public paths/checks while risk and approach remain model judgments
+  ---
+  duration_ms: 5960.4935
+  type: 'test'
+  ...
+# Subtest: CLI judgments complete core Harness with one begin, run, finish and check without editing spec
+ok 53 - CLI judgments complete core Harness with one begin, run, finish and check without editing spec
+  ---
+  duration_ms: 8488.8628
+  type: 'test'
+  ...
+# Subtest: baseline and project participants retain their current prompts and have no prefilled spec
+ok 54 - baseline and project participants retain their current prompts and have no prefilled spec
+  ---
+  duration_ms: 3005.8702
+  type: 'test'
+  ...
+# Subtest: pending preview validates evidence without fixing a corrupt derived summary
+ok 55 - pending preview validates evidence without fixing a corrupt derived summary
+  ---
+  duration_ms: 1841.4147
+  type: 'test'
+  ...
+# Subtest: stored started trials are distinct from projected recovery and are never rewritten
+ok 56 - stored started trials are distinct from projected recovery and are never rewritten
+  ---
+  duration_ms: 4622.888
+  type: 'test'
+  ...
+# Subtest: an active writer leaves started observations unverified and blocks readiness
+ok 57 - an active writer leaves started observations unverified and blocks readiness
+  ---
+  duration_ms: 2055.6859
+  type: 'test'
+  ...
+# Subtest: a dead owner is inspected without reclaiming its lock
+ok 58 - a dead owner is inspected without reclaiming its lock
+  ---
+  duration_ms: 1560.4345
+  type: 'test'
+  ...
+# Subtest: source and explicit identity drift block preview without changing trusted records
+ok 59 - source and explicit identity drift block preview without changing trusted records
+  ---
+  duration_ms: 2685.6532
+  type: 'test'
+  ...
+# Subtest: corrupt or linked evidence is rejected without repairs or raw candidate content in diagnostics
+ok 60 - corrupt or linked evidence is rejected without repairs or raw candidate content in diagnostics
+  ---
+  duration_ms: 3730.7617
+  type: 'test'
+  ...
+# Subtest: observations changed during evidence reading revoke readiness instead of claiming corruption
+ok 61 - observations changed during evidence reading revoke readiness instead of claiming corruption
+  ---
+  duration_ms: 1522.0427
+  type: 'test'
+  ...
+# Subtest: a lock acquired while reading is reported as a changed observation
+ok 62 - a lock acquired while reading is reported as a changed observation
+  ---
+  duration_ms: 1451.5205
+  type: 'test'
+  ...
+# Subtest: CLI preview needs no installed client unless explicitly checking its identity
+ok 63 - CLI preview needs no installed client unless explicitly checking its identity
+  ---
+  duration_ms: 3126.4812
+  type: 'test'
+  ...
+# Subtest: historical protocols stay unsupported and no pending calls is not completion
+ok 64 - historical protocols stay unsupported and no pending calls is not completion
+  ---
+  duration_ms: 1990.0964
+  type: 'test'
+  ...
+# Subtest: source and explicit CLI changes during inspection revoke earlier identity matches
+ok 65 - source and explicit CLI changes during inspection revoke earlier identity matches
+  ---
+  duration_ms: 2306.5232
+  type: 'test'
+  ...
+# Subtest: failed evidence reads still detect a concurrent writer and do not label records corrupt
+ok 66 - failed evidence reads still detect a concurrent writer and do not label records corrupt
+  ---
+  duration_ms: 2847.2061
+  type: 'test'
+  ...
+# Subtest: foreign, unknown and legacy locks cannot trigger result reads or recovery projections
+ok 67 - foreign, unknown and legacy locks cannot trigger result reads or recovery projections
+  ---
+  duration_ms: 3390.4061
+  type: 'test'
+  ...
+# Subtest: status uses strict frozen protocol and ledger checks before offering any calls
+ok 68 - status uses strict frozen protocol and ledger checks before offering any calls
+  ---
+  duration_ms: 2010.8878
+  type: 'test'
+  ...
+# Subtest: large previews keep exact totals, bounded lists and redacted user fields without a summary
+ok 69 - large previews keep exact totals, bounded lists and redacted user fields without a summary
+  ---
+  duration_ms: 1131.5672
+  type: 'test'
+  ...
+# Subtest: all trusted results report completion independently of model task success
+ok 70 - all trusted results report completion independently of model task success
+  ---
+  duration_ms: 5176.0643
+  type: 'test'
+  ...
+1..70
+# tests 70
+# suites 0
+# pass 70
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 58403.881

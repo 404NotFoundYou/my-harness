@@ -131,13 +131,15 @@ BUGFIX 保留远端引入的完整验证流水线。完成实际验证后，在�
 }
 ```
 
-Schema位于 `.ai-harness/schemas/begin-spec.schema.json`。不与CLI任务定义参数混用，未知字段在创建前拒绝。旧CLI继续使用重复 `--writes` / `--verify`；疑似把多个完整路径拼成一个逗号字符串时会在创建前提示纠正。确为包含逗号的字面路径，可在JSON数组中明确保留为一个元素。`N/A：理由` 会规范化为 `N/A: 理由`。
+Schema位于 `.ai-harness/schemas/begin-spec.schema.json`。完整填写的旧 spec 继续使用 `begin --spec task.json --json`。需要由模型判断的 `risk` / `approach` 可以在 JSON 中保留空字符串，并用 `begin --spec task.json --risk low --approach "实际方案" --json` 填充；CLI 只能填空，字段已有非空值时拒绝覆盖。除这两个 judgment 参数外，`--spec` 不与其他 CLI 任务定义参数混用，未知字段在创建前拒绝。旧CLI继续使用重复 `--writes` / `--verify`；疑似把多个完整路径拼成一个逗号字符串时会在创建前提示纠正。确为包含逗号的字面路径，可在JSON数组中明确保留为一个元素。`N/A：理由` 会规范化为 `N/A: 理由`。
 
 新项使用策略路由版本2，确定无数据库影响且无显式database标志时不加载完整数据库细则；影响未知或required时仍加载。用 `policies --id <ID>` 查看实际列表。建项前已完成影响判断时可用 `policies --type ITERATION --database-impact none`；该参数不替代工作项中的正式判断。旧项沿用原路由，不改写历史记录。
 
-一次执行本任务所有已声明检查可用 `run --id <ID> --task T1 --all --json`。检查逐条经过原权限与证据执行器；遇失败停止，响应的 `notRun` 列出未执行项。`--all` 不能与 `--check` 或透传命令混用。
+一次执行本任务所有已声明检查可用 `run --id <ID> --task T1 --all --json`。在 `IMPLEMENTING` 恰好只有一个 `IN_PROGRESS` 任务，或 `VERIFYING` 恰好只有一个 `COMPLETED` 任务时，可省略 `--task`；零个或多个候选都会明确要求选择，Runtime 不推进状态或猜测所有者。检查逐条经过原权限与证据执行器；遇失败停止，响应的 `notRun` 列出未执行项。`--all` 不能与 `--check` 或透传命令混用。
 
 `finish --command` 可以重复。所引证据必须属于当前任务、匹配计划签名和任务执行次数，并对应当前代码快照；验证过程中代码变化、验证后修改产品内容或出现新失败，都不能继续使用旧的通过结论。审查、文档、验收仍须是实际结论，Runtime 不从退出码推断业务语义。
+
+`finish --help` 与 `help finish` 只显示 finish 参数并退出 0，不读取项目或工作项、不写状态。若 finish 返回 `VERIFICATION_NOT_CURRENT`，错误 `details.next` 在可唯一确定任务时给出 `{ executable, args }` 参数数组，例如 `node .ai-harness/bin/harness.mjs run --id <ID> --task T1 --all --json`。先完成最后一次源码修改再执行该检查；通过后不要继续修改产品文件，否则必须重新验证。
 
 新项目、数据库、公共 API、跨端、多 AI、高风险或需要逐步批准的任务使用下述完整流程。安全/权限、支付、并发、全局 UI/路由和破坏性影响也必须升级，不能以缺少业务标志为由归为低风险。
 

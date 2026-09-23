@@ -1,0 +1,130 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "ITER-RUNTIME-INTERACTION-20260923",
+  "mode": "single",
+  "rationale": "五项改动共同构成一条 CLI-to-benchmark 纵向兼容路径，必须在同一代码快照上完成实现、文档、全量验证和独立审查。",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "实现 Runtime 1.11.0 有界交互优化",
+      "module": "runtime-cli-benchmark",
+      "status": "COMPLETED",
+      "attempt": 1,
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        ".ai-harness/manifest.json",
+        ".ai-harness/schemas/begin-spec.schema.json",
+        ".ai-harness/src/cli.mjs",
+        ".ai-harness/src/input.mjs",
+        ".ai-harness/src/guide.mjs",
+        ".ai-harness/src/verification.mjs",
+        ".ai-harness/tests/spec-input.test.mjs",
+        ".ai-harness/tests/cli.test.mjs",
+        ".ai-harness/tests/compact.test.mjs",
+        ".ai-harness/tests/guidance-tools.test.mjs",
+        "benchmarks/runner.mjs",
+        "benchmarks/tests/spec-guidance.test.mjs",
+        "README.md",
+        "docs/guides/usage.md",
+        "benchmarks/README.md"
+      ],
+      "verification": [
+        "{\"command\":\"node\",\"args\":[\"--test\",\".ai-harness/tests/spec-input.test.mjs\",\".ai-harness/tests/compact.test.mjs\",\".ai-harness/tests/cli.test.mjs\",\".ai-harness/tests/guidance-tools.test.mjs\"]}",
+        "{\"command\":\"node\",\"args\":[\"--test\",\"benchmarks/tests/spec-guidance.test.mjs\"]}",
+        "{\"command\":\"node\",\"args\":[\".ai-harness/tests/run.mjs\"],\"timeoutMs\":600000}",
+        "{\"command\":\"node\",\"args\":[\"--test\",\"benchmarks/tests/multifile.test.mjs\",\"benchmarks/tests/report.test.mjs\",\"benchmarks/tests/resume.test.mjs\",\"benchmarks/tests/runner.test.mjs\",\"benchmarks/tests/spec-guidance.test.mjs\",\"benchmarks/tests/status.test.mjs\"],\"timeoutMs\":600000}",
+        "{\"command\":\"node\",\"args\":[\".ai-harness/bin/harness.mjs\",\"doctor\",\"--json\"]}"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            "--test",
+            ".ai-harness/tests/spec-input.test.mjs",
+            ".ai-harness/tests/compact.test.mjs",
+            ".ai-harness/tests/cli.test.mjs",
+            ".ai-harness/tests/guidance-tools.test.mjs"
+          ]
+        },
+        {
+          "id": "V2",
+          "command": "node",
+          "args": [
+            "--test",
+            "benchmarks/tests/spec-guidance.test.mjs"
+          ]
+        },
+        {
+          "id": "V3",
+          "command": "node",
+          "args": [
+            ".ai-harness/tests/run.mjs"
+          ],
+          "timeoutMs": 600000
+        },
+        {
+          "id": "V4",
+          "command": "node",
+          "args": [
+            "--test",
+            "benchmarks/tests/multifile.test.mjs",
+            "benchmarks/tests/report.test.mjs",
+            "benchmarks/tests/resume.test.mjs",
+            "benchmarks/tests/runner.test.mjs",
+            "benchmarks/tests/spec-guidance.test.mjs",
+            "benchmarks/tests/status.test.mjs"
+          ],
+          "timeoutMs": 600000
+        },
+        {
+          "id": "V5",
+          "command": "node",
+          "args": [
+            ".ai-harness/bin/harness.mjs",
+            "doctor",
+            "--json"
+          ]
+        }
+      ],
+      "docsImpact": [
+        "README.md",
+        "docs/guides/usage.md",
+        "benchmarks/README.md"
+      ],
+      "reviewBatch": "R1",
+      "risk": "high",
+      "owner": "primary-ai",
+      "verificationStatus": "pass",
+      "reviewStatus": "pass",
+      "evidence": [
+        "b548ff34-32d2-40df-81c2-053297d4ec9e",
+        "866d6237-cb70-4a6e-a840-402752aacf39"
+      ],
+      "deferralApproval": null,
+      "verificationSource": {
+        "digest": "1ddfeaad7afc463576bf9903587318b59b0ba1cba902bc15068c07c0e24922c8",
+        "document": ".ai-harness/work-items/ITER-RUNTIME-INTERACTION-20260923/snapshots/1ddfeaad7afc463576bf9903587318b59b0ba1cba902bc15068c07c0e24922c8.json"
+      },
+      "reviewSource": {
+        "digest": "1ddfeaad7afc463576bf9903587318b59b0ba1cba902bc15068c07c0e24922c8",
+        "document": ".ai-harness/work-items/ITER-RUNTIME-INTERACTION-20260923/snapshots/1ddfeaad7afc463576bf9903587318b59b0ba1cba902bc15068c07c0e24922c8.json"
+      }
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "Runtime 公共 CLI 与 benchmark 引导",
+      "risk": "high",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": true
+    }
+  ],
+  "createdAt": "2026-09-23T07:26:41.597Z",
+  "updatedAt": "2026-09-23T08:14:39.475Z",
+  "revision": 3
+}

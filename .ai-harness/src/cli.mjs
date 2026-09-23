@@ -140,16 +140,18 @@ function helpText() {
 命令：
   guard -- <command...>          只判定 allow/ask/deny
   run --id ID [--task T] -- ...  仅执行 allow 命令并记录证据；ANALYZING 不带 task
-  run --id ID --task T --all    顺序执行本任务已声明检查，遇失败停止并列出未运行项
+  run --id ID [--task T] --all  顺序执行已声明检查；唯一可执行任务可省略 --task
 
 普通任务：
-  begin --spec task.json [--json]  项目内UTF-8 JSON，数组字段详见 schemas/begin-spec.schema.json；不与任务定义参数混用
+  begin --spec task.json [--risk low|medium --approach TEXT] [--json]
+                                  项目内UTF-8 JSON；judgment 参数只填充空字段
   begin --id ID --type ITERATION|BUGFIX --title TITLE --input SOURCE --acceptance CONDITION
         --authorization-source SOURCE --risk low|medium --approach TEXT --database-evidence TEXT
         --writes PATH --verify COMMAND --docs PATH_OR_NA [--flag frontend]
   run --id ID --task T1 -- <COMMAND> [ARGS...]
   finish --id ID --command EVIDENCE_ID --verification TEXT --review TEXT --documentation TEXT --acceptance TEXT
          [--stage-evidence stage=TEXT] [--stage-command stage=EVIDENCE_ID]
+  finish --help                  只显示 finish 参数，不读取工作项或写状态
   finish 可从合法中间状态继续；已通过且仍有效的结论无需重复提交，省略 --command 时匹配本项当前成功检查；不会自动执行未跑的测试
   check --ci --json
   begin 默认为 autonomous；授权来源必须真实。BUGFIX 另需 --actual、--expected、--reproduction。
@@ -158,6 +160,27 @@ function helpText() {
 
 record 可用 --artifact PATH（最多8项）及 --artifact-source TEXT 保存带哈希的产物副本。
 常用重复参数：--input、--acceptance、--non-goal、--evidence、--blocked-by、--writes、--verify、--docs、--command、--artifact。`;
+}
+
+function finishHelpText() {
+  return `AI Harness Runtime - finish
+
+用法：node .ai-harness/bin/harness.mjs finish --id ID [options]
+
+完成普通单任务工作项的剩余验证、审查、文档与验收门禁。命令不会自动运行尚未执行的计划检查。
+
+必需与常用参数：
+  --id ID                 工作项 ID
+  --command EVIDENCE_ID   当前任务成功命令证据，可重复；省略时只复用当前通过的计划检查
+  --verification TEXT     实际验证结论
+  --review TEXT           实际完整差异审查结论
+  --documentation TEXT    文档同步结论，或 N/A: 理由
+  --acceptance TEXT       按授权验收条件核实的结论
+  --stage-evidence stage=TEXT   BUGFIX 等流水线阶段证据，可重复
+  --stage-command stage=ID      reproduction/regression 等阶段命令证据，可重复
+  --json                  输出 JSON
+
+验证失效时，按错误 details.next 的 executable/args 参数数组重新执行计划检查；最后一次源码修改后再验证，验证通过后不要继续修改产品文件。`;
 }
 
 async function projectRoot() {
@@ -178,8 +201,16 @@ async function listWorkItems(root) {
 export async function runCli(argv, io = { stdout: console.log, stderr: console.error }) {
   const parsed = parseArgs(argv);
   const command = parsed.positional[0] || "help";
-  if (["help", "--help", "-h"].includes(command)) {
+  if (command === "help") {
+    emit(io, parsed, parsed.positional[1] === "finish" ? finishHelpText() : helpText());
+    return 0;
+  }
+  if (["--help", "-h"].includes(command)) {
     emit(io, parsed, helpText());
+    return 0;
+  }
+  if (command === "finish" && flag(parsed, "help")) {
+    emit(io, parsed, finishHelpText());
     return 0;
   }
   if (command === "version") {
@@ -240,8 +271,10 @@ export async function runCli(argv, io = { stdout: console.log, stderr: console.e
   }
   if (command === "start" || command === "begin") {
     if (command === "begin" && one(parsed, "spec")) {
-      invariant(Object.keys(parsed.options).every(key => ["spec", "json"].includes(key)) && parsed.positional.length === 1 && parsed.passthrough.length === 0, "SPEC_OPTION_CONFLICT", "--spec 不能与命令行任务定义混用；请把完整定义放入 JSON。" );
-      emit(io, parsed, await beginWorkItem(root, await loadBeginSpec(root, one(parsed, "spec", { required: true }))));
+      invariant(Object.keys(parsed.options).every(key => ["spec", "risk", "approach", "json"].includes(key)) && parsed.positional.length === 1 && parsed.passthrough.length === 0, "SPEC_OPTION_CONFLICT", "--spec 只能额外接受 --risk 和 --approach；其余完整定义请保留在 JSON。" );
+      const judgments = {};
+      for (const key of ["risk", "approach"]) if (parsed.options[key] !== undefined) judgments[key] = one(parsed, key, { required: true });
+      emit(io, parsed, await beginWorkItem(root, await loadBeginSpec(root, one(parsed, "spec", { required: true }), judgments)));
       return 0;
     }
     const options = {
@@ -471,8 +504,19 @@ export async function runCli(argv, io = { stdout: console.log, stderr: console.e
     if (flag(parsed, "all")) {
       invariant(!one(parsed, "check") && parsed.passthrough.length === 0, "CONFLICTING_CHECK_SELECTION", "--all 不能与 --check 或透传命令混用。" );
       const id = one(parsed, "id", { required: true });
-      const taskId = one(parsed, "task", { required: true });
+      const item = await loadWorkItem(root, id);
       const plan = await loadPlan(root, id);
+      let taskId = one(parsed, "task");
+      if (!taskId) {
+        const executableStatus = item.status === "IMPLEMENTING" ? "IN_PROGRESS" : item.status === "VERIFYING" ? "COMPLETED" : null;
+        const candidates = executableStatus ? plan.tasks.filter(task => task.status === executableStatus && task.status !== "DEFERRED") : [];
+        invariant(candidates.length === 1, "TASK_SELECTION_REQUIRED", "--all 省略 --task 时必须恰好有一个可执行的非延期任务。", {
+          workItemStatus: item.status,
+          candidates: candidates.map(task => ({ id: task.id, status: task.status, owner: task.owner })),
+          tasks: plan.tasks.filter(task => task.status !== "DEFERRED").map(task => ({ id: task.id, status: task.status, owner: task.owner })),
+        });
+        taskId = candidates[0].id;
+      }
       const task = plan.tasks.find(entry => entry.id === taskId);
       invariant(task, "TASK_NOT_FOUND", `任务不存在：${taskId}`);
       const checks = checksFor(task), commands = [];

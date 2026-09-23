@@ -12,12 +12,19 @@ export function normalizeDocumentation(value) {
   return `N/A: ${match[1].trim()}`;
 }
 
-export async function loadBeginSpec(root, relative) {
+export async function loadBeginSpec(root, relative, judgments = {}) {
   const spec = await readJson(await resolveProjectPath(root, relative, { mustExist: true }));
   invariant(spec && typeof spec === "object" && !Array.isArray(spec), "INVALID_BEGIN_SPEC", "任务定义必须是 JSON 对象。" );
   const unknown = Object.keys(spec).filter(key => !SPEC_KEYS.has(key));
   invariant(unknown.length === 0, "UNKNOWN_SPEC_FIELDS", "任务定义包含未知字段，未创建工作项。", { fields: unknown });
   invariant(spec.schemaVersion === 1, "INVALID_BEGIN_SPEC", "任务定义 schemaVersion 必须为 1。" );
+  for (const key of ["risk", "approach"]) {
+    if (judgments[key] === undefined) continue;
+    invariant(typeof judgments[key] === "string" && judgments[key].trim(), "INVALID_BEGIN_SPEC", `${key} CLI judgment 必须是非空字符串。`);
+    invariant(typeof spec[key] === "string", "INVALID_BEGIN_SPEC", `${key} 必须保留为字符串字段。`);
+    invariant(!spec[key].trim(), "SPEC_JUDGMENT_CONFLICT", `任务定义中的 ${key} 已有值，不能由命令行覆盖。`, { field: key });
+    spec[key] = judgments[key];
+  }
   for (const key of ["id", "type", "title", "authorizationSource", "risk", "approach", "databaseEvidence"]) invariant(typeof spec[key] === "string" && spec[key].trim(), "INVALID_BEGIN_SPEC", `${key} 必须是非空字符串。`);
   for (const key of ["references", "acceptance", "writeScopes", "verification", "docsImpact"]) {
     invariant(Array.isArray(spec[key]) && spec[key].length > 0, "INVALID_BEGIN_SPEC", `${key} 必须是非空数组。`);

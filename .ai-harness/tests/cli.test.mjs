@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { mkdir, mkdtemp, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readdir, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
@@ -29,6 +29,23 @@ function runCli(entrypoint, cwd, args, expectedStatus = 0) {
 function jsonOutput(result, stream = "stdout") {
   return JSON.parse(result[stream]);
 }
+
+test("finish command help is side-effect free and does not require a project", async () => {
+  const root = await mkdtemp(path.join(tmpdir(), "ai-harness-finish-help-"));
+  try {
+    const before = await readdir(root);
+    const direct = runCli(sourceEntrypoint, root, ["finish", "--help"]);
+    const topic = runCli(sourceEntrypoint, root, ["help", "finish"]);
+    for (const result of [direct, topic]) {
+      assert.match(result.stdout, /AI Harness Runtime - finish/);
+      assert.match(result.stdout, /--stage-command/);
+      assert.equal(result.stderr, "");
+    }
+    assert.deepEqual(await readdir(root), before);
+  } finally {
+    await cleanup(root);
+  }
+});
 
 for (const type of ["ITERATION", "BUGFIX"]) {
   test(`installed CLI supports compact ${type} and preserves its CI gate`, async () => {
@@ -77,6 +94,42 @@ test("CLI guard uses stable allow, ask and deny exit codes", () => {
   assert.equal(runCli(sourceEntrypoint, sourceRoot, ["guard", "--", "node", "--version"], 0).status, 0);
   assert.equal(runCli(sourceEntrypoint, sourceRoot, ["guard", "--", "npm", "install", "left-pad"], 2).status, 2);
   assert.equal(runCli(sourceEntrypoint, sourceRoot, ["guard", "--", "git", "reset", "--hard"], 3).status, 3);
+});
+
+test("run --all infers one executable task but rejects zero or multiple candidates", async () => {
+  const root = await createInstalledProject();
+  try {
+    const entrypoint = path.join(root, ".ai-harness/bin/harness.mjs");
+    const id = "TASK-SELECTION";
+    runCli(entrypoint, root, ["start", "--id", id, "--type", "ITERATION", "--title", "task selection", "--input", "fixture", "--acceptance", "selection is deterministic", "--authorization", "autonomous", "--authorization-source", "fixture authorization", "--json"]);
+    runCli(entrypoint, root, ["transition", "--id", id, "--to", "BASELINING", "--json"]);
+    runCli(entrypoint, root, ["baseline", "--id", id, "--evidence", "fixture baseline", "--json"]);
+    runCli(entrypoint, root, ["transition", "--id", id, "--to", "SOLUTION_DESIGN", "--json"]);
+    await writeFile(path.join(root, "selection-solution.md"), "# Selection\n\nNo persistence.\n");
+    runCli(entrypoint, root, ["solution", "--id", id, "--document", "selection-solution.md", "--evidence", "bounded CLI fixture", "--json"]);
+    runCli(entrypoint, root, ["database", "--id", id, "--impact", "none", "--evidence", "no persistence", "--json"]);
+    runCli(entrypoint, root, ["plan-init", "--id", id, "--mode", "single", "--rationale", "exercise candidate count", "--json"]);
+    runCli(entrypoint, root, ["batch-add", "--id", id, "--batch", "R1", "--title", "selection", "--risk", "medium", "--json"]);
+    for (const task of ["T1", "T2"]) runCli(entrypoint, root, [
+      "task-add", "--id", id, "--task", task, "--title", task, "--module", "fixture",
+      "--writes", `${task.toLowerCase()}.txt`, "--verify", "node --version", "--docs", "N/A: fixture only",
+      "--batch", "R1", "--risk", "medium", "--owner", "test", "--json",
+    ]);
+    runCli(entrypoint, root, ["plan-approve", "--id", id, "--approval-ref", "fixture authorization", "--json"]);
+    runCli(entrypoint, root, ["transition", "--id", id, "--to", "PLANNED", "--json"]);
+    runCli(entrypoint, root, ["transition", "--id", id, "--to", "IMPLEMENTING", "--json"]);
+
+    const zero = jsonOutput(runCli(entrypoint, root, ["run", "--id", id, "--all", "--json"], 1), "stderr");
+    assert.equal(zero.code, "TASK_SELECTION_REQUIRED");
+    assert.deepEqual(zero.details.candidates, []);
+    runCli(entrypoint, root, ["task-update", "--id", id, "--task", "T1", "--status", "IN_PROGRESS", "--json"]);
+    runCli(entrypoint, root, ["task-update", "--id", id, "--task", "T2", "--status", "IN_PROGRESS", "--json"]);
+    const multiple = jsonOutput(runCli(entrypoint, root, ["run", "--id", id, "--all", "--json"], 1), "stderr");
+    assert.equal(multiple.code, "TASK_SELECTION_REQUIRED");
+    assert.deepEqual(multiple.details.candidates.map(candidate => candidate.id), ["T1", "T2"]);
+  } finally {
+    await cleanup(root);
+  }
 });
 
 test("installed CLI records and binds ANALYSIS command evidence", async () => {
