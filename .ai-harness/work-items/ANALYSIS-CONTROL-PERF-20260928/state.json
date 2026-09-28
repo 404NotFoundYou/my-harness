@@ -1,0 +1,170 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 1,
+  "id": "ANALYSIS-CONTROL-PERF-20260928",
+  "type": "ANALYSIS",
+  "title": "量化控制面检查成本",
+  "status": "ANSWERED",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/analysis.md"
+  ],
+  "authorization": {
+    "mode": "approval-required",
+    "source": "用户本轮授权P2本地测量；产品文件只读"
+  },
+  "input": {
+    "references": [
+      "用户要求执行P2：测量控制面规模与doctor/check开销并决定是否需要最小优化"
+    ],
+    "acceptance": [
+      "报告可复现样本、适用范围、瓶颈判断和是否改代码；不跳过完整性校验"
+    ],
+    "nonGoals": [],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": null,
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "当前隔离分支codex/optimization-p1-p3，P1工作项DONE且check --ci通过；测量取自main@211fc5f（46目录、664控制路径）及起始隔离worktree@211fc5f（32目录）。只读测量各预热1次、重复5次。"
+    ],
+    "completedAt": "2026-09-28T05:48:17.461Z",
+    "repository": {
+      "isGit": true,
+      "branch": "codex/optimization-p1-p3",
+      "commit": "211fc5fcd1d4da7e4277e2927ee93279a0e5a128",
+      "dirty": true,
+      "changedFiles": [
+        ".ai-harness/tests/ci-matrix.test.mjs",
+        ".github/workflows/ai-harness.yml",
+        ".github/workflows/source-tests.yml"
+      ],
+      "fingerprints": {},
+      "source": {
+        "digest": "dac2b510cd9480f02731bb92b3af43cb654dc770da429b7bde28f92fb52d3d60",
+        "document": ".ai-harness/work-items/ANALYSIS-CONTROL-PERF-20260928/snapshots/dac2b510cd9480f02731bb92b3af43cb654dc770da429b7bde28f92fb52d3d60.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "pending",
+    "document": null,
+    "evidence": [],
+    "completedAt": null
+  },
+  "database": {
+    "status": "pending",
+    "document": null,
+    "evidence": [],
+    "completedAt": null,
+    "impact": "unknown"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/ANALYSIS-CONTROL-PERF-20260928/plan.json",
+    "approved": false,
+    "approvalRef": null
+  },
+  "verification": {
+    "status": "pending",
+    "evidence": [],
+    "stages": []
+  },
+  "review": {
+    "status": "pending",
+    "evidence": [],
+    "independent": false
+  },
+  "acceptance": {
+    "status": "pending",
+    "evidence": []
+  },
+  "analysis": {
+    "status": "pass",
+    "evidence": [
+      "44df5fcb-208b-4ff7-91bf-710f58b3aa5c"
+    ],
+    "conclusions": [
+      {
+        "id": "ee01c756-ff1c-4bdd-bc81-a52fa856a35a",
+        "status": "PROVEN",
+        "text": "同一源提交上只读预热后各重复5次：原main（46工作项目录、约664控制路径）的Git status中位63.6ms、doctor 213.9ms、非CI check 2698.4ms；起始干净隔离worktree（32目录）doctor 178.7ms、check 2222.3ms。两个检出目录数据不同，不能据此推断单个工作项的边际成本。",
+        "evidence": [
+          "2026-09-28本轮PowerShell Stopwatch原始样本：Git 63.6/66/63.4/64.1/63.4ms；doctor 213.9/213.7/214.4/210.5/215.9ms；check 2822/2698.4/2868.9/2645.1/2578.5ms。隔离doctor 178.7/175.4/184.6/174.2/202.9ms；check 2222.3/2225.4/2209.6/2199.3/2224.2ms。"
+        ],
+        "commands": [
+          "91fadea1-de1a-4e42-a0df-b8c34aa595b8"
+        ]
+      },
+      {
+        "id": "03266591-c7a8-426d-93a2-edd291cbd77b",
+        "status": "INFERRED",
+        "text": "当前体量下Git状态枚举不是doctor/check的主要耗时来源；无法仅凭总耗时定位check内部热点。没有约定延迟目标或规模压测证据，不宜立即修改Git路径枚举或削弱检查。",
+        "evidence": [
+          ".ai-harness/src/git.mjs:28-80；.ai-harness/src/checker.mjs:284-325；本轮五次中位耗时对照。"
+        ]
+      },
+      {
+        "id": "2073ad1d-1395-4d78-aad4-4f64c7f4f799",
+        "status": "PROPOSAL",
+        "text": "P2本轮停止在测量与裁量：不做未经量化的产品代码优化；若后续出现明确的check耗时SLO/规模瓶颈，再做同机同数据的性能剖析与前后对照，保证全部工作项及证据完整性校验不变。",
+        "evidence": [
+          "本轮Git/doctor/check五样本；.ai-harness/src/checker.mjs:284-325。"
+        ]
+      },
+      {
+        "id": "2cb2ca7b-3218-4fe1-8d88-74fd45d64a05",
+        "status": "UNKNOWN",
+        "text": "未做大规模数据阶梯压测、CPU火焰图或Linux/CI环境的耗时测量，无法证明check内部具体瓶颈或跨平台收益。",
+        "evidence": []
+      }
+    ],
+    "unknowns": [
+      "本次只读P2不改产品文件，也不声称存在已验证的性能优化收益。"
+    ]
+  },
+  "documentation": {
+    "status": "pending",
+    "evidence": []
+  },
+  "blocked": null,
+  "delivery": null,
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-09-28T05:48:17.176Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-09-28T05:48:17.281Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "ANALYZING",
+      "at": "2026-09-28T05:48:17.691Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "ANALYZING",
+      "to": "ANSWERED",
+      "at": "2026-09-28T05:48:47.070Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-09-28T05:48:17.176Z",
+  "updatedAt": "2026-09-28T05:48:47.070Z"
+}

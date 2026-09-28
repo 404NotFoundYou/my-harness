@@ -49,6 +49,14 @@ project组的完整交付还要求：至少一个开发工作项，所有开发�
 node benchmarks/run.mjs --cli '<CLI路径>' --weak '<模型标识>' --suite project --comparison paired --repetitions 1 --out .ai-harness/work-items/<工作项>/project-comparison --dry-run
 ```
 
+新题集使用显式 `--suite project-v2`，原 `project` 的单题清单及历史协议/审计不变，默认 `core` 也不变。v2复用原 `archive-pagination`，另增 `config-layers`（development，配置层叠）与 `window-intervals`（holdout，半开区间归并/裁剪）；两个新题均为多文件 BUGFIX，有只读调用方、公共复现和各12项隐藏验收。配对、重复一次的计划由原2次变为6次模型会话，**仅显式选择v2时**生效；以下命令仅预览，不调用模型：
+
+```powershell
+node benchmarks/run.mjs --cli '<CLI路径>' --weak '<模型标识>' --suite project-v2 --comparison paired --repetitions 1 --out .ai-harness/work-items/<工作项>/project-v2-comparison --dry-run
+```
+
+这些仍是合成夹具，development与holdout的划分只限制调参范围；本地参考解、模拟实验及审计通过不代表任何真实模型收益。正式对照须另行取得模型费用和环境授权，且不可将新增holdout结果用于调参。
+
 v3在协议中冻结题目入口、导出、类型和精确可写清单，并保留源码、题目、判定器和预算哈希。各试次保存 `candidate-files.json`，逐文件记录present正文及原字节SHA-256，或missing/invalid状态；result保存规范化manifest的整体哈希。路径父组件和文件都不能经过链接/junction，无效UTF-8拒绝，BOM及换行字节保留；非预期IO错误中断并保留不完整实验。候选必须恰好覆盖声明文件，不接受只读文件或额外路径。
 
 判定器从冻结题目恢复只读依赖，再放入本次候选；可写基线实现不会进入判定目录，缺失候选不会回退。候选缺失、非普通文件或非法编码均判scope/grade失败。参与者修改原测试或固定依赖同样scope失败，判定仍使用原文件。新审计检查全部manifest、文件哈希、题目清单和原始协议/摘要/统计；旧v1/v2及candidate.mjs格式保持。审计验证记录一致性，不构成外部可信执行证明或重新执行隐藏判定。

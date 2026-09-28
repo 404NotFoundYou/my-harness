@@ -1,0 +1,317 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 2,
+  "id": "BUG-ANALYSIS-HISTORY-20260928",
+  "type": "BUGFIX",
+  "title": "已回答分析命令在后续源码变化后仍可审计",
+  "status": "DONE",
+  "flags": [
+    "api"
+  ],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/bugfix.md",
+    ".ai-harness/policies/verification.md",
+    ".ai-harness/policies/api.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户授权执行P2/P3；修复其检查闭环所必需的本地BUG，不含Git交付"
+  },
+  "input": {
+    "references": [
+      "P2 ANSWERED后P3源码变化导致当前check --json报ANALYSIS命令证据无效，阻止本次交付门禁"
+    ],
+    "acceptance": [
+      "ANALYZING时命令与当前源码不一致仍拒绝；ANSWERED后新提交不使历史命令失效，但命令前后快照不一致、非allow或失败仍拒绝；旧控制面可通过check"
+    ],
+    "nonGoals": [
+      "不改未终结分析门禁、不放宽失败或篡改证据、不重构状态机"
+    ],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": {
+    "actual": "ANALYSIS-CONTROL-PERF-20260928在当前check中报告ANSWERED命令证据失效",
+    "expected": "历史ANSWERED结论应审计执行时及回答时的证据，不受之后合法源码版本变化影响",
+    "reproduction": "当前隔离工作树执行node .ai-harness/bin/harness.mjs check --json，报ANSWERED分析命令证据错误；对应旧分析命令本身通过且前后快照一致"
+  },
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "codex/optimization-p1-p3当前P1 DONE、P2 ANSWERED、P3 IMPLEMENTING；非CI check因P2终态命令被P3源码变化判陈旧退出1；只改Runtime分析证据规则及专门测试。"
+    ],
+    "completedAt": "2026-09-28T06:10:50.470Z",
+    "repository": {
+      "isGit": true,
+      "branch": "codex/optimization-p1-p3",
+      "commit": "211fc5fcd1d4da7e4277e2927ee93279a0e5a128",
+      "dirty": true,
+      "changedFiles": [
+        ".ai-harness/tests/ci-matrix.test.mjs",
+        ".github/workflows/ai-harness.yml",
+        ".github/workflows/source-tests.yml",
+        "benchmarks/README.md",
+        "benchmarks/audit-trial.mjs",
+        "benchmarks/audit.mjs",
+        "benchmarks/project-tasks-v2.mjs",
+        "benchmarks/task-contract.mjs",
+        "benchmarks/tests/project-v2.test.mjs"
+      ],
+      "fingerprints": {},
+      "source": {
+        "digest": "a74ceb5a11dd603c2ec5646bc84411335b226497b9a30764d3a3e4442442bdd1",
+        "document": ".ai-harness/work-items/BUG-ANALYSIS-HISTORY-20260928/snapshots/a74ceb5a11dd603c2ec5646bc84411335b226497b9a30764d3a3e4442442bdd1.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": ".ai-harness/work-items/BUG-ANALYSIS-HISTORY-20260928/design.md",
+    "evidence": [
+      "区分回答前的当前源码门禁与已回答后历史快照审计，保留原所有失败/白名单门禁"
+    ],
+    "completedAt": "2026-09-28T06:11:17.210Z"
+  },
+  "database": {
+    "impact": "none",
+    "status": "not-applicable",
+    "document": null,
+    "evidence": [
+      "只改分析命令证据核验及测试，不涉及数据库"
+    ],
+    "completedAt": "2026-09-28T06:11:17.295Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/BUG-ANALYSIS-HISTORY-20260928/plan.json",
+    "approved": true,
+    "approvalRef": "用户P2/P3本地实现授权及审查反馈返工；新增范围限定终态分析源码锚点和文档"
+  },
+  "verification": {
+    "status": "pass",
+    "evidence": [
+      "a4b844b0-a10d-4c3d-80ac-e3ade1669428",
+      "2688af62-d560-4eba-8ab7-edd7e8d8d341",
+      "e3773fa0-f691-4dfc-8cdb-798aacb2934f",
+      "086503b8-a1bf-4cb0-831a-1eac4e3bbb13"
+    ],
+    "stages": [
+      {
+        "stage": "static",
+        "status": "pass",
+        "evidence": [
+          "a4b844b0-a10d-4c3d-80ac-e3ade1669428"
+        ],
+        "command": null,
+        "revision": 2,
+        "source": {
+          "digest": "6f84968789b0ed7cae6158bd9853ec2ef5c2c24f7f4f5df5f7cd1c38b0419525",
+          "document": ".ai-harness/work-items/BUG-ANALYSIS-HISTORY-20260928/snapshots/6f84968789b0ed7cae6158bd9853ec2ef5c2c24f7f4f5df5f7cd1c38b0419525.json"
+        },
+        "planDigest": "b817843de285149e1946597ad799cd265b875bd9e8bca9f1c1e2bb69115a4aa1"
+      },
+      {
+        "stage": "sandbox",
+        "status": "pass",
+        "evidence": [
+          "2688af62-d560-4eba-8ab7-edd7e8d8d341"
+        ],
+        "command": null,
+        "revision": 2,
+        "source": {
+          "digest": "6f84968789b0ed7cae6158bd9853ec2ef5c2c24f7f4f5df5f7cd1c38b0419525",
+          "document": ".ai-harness/work-items/BUG-ANALYSIS-HISTORY-20260928/snapshots/6f84968789b0ed7cae6158bd9853ec2ef5c2c24f7f4f5df5f7cd1c38b0419525.json"
+        },
+        "planDigest": "b817843de285149e1946597ad799cd265b875bd9e8bca9f1c1e2bb69115a4aa1"
+      },
+      {
+        "stage": "reproduction",
+        "status": "pass",
+        "evidence": [
+          "e3773fa0-f691-4dfc-8cdb-798aacb2934f"
+        ],
+        "command": "b392c113-22ca-460b-a2de-9e8663574a8e",
+        "revision": 2,
+        "source": {
+          "digest": "6f84968789b0ed7cae6158bd9853ec2ef5c2c24f7f4f5df5f7cd1c38b0419525",
+          "document": ".ai-harness/work-items/BUG-ANALYSIS-HISTORY-20260928/snapshots/6f84968789b0ed7cae6158bd9853ec2ef5c2c24f7f4f5df5f7cd1c38b0419525.json"
+        },
+        "planDigest": "b817843de285149e1946597ad799cd265b875bd9e8bca9f1c1e2bb69115a4aa1"
+      },
+      {
+        "stage": "regression",
+        "status": "pass",
+        "evidence": [
+          "086503b8-a1bf-4cb0-831a-1eac4e3bbb13"
+        ],
+        "command": "b392c113-22ca-460b-a2de-9e8663574a8e",
+        "revision": 2,
+        "source": {
+          "digest": "6f84968789b0ed7cae6158bd9853ec2ef5c2c24f7f4f5df5f7cd1c38b0419525",
+          "document": ".ai-harness/work-items/BUG-ANALYSIS-HISTORY-20260928/snapshots/6f84968789b0ed7cae6158bd9853ec2ef5c2c24f7f4f5df5f7cd1c38b0419525.json"
+        },
+        "planDigest": "b817843de285149e1946597ad799cd265b875bd9e8bca9f1c1e2bb69115a4aa1"
+      }
+    ],
+    "source": {
+      "digest": "6f84968789b0ed7cae6158bd9853ec2ef5c2c24f7f4f5df5f7cd1c38b0419525",
+      "document": ".ai-harness/work-items/BUG-ANALYSIS-HISTORY-20260928/snapshots/6f84968789b0ed7cae6158bd9853ec2ef5c2c24f7f4f5df5f7cd1c38b0419525.json"
+    }
+  },
+  "review": {
+    "status": "pass",
+    "evidence": [
+      "3687b013-8228-462f-85c2-a0d643ac43c6"
+    ],
+    "independent": true,
+    "source": {
+      "digest": "6f84968789b0ed7cae6158bd9853ec2ef5c2c24f7f4f5df5f7cd1c38b0419525",
+      "document": ".ai-harness/work-items/BUG-ANALYSIS-HISTORY-20260928/snapshots/6f84968789b0ed7cae6158bd9853ec2ef5c2c24f7f4f5df5f7cd1c38b0419525.json"
+    }
+  },
+  "acceptance": {
+    "status": "pass",
+    "evidence": [
+      "d0362404-aa73-411a-91b8-9ed6119f3d81"
+    ],
+    "source": {
+      "digest": "6f84968789b0ed7cae6158bd9853ec2ef5c2c24f7f4f5df5f7cd1c38b0419525",
+      "document": ".ai-harness/work-items/BUG-ANALYSIS-HISTORY-20260928/snapshots/6f84968789b0ed7cae6158bd9853ec2ef5c2c24f7f4f5df5f7cd1c38b0419525.json"
+    }
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "pass",
+    "evidence": [
+      "2d9f64a2-aa35-4e87-a7ee-c619fb647ada"
+    ]
+  },
+  "blocked": null,
+  "delivery": {
+    "source": {
+      "digest": "6f84968789b0ed7cae6158bd9853ec2ef5c2c24f7f4f5df5f7cd1c38b0419525",
+      "document": ".ai-harness/work-items/BUG-ANALYSIS-HISTORY-20260928/snapshots/6f84968789b0ed7cae6158bd9853ec2ef5c2c24f7f4f5df5f7cd1c38b0419525.json"
+    },
+    "baseline": {
+      "digest": "6b92d6718de438735e0811e04215687d88bb70261df4f8f61181257ac15d8615",
+      "document": ".ai-harness/work-items/BUG-ANALYSIS-HISTORY-20260928/snapshots/6b92d6718de438735e0811e04215687d88bb70261df4f8f61181257ac15d8615.json"
+    },
+    "baselineAt": "2026-09-28T06:10:50.470Z",
+    "ownedChanges": [
+      {
+        "path": ".ai-harness/src/verification.mjs",
+        "before": "100644:e166740c5be2d64e2d83a34b8104d7f7eef4bf0c",
+        "after": "100644:a1e920215d9ee4be361852f7ba7f9386375ee5bb"
+      },
+      {
+        "path": ".ai-harness/src/workflow.mjs",
+        "before": "100644:4221de75d601025bbe21e33554ed6387b02a16e7",
+        "after": "100644:fa67b97148a9eddb3a127903182151222258825a"
+      },
+      {
+        "path": ".ai-harness/tests/analysis-command.test.mjs",
+        "before": "100644:2a807cf420332be6d2419e95e16fb0e77c2f9b0a",
+        "after": "100644:40e331ac47725f4058abaacd0d0cfcc0db452274"
+      },
+      {
+        "path": "docs/guides/usage.md",
+        "before": "100644:37a80d8b224fdb09e1311254cee60ad3a6a05b37",
+        "after": "100644:507d95f92f66b33bad1ca0319450614c0c32d223"
+      }
+    ],
+    "planDigest": "b817843de285149e1946597ad799cd265b875bd9e8bca9f1c1e2bb69115a4aa1",
+    "at": "2026-09-28T06:45:05.062Z",
+    "head": "211fc5fcd1d4da7e4277e2927ee93279a0e5a128"
+  },
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-09-28T06:10:50.178Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-09-28T06:10:50.284Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-09-28T06:10:50.705Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-09-28T06:11:17.717Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-09-28T06:11:17.800Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-09-28T06:25:22.020Z",
+      "reason": "独立审查失败，需要扩写回答时源码锚点与历史兼容；原计划范围不足",
+      "action": "replan",
+      "revision": 2
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-09-28T06:27:00.217Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-09-28T06:27:00.304Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "VERIFYING",
+      "at": "2026-09-28T06:43:45.365Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "VERIFYING",
+      "to": "CODE_REVIEW",
+      "at": "2026-09-28T06:45:02.446Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "CODE_REVIEW",
+      "to": "READY_FOR_ACCEPTANCE",
+      "at": "2026-09-28T06:45:03.123Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "READY_FOR_ACCEPTANCE",
+      "to": "DONE",
+      "at": "2026-09-28T06:45:05.167Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-09-28T06:10:50.178Z",
+  "updatedAt": "2026-09-28T06:45:05.167Z"
+}

@@ -1,0 +1,199 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 1,
+  "id": "ANALYSIS-DELIVERY-P1P3-20260928",
+  "type": "ANALYSIS",
+  "title": "核对P1-P3隔离工作树交付范围",
+  "status": "ANSWERED",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/analysis.md"
+  ],
+  "authorization": {
+    "mode": "approval-required",
+    "source": "用户本轮继续推进落地；前次明确Git提交推送仍需单独授权，本次仅本地交付前核查"
+  },
+  "input": {
+    "references": [
+      "用户要求继续推进项目落地；本轮先核对待交付文件、工作项证据、与main冲突及验证边界"
+    ],
+    "acceptance": [
+      "列出准确待交付产品与控制文件、与main的冲突/排除项、当前检出源码及本地门禁；未提交推送时不称远端CI通过"
+    ],
+    "nonGoals": [
+      "不修改产品代码、不git add/commit/push、不运行付费模型、不清理历史工作项"
+    ],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": null,
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "隔离worktree codex/optimization-p1-p3@211fc5f；10个跟踪文件修改、3个新产品/测试文件和4个既有P1-P3控制工作项未跟踪；原main同commit、跟踪差异0且16个历史未跟踪控制目录，P0实测/分析已ANSWERED。"
+    ],
+    "completedAt": "2026-09-28T08:24:11.536Z",
+    "repository": {
+      "isGit": true,
+      "branch": "codex/optimization-p1-p3",
+      "commit": "211fc5fcd1d4da7e4277e2927ee93279a0e5a128",
+      "dirty": true,
+      "changedFiles": [
+        ".ai-harness/src/verification.mjs",
+        ".ai-harness/src/workflow.mjs",
+        ".ai-harness/tests/analysis-command.test.mjs",
+        ".ai-harness/tests/ci-matrix.test.mjs",
+        ".github/workflows/ai-harness.yml",
+        ".github/workflows/source-tests.yml",
+        "benchmarks/README.md",
+        "benchmarks/audit-trial.mjs",
+        "benchmarks/audit.mjs",
+        "benchmarks/project-tasks-v2.mjs",
+        "benchmarks/task-contract.mjs",
+        "benchmarks/tests/project-v2.test.mjs",
+        "docs/guides/usage.md"
+      ],
+      "fingerprints": {},
+      "source": {
+        "digest": "6f84968789b0ed7cae6158bd9853ec2ef5c2c24f7f4f5df5f7cd1c38b0419525",
+        "document": ".ai-harness/work-items/ANALYSIS-DELIVERY-P1P3-20260928/snapshots/6f84968789b0ed7cae6158bd9853ec2ef5c2c24f7f4f5df5f7cd1c38b0419525.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "pending",
+    "document": null,
+    "evidence": [],
+    "completedAt": null
+  },
+  "database": {
+    "status": "pending",
+    "document": null,
+    "evidence": [],
+    "completedAt": null,
+    "impact": "unknown"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/ANALYSIS-DELIVERY-P1P3-20260928/plan.json",
+    "approved": false,
+    "approvalRef": null
+  },
+  "verification": {
+    "status": "pending",
+    "evidence": [],
+    "stages": []
+  },
+  "review": {
+    "status": "pending",
+    "evidence": [],
+    "independent": false
+  },
+  "acceptance": {
+    "status": "pending",
+    "evidence": []
+  },
+  "analysis": {
+    "status": "pass",
+    "evidence": [
+      "b904cf76-9087-4faf-8b7b-b7b3de289aa6"
+    ],
+    "conclusions": [
+      {
+        "id": "b0ec278f-18b7-4427-b279-a0248f25fbe8",
+        "status": "PROVEN",
+        "text": "本地隔离分支codex/optimization-p1-p3与main同基点211fc5f，当前产品源码摘要1e5009f558f2d156d4c221cb86b6e5e961ff2de7ba6b5a976feef57393c4d308与P3 rev2及BUG rev3 DONE快照一致；候选产品/测试/文档为10条跟踪修改与3条新增文件。",
+        "evidence": [
+          "git status/diff/list；P3与BUG state.json的delivery.source；本项findings.md准确路径清单。"
+        ]
+      },
+      {
+        "id": "2ef51b69-d2eb-4c98-bfe4-20dcee68161c",
+        "status": "PROVEN",
+        "text": "P1 DONE、P2 ANSWERED、P3 rev2 DONE且独立审查、BUG rev3 DONE且独立审查；当前源码计划BUG13/13、benchmark75/75及Runtime全量185/185通过，doctor与非CI check为零错误警告。",
+        "evidence": [
+          "四项state.json及其当前修订evidence.jsonl；本轮doctor/check --json/git diff --check；findings.md。"
+        ]
+      },
+      {
+        "id": "42d9441c-193e-472e-89ad-928380211594",
+        "status": "PROVEN",
+        "text": "main已跟踪产品差异0、存在822个未跟踪历史控制文件；本次五个候选工作项ID和三条新增产品路径在main无碰撞。候选控制文件含所需快照、证据及全文输出，不能仅提交state.json；P0模型产物和main其他未跟踪工作项不在本次候选范围。",
+        "evidence": [
+          "main git status、git ls-files --others、精确Test-Path交叉检查；候选工作项文件/大小/可见性清单；findings.md。"
+        ]
+      },
+      {
+        "id": "9a7ffac1-1f70-403c-85fc-eeafc00afc56",
+        "status": "PROVEN",
+        "text": "候选75文件在审查时以有前置边界的常见令牌字面模式扫描为0命中；宽松正则误报来自BUG事件名task-definition-updated。该扫描不等于全面秘密审计，不许可笼统Git暂存。",
+        "evidence": [
+          "本轮仅输出脱敏事件类型/位置的二次检查及候选文件模式计数；findings.md。"
+        ]
+      },
+      {
+        "id": "fb3b7744-8fc7-49f2-8a7c-bcb028dac955",
+        "status": "UNKNOWN",
+        "text": "本分支尚未暂存/提交/推送，故无基于新提交的干净检出验证、远端CI或Node24/Windows22/24实际矩阵结果；版本仍为1.11.0，是否作为新发行版未获授权。",
+        "evidence": []
+      },
+      {
+        "id": "defcb0b7-7f35-425d-80f4-294f0b81a6b0",
+        "status": "PROPOSAL",
+        "text": "等待单独Git交付授权后，才在当前隔离工作树精确暂存13条产品文件与五个本项审计目录，复核实际暂存清单和git diff --cached --check；按获授权范围提交，在该提交干净检出上跑doctor/check --ci，获推送授权后再确认远端ref和CI。不得从main git add . 或纳入P0真实模型结果。",
+        "evidence": [
+          "本项findings.md交付路径、当前无碰撞的main/worktree基线、项目AGENTS.md与安全策略对Git授权及CI的要求。"
+        ]
+      }
+    ],
+    "unknowns": [
+      "不能将本地工作项DONE与check通过说成远端已交付或发布；若用户要版本发布需另行明确范围。"
+    ],
+    "source": {
+      "digest": "1e5009f558f2d156d4c221cb86b6e5e961ff2de7ba6b5a976feef57393c4d308",
+      "document": ".ai-harness/work-items/ANALYSIS-DELIVERY-P1P3-20260928/snapshots/1e5009f558f2d156d4c221cb86b6e5e961ff2de7ba6b5a976feef57393c4d308.json"
+    }
+  },
+  "documentation": {
+    "status": "pending",
+    "evidence": []
+  },
+  "blocked": null,
+  "delivery": null,
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-09-28T08:24:11.269Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-09-28T08:24:11.351Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "ANALYZING",
+      "at": "2026-09-28T08:24:11.765Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "ANALYZING",
+      "to": "ANSWERED",
+      "at": "2026-09-28T08:46:05.857Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-09-28T08:24:11.269Z",
+  "updatedAt": "2026-09-28T08:56:08.480Z"
+}

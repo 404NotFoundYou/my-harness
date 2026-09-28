@@ -313,6 +313,15 @@ export async function transitionWorkItem(root, id, target, reason = null) {
       item.revision ||= 1;
       item.delivery = { source: await saveSnapshot(root, paths.directory, current), baseline, baselineAt: delivery.baselineAt, ownedChanges: delivery.ownedChanges, planDigest: planDigest(item, plan), at: nowIso(), head: (await getGitBaseline(root, { includeFingerprints: false })).commit };
     }
+    if (target === "ANSWERED") {
+      const snapshot = await sourceSnapshot(root);
+      const commands = new Set(item.analysis.conclusions.flatMap((conclusion) => conclusion.commands || []));
+      if (commands.size) {
+        const events = await readEvidence(root, id);
+        for (const commandId of commands) await assertAnalysisCommandEvidence(root, item, commandId, { events, snapshot });
+      }
+      item.analysis.source = await saveSnapshot(root, paths.directory, snapshot);
+    }
     if (target === "BLOCKED") {
       item.blocked = { from, reason, at: nowIso() };
     } else if (from === "BLOCKED") {

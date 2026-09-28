@@ -17,7 +17,7 @@ export async function readExperimentFile(root, relative) {
 
 export async function auditTrial(directory, protocol, task, group, trial, resultText, readEvidence) {
   const extended=protocol.schemaVersion>=2;
-  const project=protocol.schemaVersion===3||(protocol.schemaVersion===4&&protocol.suite==="project");
+  const project=protocol.schemaVersion===3||(protocol.schemaVersion===4&&["project","project-v2"].includes(protocol.suite));
   const folder=`${task.id}-${group.id}${extended&&protocol.repetitions>1?`-trial-${trial}`:""}`;
   const raw=readEvidence || (file=>protocol.schemaVersion===4?readExperimentFile(directory,file):readFile(path.join(directory,file)));
   const read=async file=>JSON.parse((await raw(file)).toString("utf8"));
@@ -36,6 +36,7 @@ export async function auditTrial(directory, protocol, task, group, trial, result
   assert.equal(row.judgeDigest, definition.judgeDigest);
   if (project) {
     assert.equal(row.schemaVersion,2);
+    assert.equal(row.split,task.split,"trial split differs from frozen task");
     const candidate=validateCandidate(task,await read(`${folder}/candidate-files.json`));
     assert.equal(row.candidateDigest,candidateDigest(task,candidate),"candidate digest differs");
     if (Object.values(candidate.files).some(entry=>entry.status!=="present")) {

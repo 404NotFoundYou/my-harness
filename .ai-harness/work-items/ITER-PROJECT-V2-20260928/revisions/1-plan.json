@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "ITER-PROJECT-V2-20260928",
+  "mode": "single",
+  "rationale": "单纵向扩题，原project/catalog与新suite审计需一起验证；独立高风险审查",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "新增独立版本的project开发/留出题并验证历史审计",
+      "module": "benchmarks",
+      "status": "COMPLETED",
+      "attempt": 1,
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        "benchmarks/project-tasks-v2.mjs",
+        "benchmarks/task-contract.mjs",
+        "benchmarks/audit.mjs",
+        "benchmarks/audit-trial.mjs",
+        "benchmarks/tests/project-v2.test.mjs",
+        "benchmarks/README.md"
+      ],
+      "verification": [
+        "node --test benchmarks/tests/multifile.test.mjs benchmarks/tests/report.test.mjs benchmarks/tests/resume.test.mjs benchmarks/tests/runner.test.mjs benchmarks/tests/spec-guidance.test.mjs benchmarks/tests/status.test.mjs benchmarks/tests/project-v2.test.mjs"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            "--test",
+            "benchmarks/tests/multifile.test.mjs",
+            "benchmarks/tests/report.test.mjs",
+            "benchmarks/tests/resume.test.mjs",
+            "benchmarks/tests/runner.test.mjs",
+            "benchmarks/tests/spec-guidance.test.mjs",
+            "benchmarks/tests/status.test.mjs",
+            "benchmarks/tests/project-v2.test.mjs"
+          ]
+        }
+      ],
+      "docsImpact": [
+        "benchmarks/README.md"
+      ],
+      "reviewBatch": "R1",
+      "risk": "high",
+      "owner": "primary-ai",
+      "verificationStatus": "pass",
+      "reviewStatus": "pass",
+      "evidence": [
+        "81d5f06c-5a4e-4291-a61b-28c54e2529ff",
+        "ce41551f-7355-467a-b323-2b773c8cc626"
+      ],
+      "deferralApproval": null,
+      "verificationSource": {
+        "digest": "2eacf1b38c95279b856c3dee11f71cda22254321e62ba118083f7f13a1f28d12",
+        "document": ".ai-harness/work-items/ITER-PROJECT-V2-20260928/snapshots/2eacf1b38c95279b856c3dee11f71cda22254321e62ba118083f7f13a1f28d12.json"
+      },
+      "reviewSource": {
+        "digest": "2eacf1b38c95279b856c3dee11f71cda22254321e62ba118083f7f13a1f28d12",
+        "document": ".ai-harness/work-items/ITER-PROJECT-V2-20260928/snapshots/2eacf1b38c95279b856c3dee11f71cda22254321e62ba118083f7f13a1f28d12.json"
+      }
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "版本化题集与协议审计",
+      "risk": "high",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": true
+    }
+  ],
+  "createdAt": "2026-09-28T05:56:06.913Z",
+  "updatedAt": "2026-09-28T06:34:18.326Z"
+}

@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "BUG-ANALYSIS-HISTORY-20260928",
+  "mode": "single",
+  "rationale": "单个证据校验BUG及直接回归，高风险独立复核",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "修复终态分析历史审计且保留回答前门禁",
+      "module": "analysis-evidence",
+      "status": "REWORK",
+      "attempt": 1,
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        ".ai-harness/src/verification.mjs",
+        ".ai-harness/tests/analysis-command.test.mjs"
+      ],
+      "verification": [
+        "node --test .ai-harness/tests/analysis-command.test.mjs .ai-harness/tests/checker.test.mjs"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            "--test",
+            ".ai-harness/tests/analysis-command.test.mjs",
+            ".ai-harness/tests/checker.test.mjs"
+          ]
+        }
+      ],
+      "docsImpact": [
+        "N/A: 只恢复历史审计；既有文档的命令前后源码一致规则不变"
+      ],
+      "reviewBatch": "R1",
+      "risk": "high",
+      "owner": "primary-ai",
+      "verificationStatus": "pending",
+      "reviewStatus": "pending",
+      "evidence": [
+        "58cae379-0ecb-4d15-a7af-f0c555a72f69",
+        "3eea3ed2-86d2-48b9-941e-dbf4c8565d57"
+      ],
+      "deferralApproval": null
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "终态分析证据完整性",
+      "risk": "high",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": true
+    }
+  ],
+  "createdAt": "2026-09-28T06:11:17.375Z",
+  "updatedAt": "2026-09-28T06:25:21.934Z"
+}
