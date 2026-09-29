@@ -1,0 +1,143 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 1,
+  "id": "BUG-USAGE-UNKNOWN-20260929",
+  "type": "BUGFIX",
+  "title": "部分用量未知时摘要保持未知",
+  "status": "IMPLEMENTING",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/bugfix.md",
+    ".ai-harness/policies/verification.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户本次授权检查并优化当前项目的必要可逆本地修复"
+  },
+  "input": {
+    "references": [
+      "当前项目审查发现benchmark统计将不完整usage对象计为已知用量"
+    ],
+    "acceptance": [
+      "缺任一token字段或字段非法时总用量为null且不计usageSamples；完整零用量仍为0且计数；既有有效样本及全部benchmark测试保持"
+    ],
+    "nonGoals": [],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": {
+    "actual": "usage为非空对象但input_tokens或output_tokens缺失/无效时，usageSamples计入该样本，summarize求和得到NaN（JSON中转为null），未知语义不一致",
+    "expected": "仅两个token字段都是非负安全整数时才计入完整用量，未知样本不计且总量为null",
+    "reproduction": "使用runner.test.mjs的合成rows传usage为部分对象，断言aggregate未知且usageSamples不计；修复前失败"
+  },
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "当前项目审查发现benchmark统计将不完整usage对象计为已知用量"
+    ],
+    "completedAt": "2026-09-29T08:43:23.571Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "376180f1c8563df8715536eb8b31aa5626bef922",
+      "dirty": false,
+      "changedFiles": [],
+      "fingerprints": {},
+      "source": {
+        "digest": "e33dfb58302825a1e3845a2f366e6dbd948a979a69e28137a7fba91abab49f95",
+        "document": ".ai-harness/work-items/BUG-USAGE-UNKNOWN-20260929/snapshots/e33dfb58302825a1e3845a2f366e6dbd948a979a69e28137a7fba91abab49f95.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": ".ai-harness/work-items/BUG-USAGE-UNKNOWN-20260929/solution.md",
+    "evidence": [
+      "沿用已存在的token数量整数语义，在共享统计入口过滤不完整用量，并为摘要与样本计数补同一回归用例"
+    ],
+    "completedAt": "2026-09-29T08:43:23.695Z"
+  },
+  "database": {
+    "impact": "none",
+    "status": "not-applicable",
+    "document": null,
+    "evidence": [
+      "仅修改benchmark内存统计、测试和说明，不读写数据库或迁移"
+    ],
+    "completedAt": "2026-09-29T08:43:23.701Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/BUG-USAGE-UNKNOWN-20260929/plan.json",
+    "approved": true,
+    "approvalRef": "用户本次授权检查并优化当前项目的必要可逆本地修复"
+  },
+  "verification": {
+    "status": "pending",
+    "evidence": [],
+    "stages": []
+  },
+  "review": {
+    "status": "pending",
+    "evidence": [],
+    "independent": false
+  },
+  "acceptance": {
+    "status": "pending",
+    "evidence": []
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "pending",
+    "evidence": []
+  },
+  "blocked": null,
+  "delivery": null,
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-09-29T08:43:23.413Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-09-29T08:43:23.425Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-09-29T08:43:23.689Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-09-29T08:43:23.731Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-09-29T08:43:23.736Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-09-29T08:43:23.413Z",
+  "updatedAt": "2026-09-29T08:43:23.742Z"
+}

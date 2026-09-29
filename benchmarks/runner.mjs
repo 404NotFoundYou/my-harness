@@ -9,7 +9,7 @@ import { loadPlan, loadWorkItem } from "../.ai-harness/src/workflow.mjs";
 import { redact } from "../.ai-harness/src/evidence.mjs";
 import { atomicWriteJson } from "../.ai-harness/src/filesystem.mjs";
 import { sourceSnapshot } from "../.ai-harness/src/snapshot.mjs";
-import { trialStatistics } from "./statistics.mjs";
+import { hasCompleteUsage, trialStatistics } from "./statistics.mjs";
 import { projectWorkflowContract, taskManifest, writableFilesFor } from "./task-contract.mjs";
 import { candidateDigest, collectCandidate, validateCandidate } from "./candidates.mjs";
 
@@ -252,11 +252,12 @@ export function summarize(results, { extended = false } = {}) {
   if (modes.size !== 1 || !["real", "simulated"].includes([...modes][0])) throw new Error("Real and simulated results must not be mixed");
   return [...new Set(results.map(result => result.group))].map(group => {
     const rows = results.filter(result => result.group === group);
+    const completeUsage = rows.every(row => hasCompleteUsage(row.run.usage));
     return { group, samples: rows.length, functionalPassed: rows.filter(row => row.grade.ok).length, completed: rows.filter(row => row.success).length,
       falseCompletion: rows.filter(row => row.falseCompletion).length, timeouts: rows.filter(row => row.run.timedOut).length,
       durationMs: rows.reduce((sum, row) => sum + (row.run.durationMs || 0), 0),
-      inputTokens: rows.every(row => row.run.usage) ? rows.reduce((sum,row)=>sum+row.run.usage.input_tokens,0) : null,
-      outputTokens: rows.every(row => row.run.usage) ? rows.reduce((sum,row)=>sum+row.run.usage.output_tokens,0) : null,
+      inputTokens: completeUsage ? rows.reduce((sum,row)=>sum+row.run.usage.input_tokens,0) : null,
+      outputTokens: completeUsage ? rows.reduce((sum,row)=>sum+row.run.usage.output_tokens,0) : null,
       ...(extended ? { statistics: trialStatistics(rows) } : {}) };
   });
 }

@@ -1,0 +1,170 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 1,
+  "id": "ANALYSIS-CURRENT-OPT-20260929",
+  "type": "ANALYSIS",
+  "title": "当前项目问题核查与有界优化建议",
+  "status": "ANSWERED",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/analysis.md"
+  ],
+  "authorization": {
+    "mode": "approval-required",
+    "source": "用户本次检查与优化请求，分析阶段产品文件只读"
+  },
+  "input": {
+    "references": [
+      "用户要求检查当前项目还存在的问题并优化"
+    ],
+    "acceptance": [
+      "基于当前main代码和实际命令证据列出已证实问题、风险及可局部修复项；不覆盖已有工作、不运行付费实验或部署"
+    ],
+    "nonGoals": [],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": null,
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "main@376180f；doctor与check --ci无错误；产品文件无修改，已有多份未跟踪工作项控制面保留；本轮以当前源码与测试入口为范围"
+    ],
+    "completedAt": "2026-09-29T08:31:40.946Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "376180f1c8563df8715536eb8b31aa5626bef922",
+      "dirty": false,
+      "changedFiles": [],
+      "fingerprints": {},
+      "source": {
+        "digest": "e33dfb58302825a1e3845a2f366e6dbd948a979a69e28137a7fba91abab49f95",
+        "document": ".ai-harness/work-items/ANALYSIS-CURRENT-OPT-20260929/snapshots/e33dfb58302825a1e3845a2f366e6dbd948a979a69e28137a7fba91abab49f95.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "pending",
+    "document": null,
+    "evidence": [],
+    "completedAt": null
+  },
+  "database": {
+    "status": "pending",
+    "document": null,
+    "evidence": [],
+    "completedAt": null,
+    "impact": "unknown"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/ANALYSIS-CURRENT-OPT-20260929/plan.json",
+    "approved": false,
+    "approvalRef": null
+  },
+  "verification": {
+    "status": "pending",
+    "evidence": [],
+    "stages": []
+  },
+  "review": {
+    "status": "pending",
+    "evidence": [],
+    "independent": false
+  },
+  "acceptance": {
+    "status": "pending",
+    "evidence": []
+  },
+  "analysis": {
+    "status": "pass",
+    "evidence": [
+      "2b9cf67b-3e8b-47f0-81e6-ead8c3a271de"
+    ],
+    "conclusions": [
+      {
+        "id": "fb7e028b-bbcc-442e-a03c-ac2bad82f830",
+        "status": "PROVEN",
+        "text": "当前main@376180f的doctor及非CI check无错误；CI check在新分析项创建前无错误，分析项ANALYZING期间因未终态会按门禁失败。",
+        "evidence": [
+          ".ai-harness/src/checker.mjs:290-335；本轮CLI check命令输出，ANALYSIS run失败事件明确记录当前自身未终态。"
+        ],
+        "commands": [
+          "7d2966fb-0b37-492d-8086-38474fa69144"
+        ]
+      },
+      {
+        "id": "6af20bab-cf68-476b-bef1-438e227d9f6b",
+        "status": "PROVEN",
+        "text": "摘要统计仅用usage对象的真值性判定样本：部分用量对象可进入sum，缺失数字导致NaN；usageSamples仍计为已有用量。",
+        "evidence": [
+          "benchmarks/runner.mjs:257-259；benchmarks/statistics.mjs:26；benchmarks/client-drivers.mjs:54-58已经对Claude用量进行整数校验，而Codex协议透传原usage见benchmarks/codex-driver.mjs:17。"
+        ]
+      },
+      {
+        "id": "7025211c-a302-45dc-abb0-e0e9140b5019",
+        "status": "PROPOSAL",
+        "text": "在现有统计入口将不完整或非法的input_tokens/output_tokens视为未知，补同一模拟用量样本的回归测试；不启动真实模型，不改变题目、计费或协议。",
+        "evidence": [
+          "benchmarks/runner.mjs:257-259；benchmarks/statistics.mjs:26；benchmarks/tests/runner.test.mjs:389-406已有unknown用量测试。"
+        ]
+      },
+      {
+        "id": "91cb1824-e8bf-40e0-95a9-17620f201b24",
+        "status": "UNKNOWN",
+        "text": "当前1.11.0对真实模型交付收益及本轮统计边界在各真实客户端出现频率均未知。",
+        "evidence": []
+      }
+    ],
+    "unknowns": [
+      "未获得真实模型调用与费用授权；仅能以合成用例验证确定性转换。"
+    ],
+    "source": {
+      "digest": "e33dfb58302825a1e3845a2f366e6dbd948a979a69e28137a7fba91abab49f95",
+      "document": ".ai-harness/work-items/ANALYSIS-CURRENT-OPT-20260929/snapshots/e33dfb58302825a1e3845a2f366e6dbd948a979a69e28137a7fba91abab49f95.json"
+    }
+  },
+  "documentation": {
+    "status": "pending",
+    "evidence": []
+  },
+  "blocked": null,
+  "delivery": null,
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-09-29T08:31:30.359Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-09-29T08:31:40.715Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "ANALYZING",
+      "at": "2026-09-29T08:31:41.144Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "ANALYZING",
+      "to": "ANSWERED",
+      "at": "2026-09-29T08:42:27.660Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-09-29T08:31:30.359Z",
+  "updatedAt": "2026-09-29T08:42:27.660Z"
+}
