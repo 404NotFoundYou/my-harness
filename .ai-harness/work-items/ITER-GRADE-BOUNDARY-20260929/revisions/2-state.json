@@ -1,0 +1,158 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 2,
+  "id": "ITER-GRADE-BOUNDARY-20260929",
+  "type": "ITERATION",
+  "title": "收紧隐藏评分器环境与结果诊断边界",
+  "status": "IMPLEMENTING",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/iteration.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户：根据建议进行优化"
+  },
+  "input": {
+    "references": [
+      "用户授权根据下一优化项实施评分子进程环境变量白名单和结果诊断防泄露"
+    ],
+    "acceptance": [
+      "候选子进程不能读取宿主自设虚构canary环境变量；失败用例、stderr和结果JSON不包含虚构canary及未经限定的异常正文；正常隐藏评分与权限拒绝判定保留；本地测试与CI门禁真实通过，未跑平台显式说明"
+    ],
+    "nonGoals": [],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": null,
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "已推送 codex/optimization-p1-p3@5865bf9，干净；benchmarks/runner.mjs 中 gradeCandidate 继承 process.env、cases.error 为异常栈、stderr/error 部分模式脱敏，runCase 保存 grade 到 result.json；runner.test.mjs:100-109 依赖权限拒绝标识；README 说明权限模式非恶意代码隔离。"
+    ],
+    "completedAt": "2026-09-29T01:15:17.385Z",
+    "repository": {
+      "isGit": true,
+      "branch": "codex/optimization-p1-p3",
+      "commit": "5865bf910ca86d4d580f6289499efe429ed72884",
+      "dirty": false,
+      "changedFiles": [],
+      "fingerprints": {},
+      "source": {
+        "digest": "2cd2db49e240a627c7f9493f8053b8726a188c260356558f7bac39664790c9fe",
+        "document": ".ai-harness/work-items/ITER-GRADE-BOUNDARY-20260929/snapshots/2cd2db49e240a627c7f9493f8053b8726a188c260356558f7bac39664790c9fe.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": ".ai-harness/work-items/ITER-GRADE-BOUNDARY-20260929/solution.md",
+    "evidence": [
+      "读取 benchmarks/runner.mjs 的 gradeCandidate/parseGrade/runCase、直接测试、README 和审计；选择空子进程环境及固定诊断，保留评分结果契约，显式放弃原始栈。"
+    ],
+    "completedAt": "2026-09-29T01:15:55.192Z"
+  },
+  "database": {
+    "impact": "none",
+    "status": "not-applicable",
+    "document": null,
+    "evidence": [
+      "仅 benchmark 评分进程、JSON 诊断和文档；不改 Schema、数据库查询或生产数据。"
+    ],
+    "completedAt": "2026-09-29T01:15:55.276Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/ITER-GRADE-BOUNDARY-20260929/plan.json",
+    "approved": true,
+    "approvalRef": "用户本轮实施授权；等价显式七个测试文件入口"
+  },
+  "verification": {
+    "status": "pending",
+    "evidence": [],
+    "stages": []
+  },
+  "review": {
+    "status": "pending",
+    "evidence": [],
+    "independent": false
+  },
+  "acceptance": {
+    "status": "pending",
+    "evidence": []
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "pending",
+    "evidence": []
+  },
+  "blocked": null,
+  "delivery": null,
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-09-29T01:15:17.112Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-09-29T01:15:17.197Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-09-29T01:15:17.547Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-09-29T01:16:14.478Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-09-29T01:16:14.563Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-09-29T01:20:23.251Z",
+      "reason": "计划的 node benchmarks/tests/run.mjs 被 Runtime 以 unknown-subcommand ask 拒绝；改为等价的显式 node --test 全测试文件列表，禁止绕过策略。",
+      "action": "replan",
+      "revision": 2
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-09-29T01:20:51.186Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-09-29T01:20:51.270Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-09-29T01:15:17.112Z",
+  "updatedAt": "2026-09-29T01:30:30.245Z"
+}

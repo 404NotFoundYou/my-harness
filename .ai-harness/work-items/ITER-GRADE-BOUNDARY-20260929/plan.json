@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "ITER-GRADE-BOUNDARY-20260929",
+  "mode": "single",
+  "rationale": "评分进程、结果字段和回归测试为一个安全边界的连续纵向修改",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "隔离评分进程环境并规范化诊断字段",
+      "module": "benchmarks",
+      "status": "COMPLETED",
+      "attempt": 2,
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        "benchmarks/runner.mjs",
+        "benchmarks/tests/runner.test.mjs",
+        "benchmarks/README.md"
+      ],
+      "verification": [
+        "node --test benchmarks/tests/multifile.test.mjs benchmarks/tests/project-v2.test.mjs benchmarks/tests/report.test.mjs benchmarks/tests/resume.test.mjs benchmarks/tests/runner.test.mjs benchmarks/tests/spec-guidance.test.mjs benchmarks/tests/status.test.mjs"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            "--test",
+            "benchmarks/tests/multifile.test.mjs",
+            "benchmarks/tests/project-v2.test.mjs",
+            "benchmarks/tests/report.test.mjs",
+            "benchmarks/tests/resume.test.mjs",
+            "benchmarks/tests/runner.test.mjs",
+            "benchmarks/tests/spec-guidance.test.mjs",
+            "benchmarks/tests/status.test.mjs"
+          ]
+        }
+      ],
+      "docsImpact": [
+        "benchmarks/README.md"
+      ],
+      "reviewBatch": "R1",
+      "risk": "high",
+      "owner": "primary-ai",
+      "verificationStatus": "pass",
+      "reviewStatus": "pass",
+      "evidence": [
+        "b0329113-e107-403e-bb6e-d48bbf41dc63",
+        "fef2fbbf-699e-427c-88d1-2a30658eab62"
+      ],
+      "deferralApproval": null,
+      "verificationSource": {
+        "digest": "f5c7f8dd06296da8b443300ac9e6323a2ee3f463916c166e09a707df8b2f0168",
+        "document": ".ai-harness/work-items/ITER-GRADE-BOUNDARY-20260929/snapshots/f5c7f8dd06296da8b443300ac9e6323a2ee3f463916c166e09a707df8b2f0168.json"
+      },
+      "reviewSource": {
+        "digest": "f5c7f8dd06296da8b443300ac9e6323a2ee3f463916c166e09a707df8b2f0168",
+        "document": ".ai-harness/work-items/ITER-GRADE-BOUNDARY-20260929/snapshots/f5c7f8dd06296da8b443300ac9e6323a2ee3f463916c166e09a707df8b2f0168.json"
+      }
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "评分器敏感信息边界",
+      "risk": "high",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": true
+    }
+  ],
+  "createdAt": "2026-09-29T01:16:14.143Z",
+  "updatedAt": "2026-09-29T01:34:29.980Z",
+  "revision": 3
+}
