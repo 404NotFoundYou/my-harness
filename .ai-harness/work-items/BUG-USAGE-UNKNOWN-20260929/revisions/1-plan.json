@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "BUG-USAGE-UNKNOWN-20260929",
+  "mode": "single",
+  "rationale": "沿用已存在的token数量整数语义，在共享统计入口过滤不完整用量，并为摘要与样本计数补同一回归用例",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "部分用量未知时摘要保持未知",
+      "module": "compact",
+      "status": "IN_PROGRESS",
+      "attempt": 1,
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        "benchmarks/statistics.mjs",
+        "benchmarks/runner.mjs",
+        "benchmarks/tests/runner.test.mjs",
+        "benchmarks/README.md"
+      ],
+      "verification": [
+        "node --test benchmarks/tests/runner.test.mjs",
+        "node benchmarks/tests/run.mjs"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            "--test",
+            "benchmarks/tests/runner.test.mjs"
+          ]
+        },
+        {
+          "id": "V2",
+          "command": "node",
+          "args": [
+            "benchmarks/tests/run.mjs"
+          ]
+        }
+      ],
+      "docsImpact": [
+        "benchmarks/README.md"
+      ],
+      "reviewBatch": "R1",
+      "risk": "medium",
+      "owner": "primary-ai",
+      "verificationStatus": "pending",
+      "reviewStatus": "pending",
+      "evidence": [],
+      "deferralApproval": null
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "部分用量未知时摘要保持未知",
+      "risk": "medium",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": false
+    }
+  ],
+  "createdAt": "2026-09-29T08:43:23.707Z",
+  "updatedAt": "2026-09-29T08:43:23.741Z"
+}

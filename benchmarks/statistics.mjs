@@ -1,3 +1,8 @@
+export function hasCompleteUsage(usage) {
+  return usage !== null && typeof usage === "object" && !Array.isArray(usage) &&
+    ["input_tokens", "output_tokens"].every(key => Number.isSafeInteger(usage[key]) && usage[key] >= 0);
+}
+
 function rate(passed, samples) {
   const p = passed / samples, z = 1.959963984540054;
   const denominator = 1 + z * z / samples;
@@ -23,7 +28,7 @@ export function trialStatistics(rows) {
       (row.run.protocolSuccess === false && !row.run.timedOut && !row.run.toolLimit && !row.run.error) || invalidFinal(row)).length,
     invalidFinals: rows.filter(invalidFinal).length,
     latency: { observed: durations.length, unknown: rows.length - durations.length, medianMs: percentile(durations, 0.5), p95Ms: percentile(durations, 0.95) },
-    usageSamples: rows.filter(row => row.run.usage).length,
+    usageSamples: rows.filter(row => hasCompleteUsage(row.run.usage)).length,
     toolCategories: rows.reduce((categories, row) => {
       for (const [name, entry] of Object.entries(row.run.timing?.categories || {})) {
         categories[name] ||= { calls: 0, activeMs: 0 };

@@ -1,0 +1,302 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 2,
+  "id": "BUG-USAGE-UNKNOWN-20260929",
+  "type": "BUGFIX",
+  "title": "部分用量未知时摘要保持未知",
+  "status": "DONE",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/bugfix.md",
+    ".ai-harness/policies/verification.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户本次授权检查并优化当前项目的必要可逆本地修复"
+  },
+  "input": {
+    "references": [
+      "当前项目审查发现benchmark统计将不完整usage对象计为已知用量"
+    ],
+    "acceptance": [
+      "缺任一token字段或字段非法时总用量为null且不计usageSamples；完整零用量仍为0且计数；既有有效样本及全部benchmark测试保持"
+    ],
+    "nonGoals": [],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": {
+    "actual": "usage为非空对象但input_tokens或output_tokens缺失/无效时，usageSamples计入该样本，summarize求和得到NaN（JSON中转为null），未知语义不一致",
+    "expected": "仅两个token字段都是非负安全整数时才计入完整用量，未知样本不计且总量为null",
+    "reproduction": "使用runner.test.mjs的合成rows传usage为部分对象，断言aggregate未知且usageSamples不计；修复前失败"
+  },
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "当前项目审查发现benchmark统计将不完整usage对象计为已知用量"
+    ],
+    "completedAt": "2026-09-29T08:43:23.571Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "376180f1c8563df8715536eb8b31aa5626bef922",
+      "dirty": false,
+      "changedFiles": [],
+      "fingerprints": {},
+      "source": {
+        "digest": "e33dfb58302825a1e3845a2f366e6dbd948a979a69e28137a7fba91abab49f95",
+        "document": ".ai-harness/work-items/BUG-USAGE-UNKNOWN-20260929/snapshots/e33dfb58302825a1e3845a2f366e6dbd948a979a69e28137a7fba91abab49f95.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": ".ai-harness/work-items/BUG-USAGE-UNKNOWN-20260929/solution.md",
+    "evidence": [
+      "沿用已存在的token数量整数语义，在共享统计入口过滤不完整用量，并为摘要与样本计数补同一回归用例"
+    ],
+    "completedAt": "2026-09-29T08:43:23.695Z"
+  },
+  "database": {
+    "impact": "none",
+    "status": "not-applicable",
+    "document": null,
+    "evidence": [
+      "仅修改benchmark内存统计、测试和说明，不读写数据库或迁移"
+    ],
+    "completedAt": "2026-09-29T08:43:23.701Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/BUG-USAGE-UNKNOWN-20260929/plan.json",
+    "approved": true,
+    "approvalRef": "用户本次检查并优化请求已授权同范围内可逆修复；仅将被策略拒绝的验证包装脚本换为相同测试文件的显式参数数组"
+  },
+  "verification": {
+    "status": "pass",
+    "evidence": [
+      "752d3066-fdc2-4bb9-9c9d-5d12d0cab712",
+      "0ee5e70a-8e9d-4e2d-87d6-cae6373176da",
+      "a45baa81-e1d9-4ce3-8530-5f6bf725e0e4",
+      "853a3952-a2f1-460b-8cbf-c93daa07ed77"
+    ],
+    "stages": [
+      {
+        "stage": "static",
+        "status": "pass",
+        "evidence": [
+          "752d3066-fdc2-4bb9-9c9d-5d12d0cab712"
+        ],
+        "command": null,
+        "revision": 2,
+        "source": {
+          "digest": "bfc416f8c29abd3aa565f6052efddf8f4b4fe992d07b6052adc5a548786aee99",
+          "document": ".ai-harness/work-items/BUG-USAGE-UNKNOWN-20260929/snapshots/bfc416f8c29abd3aa565f6052efddf8f4b4fe992d07b6052adc5a548786aee99.json"
+        },
+        "planDigest": "a06d186044b63ce3a3814954a9b1bf73b7e6b0e3ebe8eb21e456be9dbf20b29a"
+      },
+      {
+        "stage": "sandbox",
+        "status": "pass",
+        "evidence": [
+          "0ee5e70a-8e9d-4e2d-87d6-cae6373176da"
+        ],
+        "command": null,
+        "revision": 2,
+        "source": {
+          "digest": "bfc416f8c29abd3aa565f6052efddf8f4b4fe992d07b6052adc5a548786aee99",
+          "document": ".ai-harness/work-items/BUG-USAGE-UNKNOWN-20260929/snapshots/bfc416f8c29abd3aa565f6052efddf8f4b4fe992d07b6052adc5a548786aee99.json"
+        },
+        "planDigest": "a06d186044b63ce3a3814954a9b1bf73b7e6b0e3ebe8eb21e456be9dbf20b29a"
+      },
+      {
+        "stage": "reproduction",
+        "status": "pass",
+        "evidence": [
+          "a45baa81-e1d9-4ce3-8530-5f6bf725e0e4"
+        ],
+        "command": "7b49a972-0b3e-49b8-b16c-e12b5b912afd",
+        "revision": 2,
+        "source": {
+          "digest": "bfc416f8c29abd3aa565f6052efddf8f4b4fe992d07b6052adc5a548786aee99",
+          "document": ".ai-harness/work-items/BUG-USAGE-UNKNOWN-20260929/snapshots/bfc416f8c29abd3aa565f6052efddf8f4b4fe992d07b6052adc5a548786aee99.json"
+        },
+        "planDigest": "a06d186044b63ce3a3814954a9b1bf73b7e6b0e3ebe8eb21e456be9dbf20b29a"
+      },
+      {
+        "stage": "regression",
+        "status": "pass",
+        "evidence": [
+          "853a3952-a2f1-460b-8cbf-c93daa07ed77"
+        ],
+        "command": "5c62ff59-3818-47c3-a5f8-7e3d48c5ad87",
+        "revision": 2,
+        "source": {
+          "digest": "bfc416f8c29abd3aa565f6052efddf8f4b4fe992d07b6052adc5a548786aee99",
+          "document": ".ai-harness/work-items/BUG-USAGE-UNKNOWN-20260929/snapshots/bfc416f8c29abd3aa565f6052efddf8f4b4fe992d07b6052adc5a548786aee99.json"
+        },
+        "planDigest": "a06d186044b63ce3a3814954a9b1bf73b7e6b0e3ebe8eb21e456be9dbf20b29a"
+      }
+    ],
+    "source": {
+      "digest": "bfc416f8c29abd3aa565f6052efddf8f4b4fe992d07b6052adc5a548786aee99",
+      "document": ".ai-harness/work-items/BUG-USAGE-UNKNOWN-20260929/snapshots/bfc416f8c29abd3aa565f6052efddf8f4b4fe992d07b6052adc5a548786aee99.json"
+    }
+  },
+  "review": {
+    "status": "pass",
+    "evidence": [
+      "da57fe51-de17-468a-87c4-2031a4b9549c"
+    ],
+    "independent": false,
+    "source": {
+      "digest": "bfc416f8c29abd3aa565f6052efddf8f4b4fe992d07b6052adc5a548786aee99",
+      "document": ".ai-harness/work-items/BUG-USAGE-UNKNOWN-20260929/snapshots/bfc416f8c29abd3aa565f6052efddf8f4b4fe992d07b6052adc5a548786aee99.json"
+    }
+  },
+  "acceptance": {
+    "status": "pass",
+    "evidence": [
+      "ff338df4-7cc8-4164-bb43-8eb016d6bba2"
+    ],
+    "source": {
+      "digest": "bfc416f8c29abd3aa565f6052efddf8f4b4fe992d07b6052adc5a548786aee99",
+      "document": ".ai-harness/work-items/BUG-USAGE-UNKNOWN-20260929/snapshots/bfc416f8c29abd3aa565f6052efddf8f4b4fe992d07b6052adc5a548786aee99.json"
+    }
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "pass",
+    "evidence": [
+      "5397c19b-9d28-467f-9a6e-74ee16ad202d"
+    ]
+  },
+  "blocked": null,
+  "delivery": {
+    "source": {
+      "digest": "bfc416f8c29abd3aa565f6052efddf8f4b4fe992d07b6052adc5a548786aee99",
+      "document": ".ai-harness/work-items/BUG-USAGE-UNKNOWN-20260929/snapshots/bfc416f8c29abd3aa565f6052efddf8f4b4fe992d07b6052adc5a548786aee99.json"
+    },
+    "baseline": {
+      "digest": "e33dfb58302825a1e3845a2f366e6dbd948a979a69e28137a7fba91abab49f95",
+      "document": ".ai-harness/work-items/BUG-USAGE-UNKNOWN-20260929/snapshots/e33dfb58302825a1e3845a2f366e6dbd948a979a69e28137a7fba91abab49f95.json"
+    },
+    "baselineAt": "2026-09-29T08:43:23.571Z",
+    "ownedChanges": [
+      {
+        "path": "benchmarks/README.md",
+        "before": "100644:e101ea4dde51a5a913d98af272600e1d2fcaea8a",
+        "after": "100644:2261c38cce5a8f6883e6f57d8b483e8e5e1b5253"
+      },
+      {
+        "path": "benchmarks/runner.mjs",
+        "before": "100644:dba64ab00f2aef67c4e3081b552f927788383a5e",
+        "after": "100644:16b2909d35e63bce78993f474f73c8f605e77a8b"
+      },
+      {
+        "path": "benchmarks/statistics.mjs",
+        "before": "100644:5149bad18028feeb8af7012ae870e7f680b688c3",
+        "after": "100644:6a72508397828c2d5554e5dd41ee5dc7e1701ca1"
+      },
+      {
+        "path": "benchmarks/tests/runner.test.mjs",
+        "before": "100644:27e085f9f114519b1ed20f1709fe14c488dcc15d",
+        "after": "100644:64191403ca1bab77428dae0afa49940dc88c265a"
+      }
+    ],
+    "planDigest": "a06d186044b63ce3a3814954a9b1bf73b7e6b0e3ebe8eb21e456be9dbf20b29a",
+    "at": "2026-09-29T08:53:00.211Z",
+    "head": "376180f1c8563df8715536eb8b31aa5626bef922"
+  },
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-09-29T08:43:23.413Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-09-29T08:43:23.425Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-09-29T08:43:23.689Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-09-29T08:43:23.731Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-09-29T08:43:23.736Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-09-29T08:48:29.594Z",
+      "reason": "原计划V2使用node运行测试包装脚本，被命令策略判为ask且未执行；改为显式node --test完整测试文件列表，不改变写入范围或验收",
+      "action": "replan",
+      "revision": 2
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-09-29T08:49:03.996Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-09-29T08:49:04.083Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "VERIFYING",
+      "at": "2026-09-29T08:52:56.468Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "VERIFYING",
+      "to": "CODE_REVIEW",
+      "at": "2026-09-29T08:52:57.798Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "CODE_REVIEW",
+      "to": "READY_FOR_ACCEPTANCE",
+      "at": "2026-09-29T08:52:58.373Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "READY_FOR_ACCEPTANCE",
+      "to": "DONE",
+      "at": "2026-09-29T08:53:00.344Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-09-29T08:43:23.413Z",
+  "updatedAt": "2026-09-29T08:53:00.344Z"
+}

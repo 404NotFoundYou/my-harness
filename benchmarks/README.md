@@ -67,7 +67,7 @@ Codex与Claude请求medium推理档；Gemini CLI没有对应参数，因此记�
 
 `run.timing` 记录本地收到的工具开始/结束事件，重叠区间合并为toolActiveMs，未配对事件和中断区间明确标记。otherElapsedMs包含模型、网络、客户端启动和收尾，不等于纯推理耗时。Claude用量将输入、缓存读取、缓存写入合并为总输入，同时保留原值；Gemini保留rawUsage，共同用量字段暂记未知，避免猜测计费语义。
 
-工具区间新增基于可见工具名/命令文本的 reading、editing、planning、guidance、verification、completion 等类别，无法确定时为 unknown；类别内重叠合并，类别之间可能重叠，不直接相加。统计同时给出功能、两组共同交付和含 Harness 门禁的完整交付，报告 Wilson 95% 区间、耗时中位数/p95、协议失败、无效最终结构和已返回用量的样本数。区间仅描述这些试次，同题重复不是独立任务；超时是时间截断，p95不代表未截断的真实完成时长。
+工具区间新增基于可见工具名/命令文本的 reading、editing、planning、guidance、verification、completion 等类别，无法确定时为 unknown；类别内重叠合并，类别之间可能重叠，不直接相加。统计同时给出功能、两组共同交付和含 Harness 门禁的完整交付，报告 Wilson 95% 区间、耗时中位数/p95、协议失败、无效最终结构和完整用量的样本数（输入、输出 token 均为非负安全整数；否则该组累计用量保持未知）。区间仅描述这些试次，同题重复不是独立任务；超时是时间截断，p95不代表未截断的真实完成时长。
 
 接口依据：[Codex事件流](https://learn.chatgpt.com/docs/non-interactive-mode)、[Claude非交互模式](https://code.claude.com/docs/en/headless)、[Gemini非交互模式](https://geminicli.com/docs/cli/headless/)。驱动存在不等于已验证本机登录、沙箱和真实任务；具体环境检查与实跑记录保存在对应工作项中。
 

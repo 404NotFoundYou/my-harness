@@ -405,6 +405,21 @@ test("timing categories merge overlapping intervals and statistics retain unknow
   assert.equal(invalid.invalidFinals, 1);
 });
 
+test("incomplete token usage stays unknown instead of inflating observed usage samples", () => {
+  const row = { mode: "simulated", group: "weak-baseline", grade: { ok: true }, scope: { ok: true }, success: true,
+    run: { completed: true, durationMs: 1, usage: { input_tokens: 0, output_tokens: 0 } } };
+  const valid = summarize([row], { extended: true })[0];
+  assert.equal(valid.inputTokens, 0);
+  assert.equal(valid.outputTokens, 0);
+  assert.equal(valid.statistics.usageSamples, 1);
+  for (const usage of [{ input_tokens: 3 }, { output_tokens: 2 }, { input_tokens: "3", output_tokens: 2 }, { input_tokens: -1, output_tokens: 2 }]) {
+    const incomplete = summarize([row, { ...row, run: { ...row.run, usage } }], { extended: true })[0];
+    assert.equal(incomplete.inputTokens, null, "a partial sample cannot support an aggregate input total");
+    assert.equal(incomplete.outputTokens, null, "a partial sample cannot support an aggregate output total");
+    assert.equal(incomplete.statistics.usageSamples, 1, "only complete token counts are observed usage");
+  }
+});
+
 test("raw protocol reconstruction retains terminal failures and malformed content blocks", () => {
   for (const client of ["claude", "gemini"]) {
     const final = { completed: true, summary: "synthetic", tests: [] };
