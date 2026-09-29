@@ -25,7 +25,9 @@ test("dead owners can be recovered once without stealing a live or replacement l
     assert.equal((await inspectLock(lock)).status, "stale");
     await assert.rejects(() => recoverLock(lock, randomUUID()), { code: "LOCK_NOT_RECOVERABLE" });
     const competing = await Promise.allSettled([recoverLock(lock, owner.token), recoverLock(lock, owner.token)]);
-    assert.equal(competing.filter(result => result.status === "fulfilled").length, 1);
+    const outcomes = competing.map(result => result.status === "fulfilled" ? "fulfilled" :
+      `${result.reason?.code ?? result.reason?.name ?? "unknown"}: ${result.reason?.message ?? String(result.reason)} (lock: ${result.reason?.details?.status ?? "n/a"})`);
+    assert.equal(competing.filter(result => result.status === "fulfilled").length, 1, `exactly one recovery must win: ${outcomes.join(" | ")}`);
     await withFileLock(lock, async () => {
       const active = await inspectLock(lock);
       assert.equal(active.status, "active");

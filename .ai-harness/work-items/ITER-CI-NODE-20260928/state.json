@@ -1,0 +1,214 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 1,
+  "id": "ITER-CI-NODE-20260928",
+  "type": "ITERATION",
+  "title": "扩展Node兼容性CI矩阵",
+  "status": "DONE",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/iteration.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户本轮明确要求按照P0到P3开始执行；P1可逆本地配置修改"
+  },
+  "input": {
+    "references": [
+      "用户要求执行P1：补Node24与Windows22/24的CI验证，保持现有Node20兼容契约"
+    ],
+    "acceptance": [
+      "两条CI工作流覆盖Ubuntu Node20/22/24及Windows Node20/22/24，保留原测试与超时配置；最低Node版本不变"
+    ],
+    "nonGoals": [
+      "不安装Node新版本、不提交推送、不宣称远端CI已通过、不提高最低版本"
+    ],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": null,
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "隔离worktree codex/optimization-p1-p3 @211fc5f，产品树无改动；当前AI Harness Ubuntu20/22，source-tests Ubuntu20/22+Windows20；本地Node22；doctor及原check --ci通过。"
+    ],
+    "completedAt": "2026-09-28T05:44:52.085Z",
+    "repository": {
+      "isGit": true,
+      "branch": "codex/optimization-p1-p3",
+      "commit": "211fc5fcd1d4da7e4277e2927ee93279a0e5a128",
+      "dirty": false,
+      "changedFiles": [],
+      "fingerprints": {},
+      "source": {
+        "digest": "1ddfeaad7afc463576bf9903587318b59b0ba1cba902bc15068c07c0e24922c8",
+        "document": ".ai-harness/work-items/ITER-CI-NODE-20260928/snapshots/1ddfeaad7afc463576bf9903587318b59b0ba1cba902bc15068c07c0e24922c8.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": ".ai-harness/work-items/ITER-CI-NODE-20260928/design.md",
+    "evidence": [
+      "按现有两条工作流增版本矩阵并加本地静态断言；不改最低Node版本或测试入口"
+    ],
+    "completedAt": "2026-09-28T05:45:21.027Z"
+  },
+  "database": {
+    "impact": "none",
+    "status": "not-applicable",
+    "document": null,
+    "evidence": [
+      "仅修改CI YAML与测试，无数据库持久化或查询影响"
+    ],
+    "completedAt": "2026-09-28T05:45:21.133Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/ITER-CI-NODE-20260928/plan.json",
+    "approved": true,
+    "approvalRef": "用户本轮授权执行P1的本地可逆修改，未授权发布与费用"
+  },
+  "verification": {
+    "status": "pass",
+    "evidence": [
+      "8c5a21b5-03b7-43c2-8741-afb17ccbc613"
+    ],
+    "stages": [],
+    "source": {
+      "digest": "dac2b510cd9480f02731bb92b3af43cb654dc770da429b7bde28f92fb52d3d60",
+      "document": ".ai-harness/work-items/ITER-CI-NODE-20260928/snapshots/dac2b510cd9480f02731bb92b3af43cb654dc770da429b7bde28f92fb52d3d60.json"
+    }
+  },
+  "review": {
+    "status": "pass",
+    "evidence": [
+      "5c5fd802-3416-42e7-8916-c40a36c08bce"
+    ],
+    "independent": false,
+    "source": {
+      "digest": "dac2b510cd9480f02731bb92b3af43cb654dc770da429b7bde28f92fb52d3d60",
+      "document": ".ai-harness/work-items/ITER-CI-NODE-20260928/snapshots/dac2b510cd9480f02731bb92b3af43cb654dc770da429b7bde28f92fb52d3d60.json"
+    }
+  },
+  "acceptance": {
+    "status": "pass",
+    "evidence": [
+      "ace8d632-344b-4d88-bf12-9516eabb7fa6"
+    ],
+    "source": {
+      "digest": "dac2b510cd9480f02731bb92b3af43cb654dc770da429b7bde28f92fb52d3d60",
+      "document": ".ai-harness/work-items/ITER-CI-NODE-20260928/snapshots/dac2b510cd9480f02731bb92b3af43cb654dc770da429b7bde28f92fb52d3d60.json"
+    }
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "not-applicable",
+    "evidence": [
+      "ad315bd7-ef4c-4854-b584-3f2838da98ce"
+    ]
+  },
+  "blocked": null,
+  "delivery": {
+    "source": {
+      "digest": "dac2b510cd9480f02731bb92b3af43cb654dc770da429b7bde28f92fb52d3d60",
+      "document": ".ai-harness/work-items/ITER-CI-NODE-20260928/snapshots/dac2b510cd9480f02731bb92b3af43cb654dc770da429b7bde28f92fb52d3d60.json"
+    },
+    "baseline": {
+      "digest": "1ddfeaad7afc463576bf9903587318b59b0ba1cba902bc15068c07c0e24922c8",
+      "document": ".ai-harness/work-items/ITER-CI-NODE-20260928/snapshots/1ddfeaad7afc463576bf9903587318b59b0ba1cba902bc15068c07c0e24922c8.json"
+    },
+    "baselineAt": "2026-09-28T05:44:52.085Z",
+    "ownedChanges": [
+      {
+        "path": ".ai-harness/tests/ci-matrix.test.mjs",
+        "before": null,
+        "after": "100644:d950c9811ef2745c404e614b770f3f70ce2fae5a"
+      },
+      {
+        "path": ".github/workflows/ai-harness.yml",
+        "before": "100644:5044d04473a6b24195961fd95d71d65a8b8b3454",
+        "after": "100644:956e4253cdea221aa8b5ff17534d48c4e971cc69"
+      },
+      {
+        "path": ".github/workflows/source-tests.yml",
+        "before": "100644:b5741bdb718afb5b2315ee53bba06bdb446f72f0",
+        "after": "100644:937957c85f1bb5d401b1123cab2f434a9795c59f"
+      }
+    ],
+    "planDigest": "e852c4fd9fc12b566af813a66254dbcfd848dbacb5afe8cabc7270cc68c7aff9",
+    "at": "2026-09-28T05:47:35.625Z",
+    "head": "211fc5fcd1d4da7e4277e2927ee93279a0e5a128"
+  },
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-09-28T05:44:51.773Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-09-28T05:44:51.886Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-09-28T05:44:52.271Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-09-28T05:45:45.453Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-09-28T05:45:45.544Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "VERIFYING",
+      "at": "2026-09-28T05:47:33.078Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "VERIFYING",
+      "to": "CODE_REVIEW",
+      "at": "2026-09-28T05:47:33.517Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "CODE_REVIEW",
+      "to": "READY_FOR_ACCEPTANCE",
+      "at": "2026-09-28T05:47:33.956Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "READY_FOR_ACCEPTANCE",
+      "to": "DONE",
+      "at": "2026-09-28T05:47:35.727Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-09-28T05:44:51.773Z",
+  "updatedAt": "2026-09-28T05:47:35.727Z"
+}

@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "ITER-CI-NODE-20260928",
+  "mode": "single",
+  "rationale": "一个纵向CI兼容性覆盖任务，单AI执行，静态回归保护现有入口",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "扩展Ubuntu和Windows的Node版本CI覆盖",
+      "module": "ci",
+      "status": "COMPLETED",
+      "attempt": 1,
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        ".github/workflows/ai-harness.yml",
+        ".github/workflows/source-tests.yml",
+        ".ai-harness/tests/ci-matrix.test.mjs"
+      ],
+      "verification": [
+        "node --test .ai-harness/tests/ci-matrix.test.mjs"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            "--test",
+            ".ai-harness/tests/ci-matrix.test.mjs"
+          ]
+        }
+      ],
+      "docsImpact": [
+        "N/A: 最低Node20+契约不变，仅扩展内部CI矩阵"
+      ],
+      "reviewBatch": "R1",
+      "risk": "medium",
+      "owner": "primary-ai",
+      "verificationStatus": "pass",
+      "reviewStatus": "pass",
+      "evidence": [
+        "5ace1b5e-f7af-46de-9ec0-3ca309bcde2b",
+        "684165aa-dc1d-434b-b656-3bd73604759b"
+      ],
+      "deferralApproval": null,
+      "verificationSource": {
+        "digest": "dac2b510cd9480f02731bb92b3af43cb654dc770da429b7bde28f92fb52d3d60",
+        "document": ".ai-harness/work-items/ITER-CI-NODE-20260928/snapshots/dac2b510cd9480f02731bb92b3af43cb654dc770da429b7bde28f92fb52d3d60.json"
+      },
+      "reviewSource": {
+        "digest": "dac2b510cd9480f02731bb92b3af43cb654dc770da429b7bde28f92fb52d3d60",
+        "document": ".ai-harness/work-items/ITER-CI-NODE-20260928/snapshots/dac2b510cd9480f02731bb92b3af43cb654dc770da429b7bde28f92fb52d3d60.json"
+      }
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "CI兼容覆盖",
+      "risk": "medium",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": false
+    }
+  ],
+  "createdAt": "2026-09-28T05:45:21.219Z",
+  "updatedAt": "2026-09-28T05:47:33.072Z"
+}

@@ -97,6 +97,48 @@ test("hidden judges accept all reference contracts and reject incomplete impleme
   }
 });
 
+test("hidden judge must keep host files outside the grading read scope",async()=>{
+  const outside=fileURLToPath(import.meta.url);
+  const candidate=`import { readFileSync } from "node:fs";
+export function parseCsv(){try{readFileSync(${JSON.stringify(outside)});return false;}catch(e){return e.code==="ERR_ACCESS_DENIED"||/Access to this API has been restricted/.test(String(e.message));}}
+`;
+  const task={...tasks[0],cases:[["host-read-restricted","assert.equal(f(),true);"]]};
+  const result=await gradeCandidate(task,candidate);
+  assert.equal(result.complete,true,JSON.stringify(result));
+  assert.equal(result.ok,true,JSON.stringify(result));
+});
+test("grading keeps host environment and arbitrary judge diagnostics out of persisted grade",async()=>{
+  const key="BENCHMARK_GRADE_CANARY",previous=process.env[key],canary="fixture-grading-canary";
+  const output=await mkdtemp(path.join(tmpdir(),"ai-harness-grade-boundary-test-"));
+  process.env[key]=canary;
+  try{
+    const envTask={...tasks[0],cases:[["env","assert.equal(f(),undefined);"]]};
+    const envGrade=await gradeCandidate(envTask,`export function parseCsv(){return process.env.${key};}`);
+    assert.equal(envGrade.ok,true,JSON.stringify(envGrade));
+
+    const failedTask={...tasks[0],cases:[["diagnostic","f();"]]};
+    const candidate=`export function parseCsv(){console.error(${JSON.stringify(canary)});throw new Error(${JSON.stringify(canary)});}`;
+    const row=await runCase({task:failedTask,group:groups("weak","strong")[0],sourceRoot,outputDirectory:path.join(output,"case"),
+      driver:async({root})=>{await writeFile(path.join(root,failedTask.entry),candidate);return {mode:"simulated",completed:true,final:{completed:true},durationMs:1,usage:null};}});
+    assert.equal(row.grade.complete,true);
+    assert.equal(row.grade.ok,false);
+    const result=JSON.parse(await readFile(path.join(output,"case","result.json"),"utf8"));
+    assert.equal(JSON.stringify(result.grade).includes(canary),false,"candidate stderr and exception text must not reach the persisted grade");
+    assert.equal(row.grade.cases[0].pass,false);
+    assert.equal(row.grade.cases[0].error.includes(canary),false);
+
+    const forged=parseGrade(`MARK${JSON.stringify({cases:[{id:"diagnostic",pass:false,error:canary,extra:canary}]})}`,
+      "MARK",["diagnostic"],1);
+    assert.equal(JSON.stringify(forged).includes(canary),false,"untrusted judge fields must not bypass normalization");
+    const fakeDenied=parseGrade('MARK{"cases":[{"id":"diagnostic","pass":false,"error":"ERR_ACCESS_DENIED"}]}',"MARK",["diagnostic"],1);
+    assert.equal(fakeDenied.cases[0].error,"Case failed","candidate-supplied codes must not be presented as trusted diagnostics");
+  }finally{
+    if(previous===undefined)delete process.env[key];else process.env[key]=previous;
+    assert.equal(path.dirname(path.resolve(output)),path.resolve(tmpdir()));
+    assert.ok(path.basename(output).startsWith("ai-harness-grade-boundary-test-"));
+    await rm(output,{recursive:true,force:true});
+  }
+});
 test("exit zero, missing or duplicate tests cannot impersonate a completed acceptance run",async()=>{
   assert.equal((await gradeCandidate(tasks[0],`process.exit(0);export function parseCsv(){return [];}`)).ok,false);
   assert.equal(parseGrade('MARK{"cases":[{"id":"one","pass":true}]}',"MARK",["one","two"],0).ok,false);

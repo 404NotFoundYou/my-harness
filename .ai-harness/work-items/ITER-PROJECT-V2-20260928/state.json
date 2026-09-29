@@ -1,0 +1,243 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 2,
+  "id": "ITER-PROJECT-V2-20260928",
+  "type": "ITERATION",
+  "title": "新增版本化project工程评测题集",
+  "status": "DONE",
+  "flags": [
+    "api"
+  ],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/iteration.md",
+    ".ai-harness/policies/api.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户本轮明确要求P3可逆本地实现；付费评测及Git交付未获授权"
+  },
+  "input": {
+    "references": [
+      "用户要求执行P3：扩展不同类型的development与holdout项目题；历史project审计必须保持可重现"
+    ],
+    "acceptance": [
+      "旧core与project计划、审计及预算不变；新增显式project-v2含两个development和一个holdout的多文件BUGFIX题，公开夹具/参考解/隐藏判定可在本地模拟完整审计"
+    ],
+    "nonGoals": [
+      "不修改旧project题集、不运行付费模型、不增加默认调用数、不修改用户既有实验目录"
+    ],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": null,
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "codex/optimization-p1-p3在211fc5f之上；P1 DONE、P2 ANSWERED；旧project一题且audit/validate协议直接以当前任务表复核历史，需要显式suite版本隔离；产品未有其他并发修改。"
+    ],
+    "completedAt": "2026-09-28T06:36:20.420Z",
+    "repository": {
+      "isGit": true,
+      "branch": "codex/optimization-p1-p3",
+      "commit": "211fc5fcd1d4da7e4277e2927ee93279a0e5a128",
+      "dirty": true,
+      "changedFiles": [
+        ".ai-harness/tests/ci-matrix.test.mjs",
+        ".github/workflows/ai-harness.yml",
+        ".github/workflows/source-tests.yml"
+      ],
+      "fingerprints": {},
+      "source": {
+        "digest": "2eacf1b38c95279b856c3dee11f71cda22254321e62ba118083f7f13a1f28d12",
+        "document": ".ai-harness/work-items/ITER-PROJECT-V2-20260928/snapshots/2eacf1b38c95279b856c3dee11f71cda22254321e62ba118083f7f13a1f28d12.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": ".ai-harness/work-items/ITER-PROJECT-V2-20260928/design.md",
+    "evidence": [
+      "审计依赖冻结任务集，采用新suite隔离以保护历史project/core，两个新BUGFIX题分别覆盖配置层叠和窗口归并"
+    ],
+    "completedAt": "2026-09-28T05:56:06.746Z"
+  },
+  "database": {
+    "impact": "none",
+    "status": "not-applicable",
+    "document": null,
+    "evidence": [
+      "评测临时Git项目与本地协议JSON，不涉及业务数据库或迁移"
+    ],
+    "completedAt": "2026-09-28T05:56:06.831Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/ITER-PROJECT-V2-20260928/plan.json",
+    "approved": true,
+    "approvalRef": "用户本轮P3本地实现授权；高风险改动仍须独立审查，不含付费评测或Git交付"
+  },
+  "verification": {
+    "status": "pass",
+    "evidence": [
+      "c3a6757c-3e97-423a-9c60-8fbeaaf450a4"
+    ],
+    "stages": [],
+    "source": {
+      "digest": "1e5009f558f2d156d4c221cb86b6e5e961ff2de7ba6b5a976feef57393c4d308",
+      "document": ".ai-harness/work-items/ITER-PROJECT-V2-20260928/snapshots/1e5009f558f2d156d4c221cb86b6e5e961ff2de7ba6b5a976feef57393c4d308.json"
+    }
+  },
+  "review": {
+    "status": "pass",
+    "evidence": [
+      "88389a44-4952-4a77-9719-0ff8f659b4c7"
+    ],
+    "independent": true,
+    "source": {
+      "digest": "1e5009f558f2d156d4c221cb86b6e5e961ff2de7ba6b5a976feef57393c4d308",
+      "document": ".ai-harness/work-items/ITER-PROJECT-V2-20260928/snapshots/1e5009f558f2d156d4c221cb86b6e5e961ff2de7ba6b5a976feef57393c4d308.json"
+    }
+  },
+  "acceptance": {
+    "status": "pass",
+    "evidence": [
+      "b9774d48-7026-42e5-b590-5ca210bf4c40"
+    ],
+    "source": {
+      "digest": "1e5009f558f2d156d4c221cb86b6e5e961ff2de7ba6b5a976feef57393c4d308",
+      "document": ".ai-harness/work-items/ITER-PROJECT-V2-20260928/snapshots/1e5009f558f2d156d4c221cb86b6e5e961ff2de7ba6b5a976feef57393c4d308.json"
+    }
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "pass",
+    "evidence": [
+      "bf34dd9c-7138-4691-ac89-c737aee5309e"
+    ]
+  },
+  "blocked": null,
+  "delivery": {
+    "source": {
+      "digest": "1e5009f558f2d156d4c221cb86b6e5e961ff2de7ba6b5a976feef57393c4d308",
+      "document": ".ai-harness/work-items/ITER-PROJECT-V2-20260928/snapshots/1e5009f558f2d156d4c221cb86b6e5e961ff2de7ba6b5a976feef57393c4d308.json"
+    },
+    "baseline": {
+      "digest": "2eacf1b38c95279b856c3dee11f71cda22254321e62ba118083f7f13a1f28d12",
+      "document": ".ai-harness/work-items/ITER-PROJECT-V2-20260928/snapshots/2eacf1b38c95279b856c3dee11f71cda22254321e62ba118083f7f13a1f28d12.json"
+    },
+    "baselineAt": "2026-09-28T06:36:20.420Z",
+    "ownedChanges": [
+      {
+        "path": "benchmarks/tests/project-v2.test.mjs",
+        "before": "100644:4ce9ccc83d7cd5d3d1fd7a576596b8a4d72b6182",
+        "after": "100644:f3dab29e9285ea8ca515e61c158a2e78e19fbef8"
+      }
+    ],
+    "planDigest": "7e0868dec1caad110071ea56c67ab0172e1a066769ada4dab9a798c8ac32a167",
+    "at": "2026-09-28T08:34:33.524Z",
+    "head": "211fc5fcd1d4da7e4277e2927ee93279a0e5a128"
+  },
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-09-28T05:49:59.515Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-09-28T05:49:59.633Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-09-28T05:50:00.044Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-09-28T05:56:24.930Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-09-28T05:56:25.010Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "VERIFYING",
+      "at": "2026-09-28T06:35:15.309Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "VERIFYING",
+      "to": "CODE_REVIEW",
+      "at": "2026-09-28T06:36:17.794Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "CODE_REVIEW",
+      "to": "READY_FOR_ACCEPTANCE",
+      "at": "2026-09-28T06:36:18.458Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "READY_FOR_ACCEPTANCE",
+      "to": "DONE",
+      "at": "2026-09-28T06:36:20.526Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "DONE",
+      "to": "IMPLEMENTING",
+      "at": "2026-09-28T08:28:32.326Z",
+      "reason": "交付审查发现本项测试文件中自身引入的机械冗余/排版问题；仅在原已批准写入范围修正并重新验证",
+      "action": "reopen",
+      "revision": 2
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "VERIFYING",
+      "at": "2026-09-28T08:34:02.606Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "VERIFYING",
+      "to": "CODE_REVIEW",
+      "at": "2026-09-28T08:34:30.960Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "CODE_REVIEW",
+      "to": "READY_FOR_ACCEPTANCE",
+      "at": "2026-09-28T08:34:31.618Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "READY_FOR_ACCEPTANCE",
+      "to": "DONE",
+      "at": "2026-09-28T08:34:33.629Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-09-28T05:49:59.515Z",
+  "updatedAt": "2026-09-28T08:34:33.629Z"
+}

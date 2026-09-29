@@ -119,9 +119,11 @@ export function parseGrade(output, marker, expectedIds, exitCode) {
   const lines = output.split(/\r?\n/).filter(line => line.startsWith(marker));
   let result;
   try { if (lines.length === 1) result = JSON.parse(lines[0].slice(marker.length)); } catch {}
-  const complete = Array.isArray(result?.cases) && JSON.stringify(result.cases.map(row => row.id)) === JSON.stringify(expectedIds) &&
-    result.cases.every(row => typeof row.pass === "boolean");
-  return { complete, ok: exitCode === 0 && complete && result.cases.every(row => row.pass), cases: complete ? result.cases : [], expectedCases: expectedIds.length };
+  const complete = Array.isArray(result?.cases) && result.cases.every(row => row && typeof row.id === "string" && typeof row.pass === "boolean") &&
+    JSON.stringify(result.cases.map(row => row.id)) === JSON.stringify(expectedIds);
+  const cases = complete ? result.cases.map(row => row.pass ? {id:row.id,pass:true} :
+    {id:row.id,pass:false,error:"Case failed"}) : [];
+  return { complete, ok: exitCode === 0 && complete && cases.every(row => row.pass), cases, expectedCases: expectedIds.length };
 }
 
 export async function gradeCandidate(task, implementation) {
@@ -150,15 +152,16 @@ export async function gradeCandidate(task, implementation) {
     }
     const code = `import assert from "node:assert/strict";\nimport { ${task.name} as f } from "./${task.entry}";\n` +
       `const tests=[${task.cases.map(([id, body]) => `{id:${JSON.stringify(id)},run:${task.writableFiles === undefined ? "" : "async "}()=>{${body}}}`).join(",")}];\n` +
-      `const cases=[];for(const t of tests){try{await t.run();cases.push({id:t.id,pass:true});}catch(e){cases.push({id:t.id,pass:false,error:String(e.stack||e)});}}\n` +
+      `const cases=[];for(const t of tests){try{await t.run();cases.push({id:t.id,pass:true});}catch{cases.push({id:t.id,pass:false,error:"Case failed"});}}\n` +
       `console.log(${JSON.stringify(marker)}+JSON.stringify({cases}));process.exitCode=cases.every(t=>t.pass)?0:1;\n`;
     await writeFile(path.join(root, "judge.mjs"), code);
-    const run = spawnSync(process.execPath, ["--experimental-permission", `--allow-fs-read=${root}`, path.join(root, "judge.mjs")], {
+    const permissionFlag = process.allowedNodeEnvironmentFlags.has("--permission") ? "--permission" : "--experimental-permission";
+    const run = spawnSync(process.execPath, [permissionFlag, `--allow-fs-read=${root}`, path.join(root, "judge.mjs")], {
       cwd: root, shell: false, windowsHide: true, encoding: "utf8", timeout: 5000, maxBuffer: 1024 * 1024,
-      env: { ...process.env, NODE_OPTIONS: "", NODE_TEST_CONTEXT: undefined },
+      env: {},
     });
     return { ...parseGrade(run.stdout || "", marker, task.cases.map(([id]) => id), run.status), exitCode: run.status,
-      timedOut: run.error?.code === "ETIMEDOUT", stderr: redact(run.stderr || ""), error: run.error ? redact(run.error.message) : null };
+      timedOut: run.error?.code === "ETIMEDOUT", stderr: run.stderr ? "Judge stderr omitted" : "", error: run.error ? "Judge process failed" : null };
   } finally { await cleanupSandbox(root); }
 }
 

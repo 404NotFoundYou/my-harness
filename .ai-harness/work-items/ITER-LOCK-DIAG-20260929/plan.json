@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "ITER-LOCK-DIAG-20260929",
+  "mode": "single",
+  "rationale": "只改 locking.test.mjs 的断言消息，不改 lock 实现、时序或成功条件",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "锁恢复竞争测试失败诊断",
+      "module": "compact",
+      "status": "COMPLETED",
+      "attempt": 1,
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        ".ai-harness/tests/locking.test.mjs"
+      ],
+      "verification": [
+        "node --test .ai-harness/tests/locking.test.mjs"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            "--test",
+            ".ai-harness/tests/locking.test.mjs"
+          ]
+        }
+      ],
+      "docsImpact": [
+        "N/A: 仅测试失败输出，现有功能文档不变"
+      ],
+      "reviewBatch": "R1",
+      "risk": "low",
+      "owner": "primary-ai",
+      "verificationStatus": "pass",
+      "reviewStatus": "pass",
+      "evidence": [
+        "a1ac3b55-323e-4546-864f-1c6883ccbc72",
+        "82419acf-ad36-4cce-b999-156b97e811f3"
+      ],
+      "deferralApproval": null,
+      "verificationSource": {
+        "digest": "e33dfb58302825a1e3845a2f366e6dbd948a979a69e28137a7fba91abab49f95",
+        "document": ".ai-harness/work-items/ITER-LOCK-DIAG-20260929/snapshots/e33dfb58302825a1e3845a2f366e6dbd948a979a69e28137a7fba91abab49f95.json"
+      },
+      "reviewSource": {
+        "digest": "e33dfb58302825a1e3845a2f366e6dbd948a979a69e28137a7fba91abab49f95",
+        "document": ".ai-harness/work-items/ITER-LOCK-DIAG-20260929/snapshots/e33dfb58302825a1e3845a2f366e6dbd948a979a69e28137a7fba91abab49f95.json"
+      }
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "锁恢复竞争测试失败诊断",
+      "risk": "low",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": false
+    }
+  ],
+  "createdAt": "2026-09-29T02:57:31.411Z",
+  "updatedAt": "2026-09-29T02:58:11.492Z"
+}

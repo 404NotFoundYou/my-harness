@@ -295,7 +295,7 @@ node .ai-harness/bin/harness.mjs record --id <ID> --kind analysis --status pass 
 node .ai-harness/bin/harness.mjs transition --id <ID> --to ANSWERED --json
 ```
 
-结论状态为 `PROVEN`、`INFERRED`、`PROPOSAL` 或 `UNKNOWN`。除 `UNKNOWN` 外必须提供至少一条文本证据或当前通过的命令 ID；`--command` 可重复。命令证据必须属于本分析项当前修订、通过 ANALYSIS 只读策略、退出码为 0、前后源码一致且没有同命令的随后失败。
+结论状态为 `PROVEN`、`INFERRED`、`PROPOSAL` 或 `UNKNOWN`。除 `UNKNOWN` 外必须提供至少一条文本证据或当前通过的命令 ID；`--command` 可重复。命令证据必须属于本分析项当前修订、通过 ANALYSIS 只读策略、退出码为 0、前后源码一致且没有同命令的随后失败。转入 `ANSWERED` 前会重新核对并保存当次捕获的源码快照：终态复核以此历史快照而非以后版本的源码判断命令是否有效；回答前源码漂移仍拒绝。旧记录缺该字段时，如基线与命令源码相同则使用基线，否则只能核验命令自身前后快照一致，不能再证明回答时的源码绑定，高风险使用需人工核验。不把历史事实解释为当前事实；本地JSON也不提供对有权改写全部记录者的防篡改签名。快照捕获与状态落盘之间不锁定外部写入，捕获时点才是该证据对应的源码时点。
 
 ### 验收项与检查对应
 

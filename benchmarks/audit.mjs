@@ -15,8 +15,8 @@ export async function auditExperiment(directory, { readEvidence } = {}) {
   assert.ok([1, 2, 3, 4].includes(protocol.schemaVersion));
   const extended = protocol.schemaVersion >= 2;
   const resumable=protocol.schemaVersion === 4;
-  const project = protocol.schemaVersion === 3||(resumable&&protocol.suite === "project");
-  if (project) assert.equal(protocol.suite,"project");
+  const project = protocol.schemaVersion === 3||(resumable&&["project","project-v2"].includes(protocol.suite));
+  if (project) assert.ok(protocol.schemaVersion === 3 ? protocol.suite === "project" : ["project","project-v2"].includes(protocol.suite));
   else assert.equal(protocol.suite,resumable?"core":undefined);
   const tasks=tasksForSuite(project?protocol.suite:"core");
   assert.ok(extended ? ["real", "simulated"].includes(protocol.mode) : protocol.mode === "real");

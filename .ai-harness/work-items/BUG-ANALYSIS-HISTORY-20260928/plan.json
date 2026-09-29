@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "BUG-ANALYSIS-HISTORY-20260928",
+  "mode": "single",
+  "rationale": "单个证据校验BUG及直接回归，高风险独立复核",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "修复终态分析历史审计且保留回答前门禁",
+      "module": "analysis-evidence",
+      "status": "COMPLETED",
+      "attempt": 2,
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        ".ai-harness/src/verification.mjs",
+        ".ai-harness/src/workflow.mjs",
+        ".ai-harness/tests/analysis-command.test.mjs",
+        "docs/guides/usage.md"
+      ],
+      "verification": [
+        "node --test .ai-harness/tests/analysis-command.test.mjs .ai-harness/tests/checker.test.mjs"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            "--test",
+            ".ai-harness/tests/analysis-command.test.mjs",
+            ".ai-harness/tests/checker.test.mjs"
+          ]
+        }
+      ],
+      "docsImpact": [
+        "docs/guides/usage.md"
+      ],
+      "reviewBatch": "R1",
+      "risk": "high",
+      "owner": "primary-ai",
+      "verificationStatus": "pass",
+      "reviewStatus": "pass",
+      "evidence": [
+        "ddfe0ed4-6492-41d5-9392-150cfe7e9d00",
+        "953a795f-fc87-4f87-a014-80c52ae9d21c"
+      ],
+      "deferralApproval": null,
+      "verificationSource": {
+        "digest": "1e5009f558f2d156d4c221cb86b6e5e961ff2de7ba6b5a976feef57393c4d308",
+        "document": ".ai-harness/work-items/BUG-ANALYSIS-HISTORY-20260928/snapshots/1e5009f558f2d156d4c221cb86b6e5e961ff2de7ba6b5a976feef57393c4d308.json"
+      },
+      "reviewSource": {
+        "digest": "1e5009f558f2d156d4c221cb86b6e5e961ff2de7ba6b5a976feef57393c4d308",
+        "document": ".ai-harness/work-items/BUG-ANALYSIS-HISTORY-20260928/snapshots/1e5009f558f2d156d4c221cb86b6e5e961ff2de7ba6b5a976feef57393c4d308.json"
+      }
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "终态分析证据完整性",
+      "risk": "high",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": true
+    }
+  ],
+  "createdAt": "2026-09-28T06:11:17.375Z",
+  "updatedAt": "2026-09-28T08:35:06.144Z",
+  "revision": 3
+}

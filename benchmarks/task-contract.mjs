@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import { tasks } from "./tasks.mjs";
 import { projectTasks } from "./project-tasks.mjs";
+import { projectTasksV2 } from "./project-tasks-v2.mjs";
 import { fileMatchesScope } from "../.ai-harness/src/validator.mjs";
 
 const hash = value => createHash("sha256").update(value).digest("hex");
@@ -26,9 +27,10 @@ export function taskManifest(task) {
 
 export function tasksForSuite(suite = "core") {
   if (suite === "core") return tasks;
-  if (suite !== "project") throw new Error("Invalid task suite");
-  for (const task of projectTasks) taskManifest(task);
-  return projectTasks;
+  if (!["project", "project-v2"].includes(suite)) throw new Error("Invalid task suite");
+  const selected = suite === "project" ? projectTasks : projectTasksV2;
+  for (const task of selected) taskManifest(task);
+  return selected;
 }
 
 export function projectWorkflowContract(task, records) {

@@ -49,6 +49,14 @@ project组的完整交付还要求：至少一个开发工作项，所有开发�
 node benchmarks/run.mjs --cli '<CLI路径>' --weak '<模型标识>' --suite project --comparison paired --repetitions 1 --out .ai-harness/work-items/<工作项>/project-comparison --dry-run
 ```
 
+新题集使用显式 `--suite project-v2`，原 `project` 的单题清单及历史协议/审计不变，默认 `core` 也不变。v2复用原 `archive-pagination`，另增 `config-layers`（development，配置层叠）与 `window-intervals`（holdout，半开区间归并/裁剪）；两个新题均为多文件 BUGFIX，有只读调用方、公共复现和各12项隐藏验收。配对、重复一次的计划由原2次变为6次模型会话，**仅显式选择v2时**生效；以下命令仅预览，不调用模型：
+
+```powershell
+node benchmarks/run.mjs --cli '<CLI路径>' --weak '<模型标识>' --suite project-v2 --comparison paired --repetitions 1 --out .ai-harness/work-items/<工作项>/project-v2-comparison --dry-run
+```
+
+这些仍是合成夹具，development与holdout的划分只限制调参范围；本地参考解、模拟实验及审计通过不代表任何真实模型收益。正式对照须另行取得模型费用和环境授权，且不可将新增holdout结果用于调参。
+
 v3在协议中冻结题目入口、导出、类型和精确可写清单，并保留源码、题目、判定器和预算哈希。各试次保存 `candidate-files.json`，逐文件记录present正文及原字节SHA-256，或missing/invalid状态；result保存规范化manifest的整体哈希。路径父组件和文件都不能经过链接/junction，无效UTF-8拒绝，BOM及换行字节保留；非预期IO错误中断并保留不完整实验。候选必须恰好覆盖声明文件，不接受只读文件或额外路径。
 
 判定器从冻结题目恢复只读依赖，再放入本次候选；可写基线实现不会进入判定目录，缺失候选不会回退。候选缺失、非普通文件或非法编码均判scope/grade失败。参与者修改原测试或固定依赖同样scope失败，判定仍使用原文件。新审计检查全部manifest、文件哈希、题目清单和原始协议/摘要/统计；旧v1/v2及candidate.mjs格式保持。审计验证记录一致性，不构成外部可信执行证明或重新执行隐藏判定。
@@ -124,6 +132,6 @@ node benchmarks/run.mjs --cli '<CLI实际文件路径>' --weak '<原模型标识
 
 持久化协议按字段递归脱敏并保持 JSON 结构，最终结果使用相同规范；无法解析的行保留明确失败标记和数量，原始敏感正文不落盘。审计使用这份结构化脱敏记录，不宣称逐字保存客户端原始字节流。
 
-隐藏判定在 Node 权限模式下仅开放判定目录读取，有5秒超时；必须收到随机完成标记及完整、无重复的用例ID集合。单纯退出0、提前退出或缺失日志都不算通过。这是功能实验，不是抵抗恶意参试者的远程安全隔离系统。
+隐藏判定在 Node 权限模式下仅开放判定目录读取，有5秒超时；评分子进程不继承宿主环境变量。`result.json.grade` 只保留用例ID/通过状态及通用失败标识，不持久化评分子进程的候选异常栈、原始stderr或启动错误正文；失败细节需在无敏感信息的受控环境单独排查。必须收到随机完成标记及完整、无重复的用例ID集合。单纯退出0、提前退出或缺失日志都不算通过。这是功能实验，不是抵抗恶意参试者的远程安全隔离系统；`result.json.run`、候选源码及其他实验产物仍按原流程保存，不能由本改动推断整个结果文件均不含候选自行输出的敏感内容。
 
 `tasks.mjs` 中参考解和隐藏用例只供框架作者验证判定器；实验前冻结任务，不能按某组输出修改验收。修改辅助后使用相同任务和预算重新跑全部三组，开发集失败用于调整，留出题结果不用于调参。小样本只说明这些题在本次配置下的表现，不能证明通用模型能力等价。

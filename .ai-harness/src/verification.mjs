@@ -80,11 +80,12 @@ export function hasFailedReview(events, item, task = null) {
 
 export async function assertAnalysisCommandEvidence(root, item, commandId, { snapshot = null, events = null } = {}) {
   invariant(item.type === "ANALYSIS" && ["ANALYZING", "ANSWERED"].includes(item.status), "ANALYSIS_COMMAND_WRONG_STAGE", "分析命令证据只属于 ANALYZING 或 ANSWERED 工作项。" );
-  const current = snapshot || await sourceSnapshot(root);
   const evidence = events || await readEvidence(root, item.id);
   const index = evidence.findIndex((candidate) => candidate.id === commandId);
   const event = evidence[index];
   const command = event?.command;
+  const reference = item.analysis.source || (item.baseline.repository?.source?.digest === command?.source?.digest ? item.baseline.repository.source : command?.source);
+  const current = item.status === "ANSWERED" ? await loadSnapshot(root, reference) : snapshot || await sourceSnapshot(root);
   const subsequentFailure = command && evidence.slice(index + 1).some((later) => later.kind === "command" && later.status !== "pass" &&
     (later.revision || 1) === (item.revision || 1) && !later.taskId && later.command && commandEvidenceKey(later.command) === commandEvidenceKey(command));
   invariant(event?.kind === "command" && event.workItemId === item.id && !event.taskId && event.status === "pass" &&

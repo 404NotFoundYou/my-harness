@@ -1,0 +1,158 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 1,
+  "id": "BUG-ANALYSIS-HISTORY-20260928",
+  "type": "BUGFIX",
+  "title": "已回答分析命令在后续源码变化后仍可审计",
+  "status": "IMPLEMENTING",
+  "flags": [
+    "api"
+  ],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/bugfix.md",
+    ".ai-harness/policies/verification.md",
+    ".ai-harness/policies/api.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户授权执行P2/P3；修复其检查闭环所必需的本地BUG，不含Git交付"
+  },
+  "input": {
+    "references": [
+      "P2 ANSWERED后P3源码变化导致当前check --json报ANALYSIS命令证据无效，阻止本次交付门禁"
+    ],
+    "acceptance": [
+      "ANALYZING时命令与当前源码不一致仍拒绝；ANSWERED后新提交不使历史命令失效，但命令前后快照不一致、非allow或失败仍拒绝；旧控制面可通过check"
+    ],
+    "nonGoals": [
+      "不改未终结分析门禁、不放宽失败或篡改证据、不重构状态机"
+    ],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": {
+    "actual": "ANALYSIS-CONTROL-PERF-20260928在当前check中报告ANSWERED命令证据失效",
+    "expected": "历史ANSWERED结论应审计执行时及回答时的证据，不受之后合法源码版本变化影响",
+    "reproduction": "当前隔离工作树执行node .ai-harness/bin/harness.mjs check --json，报ANSWERED分析命令证据错误；对应旧分析命令本身通过且前后快照一致"
+  },
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "codex/optimization-p1-p3当前P1 DONE、P2 ANSWERED、P3 IMPLEMENTING；非CI check因P2终态命令被P3源码变化判陈旧退出1；只改Runtime分析证据规则及专门测试。"
+    ],
+    "completedAt": "2026-09-28T06:10:50.470Z",
+    "repository": {
+      "isGit": true,
+      "branch": "codex/optimization-p1-p3",
+      "commit": "211fc5fcd1d4da7e4277e2927ee93279a0e5a128",
+      "dirty": true,
+      "changedFiles": [
+        ".ai-harness/tests/ci-matrix.test.mjs",
+        ".github/workflows/ai-harness.yml",
+        ".github/workflows/source-tests.yml",
+        "benchmarks/README.md",
+        "benchmarks/audit-trial.mjs",
+        "benchmarks/audit.mjs",
+        "benchmarks/project-tasks-v2.mjs",
+        "benchmarks/task-contract.mjs",
+        "benchmarks/tests/project-v2.test.mjs"
+      ],
+      "fingerprints": {},
+      "source": {
+        "digest": "a74ceb5a11dd603c2ec5646bc84411335b226497b9a30764d3a3e4442442bdd1",
+        "document": ".ai-harness/work-items/BUG-ANALYSIS-HISTORY-20260928/snapshots/a74ceb5a11dd603c2ec5646bc84411335b226497b9a30764d3a3e4442442bdd1.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": ".ai-harness/work-items/BUG-ANALYSIS-HISTORY-20260928/design.md",
+    "evidence": [
+      "区分回答前的当前源码门禁与已回答后历史快照审计，保留原所有失败/白名单门禁"
+    ],
+    "completedAt": "2026-09-28T06:11:17.210Z"
+  },
+  "database": {
+    "impact": "none",
+    "status": "not-applicable",
+    "document": null,
+    "evidence": [
+      "只改分析命令证据核验及测试，不涉及数据库"
+    ],
+    "completedAt": "2026-09-28T06:11:17.295Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/BUG-ANALYSIS-HISTORY-20260928/plan.json",
+    "approved": true,
+    "approvalRef": "用户P2/P3本地实现授权及门禁阻塞，仍需独立审查"
+  },
+  "verification": {
+    "status": "pending",
+    "evidence": [],
+    "stages": []
+  },
+  "review": {
+    "status": "pending",
+    "evidence": [],
+    "independent": false
+  },
+  "acceptance": {
+    "status": "pending",
+    "evidence": []
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "pending",
+    "evidence": []
+  },
+  "blocked": null,
+  "delivery": null,
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-09-28T06:10:50.178Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-09-28T06:10:50.284Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-09-28T06:10:50.705Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-09-28T06:11:17.717Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-09-28T06:11:17.800Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-09-28T06:10:50.178Z",
+  "updatedAt": "2026-09-28T06:25:21.935Z"
+}
