@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "BUG-NODE24-GRADER-20260928",
+  "mode": "single",
+  "rationale": "单纵向安全兼容BUG，评分器与直接反例测试一并验证，高风险独立审查",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "选择当前Node支持的评分权限标志并拒绝越界读取",
+      "module": "benchmarks",
+      "status": "COMPLETED",
+      "attempt": 1,
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        "benchmarks/runner.mjs",
+        "benchmarks/tests/runner.test.mjs"
+      ],
+      "verification": [
+        "node --test benchmarks/tests/multifile.test.mjs benchmarks/tests/project-v2.test.mjs benchmarks/tests/report.test.mjs benchmarks/tests/resume.test.mjs benchmarks/tests/runner.test.mjs benchmarks/tests/spec-guidance.test.mjs benchmarks/tests/status.test.mjs"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            "--test",
+            "benchmarks/tests/multifile.test.mjs",
+            "benchmarks/tests/project-v2.test.mjs",
+            "benchmarks/tests/report.test.mjs",
+            "benchmarks/tests/resume.test.mjs",
+            "benchmarks/tests/runner.test.mjs",
+            "benchmarks/tests/spec-guidance.test.mjs",
+            "benchmarks/tests/status.test.mjs"
+          ]
+        }
+      ],
+      "docsImpact": [
+        "N/A: 恢复已声明Node20+与新增Node24 CI兼容，不更改使用命令和题目契约"
+      ],
+      "reviewBatch": "R1",
+      "risk": "high",
+      "owner": "primary-ai",
+      "verificationStatus": "pass",
+      "reviewStatus": "pass",
+      "evidence": [
+        "0a951d05-5338-40d7-bdd9-e3ccfc22a636",
+        "dc4ca734-47d6-4dfc-8b97-409136888a0b"
+      ],
+      "deferralApproval": null,
+      "verificationSource": {
+        "digest": "2cd2db49e240a627c7f9493f8053b8726a188c260356558f7bac39664790c9fe",
+        "document": ".ai-harness/work-items/BUG-NODE24-GRADER-20260928/snapshots/2cd2db49e240a627c7f9493f8053b8726a188c260356558f7bac39664790c9fe.json"
+      },
+      "reviewSource": {
+        "digest": "2cd2db49e240a627c7f9493f8053b8726a188c260356558f7bac39664790c9fe",
+        "document": ".ai-harness/work-items/BUG-NODE24-GRADER-20260928/snapshots/2cd2db49e240a627c7f9493f8053b8726a188c260356558f7bac39664790c9fe.json"
+      }
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "Node版本权限隔离兼容",
+      "risk": "high",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": true
+    }
+  ],
+  "createdAt": "2026-09-28T09:12:21.712Z",
+  "updatedAt": "2026-09-29T00:33:29.204Z"
+}

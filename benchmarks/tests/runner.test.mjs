@@ -97,6 +97,17 @@ test("hidden judges accept all reference contracts and reject incomplete impleme
   }
 });
 
+test("hidden judge must keep host files outside the grading read scope",async()=>{
+  const outside=fileURLToPath(import.meta.url);
+  const candidate=`import { readFileSync } from "node:fs";
+export function parseCsv(text){readFileSync(${JSON.stringify(outside)});return [];}
+`;
+  const result=await gradeCandidate(tasks[0],candidate);
+  assert.equal(result.complete,true,JSON.stringify(result));
+  assert.equal(result.ok,false);
+  assert.ok(result.cases.some(row=>/ERR_ACCESS_DENIED|Access to this API has been restricted/.test(row.error||"")),JSON.stringify(result));
+});
+
 test("exit zero, missing or duplicate tests cannot impersonate a completed acceptance run",async()=>{
   assert.equal((await gradeCandidate(tasks[0],`process.exit(0);export function parseCsv(){return [];}`)).ok,false);
   assert.equal(parseGrade('MARK{"cases":[{"id":"one","pass":true}]}',"MARK",["one","two"],0).ok,false);

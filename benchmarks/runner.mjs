@@ -153,7 +153,8 @@ export async function gradeCandidate(task, implementation) {
       `const cases=[];for(const t of tests){try{await t.run();cases.push({id:t.id,pass:true});}catch(e){cases.push({id:t.id,pass:false,error:String(e.stack||e)});}}\n` +
       `console.log(${JSON.stringify(marker)}+JSON.stringify({cases}));process.exitCode=cases.every(t=>t.pass)?0:1;\n`;
     await writeFile(path.join(root, "judge.mjs"), code);
-    const run = spawnSync(process.execPath, ["--experimental-permission", `--allow-fs-read=${root}`, path.join(root, "judge.mjs")], {
+    const permissionFlag = process.allowedNodeEnvironmentFlags.has("--permission") ? "--permission" : "--experimental-permission";
+    const run = spawnSync(process.execPath, [permissionFlag, `--allow-fs-read=${root}`, path.join(root, "judge.mjs")], {
       cwd: root, shell: false, windowsHide: true, encoding: "utf8", timeout: 5000, maxBuffer: 1024 * 1024,
       env: { ...process.env, NODE_OPTIONS: "", NODE_TEST_CONTEXT: undefined },
     });

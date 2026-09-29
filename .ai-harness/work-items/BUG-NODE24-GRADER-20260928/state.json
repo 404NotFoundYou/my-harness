@@ -1,0 +1,277 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 1,
+  "id": "BUG-NODE24-GRADER-20260928",
+  "type": "BUGFIX",
+  "title": "修复Node24评测判定器权限标志兼容",
+  "status": "DONE",
+  "flags": [
+    "api"
+  ],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/bugfix.md",
+    ".ai-harness/policies/verification.md",
+    ".ai-harness/policies/api.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户明确授权此分支提交推送并核对远端CI；本修复仅闭环由新增Node24矩阵暴露的失败，另保留独立高风险审查"
+  },
+  "input": {
+    "references": [
+      "推送ee14f32后Harness source tests的Ubuntu Node24 benchmark step失败；本地Node24.15.0同套件可复现bad option: --experimental-permission"
+    ],
+    "acceptance": [
+      "Node24在不关闭权限模型的前提下通过判定器参考解且拒绝读取评分沙箱外文件；Node22行为保持；benchmark全量当前本机22/24通过、最终CI所有矩阵真实通过"
+    ],
+    "nonGoals": [
+      "不关闭Node权限模型、不扩大评分文件读写范围、不改变题目/模型预算、不运行付费模型、不改写已推送历史或合并main"
+    ],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": {
+    "actual": "benchmarks/runner.mjs固定传--experimental-permission，Node24子进程退出9且判定器返回complete:false",
+    "expected": "按当前Node支持的权限模型启动评分子进程，仅允许读取评分临时根；旧Node20仍兼容实验标志",
+    "reproduction": "本地C:/Program Files/nodejs/node.exe v24.15.0执行benchmark test出现bad option: --experimental-permission；GitHub run 36400758519 Ubuntu24 benchmark step failure，其日志API403不可核实内部错误"
+  },
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "codex/optimization-p1-p3@ee14f32干净；Node22现有CI benchmark通过、Node24本机test因--experimental-permission不支持失败；Ubuntu24 CI benchmark step失败、其他Node20/22 Runtime矩阵通过。仅本分支修复，不触及main。"
+    ],
+    "completedAt": "2026-09-28T09:10:32.965Z",
+    "repository": {
+      "isGit": true,
+      "branch": "codex/optimization-p1-p3",
+      "commit": "ee14f320a11ab74dff1a80e3e5db7261f0365a44",
+      "dirty": false,
+      "changedFiles": [],
+      "fingerprints": {},
+      "source": {
+        "digest": "1e5009f558f2d156d4c221cb86b6e5e961ff2de7ba6b5a976feef57393c4d308",
+        "document": ".ai-harness/work-items/BUG-NODE24-GRADER-20260928/snapshots/1e5009f558f2d156d4c221cb86b6e5e961ff2de7ba6b5a976feef57393c4d308.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": ".ai-harness/work-items/BUG-NODE24-GRADER-20260928/design.md",
+    "evidence": [
+      "按实际Node能力选新旧权限标志而不撤销评分沙箱；参考解与越界读取反例验证意图"
+    ],
+    "completedAt": "2026-09-28T09:12:21.533Z"
+  },
+  "database": {
+    "impact": "none",
+    "status": "not-applicable",
+    "document": null,
+    "evidence": [
+      "仅评分子进程启动参数与测试，无Schema/持久化/查询影响"
+    ],
+    "completedAt": "2026-09-28T09:12:21.624Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/BUG-NODE24-GRADER-20260928/plan.json",
+    "approved": true,
+    "approvalRef": "用户已授权此分支交付及CI核对；本BUG是Node24 CI失败的有界必要修复，独立复核仍必需"
+  },
+  "verification": {
+    "status": "pass",
+    "evidence": [
+      "4b63c947-6aaa-476d-8817-885be128ff53",
+      "d67d5e0a-d56d-4d0d-82d3-a7f89c63bd20",
+      "2b219b0c-5227-4b08-827e-a3830fad5086",
+      "add30f67-f479-4c1b-811c-d7487d4e948e"
+    ],
+    "stages": [
+      {
+        "stage": "static",
+        "status": "pass",
+        "evidence": [
+          "4b63c947-6aaa-476d-8817-885be128ff53"
+        ],
+        "command": null,
+        "revision": 1,
+        "source": {
+          "digest": "2cd2db49e240a627c7f9493f8053b8726a188c260356558f7bac39664790c9fe",
+          "document": ".ai-harness/work-items/BUG-NODE24-GRADER-20260928/snapshots/2cd2db49e240a627c7f9493f8053b8726a188c260356558f7bac39664790c9fe.json"
+        },
+        "planDigest": "8204ac50fe9e52774a16882621bb2877ae7197fa5db4a9e5e7c1a212d0e1923b"
+      },
+      {
+        "stage": "sandbox",
+        "status": "pass",
+        "evidence": [
+          "d67d5e0a-d56d-4d0d-82d3-a7f89c63bd20"
+        ],
+        "command": null,
+        "revision": 1,
+        "source": {
+          "digest": "2cd2db49e240a627c7f9493f8053b8726a188c260356558f7bac39664790c9fe",
+          "document": ".ai-harness/work-items/BUG-NODE24-GRADER-20260928/snapshots/2cd2db49e240a627c7f9493f8053b8726a188c260356558f7bac39664790c9fe.json"
+        },
+        "planDigest": "8204ac50fe9e52774a16882621bb2877ae7197fa5db4a9e5e7c1a212d0e1923b"
+      },
+      {
+        "stage": "reproduction",
+        "status": "pass",
+        "evidence": [
+          "2b219b0c-5227-4b08-827e-a3830fad5086"
+        ],
+        "command": "3878d1fd-33a0-45e1-8ad2-6febd8b77c68",
+        "revision": 1,
+        "source": {
+          "digest": "2cd2db49e240a627c7f9493f8053b8726a188c260356558f7bac39664790c9fe",
+          "document": ".ai-harness/work-items/BUG-NODE24-GRADER-20260928/snapshots/2cd2db49e240a627c7f9493f8053b8726a188c260356558f7bac39664790c9fe.json"
+        },
+        "planDigest": "8204ac50fe9e52774a16882621bb2877ae7197fa5db4a9e5e7c1a212d0e1923b"
+      },
+      {
+        "stage": "regression",
+        "status": "pass",
+        "evidence": [
+          "add30f67-f479-4c1b-811c-d7487d4e948e"
+        ],
+        "command": "3878d1fd-33a0-45e1-8ad2-6febd8b77c68",
+        "revision": 1,
+        "source": {
+          "digest": "2cd2db49e240a627c7f9493f8053b8726a188c260356558f7bac39664790c9fe",
+          "document": ".ai-harness/work-items/BUG-NODE24-GRADER-20260928/snapshots/2cd2db49e240a627c7f9493f8053b8726a188c260356558f7bac39664790c9fe.json"
+        },
+        "planDigest": "8204ac50fe9e52774a16882621bb2877ae7197fa5db4a9e5e7c1a212d0e1923b"
+      }
+    ],
+    "source": {
+      "digest": "2cd2db49e240a627c7f9493f8053b8726a188c260356558f7bac39664790c9fe",
+      "document": ".ai-harness/work-items/BUG-NODE24-GRADER-20260928/snapshots/2cd2db49e240a627c7f9493f8053b8726a188c260356558f7bac39664790c9fe.json"
+    }
+  },
+  "review": {
+    "status": "pass",
+    "evidence": [
+      "e49908ae-de4c-4073-9c97-640a20393b0b"
+    ],
+    "independent": true,
+    "source": {
+      "digest": "2cd2db49e240a627c7f9493f8053b8726a188c260356558f7bac39664790c9fe",
+      "document": ".ai-harness/work-items/BUG-NODE24-GRADER-20260928/snapshots/2cd2db49e240a627c7f9493f8053b8726a188c260356558f7bac39664790c9fe.json"
+    }
+  },
+  "acceptance": {
+    "status": "pass",
+    "evidence": [
+      "0fb9cf46-1d06-4b96-b25b-71db4bc292d0"
+    ],
+    "source": {
+      "digest": "2cd2db49e240a627c7f9493f8053b8726a188c260356558f7bac39664790c9fe",
+      "document": ".ai-harness/work-items/BUG-NODE24-GRADER-20260928/snapshots/2cd2db49e240a627c7f9493f8053b8726a188c260356558f7bac39664790c9fe.json"
+    }
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "not-applicable",
+    "evidence": [
+      "b563df4e-2962-4839-971b-c7d04fa74aab"
+    ]
+  },
+  "blocked": null,
+  "delivery": {
+    "source": {
+      "digest": "2cd2db49e240a627c7f9493f8053b8726a188c260356558f7bac39664790c9fe",
+      "document": ".ai-harness/work-items/BUG-NODE24-GRADER-20260928/snapshots/2cd2db49e240a627c7f9493f8053b8726a188c260356558f7bac39664790c9fe.json"
+    },
+    "baseline": {
+      "digest": "1e5009f558f2d156d4c221cb86b6e5e961ff2de7ba6b5a976feef57393c4d308",
+      "document": ".ai-harness/work-items/BUG-NODE24-GRADER-20260928/snapshots/1e5009f558f2d156d4c221cb86b6e5e961ff2de7ba6b5a976feef57393c4d308.json"
+    },
+    "baselineAt": "2026-09-28T09:10:32.965Z",
+    "ownedChanges": [
+      {
+        "path": "benchmarks/runner.mjs",
+        "before": "100644:c2ad12b9e0343244726621fd5b29fced672377ce",
+        "after": "100644:481c2ae1ee53171732a0673a4fe8b51a40cc101f"
+      },
+      {
+        "path": "benchmarks/tests/runner.test.mjs",
+        "before": "100644:8fac8d24044bcd3624232409c1ce40fd8fcfaf9a",
+        "after": "100644:dc92d6ddbb507bec3102dbd27e01cb404920a034"
+      }
+    ],
+    "planDigest": "8204ac50fe9e52774a16882621bb2877ae7197fa5db4a9e5e7c1a212d0e1923b",
+    "at": "2026-09-29T00:35:07.484Z",
+    "head": "ee14f320a11ab74dff1a80e3e5db7261f0365a44"
+  },
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-09-28T09:10:32.639Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-09-28T09:10:32.773Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-09-28T09:10:33.132Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-09-28T09:12:22.071Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-09-28T09:12:22.160Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "VERIFYING",
+      "at": "2026-09-29T00:33:29.284Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "VERIFYING",
+      "to": "CODE_REVIEW",
+      "at": "2026-09-29T00:35:05.020Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "CODE_REVIEW",
+      "to": "READY_FOR_ACCEPTANCE",
+      "at": "2026-09-29T00:35:05.666Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "READY_FOR_ACCEPTANCE",
+      "to": "DONE",
+      "at": "2026-09-29T00:35:07.587Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-09-28T09:10:32.639Z",
+  "updatedAt": "2026-09-29T00:35:07.587Z"
+}
