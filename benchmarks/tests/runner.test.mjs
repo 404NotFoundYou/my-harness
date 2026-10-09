@@ -293,12 +293,14 @@ test("repeated paired trials preserve independent outputs and remain explicitly 
     const protocol = JSON.parse(await readFile(path.join(outputDirectory, "protocol.json"), "utf8"));
     // Preserve explicit v2 compatibility coverage; v4 ledger checks have their own tests.
     protocol.schemaVersion=2;
+    delete protocol.summaryVersion;
     delete protocol.suite;
     delete protocol.driverIdentity;
     protocol.mode = "real";
     await writeFile(path.join(outputDirectory, "protocol.json"), JSON.stringify(protocol));
     const summary = JSON.parse(await readFile(path.join(outputDirectory, "summary.json"), "utf8"));
     summary.mode = "real";
+    delete summary.summaryVersion;
     await writeFile(path.join(outputDirectory, "summary.json"), JSON.stringify(summary));
     for (const entry of plan.schedule) {
       const folder = path.join(outputDirectory, entry.directory);
@@ -395,6 +397,11 @@ test("timing categories merge overlapping intervals and statistics retain unknow
   assert.deepEqual(timing.summarize(20).categories.verification, { calls: 2, activeMs: 15 });
   const base = { mode: "simulated", group: "weak-baseline", grade: { ok: true }, scope: { ok: true }, success: true, run: { completed: true, durationMs: 10, usage: null } };
   const rows = [base, { ...base, success: false, run: { completed: false, timedOut: true, durationMs: 30, usage: null } }, { ...base, run: { completed: true, durationMs: undefined, usage: null } }];
+  assert.equal(summarize(rows, { extended: true })[0].durationMs, null, "a missing trial duration cannot support a group total");
+  assert.equal(summarize(rows, { extended: true, legacyDuration: true })[0].durationMs, 40, "archived summaries retain their original aggregation");
+  assert.equal(summarize([{ ...base, run: { ...base.run, durationMs: 0 } }])[0].durationMs, 0, "an observed zero must not become unknown");
+  const huge = { ...base, run: { ...base.run, durationMs: 1e308 } };
+  assert.equal(summarize([huge, huge])[0].durationMs, null, "finite samples whose sum overflows cannot support a numeric total");
   const statistics = summarize(rows, { extended: true })[0].statistics;
   assert.deepEqual(statistics.latency, { observed: 2, unknown: 1, medianMs: 20, p95Ms: 29 });
   assert.equal(statistics.fullDelivery.rate, 2 / 3);

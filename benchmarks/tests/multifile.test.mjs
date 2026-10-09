@@ -248,6 +248,8 @@ test("a simulated project experiment completes real BUGFIX gates and audits ever
     const realProtocol=JSON.parse(originalProtocol);
     // Keep the archived v3 protocol audit independent of v4 resume state.
     realProtocol.schemaVersion=3;
+    delete realProtocol.summaryVersion;
+    delete savedSummary.summaryVersion;
     delete realProtocol.driverIdentity;
     realProtocol.mode="real";
     await writeFile(protocolPath,JSON.stringify(realProtocol));

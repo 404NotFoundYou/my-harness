@@ -15,6 +15,8 @@ export async function auditExperiment(directory, { readEvidence } = {}) {
   assert.ok([1, 2, 3, 4].includes(protocol.schemaVersion));
   const extended = protocol.schemaVersion >= 2;
   const resumable=protocol.schemaVersion === 4;
+  assert.ok(protocol.summaryVersion===undefined||(resumable&&protocol.summaryVersion===2),"Invalid summary version");
+  assert.equal(summary.summaryVersion,protocol.summaryVersion,"Summary accounting version differs from frozen protocol");
   const project = protocol.schemaVersion === 3||(resumable&&["project","project-v2"].includes(protocol.suite));
   if (project) assert.ok(protocol.schemaVersion === 3 ? protocol.suite === "project" : ["project","project-v2"].includes(protocol.suite));
   else assert.equal(protocol.suite,resumable?"core":undefined);
@@ -49,7 +51,7 @@ export async function auditExperiment(directory, { readEvidence } = {}) {
     assert.deepEqual(summary.results.map(row => [row.taskId, row.group, row.trial]).sort(), schedule.map(row => [row.taskId, row.group, row.trial]).sort());
     assert.deepEqual([...summary.results].sort((a, b) => key(a).localeCompare(key(b))), rows.map(row => ({ taskId: row.taskId, group: row.group, trial: row.trial, success: row.success, functionalPassed: row.grade.ok })).sort((a, b) => key(a).localeCompare(key(b))));
   }
-  const expected = summarize(rows, { extended }).sort((a,b)=>a.group.localeCompare(b.group));
+  const expected = summarize(rows, { extended, legacyDuration:protocol.summaryVersion!==2 }).sort((a,b)=>a.group.localeCompare(b.group));
   assert.deepEqual([...summary.groups].sort((a,b)=>a.group.localeCompare(b.group)), expected);
   if(resumable){
     const recovered=await readExecution(directory,protocol,{readEvidence});
