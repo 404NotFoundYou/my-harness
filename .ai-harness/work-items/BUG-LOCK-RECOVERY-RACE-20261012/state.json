@@ -1,0 +1,173 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 1,
+  "id": "BUG-LOCK-RECOVERY-RACE-20261012",
+  "type": "BUGFIX",
+  "title": "避免并发恢复旧锁时双重认领",
+  "status": "VERIFYING",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/bugfix.md",
+    ".ai-harness/policies/verification.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户本轮明确要求按建议在 CI 升级合并后单独修复锁竞态，并授权独立子代理复核高风险改动"
+  },
+  "input": {
+    "references": [
+      "用户授权单独修复；PR #6 草稿首轮 Windows22 source-tests 的 locking.test.mjs 第一个用例失败，GitHub job 114629970351"
+    ],
+    "acceptance": [
+      "同一失活锁的并发恢复恰好一个成功且恢复操作至多执行一次；失败竞争者明确报冲突，不会清理赢家或误释放新锁",
+      "中断认领、活锁、异机锁与旧格式锁的现有拒绝和恢复语义保持；最小复现红转绿及相关回归真实通过"
+    ],
+    "nonGoals": [],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": {
+    "actual": "两次 recoverLock(lock, owner.token) 并发时曾同时以 ENOENT 失败，原测试断言 0 !== 1；一方清理找不到认领文件，另一方移动锁目录失败",
+    "expected": "唯一恢复者完成动作并释放旧锁；竞争者不执行动作且明确识别锁已变化",
+    "reproduction": "Windows22 GitHub Actions job 114629970351；node --test .ai-harness/tests/locking.test.mjs 的 dead owners can be recovered once ... 用例，需再补可稳定暴露该交错的测试"
+  },
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "branch codex/lock-recovery-race-20261012 基于 main@edf2df8；现有未跟踪实验资料不改；主分支AI Harness与source tests矩阵全绿，但PR#6草稿首轮Windows22在旧locking.test并发恢复失败。已读取locking.mjs、workflow.mjs和benchmark experiment调用方及相关测试。"
+    ],
+    "completedAt": "2026-10-12T02:35:51.519Z",
+    "repository": {
+      "isGit": true,
+      "branch": "codex/lock-recovery-race-20261012",
+      "commit": "edf2df895671f907334f880448136b90f59e6177",
+      "dirty": false,
+      "changedFiles": [],
+      "fingerprints": {},
+      "source": {
+        "digest": "27d40ba537f9227a0981d724b9e2535aec2a6e52a8e79067746a31c06c9b8ad6",
+        "document": ".ai-harness/work-items/BUG-LOCK-RECOVERY-RACE-20261012/snapshots/27d40ba537f9227a0981d724b9e2535aec2a6e52a8e79067746a31c06c9b8ad6.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": ".ai-harness/work-items/BUG-LOCK-RECOVERY-RACE-20261012/solution.md",
+    "evidence": [
+      "结合PR#6 Windows22失败日志、locking.mjs认领/释放路径、workflow和benchmark直接调用方及现有中断恢复测试，限定本轮同进程竞态修复并显式标记跨进程未知边界。"
+    ],
+    "completedAt": "2026-10-12T02:36:50.651Z"
+  },
+  "database": {
+    "impact": "none",
+    "status": "not-applicable",
+    "document": null,
+    "evidence": [
+      "只更改运行时临时锁的同进程竞争保护与回归测试，不涉及数据库、迁移或持久化查询。"
+    ],
+    "completedAt": "2026-10-12T02:36:50.750Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/BUG-LOCK-RECOVERY-RACE-20261012/plan.json",
+    "approved": true,
+    "approvalRef": "用户授权在CI升级合并后单独修锁，明确授权独立子代理复核高风险改动"
+  },
+  "verification": {
+    "status": "pending",
+    "evidence": [
+      "f3d6bfad-f25b-4277-8828-b9fe5d5b28b3"
+    ],
+    "stages": [
+      {
+        "stage": "static",
+        "status": "pass",
+        "evidence": [
+          "f3d6bfad-f25b-4277-8828-b9fe5d5b28b3"
+        ],
+        "command": null,
+        "revision": 1,
+        "source": {
+          "digest": "5fc789879294ce7c1fd5b8f8a19037cf720a5446a503760becc0263c5981d5f1",
+          "document": ".ai-harness/work-items/BUG-LOCK-RECOVERY-RACE-20261012/snapshots/5fc789879294ce7c1fd5b8f8a19037cf720a5446a503760becc0263c5981d5f1.json"
+        },
+        "planDigest": "28d60dea161cfe7a60e68e360ee875a613b23bef375f5a5c1a4762d38ffee2eb"
+      }
+    ],
+    "source": {
+      "digest": "5fc789879294ce7c1fd5b8f8a19037cf720a5446a503760becc0263c5981d5f1",
+      "document": ".ai-harness/work-items/BUG-LOCK-RECOVERY-RACE-20261012/snapshots/5fc789879294ce7c1fd5b8f8a19037cf720a5446a503760becc0263c5981d5f1.json"
+    }
+  },
+  "review": {
+    "status": "pending",
+    "evidence": [],
+    "independent": false
+  },
+  "acceptance": {
+    "status": "pending",
+    "evidence": []
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "not-applicable",
+    "evidence": [
+      "0cabf702-b437-4a22-acbf-fdbf4e34616b"
+    ]
+  },
+  "blocked": null,
+  "delivery": null,
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-10-12T02:31:08.802Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-10-12T02:35:51.255Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-10-12T02:35:51.726Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-10-12T02:38:00.523Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-10-12T02:38:00.627Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "VERIFYING",
+      "at": "2026-10-12T03:04:01.464Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-10-12T02:31:08.802Z",
+  "updatedAt": "2026-10-12T03:04:01.866Z"
+}

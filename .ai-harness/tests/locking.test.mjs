@@ -51,6 +51,48 @@ test("dead owners can be recovered once without stealing a live or replacement l
   }
 });
 
+test("same-process recovery accepts one action across namespaced Windows paths", async () => {
+  const directory = await mkdtemp(path.join(tmpdir(), "ai-harness-lock-test-"));
+  try {
+    const { lock, owner } = await abandonedLock(directory);
+    const child = path.join(directory, "competing-claims.mjs");
+    await writeFile(child, `import fs from "node:fs";
+import { syncBuiltinESMExports } from "node:module";
+const originalRename = fs.promises.rename;
+const ownerFile = ${JSON.stringify(path.join(lock, `owner-${owner.token}.json`))};
+let claims = 0, actions = 0, secondArrived, firstClaimed, secondFinished;
+const arrived = new Promise(resolve => secondArrived = resolve);
+const claimed = new Promise(resolve => firstClaimed = resolve);
+const finished = new Promise(resolve => secondFinished = resolve);
+fs.promises.rename = async (source, target) => {
+  if (source !== ownerFile && source !== ${JSON.stringify(path.toNamespacedPath(path.join(lock, `owner-${owner.token}.json`)))}) return originalRename(source, target);
+  if (++claims === 1) {
+    await Promise.race([arrived, finished]);
+    try { return await originalRename(source, target); } finally { firstClaimed(); }
+  }
+  secondArrived();
+  await claimed;
+  return undefined;
+};
+syncBuiltinESMExports();
+const { recoverLock } = await import(${JSON.stringify(new URL("../src/locking.mjs", import.meta.url).href)});
+const first = recoverLock(${JSON.stringify(lock)}, ${JSON.stringify(owner.token)}, async () => { actions++; });
+const second = recoverLock(${JSON.stringify(path.toNamespacedPath(lock))}, ${JSON.stringify(owner.token)}, async () => { actions++; });
+second.then(secondFinished, secondFinished);
+const settled = await Promise.allSettled([first, second]);
+console.log(JSON.stringify({ claims, actions, outcomes: settled.map(row => row.status === "fulfilled" ? "ok" : row.reason?.code) }));`);
+    const result = spawnSync(process.execPath, [child], { shell: false, windowsHide: true, encoding: "utf8", timeout: 5000 });
+    assert.equal(result.status, 0, result.stderr || result.error?.message);
+    const observed = JSON.parse(result.stdout.trim());
+    assert.equal(observed.actions, 1, "a losing recovery must not invoke the protected action");
+    assert.deepEqual(observed.outcomes.sort(), ["LOCK_CHANGED", "ok"]);
+  } finally {
+    assert.equal(path.dirname(directory), path.resolve(tmpdir()));
+    assert.ok(path.basename(directory).startsWith("ai-harness-lock-test-"));
+    await rm(directory, { recursive: true, force: true });
+  }
+});
+
 test("recovering an interrupted work item preserves evidence and reports inconsistent writes", async () => {
   const root = await createInstalledProject();
   try {
