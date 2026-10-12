@@ -8,7 +8,7 @@
       "id": "T1",
       "title": "升级CI动作运行时并保持测试矩阵",
       "module": "compact",
-      "status": "IN_PROGRESS",
+      "status": "COMPLETED",
       "attempt": 1,
       "blockedBy": [],
       "blocks": [],
@@ -36,10 +36,21 @@
       "reviewBatch": "R1",
       "risk": "medium",
       "owner": "primary-ai",
-      "verificationStatus": "pending",
-      "reviewStatus": "pending",
-      "evidence": [],
-      "deferralApproval": null
+      "verificationStatus": "pass",
+      "reviewStatus": "pass",
+      "evidence": [
+        "9358a75f-0124-44e2-9df1-901ecb7829cc",
+        "14d7c4b5-d558-4f4b-a843-373a5bb26eee"
+      ],
+      "deferralApproval": null,
+      "verificationSource": {
+        "digest": "27d40ba537f9227a0981d724b9e2535aec2a6e52a8e79067746a31c06c9b8ad6",
+        "document": ".ai-harness/work-items/ITER-CI-ACTIONS-NODE24-20261012/snapshots/27d40ba537f9227a0981d724b9e2535aec2a6e52a8e79067746a31c06c9b8ad6.json"
+      },
+      "reviewSource": {
+        "digest": "27d40ba537f9227a0981d724b9e2535aec2a6e52a8e79067746a31c06c9b8ad6",
+        "document": ".ai-harness/work-items/ITER-CI-ACTIONS-NODE24-20261012/snapshots/27d40ba537f9227a0981d724b9e2535aec2a6e52a8e79067746a31c06c9b8ad6.json"
+      }
     }
   ],
   "reviewBatches": [
@@ -54,5 +65,5 @@
     }
   ],
   "createdAt": "2026-10-12T01:40:08.287Z",
-  "updatedAt": "2026-10-12T01:40:08.314Z"
+  "updatedAt": "2026-10-12T02:04:11.319Z"
 }
