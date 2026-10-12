@@ -1,0 +1,213 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 1,
+  "id": "ITER-CI-ACTIONS-NODE24-20261012",
+  "type": "ITERATION",
+  "title": "升级CI动作运行时并保持测试矩阵",
+  "status": "DONE",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/iteration.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户本轮明确要求按推荐继续执行CI动作升级；不授权模型实验或系统权限变更"
+  },
+  "input": {
+    "references": [
+      "用户允许依据推荐将两份工作流中的checkout/setup-node升至支持Node24动作运行时的版本，保持测试矩阵和权限不变"
+    ],
+    "acceptance": [
+      "两份工作流使用官方维护的Node24动作运行时版本，仍覆盖Ubuntu/Windows的Node20/22/24既有矩阵",
+      "显式不启用依赖缓存，保持原无依赖安装的CI行为；本地目标测试与PR矩阵通过"
+    ],
+    "nonGoals": [],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": null,
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "用户允许依据推荐将两份工作流中的checkout/setup-node升至支持Node24动作运行时的版本，保持测试矩阵和权限不变"
+    ],
+    "completedAt": "2026-10-12T01:40:08.141Z",
+    "repository": {
+      "isGit": true,
+      "branch": "codex/ci-actions-node24-20261012",
+      "commit": "1266de63d1dcb5fd2b1d626ef879537308eed8e4",
+      "dirty": false,
+      "changedFiles": [],
+      "fingerprints": {},
+      "source": {
+        "digest": "25d75c6b260124cc07482cc424cd755068126074629b3ebfa538f0e9314bd2b5",
+        "document": ".ai-harness/work-items/ITER-CI-ACTIONS-NODE24-20261012/snapshots/25d75c6b260124cc07482cc424cd755068126074629b3ebfa538f0e9314bd2b5.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": ".ai-harness/work-items/ITER-CI-ACTIONS-NODE24-20261012/solution.md",
+    "evidence": [
+      "仅更新两份workflow里的checkout/setup-node主版本和setup-node缓存设置，补矩阵合同测试后以独立PR验证"
+    ],
+    "completedAt": "2026-10-12T01:40:08.280Z"
+  },
+  "database": {
+    "impact": "none",
+    "status": "not-applicable",
+    "document": null,
+    "evidence": [
+      "只改GitHub Actions YAML和合同测试，无数据库、持久化Schema或查询影响"
+    ],
+    "completedAt": "2026-10-12T01:40:08.283Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/ITER-CI-ACTIONS-NODE24-20261012/plan.json",
+    "approved": true,
+    "approvalRef": "用户本轮明确要求按推荐继续执行CI动作升级；不授权模型实验或系统权限变更"
+  },
+  "verification": {
+    "status": "pass",
+    "evidence": [
+      "18b23609-63d9-4f8e-8a17-fa512ffe7a7a"
+    ],
+    "stages": [],
+    "source": {
+      "digest": "27d40ba537f9227a0981d724b9e2535aec2a6e52a8e79067746a31c06c9b8ad6",
+      "document": ".ai-harness/work-items/ITER-CI-ACTIONS-NODE24-20261012/snapshots/27d40ba537f9227a0981d724b9e2535aec2a6e52a8e79067746a31c06c9b8ad6.json"
+    }
+  },
+  "review": {
+    "status": "pass",
+    "evidence": [
+      "48bd21ea-83d5-4bae-bd24-53514b35e699"
+    ],
+    "independent": false,
+    "source": {
+      "digest": "27d40ba537f9227a0981d724b9e2535aec2a6e52a8e79067746a31c06c9b8ad6",
+      "document": ".ai-harness/work-items/ITER-CI-ACTIONS-NODE24-20261012/snapshots/27d40ba537f9227a0981d724b9e2535aec2a6e52a8e79067746a31c06c9b8ad6.json"
+    }
+  },
+  "acceptance": {
+    "status": "pass",
+    "evidence": [
+      "ae95d7b4-b313-4b71-aa8d-bef56c01cdca"
+    ],
+    "source": {
+      "digest": "27d40ba537f9227a0981d724b9e2535aec2a6e52a8e79067746a31c06c9b8ad6",
+      "document": ".ai-harness/work-items/ITER-CI-ACTIONS-NODE24-20261012/snapshots/27d40ba537f9227a0981d724b9e2535aec2a6e52a8e79067746a31c06c9b8ad6.json"
+    }
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "not-applicable",
+    "evidence": [
+      "fd5f6145-3873-4d6b-9a1d-0cfc0d5e5a9a"
+    ]
+  },
+  "blocked": null,
+  "delivery": {
+    "source": {
+      "digest": "27d40ba537f9227a0981d724b9e2535aec2a6e52a8e79067746a31c06c9b8ad6",
+      "document": ".ai-harness/work-items/ITER-CI-ACTIONS-NODE24-20261012/snapshots/27d40ba537f9227a0981d724b9e2535aec2a6e52a8e79067746a31c06c9b8ad6.json"
+    },
+    "baseline": {
+      "digest": "25d75c6b260124cc07482cc424cd755068126074629b3ebfa538f0e9314bd2b5",
+      "document": ".ai-harness/work-items/ITER-CI-ACTIONS-NODE24-20261012/snapshots/25d75c6b260124cc07482cc424cd755068126074629b3ebfa538f0e9314bd2b5.json"
+    },
+    "baselineAt": "2026-10-12T01:40:08.141Z",
+    "ownedChanges": [
+      {
+        "path": ".ai-harness/tests/ci-matrix.test.mjs",
+        "before": "100644:d950c9811ef2745c404e614b770f3f70ce2fae5a",
+        "after": "100644:3f9edfc06bffe7781ce825a6d292c6d83fd8b659"
+      },
+      {
+        "path": ".github/workflows/ai-harness.yml",
+        "before": "100644:956e4253cdea221aa8b5ff17534d48c4e971cc69",
+        "after": "100644:de9b125336b72736ad7f5ae429c6cc811066b961"
+      },
+      {
+        "path": ".github/workflows/source-tests.yml",
+        "before": "100644:937957c85f1bb5d401b1123cab2f434a9795c59f",
+        "after": "100644:d5ca3d9621b66429c6d9e81aff5927b19d58f2f5"
+      }
+    ],
+    "planDigest": "ce053b103aa962262f1f0ed4b0d75d5f274e5a02415fffba0b765a10166f1a1d",
+    "at": "2026-10-12T02:04:14.852Z",
+    "head": "d4f8faadfd87b5a7f581bf1992ae0b74db132dd6"
+  },
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-10-12T01:40:07.968Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-10-12T01:40:07.978Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-10-12T01:40:08.275Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-10-12T01:40:08.306Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-10-12T01:40:08.310Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "VERIFYING",
+      "at": "2026-10-12T02:04:11.361Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "VERIFYING",
+      "to": "CODE_REVIEW",
+      "at": "2026-10-12T02:04:11.977Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "CODE_REVIEW",
+      "to": "READY_FOR_ACCEPTANCE",
+      "at": "2026-10-12T02:04:12.504Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "READY_FOR_ACCEPTANCE",
+      "to": "DONE",
+      "at": "2026-10-12T02:04:15.032Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-10-12T01:40:07.968Z",
+  "updatedAt": "2026-10-12T02:04:15.032Z"
+}

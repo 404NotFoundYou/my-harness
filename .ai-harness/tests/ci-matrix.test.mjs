@@ -18,3 +18,12 @@ test("CI keeps every supported Node line in Ubuntu and Windows coverage", async 
   assert.match(source, /run: node benchmarks\/tests\/run\.mjs/);
   assert.match(source, /run: node \.ai-harness\/tests\/run\.mjs/);
 });
+
+test("CI actions use a supported runtime without implicit dependency caching", async () => {
+  for (const file of ["ai-harness.yml", "source-tests.yml"]) {
+    const workflow = await readFile(path.join(root, ".github/workflows", file), "utf8");
+    assert.deepEqual([...workflow.matchAll(/uses: actions\/(checkout|setup-node)@(\S+)/g)]
+      .map(([, action, version]) => `${action}@${version}`), ["checkout@v7", "setup-node@v7"]);
+    assert.match(workflow, /package-manager-cache: false/, "no dependency install should enable setup-node caching");
+  }
+});
