@@ -6,7 +6,7 @@
   "id": "BUG-LOCK-RECOVERY-RACE-20261012",
   "type": "BUGFIX",
   "title": "避免并发恢复旧锁时双重认领",
-  "status": "VERIFYING",
+  "status": "DONE",
   "flags": [],
   "policyFiles": [
     ".ai-harness/policies/core.md",
@@ -82,9 +82,12 @@
     "approvalRef": "用户授权在CI升级合并后单独修锁，明确授权独立子代理复核高风险改动"
   },
   "verification": {
-    "status": "pending",
+    "status": "pass",
     "evidence": [
-      "f3d6bfad-f25b-4277-8828-b9fe5d5b28b3"
+      "f3d6bfad-f25b-4277-8828-b9fe5d5b28b3",
+      "b58c05c7-3dc4-47f7-af20-ca314c302d1b",
+      "888c9cb9-8a28-41e1-a36d-7d9f96cd6d19",
+      "db2f6121-4b2a-4007-8345-9773fdf885a6"
     ],
     "stages": [
       {
@@ -100,6 +103,48 @@
           "document": ".ai-harness/work-items/BUG-LOCK-RECOVERY-RACE-20261012/snapshots/5fc789879294ce7c1fd5b8f8a19037cf720a5446a503760becc0263c5981d5f1.json"
         },
         "planDigest": "28d60dea161cfe7a60e68e360ee875a613b23bef375f5a5c1a4762d38ffee2eb"
+      },
+      {
+        "stage": "sandbox",
+        "status": "pass",
+        "evidence": [
+          "b58c05c7-3dc4-47f7-af20-ca314c302d1b"
+        ],
+        "command": null,
+        "revision": 1,
+        "source": {
+          "digest": "5fc789879294ce7c1fd5b8f8a19037cf720a5446a503760becc0263c5981d5f1",
+          "document": ".ai-harness/work-items/BUG-LOCK-RECOVERY-RACE-20261012/snapshots/5fc789879294ce7c1fd5b8f8a19037cf720a5446a503760becc0263c5981d5f1.json"
+        },
+        "planDigest": "28d60dea161cfe7a60e68e360ee875a613b23bef375f5a5c1a4762d38ffee2eb"
+      },
+      {
+        "stage": "reproduction",
+        "status": "pass",
+        "evidence": [
+          "888c9cb9-8a28-41e1-a36d-7d9f96cd6d19"
+        ],
+        "command": "9eb59bbe-be5c-4648-8437-ee598242ca64",
+        "revision": 1,
+        "source": {
+          "digest": "5fc789879294ce7c1fd5b8f8a19037cf720a5446a503760becc0263c5981d5f1",
+          "document": ".ai-harness/work-items/BUG-LOCK-RECOVERY-RACE-20261012/snapshots/5fc789879294ce7c1fd5b8f8a19037cf720a5446a503760becc0263c5981d5f1.json"
+        },
+        "planDigest": "28d60dea161cfe7a60e68e360ee875a613b23bef375f5a5c1a4762d38ffee2eb"
+      },
+      {
+        "stage": "regression",
+        "status": "pass",
+        "evidence": [
+          "db2f6121-4b2a-4007-8345-9773fdf885a6"
+        ],
+        "command": "9eb59bbe-be5c-4648-8437-ee598242ca64",
+        "revision": 1,
+        "source": {
+          "digest": "5fc789879294ce7c1fd5b8f8a19037cf720a5446a503760becc0263c5981d5f1",
+          "document": ".ai-harness/work-items/BUG-LOCK-RECOVERY-RACE-20261012/snapshots/5fc789879294ce7c1fd5b8f8a19037cf720a5446a503760becc0263c5981d5f1.json"
+        },
+        "planDigest": "28d60dea161cfe7a60e68e360ee875a613b23bef375f5a5c1a4762d38ffee2eb"
       }
     ],
     "source": {
@@ -108,13 +153,25 @@
     }
   },
   "review": {
-    "status": "pending",
-    "evidence": [],
-    "independent": false
+    "status": "pass",
+    "evidence": [
+      "3665c03b-b825-4d3e-86e1-18babd548ef2"
+    ],
+    "independent": true,
+    "source": {
+      "digest": "5fc789879294ce7c1fd5b8f8a19037cf720a5446a503760becc0263c5981d5f1",
+      "document": ".ai-harness/work-items/BUG-LOCK-RECOVERY-RACE-20261012/snapshots/5fc789879294ce7c1fd5b8f8a19037cf720a5446a503760becc0263c5981d5f1.json"
+    }
   },
   "acceptance": {
-    "status": "pending",
-    "evidence": []
+    "status": "pass",
+    "evidence": [
+      "a2e4a958-bef4-47f3-8123-51e6b7cb38a1"
+    ],
+    "source": {
+      "digest": "5fc789879294ce7c1fd5b8f8a19037cf720a5446a503760becc0263c5981d5f1",
+      "document": ".ai-harness/work-items/BUG-LOCK-RECOVERY-RACE-20261012/snapshots/5fc789879294ce7c1fd5b8f8a19037cf720a5446a503760becc0263c5981d5f1.json"
+    }
   },
   "analysis": {
     "status": "pending",
@@ -129,7 +186,32 @@
     ]
   },
   "blocked": null,
-  "delivery": null,
+  "delivery": {
+    "source": {
+      "digest": "5fc789879294ce7c1fd5b8f8a19037cf720a5446a503760becc0263c5981d5f1",
+      "document": ".ai-harness/work-items/BUG-LOCK-RECOVERY-RACE-20261012/snapshots/5fc789879294ce7c1fd5b8f8a19037cf720a5446a503760becc0263c5981d5f1.json"
+    },
+    "baseline": {
+      "digest": "27d40ba537f9227a0981d724b9e2535aec2a6e52a8e79067746a31c06c9b8ad6",
+      "document": ".ai-harness/work-items/BUG-LOCK-RECOVERY-RACE-20261012/snapshots/27d40ba537f9227a0981d724b9e2535aec2a6e52a8e79067746a31c06c9b8ad6.json"
+    },
+    "baselineAt": "2026-10-12T02:35:51.519Z",
+    "ownedChanges": [
+      {
+        "path": ".ai-harness/src/locking.mjs",
+        "before": "100644:3c056579425b186740c7896a06c2a3c1daa9f9a8",
+        "after": "100644:7701661489e68de2922137553882c27d740cb2de"
+      },
+      {
+        "path": ".ai-harness/tests/locking.test.mjs",
+        "before": "100644:42c00caaf88374f41d3cb2cf14369b2fc6da1640",
+        "after": "100644:bd925cc992702864a83468ec05ee759909dc211b"
+      }
+    ],
+    "planDigest": "28d60dea161cfe7a60e68e360ee875a613b23bef375f5a5c1a4762d38ffee2eb",
+    "at": "2026-10-12T03:15:09.514Z",
+    "head": "584fcbad2af4369283f96ddde80796f457933bc9"
+  },
   "history": [
     {
       "from": null,
@@ -166,8 +248,26 @@
       "to": "VERIFYING",
       "at": "2026-10-12T03:04:01.464Z",
       "reason": "gate-passed"
+    },
+    {
+      "from": "VERIFYING",
+      "to": "CODE_REVIEW",
+      "at": "2026-10-12T03:14:52.616Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "CODE_REVIEW",
+      "to": "READY_FOR_ACCEPTANCE",
+      "at": "2026-10-12T03:14:53.256Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "READY_FOR_ACCEPTANCE",
+      "to": "DONE",
+      "at": "2026-10-12T03:15:09.676Z",
+      "reason": "gate-passed"
     }
   ],
   "createdAt": "2026-10-12T02:31:08.802Z",
-  "updatedAt": "2026-10-12T03:04:01.866Z"
+  "updatedAt": "2026-10-12T03:15:09.676Z"
 }
