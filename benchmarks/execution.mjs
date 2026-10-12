@@ -65,7 +65,7 @@ export async function readExecution(directory, protocol, {readEvidence=file=>rea
 
 export function executionSummary(protocol, ledger, rows, sourceAfter, error = null) {
   const states=ledger.trials.map((state,index)=>({...protocol.schedule[index],...state}));
-  return {mode:protocol.mode,complete:states.every(state=>state.status === "completed")&&sourceAfter === protocol.source&&error === null,
+  return {...(protocol.summaryVersion===2?{summaryVersion:2}:{}),mode:protocol.mode,complete:states.every(state=>state.status === "completed")&&sourceAfter === protocol.source&&error === null,
     sourceBefore:protocol.source,sourceAfter,error,
     results:rows.map(row=>({taskId:row.taskId,group:row.group,trial:row.trial,success:row.success,functionalPassed:row.grade.ok})),
     notRun:protocol.schedule.filter((entry,index)=>states[index].status === "pending"),
@@ -74,5 +74,5 @@ export function executionSummary(protocol, ledger, rows, sourceAfter, error = nu
       const trials=states.filter(state=>state.group === group.id),completed=rows.filter(row=>row.group === group.id);
       const count=status=>trials.filter(state=>state.status === status).length;
       return {group:group.id,scheduled:trials.length,completed:count("completed"),interrupted:count("interrupted"),pending:count("pending"),usageUnknown:count("interrupted")+completed.filter(row=>!row.run.usage).length};
-    }),groups:rows.length?summarize(rows,{extended:true}):[]};
+    }),groups:rows.length?summarize(rows,{extended:true,legacyDuration:protocol.summaryVersion!==2}):[]};
 }

@@ -1,0 +1,129 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "ITER-DURATION-UNKNOWN-20261009",
+  "mode": "single",
+  "rationale": "统计口径、冻结协议、执行摘要、审计和回归测试形成单一纵向兼容任务，不能拆开交付。",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "修正未知总时长并保持历史审计",
+      "module": "benchmarks",
+      "status": "COMPLETED",
+      "attempt": 2,
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        "benchmarks/runner.mjs",
+        "benchmarks/execution.mjs",
+        "benchmarks/audit.mjs",
+        "benchmarks/experiment.mjs",
+        "benchmarks/tests/runner.test.mjs",
+        "benchmarks/tests/resume.test.mjs",
+        "benchmarks/tests/multifile.test.mjs",
+        "benchmarks/README.md"
+      ],
+      "verification": [
+        "node --test benchmarks/tests/runner.test.mjs",
+        "node --test benchmarks/tests/resume.test.mjs",
+        "node --test benchmarks/tests/multifile.test.mjs",
+        "node --test benchmarks/tests/project-v2.test.mjs",
+        "node --test benchmarks/tests/report.test.mjs",
+        "node --test benchmarks/tests/spec-guidance.test.mjs",
+        "node --test benchmarks/tests/status.test.mjs"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            "--test",
+            "benchmarks/tests/runner.test.mjs"
+          ]
+        },
+        {
+          "id": "V2",
+          "command": "node",
+          "args": [
+            "--test",
+            "benchmarks/tests/resume.test.mjs"
+          ]
+        },
+        {
+          "id": "V3",
+          "command": "node",
+          "args": [
+            "--test",
+            "benchmarks/tests/multifile.test.mjs"
+          ]
+        },
+        {
+          "id": "V4",
+          "command": "node",
+          "args": [
+            "--test",
+            "benchmarks/tests/project-v2.test.mjs"
+          ]
+        },
+        {
+          "id": "V5",
+          "command": "node",
+          "args": [
+            "--test",
+            "benchmarks/tests/report.test.mjs"
+          ]
+        },
+        {
+          "id": "V6",
+          "command": "node",
+          "args": [
+            "--test",
+            "benchmarks/tests/spec-guidance.test.mjs"
+          ]
+        },
+        {
+          "id": "V7",
+          "command": "node",
+          "args": [
+            "--test",
+            "benchmarks/tests/status.test.mjs"
+          ]
+        }
+      ],
+      "docsImpact": [
+        "benchmarks/README.md"
+      ],
+      "reviewBatch": "R1",
+      "risk": "high",
+      "owner": "primary-ai",
+      "verificationStatus": "pass",
+      "reviewStatus": "pass",
+      "evidence": [
+        "e8037bf7-eb3c-4f45-b60b-57acb66650d5",
+        "b5e67985-d3fb-4507-a8ce-273c8fdb36af"
+      ],
+      "deferralApproval": null,
+      "verificationSource": {
+        "digest": "25d75c6b260124cc07482cc424cd755068126074629b3ebfa538f0e9314bd2b5",
+        "document": ".ai-harness/work-items/ITER-DURATION-UNKNOWN-20261009/snapshots/25d75c6b260124cc07482cc424cd755068126074629b3ebfa538f0e9314bd2b5.json"
+      },
+      "reviewSource": {
+        "digest": "25d75c6b260124cc07482cc424cd755068126074629b3ebfa538f0e9314bd2b5",
+        "document": ".ai-harness/work-items/ITER-DURATION-UNKNOWN-20261009/snapshots/25d75c6b260124cc07482cc424cd755068126074629b3ebfa538f0e9314bd2b5.json"
+      }
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "实验摘要兼容修正",
+      "risk": "high",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": true
+    }
+  ],
+  "createdAt": "2026-10-09T08:58:24.013Z",
+  "updatedAt": "2026-10-09T09:33:48.703Z",
+  "revision": 4
+}

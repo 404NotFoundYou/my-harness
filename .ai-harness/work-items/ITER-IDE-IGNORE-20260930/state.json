@@ -1,0 +1,239 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 1,
+  "id": "ITER-IDE-IGNORE-20260930",
+  "type": "ITERATION",
+  "title": "忽略项目根目录IDE生成配置以恢复本地门禁",
+  "status": "DONE",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/iteration.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户本次根据建议进行修改的明确授权"
+  },
+  "input": {
+    "references": [
+      "用户授权根据当前建议修改项目级Git忽略规则"
+    ],
+    "acceptance": [
+      "仅根目录.idea配置被忽略；六个IDE文件字节不变；历史工作项仍可见；计划check与最终check --ci通过"
+    ],
+    "nonGoals": [],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": null,
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "用户授权根据当前建议修改项目级Git忽略规则"
+    ],
+    "completedAt": "2026-09-30T06:41:12.402Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "51712d5ed53375b7212c76196f4c244a989138bf",
+      "dirty": true,
+      "changedFiles": [
+        ".idea/.gitignore",
+        ".idea/aiproject.iml",
+        ".idea/inspectionProfiles/Project_Default.xml",
+        ".idea/misc.xml",
+        ".idea/modules.xml",
+        ".idea/vcs.xml"
+      ],
+      "fingerprints": {},
+      "source": {
+        "digest": "2320756d89e68039c68b8880d9231041e3b4139535c437a5436734db515b1004",
+        "document": ".ai-harness/work-items/ITER-IDE-IGNORE-20260930/snapshots/2320756d89e68039c68b8880d9231041e3b4139535c437a5436734db515b1004.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": ".ai-harness/work-items/ITER-IDE-IGNORE-20260930/solution.md",
+    "evidence": [
+      "仅在项目根新建.gitignore并写入/.idea/；将既有六个路径的Git可见性变化列入范围，不物理改动IDE文件"
+    ],
+    "completedAt": "2026-09-30T06:41:12.639Z"
+  },
+  "database": {
+    "impact": "none",
+    "status": "not-applicable",
+    "document": null,
+    "evidence": [
+      "只改Git忽略规则和工作项控制面，不涉及数据库访问、Schema或迁移"
+    ],
+    "completedAt": "2026-09-30T06:41:12.643Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/ITER-IDE-IGNORE-20260930/plan.json",
+    "approved": true,
+    "approvalRef": "用户本次根据建议进行修改的明确授权"
+  },
+  "verification": {
+    "status": "pass",
+    "evidence": [
+      "efc9d480-0d60-4422-b9d5-accbceee46c8"
+    ],
+    "stages": [],
+    "source": {
+      "digest": "42710baaddae31aa089394fc688cd88231dc6d55911d7925f2b3c0c5636e4097",
+      "document": ".ai-harness/work-items/ITER-IDE-IGNORE-20260930/snapshots/42710baaddae31aa089394fc688cd88231dc6d55911d7925f2b3c0c5636e4097.json"
+    }
+  },
+  "review": {
+    "status": "pass",
+    "evidence": [
+      "fdadd6a1-cd36-49cd-ae20-75c890f412a8"
+    ],
+    "independent": false,
+    "source": {
+      "digest": "42710baaddae31aa089394fc688cd88231dc6d55911d7925f2b3c0c5636e4097",
+      "document": ".ai-harness/work-items/ITER-IDE-IGNORE-20260930/snapshots/42710baaddae31aa089394fc688cd88231dc6d55911d7925f2b3c0c5636e4097.json"
+    }
+  },
+  "acceptance": {
+    "status": "pass",
+    "evidence": [
+      "731b681f-ace8-479c-905e-023641f95fd8"
+    ],
+    "source": {
+      "digest": "42710baaddae31aa089394fc688cd88231dc6d55911d7925f2b3c0c5636e4097",
+      "document": ".ai-harness/work-items/ITER-IDE-IGNORE-20260930/snapshots/42710baaddae31aa089394fc688cd88231dc6d55911d7925f2b3c0c5636e4097.json"
+    }
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "not-applicable",
+    "evidence": [
+      "c5ba3f79-3040-47fa-bc6a-3609a8f0c70e"
+    ]
+  },
+  "blocked": null,
+  "delivery": {
+    "source": {
+      "digest": "42710baaddae31aa089394fc688cd88231dc6d55911d7925f2b3c0c5636e4097",
+      "document": ".ai-harness/work-items/ITER-IDE-IGNORE-20260930/snapshots/42710baaddae31aa089394fc688cd88231dc6d55911d7925f2b3c0c5636e4097.json"
+    },
+    "baseline": {
+      "digest": "2320756d89e68039c68b8880d9231041e3b4139535c437a5436734db515b1004",
+      "document": ".ai-harness/work-items/ITER-IDE-IGNORE-20260930/snapshots/2320756d89e68039c68b8880d9231041e3b4139535c437a5436734db515b1004.json"
+    },
+    "baselineAt": "2026-09-30T06:41:12.402Z",
+    "ownedChanges": [
+      {
+        "path": ".gitignore",
+        "before": null,
+        "after": "100644:85e7c1dfcb7fbb33f932c81024018cd8c10519da"
+      },
+      {
+        "path": ".idea/.gitignore",
+        "before": "100644:7bc07ec21cfe35e60fd050ad8560bcdf2334de92",
+        "after": null
+      },
+      {
+        "path": ".idea/aiproject.iml",
+        "before": "100644:d6ebd4805981b8400db3e3291c74a743fef9a824",
+        "after": null
+      },
+      {
+        "path": ".idea/inspectionProfiles/Project_Default.xml",
+        "before": "100644:8d66637cb9fd38ded17c4988b9f70dd425cf2e3c",
+        "after": null
+      },
+      {
+        "path": ".idea/misc.xml",
+        "before": "100644:6f29fee2f2b3b412625a792b92bcd1263e5b765a",
+        "after": null
+      },
+      {
+        "path": ".idea/modules.xml",
+        "before": "100644:99def001e6b89388f9c9e9e8ddc079ef487fd47e",
+        "after": null
+      },
+      {
+        "path": ".idea/vcs.xml",
+        "before": "100644:35eb1ddfbbc029bcab630581847471d7f238ec53",
+        "after": null
+      }
+    ],
+    "planDigest": "2b070a5fb1d7ed41f420ba4dbe3781e7d3e7bd9c0197a227d8e5aeb80905d1eb",
+    "at": "2026-09-30T06:44:25.026Z",
+    "head": "51712d5ed53375b7212c76196f4c244a989138bf"
+  },
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-09-30T06:41:12.210Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-09-30T06:41:12.221Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-09-30T06:41:12.634Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-09-30T06:41:12.668Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-09-30T06:41:12.672Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "VERIFYING",
+      "at": "2026-09-30T06:44:21.513Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "VERIFYING",
+      "to": "CODE_REVIEW",
+      "at": "2026-09-30T06:44:22.164Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "CODE_REVIEW",
+      "to": "READY_FOR_ACCEPTANCE",
+      "at": "2026-09-30T06:44:22.808Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "READY_FOR_ACCEPTANCE",
+      "to": "DONE",
+      "at": "2026-09-30T06:44:25.183Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-09-30T06:41:12.210Z",
+  "updatedAt": "2026-09-30T06:44:25.183Z"
+}

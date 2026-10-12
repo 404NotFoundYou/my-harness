@@ -1,0 +1,292 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 4,
+  "id": "ITER-DURATION-UNKNOWN-20261009",
+  "type": "ITERATION",
+  "title": "缺失耗时汇总保留未知并兼容历史实验审计",
+  "status": "DONE",
+  "flags": [
+    "api"
+  ],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/iteration.md",
+    ".ai-harness/policies/api.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户本轮明确回复允许兼容历史审计地修正统计问题"
+  },
+  "input": {
+    "references": [
+      "用户允许在旧实验仍可审计前提下修正缺失durationMs按0累计问题"
+    ],
+    "acceptance": [
+      "新生成摘要中任一已完成样本耗时缺失时该组总时长为null，真实零时长仍为0",
+      "历史无版本标识的实验摘要保持原口径并通过审计，新摘要有明确标识且完整性校验不弱化",
+      "相关单测与历史审计回归通过；不修改原实验记录、不调用模型"
+    ],
+    "nonGoals": [],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": null,
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "main@51712d5，工作树仅原有未跟踪.gitignore和历史工作项及本轮分析控制面；目标为benchmarks汇总、执行摘要、审计与测试；原实验数据只读；doctor通过；原有check --ci因BLOCKED实验失败，产品测试本轮尚未运行。"
+    ],
+    "completedAt": "2026-10-09T08:56:18.965Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "51712d5ed53375b7212c76196f4c244a989138bf",
+      "dirty": true,
+      "changedFiles": [
+        ".gitignore"
+      ],
+      "fingerprints": {},
+      "source": {
+        "digest": "42710baaddae31aa089394fc688cd88231dc6d55911d7925f2b3c0c5636e4097",
+        "document": ".ai-harness/work-items/ITER-DURATION-UNKNOWN-20261009/snapshots/42710baaddae31aa089394fc688cd88231dc6d55911d7925f2b3c0c5636e4097.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": ".ai-harness/work-items/ITER-DURATION-UNKNOWN-20261009/solution.md",
+    "evidence": [
+      "已读summarize、executionSummary、validateExperimentProtocol、runExperiment、auditExperiment直接调用方和既有测试；选择协议与摘要双标识避免旧摘要被误识别。"
+    ],
+    "completedAt": "2026-10-09T08:57:58.532Z"
+  },
+  "database": {
+    "impact": "none",
+    "status": "not-applicable",
+    "document": null,
+    "evidence": [
+      "只处理实验JSON摘要和校验；无数据库Schema/查询/事务或生产数据路径。"
+    ],
+    "completedAt": "2026-10-09T08:57:58.621Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/ITER-DURATION-UNKNOWN-20261009/plan.json",
+    "approved": true,
+    "approvalRef": "用户已授权保留历史审计兼容；补充同目标v3夹具测试文件，不增加功能范围"
+  },
+  "verification": {
+    "status": "pass",
+    "evidence": [
+      "2540ff2e-22cb-4ae7-b687-1de15ad84a8c"
+    ],
+    "stages": [],
+    "source": {
+      "digest": "25d75c6b260124cc07482cc424cd755068126074629b3ebfa538f0e9314bd2b5",
+      "document": ".ai-harness/work-items/ITER-DURATION-UNKNOWN-20261009/snapshots/25d75c6b260124cc07482cc424cd755068126074629b3ebfa538f0e9314bd2b5.json"
+    }
+  },
+  "review": {
+    "status": "pass",
+    "evidence": [
+      "6ef8c5de-2ced-43b3-b502-2873cca5eb61"
+    ],
+    "independent": true,
+    "source": {
+      "digest": "25d75c6b260124cc07482cc424cd755068126074629b3ebfa538f0e9314bd2b5",
+      "document": ".ai-harness/work-items/ITER-DURATION-UNKNOWN-20261009/snapshots/25d75c6b260124cc07482cc424cd755068126074629b3ebfa538f0e9314bd2b5.json"
+    }
+  },
+  "acceptance": {
+    "status": "pass",
+    "evidence": [
+      "4933553b-79fd-48df-b994-55b535ce205e"
+    ],
+    "source": {
+      "digest": "25d75c6b260124cc07482cc424cd755068126074629b3ebfa538f0e9314bd2b5",
+      "document": ".ai-harness/work-items/ITER-DURATION-UNKNOWN-20261009/snapshots/25d75c6b260124cc07482cc424cd755068126074629b3ebfa538f0e9314bd2b5.json"
+    }
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "pass",
+    "evidence": [
+      "f352113d-b6b8-4d7a-8cf3-7c49afda57ba"
+    ]
+  },
+  "blocked": null,
+  "delivery": {
+    "source": {
+      "digest": "25d75c6b260124cc07482cc424cd755068126074629b3ebfa538f0e9314bd2b5",
+      "document": ".ai-harness/work-items/ITER-DURATION-UNKNOWN-20261009/snapshots/25d75c6b260124cc07482cc424cd755068126074629b3ebfa538f0e9314bd2b5.json"
+    },
+    "baseline": {
+      "digest": "42710baaddae31aa089394fc688cd88231dc6d55911d7925f2b3c0c5636e4097",
+      "document": ".ai-harness/work-items/ITER-DURATION-UNKNOWN-20261009/snapshots/42710baaddae31aa089394fc688cd88231dc6d55911d7925f2b3c0c5636e4097.json"
+    },
+    "baselineAt": "2026-10-09T08:56:18.965Z",
+    "ownedChanges": [
+      {
+        "path": "benchmarks/README.md",
+        "before": "100644:2261c38cce5a8f6883e6f57d8b483e8e5e1b5253",
+        "after": "100644:fba3f4ba0cff554db2c61341661e300d1f1e6062"
+      },
+      {
+        "path": "benchmarks/audit.mjs",
+        "before": "100644:e132e70cb043035ae6c2b1ba43558c0e84b80fc6",
+        "after": "100644:7c10d60a7b233b16537ebcf43ee7af68b2e05125"
+      },
+      {
+        "path": "benchmarks/execution.mjs",
+        "before": "100644:d85eba5fe173b0e0abcb9b48716d43ffb7ca88cf",
+        "after": "100644:6ae00de15f5d6c4451bb2ce6e5ef2e7af41218f8"
+      },
+      {
+        "path": "benchmarks/experiment.mjs",
+        "before": "100644:875307ca4bbd5607ee07686ecb90f16aa0ba4ff7",
+        "after": "100644:18b7376281f38fedf7c4c74f5c9964b63e27fba7"
+      },
+      {
+        "path": "benchmarks/runner.mjs",
+        "before": "100644:16b2909d35e63bce78993f474f73c8f605e77a8b",
+        "after": "100644:f1cd9aa4f41ac6906633823853ec1b208c9ccc6b"
+      },
+      {
+        "path": "benchmarks/tests/multifile.test.mjs",
+        "before": "100644:a0f3974ca5ad04db97deb60ed8ad98236bd8067c",
+        "after": "100644:24193131b36785a1497d2a1e3795d65870cbdc4b"
+      },
+      {
+        "path": "benchmarks/tests/resume.test.mjs",
+        "before": "100644:f5e9bbabf39ec5147ba324b0495df004a216e358",
+        "after": "100644:5eea34a095916964693d73b6518106f6c2a604f6"
+      },
+      {
+        "path": "benchmarks/tests/runner.test.mjs",
+        "before": "100644:64191403ca1bab77428dae0afa49940dc88c265a",
+        "after": "100644:dfac91cc2957745f930931fddbeba02880ccc9c1"
+      }
+    ],
+    "planDigest": "7a303e0d650936f35f0fa9d3a99cf7664c2b0e16b9b9d14d70ce1381da625fbe",
+    "at": "2026-10-09T09:34:55.138Z",
+    "head": "51712d5ed53375b7212c76196f4c244a989138bf"
+  },
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-10-09T08:56:04.025Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-10-09T08:56:18.740Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-10-09T08:56:19.215Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-10-09T08:58:45.040Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-10-09T08:58:45.142Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-10-09T09:06:41.363Z",
+      "reason": "计划中的node benchmarks/tests/run.mjs被验证命令策略判为ask且未执行；改为逐文件node --test运行完整同一套件，不绕过权限门禁。",
+      "action": "replan",
+      "revision": 2
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-10-09T09:07:38.461Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-10-09T09:07:38.562Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-10-09T09:10:45.435Z",
+      "reason": "完整回归发现v3兼容夹具需要移除新增摘要标识；补充直接关联的multifile测试文件到写入范围并重新验证。",
+      "action": "replan",
+      "revision": 3
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-10-09T09:10:45.863Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-10-09T09:10:45.939Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "IMPLEMENTING",
+      "at": "2026-10-09T09:23:28.195Z",
+      "reason": "独立审查发现新摘要极大有限耗时求和溢出并使审计失败，补边界测试和最小修正后重新验证与复核。",
+      "action": "reopen",
+      "revision": 4
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "VERIFYING",
+      "at": "2026-10-09T09:34:08.538Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "VERIFYING",
+      "to": "CODE_REVIEW",
+      "at": "2026-10-09T09:34:22.954Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "CODE_REVIEW",
+      "to": "READY_FOR_ACCEPTANCE",
+      "at": "2026-10-09T09:34:38.252Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "READY_FOR_ACCEPTANCE",
+      "to": "DONE",
+      "at": "2026-10-09T09:34:55.268Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-10-09T08:56:04.025Z",
+  "updatedAt": "2026-10-09T09:34:55.268Z"
+}

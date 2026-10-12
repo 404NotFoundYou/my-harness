@@ -51,8 +51,9 @@ export function validateExperimentProtocol(protocol) {
   assert.equal(protocol.schemaVersion,4,"Only protocol v4 can resume; historical experiments are read-only");
   assert.ok(["real","simulated"].includes(protocol.mode),"Invalid experiment mode");
   assert.match(protocol.source,/^[a-f0-9]{64}$/,"Invalid source digest");
-  const {createdAt,...stored}=protocol;
+  const {createdAt,summaryVersion,...stored}=protocol;
   assert.ok(typeof createdAt === "string"&&Number.isFinite(Date.parse(createdAt)),"Invalid protocol creation time");
+  assert.ok(summaryVersion===undefined||summaryVersion===2,"Invalid summary version");
   const plan=experimentPlan({weak:protocol.groups.find(group=>group.id==="weak-baseline")?.model,strong:protocol.groups.find(group=>group.id==="strong-reference")?.model,client:protocol.client,comparison:protocol.comparison,repetitions:protocol.repetitions,timeoutMs:protocol.budget.timeoutMs,maxToolCalls:protocol.budget.maxToolCalls,suite:protocol.suite});
   assert.deepEqual(stored,{...plan,mode:protocol.mode,source:protocol.source,tasks:tasksForSuite(plan.suite).map(taskManifest),driverIdentity:checkedIdentity(protocol.mode,null,protocol.driverIdentity)},"Invalid frozen protocol");
 }
@@ -68,7 +69,7 @@ export async function runExperiment({ plan, sourceRoot, outputDirectory, driver,
   const identity=checkedIdentity(mode,driver,driverIdentity);
   const source=(await sourceSnapshot(sourceRoot)).digest;
   const tasks=tasksForSuite(plan.suite);
-  const frozen={...plan,mode,source,tasks:tasks.map(taskManifest),driverIdentity:identity};
+  const frozen={...plan,mode,source,tasks:tasks.map(taskManifest),driverIdentity:identity,summaryVersion:2};
   const lock=await resolveProjectPath(outputDirectory,".experiment.lock",{forWrite:true});
   const save=async(file,value)=>saveJson(await resolveProjectPath(outputDirectory,file,{forWrite:true}),value);
   const assertSource=async()=>{
@@ -80,7 +81,8 @@ export async function runExperiment({ plan, sourceRoot, outputDirectory, driver,
     const protocol=JSON.parse((await readExperimentFile(outputDirectory,"protocol.json")).toString("utf8"));
     validateExperimentProtocol(protocol);
     const {createdAt,...stored}=protocol;
-    assert.deepEqual(stored,frozen,"Frozen protocol, source or driver differs");
+    const {summaryVersion: ignoredVersion,...legacyFrozen}=frozen;
+    assert.deepEqual(stored,protocol.summaryVersion===undefined?legacyFrozen:frozen,"Frozen protocol, source or driver differs");
     return {protocol,...await readExecution(outputDirectory,protocol)};
   }
   if(resume){

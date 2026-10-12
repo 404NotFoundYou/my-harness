@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "ITER-IDE-IGNORE-20260930",
+  "mode": "single",
+  "rationale": "仅在项目根新建.gitignore并写入/.idea/；将既有六个路径的Git可见性变化列入范围，不物理改动IDE文件",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "忽略项目根目录IDE生成配置以恢复本地门禁",
+      "module": "compact",
+      "status": "COMPLETED",
+      "attempt": 1,
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        ".gitignore",
+        ".idea/.gitignore",
+        ".idea/aiproject.iml",
+        ".idea/inspectionProfiles/Project_Default.xml",
+        ".idea/misc.xml",
+        ".idea/modules.xml",
+        ".idea/vcs.xml"
+      ],
+      "verification": [
+        "node .ai-harness/bin/harness.mjs check --json"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            ".ai-harness/bin/harness.mjs",
+            "check",
+            "--json"
+          ]
+        }
+      ],
+      "docsImpact": [
+        "N/A: 仅Git忽略规则，不改变现有用户接口和说明"
+      ],
+      "reviewBatch": "R1",
+      "risk": "low",
+      "owner": "primary-ai",
+      "verificationStatus": "pass",
+      "reviewStatus": "pass",
+      "evidence": [
+        "db3ee6f8-885c-4cb4-9b91-1c58f4530fad",
+        "830515d7-386a-47a7-bcb4-46429e1ff339"
+      ],
+      "deferralApproval": null,
+      "verificationSource": {
+        "digest": "42710baaddae31aa089394fc688cd88231dc6d55911d7925f2b3c0c5636e4097",
+        "document": ".ai-harness/work-items/ITER-IDE-IGNORE-20260930/snapshots/42710baaddae31aa089394fc688cd88231dc6d55911d7925f2b3c0c5636e4097.json"
+      },
+      "reviewSource": {
+        "digest": "42710baaddae31aa089394fc688cd88231dc6d55911d7925f2b3c0c5636e4097",
+        "document": ".ai-harness/work-items/ITER-IDE-IGNORE-20260930/snapshots/42710baaddae31aa089394fc688cd88231dc6d55911d7925f2b3c0c5636e4097.json"
+      }
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "忽略项目根目录IDE生成配置以恢复本地门禁",
+      "risk": "low",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": false
+    }
+  ],
+  "createdAt": "2026-09-30T06:41:12.648Z",
+  "updatedAt": "2026-09-30T06:44:21.505Z"
+}

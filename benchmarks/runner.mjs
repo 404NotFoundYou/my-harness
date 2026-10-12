@@ -246,16 +246,18 @@ export async function runCase({ task, group, sourceRoot, outputDirectory, driver
   } finally { await cleanupSandbox(participant.root); }
 }
 
-export function summarize(results, { extended = false } = {}) {
+export function summarize(results, { extended = false, legacyDuration = false } = {}) {
   const modes = new Set(results.map(result => result.mode));
   if (new Set(results.map(result => result.client || "codex")).size !== 1) throw new Error("Different clients must be reported separately");
   if (modes.size !== 1 || !["real", "simulated"].includes([...modes][0])) throw new Error("Real and simulated results must not be mixed");
   return [...new Set(results.map(result => result.group))].map(group => {
     const rows = results.filter(result => result.group === group);
     const completeUsage = rows.every(row => hasCompleteUsage(row.run.usage));
+    const durationMs = rows.reduce((sum, row) => sum + (row.run.durationMs || 0), 0);
+    const completeDuration = rows.every(row => Number.isFinite(row.run.durationMs) && row.run.durationMs >= 0) && Number.isFinite(durationMs);
     return { group, samples: rows.length, functionalPassed: rows.filter(row => row.grade.ok).length, completed: rows.filter(row => row.success).length,
       falseCompletion: rows.filter(row => row.falseCompletion).length, timeouts: rows.filter(row => row.run.timedOut).length,
-      durationMs: rows.reduce((sum, row) => sum + (row.run.durationMs || 0), 0),
+      durationMs: legacyDuration || completeDuration ? durationMs : null,
       inputTokens: completeUsage ? rows.reduce((sum,row)=>sum+row.run.usage.input_tokens,0) : null,
       outputTokens: completeUsage ? rows.reduce((sum,row)=>sum+row.run.usage.output_tokens,0) : null,
       ...(extended ? { statistics: trialStatistics(rows) } : {}) };

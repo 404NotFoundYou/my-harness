@@ -7,8 +7,9 @@ import { spawnSync } from "node:child_process";
 import { mkdir, mkdtemp, readFile, readdir, realpath, rm, symlink, writeFile } from "node:fs/promises";
 import fsPromises from "node:fs/promises";
 import { syncBuiltinESMExports } from "node:module";
-import { cliIdentity, experimentPlan, runExperiment } from "../experiment.mjs";
+import { cliIdentity, experimentPlan, runExperiment, validateExperimentProtocol } from "../experiment.mjs";
 import { auditExperiment } from "../audit.mjs";
+import { executionSummary, readExecution } from "../execution.mjs";
 import { projectTasks } from "../project-tasks.mjs";
 import { hash, saveJson } from "../runner.mjs";
 import { cleanup as cleanupSource, createInstalledProject } from "../../.ai-harness/tests/helpers.mjs";
@@ -43,6 +44,72 @@ test("completed trials including failed deliveries are audited and never called 
   }finally{await cleanup(directory);}
 });
 
+test("missing duration stays unknown for new summaries while legacy archives remain auditable",async()=>{
+  const directory=await fixture();let calls=0;
+  try{
+    const opts={...options(directory),driver:async input=>({...await fakeDriver(input),durationMs:++calls===1?undefined:0})};
+    const summary=await runExperiment(opts),out=opts.outputDirectory;
+    const protocolPath=path.join(out,"protocol.json"),summaryPath=path.join(out,"summary.json"),ledgerPath=path.join(out,"execution.json");
+    const protocol=await read(out,"protocol.json"),originalProtocol=await readFile(protocolPath),originalSummary=await readFile(summaryPath);
+    assert.equal(protocol.summaryVersion,2);
+    assert.equal(summary.summaryVersion,2);
+    assert.equal(summary.groups.find(row=>row.group===protocol.schedule[0].group).durationMs,null,"a missing sample cannot be a zero-length run");
+    assert.equal(summary.groups.find(row=>row.group===protocol.schedule[1].group).durationMs,0,"an observed zero remains known");
+    assert.equal((await auditExperiment(out)).valid,true);
+    assert.throws(()=>validateExperimentProtocol({...protocol,summaryVersion:3}),/Invalid summary version/);
+    const {summaryVersion: removedVersion,...downgraded}=summary;
+    await writeFile(summaryPath,JSON.stringify(downgraded));
+    await assert.rejects(()=>auditExperiment(out),/Summary accounting version differs/,"a new protocol cannot audit through legacy summary rules");
+    await writeFile(protocolPath,JSON.stringify({...protocol,summaryVersion:3}));
+    await writeFile(summaryPath,JSON.stringify({...summary,summaryVersion:3}));
+    await assert.rejects(()=>auditExperiment(out),/Invalid summary version/,"matching unknown markers cannot downgrade accounting rules");
+    await writeFile(protocolPath,originalProtocol);
+    await writeFile(summaryPath,originalSummary);
+
+    delete protocol.summaryVersion;
+    await writeFile(protocolPath,JSON.stringify(protocol));
+    const ledger=await read(out,"execution.json");ledger.protocolSha256=hash(await readFile(protocolPath));
+    for(const [index,entry] of protocol.schedule.entries()){
+      const resultPath=path.join(out,entry.directory,"result.json"),result=await read(out,`${entry.directory}/result.json`);
+      result.execution.protocolSha256=ledger.protocolSha256;
+      await writeFile(resultPath,JSON.stringify(result));
+      ledger.trials[index].resultSha256=hash(await readFile(resultPath));
+    }
+    await writeFile(ledgerPath,JSON.stringify(ledger));
+    const recovered=await readExecution(out,protocol);
+    assert.equal(recovered.changed,false);
+    const legacy=executionSummary(protocol,recovered.ledger,recovered.rows,protocol.source);
+    assert.equal(legacy.summaryVersion,undefined);
+    assert.equal(legacy.groups.find(row=>row.group===protocol.schedule[0].group).durationMs,0,"old archives retain their original aggregate");
+    await writeFile(summaryPath,JSON.stringify(legacy));
+    assert.equal((await auditExperiment(out)).valid,true);
+    const resumed=await runExperiment({...opts,resume:true});
+    assert.equal(calls,2,"auditing or resuming old completed results must not start new trials");
+    assert.equal(resumed.summaryVersion,undefined);
+    assert.equal((await auditExperiment(out)).valid,true);
+  }finally{await cleanup(directory);}
+});
+test("a pending trial in a legacy v4 protocol resumes without changing the old accounting rule",async()=>{
+  const directory=await fixture();let calls=0;
+  try{
+    const opts={...options(directory),driver:async input=>{if(++calls===1)throw new Error("synthetic interruption");return {...await fakeDriver(input),durationMs:undefined};}};
+    await assert.rejects(()=>runExperiment(opts),/synthetic interruption/);
+    const out=opts.outputDirectory,protocolPath=path.join(out,"protocol.json"),protocol=await read(out,"protocol.json");
+    delete protocol.summaryVersion;
+    await writeFile(protocolPath,JSON.stringify(protocol));
+    const ledger=await read(out,"execution.json");
+    assert.deepEqual(ledger.trials.map(row=>row.status),["interrupted","pending"]);
+    ledger.protocolSha256=hash(await readFile(protocolPath));
+    await writeFile(path.join(out,"execution.json"),JSON.stringify(ledger));
+    await writeFile(path.join(out,"summary.json"),JSON.stringify(executionSummary(protocol,ledger,[],protocol.source,"synthetic interruption")));
+    const resumed=await runExperiment({...opts,resume:true});
+    assert.equal(calls,2,"only the pending trial may start after recovery");
+    assert.equal(resumed.summaryVersion,undefined);
+    assert.equal(resumed.complete,false,"the interrupted trial is not silently retried");
+    assert.deepEqual(resumed.progress.map(row=>[row.completed,row.interrupted,row.pending]).sort(),[[0,1,0],[1,0,0]]);
+    assert.equal(resumed.groups[0].durationMs,0,"the legacy aggregate remains unchanged with missing duration");
+  }finally{await cleanup(directory);}
+});
 test("a stopped driver stays interrupted while resume runs only untouched trials",async()=>{
   const directory=await fixture();let calls=0;
   const driver=async input=>{if(++calls===1)throw new Error("synthetic interruption");return fakeDriver(input);};
