@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "ITER-CI-ACTIONS-NODE24-20261012",
+  "mode": "single",
+  "rationale": "仅更新两份workflow里的checkout/setup-node主版本和setup-node缓存设置，补矩阵合同测试后以独立PR验证",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "升级CI动作运行时并保持测试矩阵",
+      "module": "compact",
+      "status": "IN_PROGRESS",
+      "attempt": 1,
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        ".github/workflows/ai-harness.yml",
+        ".github/workflows/source-tests.yml",
+        ".ai-harness/tests/ci-matrix.test.mjs"
+      ],
+      "verification": [
+        "node --test .ai-harness/tests/ci-matrix.test.mjs"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            "--test",
+            ".ai-harness/tests/ci-matrix.test.mjs"
+          ]
+        }
+      ],
+      "docsImpact": [
+        "N/A: 既有Node测试矩阵及用户指南不变，CI实现引用只在workflow内"
+      ],
+      "reviewBatch": "R1",
+      "risk": "medium",
+      "owner": "primary-ai",
+      "verificationStatus": "pending",
+      "reviewStatus": "pending",
+      "evidence": [],
+      "deferralApproval": null
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "升级CI动作运行时并保持测试矩阵",
+      "risk": "medium",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": false
+    }
+  ],
+  "createdAt": "2026-10-12T01:40:08.287Z",
+  "updatedAt": "2026-10-12T01:40:08.314Z"
+}
