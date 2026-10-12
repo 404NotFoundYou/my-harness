@@ -1,4 +1,5 @@
 import { lstat, mkdir, readFile, readdir, rename, rmdir, unlink, writeFile } from "node:fs/promises";
+import { realpathSync } from "node:fs";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
 import { hostname } from "node:os";
@@ -8,6 +9,7 @@ const ownerName = token => `owner-${token}.json`;
 const uuidPattern = "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}";
 const tokenPattern = new RegExp(`^${uuidPattern}$`);
 const markerPattern = new RegExp(`^(?:owner-(${uuidPattern})|claim-(${uuidPattern})-([1-9]\\d*)-(${uuidPattern}))\\.json$`);
+const activeRecoveries = new Set();
 
 export async function inspectLock(lockPath) {
   let info;
@@ -52,18 +54,30 @@ async function releaseOwner(lockPath, file, token) {
 
 export async function recoverLock(lockPath, token, action = async () => undefined) {
   invariant(typeof token === "string" && tokenPattern.test(token), "LOCK_TOKEN_REQUIRED", "恢复需要 lock-status 返回的所有者 token。" );
-  const current = await inspectLock(lockPath);
-  invariant(current.status === "stale" && current.owner.token === token, "LOCK_NOT_RECOVERABLE", "只能恢复同机、确定已退出且 token 匹配的所有者锁；旧格式或未知锁不能自动回收。", current);
-  const claimToken = randomUUID(), claimFile = `claim-${current.originalToken}-${process.pid}-${claimToken}.json`;
-  // 原子认领唯一代次；竞争恢复者只能重命名旧文件，不能移走新锁目录。
-  try { await rename(path.join(lockPath, current.file), path.join(lockPath, claimFile)); } catch (error) {
-    if (["ENOENT", "ENOTDIR"].includes(error.code)) throw new HarnessError("LOCK_CHANGED", "锁已被其他恢复操作处理；请重新读取状态。" );
-    throw error;
+  let key = path.resolve(lockPath);
+  try { key = realpathSync.native(key); } catch (error) {
+    if (!["ENOENT", "ENOTDIR"].includes(error.code)) throw error;
   }
-  // 检查失败保留认领锁及原始记录，禁止等待中的写入提前进入损坏控制面。
-  const result = await action(current.owner);
-  await releaseOwner(lockPath, claimFile, claimToken);
-  return { recovered: true, owner: current.owner, result };
+  if (process.platform === "win32") key = key.toLowerCase();
+  invariant(!activeRecoveries.has(key), "LOCK_CHANGED", "同一进程已有锁恢复进行中；请重新读取状态。" );
+  // Reserve before the first await; the file claim still arbitrates across processes.
+  activeRecoveries.add(key);
+  try {
+    const current = await inspectLock(lockPath);
+    invariant(current.status === "stale" && current.owner.token === token, "LOCK_NOT_RECOVERABLE", "只能恢复同机、确定已退出且 token 匹配的所有者锁；旧格式或未知锁不能自动回收。", current);
+    const claimToken = randomUUID(), claimFile = `claim-${current.originalToken}-${process.pid}-${claimToken}.json`;
+    // 原子认领唯一代次；竞争恢复者只能重命名旧文件，不能移走新锁目录。
+    try { await rename(path.join(lockPath, current.file), path.join(lockPath, claimFile)); } catch (error) {
+      if (["ENOENT", "ENOTDIR"].includes(error.code)) throw new HarnessError("LOCK_CHANGED", "锁已被其他恢复操作处理；请重新读取状态。" );
+      throw error;
+    }
+    // 检查失败保留认领锁及原始记录，禁止等待中的写入提前进入损坏控制面。
+    const result = await action(current.owner);
+    await releaseOwner(lockPath, claimFile, claimToken);
+    return { recovered: true, owner: current.owner, result };
+  } finally {
+    activeRecoveries.delete(key);
+  }
 }
 
 export async function withFileLock(lockPath, action, timeoutMs = 5000) {

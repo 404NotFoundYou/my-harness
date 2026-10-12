@@ -1,0 +1,104 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "BUG-LOCK-RECOVERY-RACE-20261012",
+  "mode": "single",
+  "rationale": "一个锁认领根因纵向任务涵盖源文件、确定性反例、恢复和调用方回归；高风险独立复核，不拆分规避门禁。",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "修复同进程并发旧锁恢复",
+      "module": ".ai-harness/src/locking.mjs",
+      "status": "COMPLETED",
+      "attempt": 1,
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        ".ai-harness/src/locking.mjs",
+        ".ai-harness/tests/locking.test.mjs"
+      ],
+      "verification": [
+        "node --test .ai-harness/tests/locking.test.mjs",
+        "node --test .ai-harness/tests/workflow.test.mjs",
+        "node --test .ai-harness/tests/reliability.test.mjs",
+        "node --test benchmarks/tests/resume.test.mjs",
+        "node --check .ai-harness/src/locking.mjs"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            "--test",
+            ".ai-harness/tests/locking.test.mjs"
+          ]
+        },
+        {
+          "id": "V2",
+          "command": "node",
+          "args": [
+            "--test",
+            ".ai-harness/tests/workflow.test.mjs"
+          ]
+        },
+        {
+          "id": "V3",
+          "command": "node",
+          "args": [
+            "--test",
+            ".ai-harness/tests/reliability.test.mjs"
+          ]
+        },
+        {
+          "id": "V4",
+          "command": "node",
+          "args": [
+            "--test",
+            "benchmarks/tests/resume.test.mjs"
+          ]
+        },
+        {
+          "id": "V5",
+          "command": "node",
+          "args": [
+            "--check",
+            ".ai-harness/src/locking.mjs"
+          ]
+        }
+      ],
+      "docsImpact": [
+        "N/A: 修复既定唯一恢复者语义，不新增用户接口；设计及限制记于工作项solution.md"
+      ],
+      "reviewBatch": "R1",
+      "risk": "high",
+      "owner": "primary-ai",
+      "verificationStatus": "pass",
+      "reviewStatus": "pass",
+      "evidence": [
+        "9afc9697-5d78-4def-9753-0b9f441be231",
+        "2c1e6262-1f72-419b-b875-0bd64baf04e9"
+      ],
+      "deferralApproval": null,
+      "verificationSource": {
+        "digest": "5fc789879294ce7c1fd5b8f8a19037cf720a5446a503760becc0263c5981d5f1",
+        "document": ".ai-harness/work-items/BUG-LOCK-RECOVERY-RACE-20261012/snapshots/5fc789879294ce7c1fd5b8f8a19037cf720a5446a503760becc0263c5981d5f1.json"
+      },
+      "reviewSource": {
+        "digest": "5fc789879294ce7c1fd5b8f8a19037cf720a5446a503760becc0263c5981d5f1",
+        "document": ".ai-harness/work-items/BUG-LOCK-RECOVERY-RACE-20261012/snapshots/5fc789879294ce7c1fd5b8f8a19037cf720a5446a503760becc0263c5981d5f1.json"
+      }
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "锁恢复并发互斥",
+      "risk": "high",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": true
+    }
+  ],
+  "createdAt": "2026-10-12T02:37:20.910Z",
+  "updatedAt": "2026-10-12T03:03:16.138Z"
+}
