@@ -1,0 +1,207 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 1,
+  "id": "csv-iteration",
+  "type": "ITERATION",
+  "title": "完成csv固定迭代",
+  "status": "DONE",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/iteration.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "TASK.md中的已授权固定任务"
+  },
+  "input": {
+    "references": [
+      "TASK.md"
+    ],
+    "acceptance": [
+      "保持TASK.md的公开契约并通过test/public.test.mjs"
+    ],
+    "nonGoals": [],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": null,
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "TASK.md"
+    ],
+    "completedAt": "2026-10-13T06:52:07.130Z",
+    "repository": {
+      "isGit": true,
+      "branch": "master",
+      "commit": "28f25163d256576900a18a03ed9e70a9e6d34a26",
+      "dirty": false,
+      "changedFiles": [],
+      "fingerprints": {},
+      "source": {
+        "digest": "8fbbad15cbb72920ae8d3c6eb5e61fc34aef6d02c6d8dc78e30c9a1dbf184a64",
+        "document": ".ai-harness/work-items/csv-iteration/snapshots/8fbbad15cbb72920ae8d3c6eb5e61fc34aef6d02c6d8dc78e30c9a1dbf184a64.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": ".ai-harness/work-items/csv-iteration/solution.md",
+    "evidence": [
+      "在parseCsv内使用逐字符状态机区分字段起始、裸字段、引号字段和闭合引号，严格校验语法并保留换行及空白；新增边界和调用方兼容测试，不修改接口或依赖。"
+    ],
+    "completedAt": "2026-10-13T06:52:07.239Z"
+  },
+  "database": {
+    "impact": "none",
+    "status": "not-applicable",
+    "document": null,
+    "evidence": [
+      "TASK.md明确无数据库影响"
+    ],
+    "completedAt": "2026-10-13T06:52:07.244Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/csv-iteration/plan.json",
+    "approved": true,
+    "approvalRef": "TASK.md中的已授权固定任务"
+  },
+  "verification": {
+    "status": "pass",
+    "evidence": [
+      "3f3ef482-20da-4006-88bf-6f5b800ffdd5"
+    ],
+    "stages": [],
+    "source": {
+      "digest": "d029ad7d6ff454900a4d7130509cfe119158d7c92cf16a0ed673a230b26da0b1",
+      "document": ".ai-harness/work-items/csv-iteration/snapshots/d029ad7d6ff454900a4d7130509cfe119158d7c92cf16a0ed673a230b26da0b1.json"
+    }
+  },
+  "review": {
+    "status": "pass",
+    "evidence": [
+      "ec1487d3-b302-4712-9332-5ea1a091bc12"
+    ],
+    "independent": false,
+    "source": {
+      "digest": "d029ad7d6ff454900a4d7130509cfe119158d7c92cf16a0ed673a230b26da0b1",
+      "document": ".ai-harness/work-items/csv-iteration/snapshots/d029ad7d6ff454900a4d7130509cfe119158d7c92cf16a0ed673a230b26da0b1.json"
+    }
+  },
+  "acceptance": {
+    "status": "pass",
+    "evidence": [
+      "e9def0d8-8c52-4ecb-abdc-a47b78868ad1"
+    ],
+    "source": {
+      "digest": "d029ad7d6ff454900a4d7130509cfe119158d7c92cf16a0ed673a230b26da0b1",
+      "document": ".ai-harness/work-items/csv-iteration/snapshots/d029ad7d6ff454900a4d7130509cfe119158d7c92cf16a0ed673a230b26da0b1.json"
+    }
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "not-applicable",
+    "evidence": [
+      "a47a7e0d-f60c-4559-b532-0e011d87e933"
+    ]
+  },
+  "blocked": null,
+  "delivery": {
+    "source": {
+      "digest": "d029ad7d6ff454900a4d7130509cfe119158d7c92cf16a0ed673a230b26da0b1",
+      "document": ".ai-harness/work-items/csv-iteration/snapshots/d029ad7d6ff454900a4d7130509cfe119158d7c92cf16a0ed673a230b26da0b1.json"
+    },
+    "baseline": {
+      "digest": "8fbbad15cbb72920ae8d3c6eb5e61fc34aef6d02c6d8dc78e30c9a1dbf184a64",
+      "document": ".ai-harness/work-items/csv-iteration/snapshots/8fbbad15cbb72920ae8d3c6eb5e61fc34aef6d02c6d8dc78e30c9a1dbf184a64.json"
+    },
+    "baselineAt": "2026-10-13T06:52:07.130Z",
+    "ownedChanges": [
+      {
+        "path": "src/csv.mjs",
+        "before": "100644:865133e55d2a6204011eee26110f9f994c8f2745",
+        "after": "100644:805f51777e9d85fc7c94bddd91006f30cd84fc8c"
+      },
+      {
+        "path": "test/extra.test.mjs",
+        "before": null,
+        "after": "100644:8baf7ed54d44d3e80d1b0ad2776dae8dde756986"
+      }
+    ],
+    "planDigest": "7c81134c902a5a877c7d4d318badb5e2dd20e1115bbc6a9019720c0d92760fe4",
+    "at": "2026-10-13T06:53:41.209Z",
+    "head": "28f25163d256576900a18a03ed9e70a9e6d34a26"
+  },
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-10-13T06:52:06.991Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-10-13T06:52:07.004Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-10-13T06:52:07.232Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-10-13T06:52:07.292Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-10-13T06:52:07.303Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "VERIFYING",
+      "at": "2026-10-13T06:53:39.565Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "VERIFYING",
+      "to": "CODE_REVIEW",
+      "at": "2026-10-13T06:53:40.018Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "CODE_REVIEW",
+      "to": "READY_FOR_ACCEPTANCE",
+      "at": "2026-10-13T06:53:40.465Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "READY_FOR_ACCEPTANCE",
+      "to": "DONE",
+      "at": "2026-10-13T06:53:41.314Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-10-13T06:52:06.991Z",
+  "updatedAt": "2026-10-13T06:53:41.314Z"
+}

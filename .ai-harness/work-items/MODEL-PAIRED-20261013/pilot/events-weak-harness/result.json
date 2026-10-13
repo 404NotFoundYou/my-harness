@@ -1,0 +1,243 @@
+{
+  "schemaVersion": 1,
+  "trial": 1,
+  "mode": "real",
+  "client": "codex",
+  "taskId": "events",
+  "split": "holdout",
+  "group": "weak-harness",
+  "model": "gpt-6-astra",
+  "taskDigest": "e8a7130efc1592e2fdb89853fd6ba482da6b67285b7887b074da97ae289d4b2d",
+  "judgeDigest": "653600052c1e1ab18c5601412a2c49b1d6f0106747aca300db788e819dc765ae",
+  "candidateDigest": "8a2abf58c5aeee476da1dfb4d87688e45688ba5eee3b40aed913db23ad2a966a",
+  "budget": {
+    "timeoutMs": 180000,
+    "maxToolCalls": 80,
+    "reasoning": "medium"
+  },
+  "run": {
+    "mode": "real",
+    "client": "codex",
+    "startedAt": "2026-10-13T07:01:59.393Z",
+    "durationMs": 180395,
+    "timing": {
+      "basis": "local-event-receive-time",
+      "toolActiveMs": 6257,
+      "otherElapsedMs": 174138,
+      "spans": [
+        {
+          "id": "item_3",
+          "startMs": 11698,
+          "endMs": 11856,
+          "category": "unknown",
+          "complete": true
+        },
+        {
+          "id": "item_4",
+          "startMs": 30426,
+          "endMs": 30618,
+          "category": "unknown",
+          "complete": true
+        },
+        {
+          "id": "item_6",
+          "startMs": 45579,
+          "endMs": 46347,
+          "category": "planning",
+          "complete": true
+        },
+        {
+          "id": "item_7",
+          "startMs": 53955,
+          "endMs": 54096,
+          "category": "unknown",
+          "complete": true
+        },
+        {
+          "id": "item_8",
+          "startMs": 129167,
+          "endMs": 129798,
+          "category": "verification",
+          "complete": true
+        },
+        {
+          "id": "item_9",
+          "startMs": 136484,
+          "endMs": 137448,
+          "category": "verification",
+          "complete": true
+        },
+        {
+          "id": "item_11",
+          "startMs": 158042,
+          "endMs": 161445,
+          "category": "completion",
+          "complete": true
+        }
+      ],
+      "categories": {
+        "unknown": {
+          "calls": 3,
+          "activeMs": 491
+        },
+        "planning": {
+          "calls": 1,
+          "activeMs": 768
+        },
+        "verification": {
+          "calls": 2,
+          "activeMs": 1595
+        },
+        "completion": {
+          "calls": 1,
+          "activeMs": 3403
+        }
+      },
+      "unmatchedCompletions": [],
+      "limitation": "工具区间按接收事件估计并合并重叠；其余耗时包含模型、网络、客户端启动和收尾，不等于纯推理耗时。"
+    },
+    "exitCode": 1,
+    "timedOut": true,
+    "toolLimit": false,
+    "toolCalls": 7,
+    "turnCompleted": false,
+    "protocolSuccess": false,
+    "usage": null,
+    "errors": [],
+    "warnings": [],
+    "unparsedLines": 0,
+    "error": null,
+    "final": null,
+    "completed": false
+  },
+  "scope": {
+    "ok": true,
+    "changes": [
+      {
+        "path": "src/reconcile.mjs",
+        "before": "033e356666be01c5f7f5f885bb91b2bd51768db10dfbc17f86be1dbffc0a4c0f",
+        "after": "8a2abf58c5aeee476da1dfb4d87688e45688ba5eee3b40aed913db23ad2a966a"
+      },
+      {
+        "path": ".ai-harness/work-items/benchmark-begin-spec.json",
+        "before": null,
+        "after": "96af4dc9cb311c38fbc8240f916bc7b3dc684f0546a6493fda3e22c4cd2b95cd"
+      },
+      {
+        "path": ".ai-harness/work-items/events-iteration/events.jsonl",
+        "before": null,
+        "after": "abd12e0d1499ba20603d17f145b0f8ef6868f4a130b96580cad3f65cf418e229"
+      },
+      {
+        "path": ".ai-harness/work-items/events-iteration/evidence.jsonl",
+        "before": null,
+        "after": "33471cca112c14f7cca3ee4f21ced0ac2be2fa221eea2a4dc65b50c0dee872bc"
+      },
+      {
+        "path": ".ai-harness/work-items/events-iteration/plan.json",
+        "before": null,
+        "after": "666cfa1845e6678b6b9f210082e90641eb7d1ec3a7c45dcc237a2a5e6833069c"
+      },
+      {
+        "path": ".ai-harness/work-items/events-iteration/snapshots/200928a3ecca8be919d4510ef7a7443b83422cbba22b8c66b23047fc94b41ab2.json",
+        "before": null,
+        "after": "584f0ee875154b31c2e07e0172069db026caa47f428a428d09b48106b91ff049"
+      },
+      {
+        "path": ".ai-harness/work-items/events-iteration/snapshots/57b44682eff279005c716fbb935ed55ab9846dba1164455f29ea84accf53a291.json",
+        "before": null,
+        "after": "5b9bd557eb2bcd264cbfc7fb7da4f80854b03be474bafb7cb34e6d6165c2dfca"
+      },
+      {
+        "path": ".ai-harness/work-items/events-iteration/solution.md",
+        "before": null,
+        "after": "c3d3cc54732fabef1763552237765d31b5a45950fa03fd047328a96ee019c125"
+      },
+      {
+        "path": ".ai-harness/work-items/events-iteration/state.json",
+        "before": null,
+        "after": "99b2c0610823f2fdadd623675fb46624379ca3c8f791ac92657fa9acb4e7c581"
+      },
+      {
+        "path": "test/extra.test.mjs",
+        "before": null,
+        "after": "af6caf30bc3be32953ba0de362b8f7a3fd1ae6c4edac6ae500858593cbe39dd4"
+      }
+    ],
+    "violations": []
+  },
+  "workflow": {
+    "ok": true,
+    "errors": [],
+    "workItems": [
+      "events-iteration"
+    ]
+  },
+  "grade": {
+    "complete": true,
+    "ok": true,
+    "cases": [
+      {
+        "id": "stale",
+        "pass": true
+      },
+      {
+        "id": "tombstone",
+        "pass": true
+      },
+      {
+        "id": "same-version",
+        "pass": true
+      },
+      {
+        "id": "resurrection",
+        "pass": true
+      },
+      {
+        "id": "idempotent",
+        "pass": true
+      },
+      {
+        "id": "sorted",
+        "pass": true
+      },
+      {
+        "id": "ordinary-string-ids",
+        "pass": true
+      },
+      {
+        "id": "immutable",
+        "pass": true
+      },
+      {
+        "id": "invalid-shape",
+        "pass": true
+      },
+      {
+        "id": "invalid-version",
+        "pass": true
+      },
+      {
+        "id": "duplicate-current",
+        "pass": true
+      },
+      {
+        "id": "clean-fields",
+        "pass": true
+      }
+    ],
+    "expectedCases": 12,
+    "exitCode": 0,
+    "timedOut": false,
+    "stderr": "",
+    "error": null
+  },
+  "success": false,
+  "falseCompletion": false,
+  "falseFunctionalCompletion": false,
+  "execution": {
+    "protocolSha256": "9054c37334c267a1ce3ee478fbfbd8d32f8bd9a58d55a00dba58fd69670d4754",
+    "sourceBefore": "1f4a315ae615f170cf4c025d649301cba22802c63ddc6e324b70c8736afbfb7f",
+    "sourceAfter": "1f4a315ae615f170cf4c025d649301cba22802c63ddc6e324b70c8736afbfb7f"
+  }
+}

@@ -1,0 +1,4 @@
+请在当前临时项目完成TASK.md中的迭代，先读规格、实现、src/caller.mjs和公共测试，然后实现并验证。
+只有src/csv.mjs和新增test/extra.test.mjs可写（Harness组另可通过CLI维护工作项控制面）。不要修改原有测试或规格，不安装依赖、不访问网络、不提交Git。无需询问已授权的实现选择。
+预算180秒、80次工具调用；到期如实报告未完成。最终按结构化格式报告completed、summary和实际运行的tests。
+本组已安装并初始化Harness。.ai-harness/work-items/benchmark-begin-spec.json已预填公开写入范围和公共验证命令，不要编辑该JSON；根据实际方案判断risk(low/medium)与approach后，通过node .ai-harness/bin/harness.mjs begin --spec .ai-harness/work-items/benchmark-begin-spec.json --risk <low或medium> --approach "<实际方案>" --json提交。创建后用guide --id csv-iteration --task T1 --brief --json查看缺失事项；先完成实现和必要额外测试，最后用run --id csv-iteration --all --json执行全部计划检查。检查通过后不要再修改产品文件，立即按guide的finish模板收尾并执行check --ci；两者均通过后返回结构化最终结果，未完成如实报告。

@@ -1,0 +1,207 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 1,
+  "id": "allocation-iteration",
+  "type": "ITERATION",
+  "title": "完成allocation固定迭代",
+  "status": "DONE",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/iteration.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "TASK.md中的已授权固定任务"
+  },
+  "input": {
+    "references": [
+      "TASK.md"
+    ],
+    "acceptance": [
+      "保持TASK.md的公开契约并通过test/public.test.mjs"
+    ],
+    "nonGoals": [],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": null,
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "TASK.md"
+    ],
+    "completedAt": "2026-10-13T06:54:29.204Z",
+    "repository": {
+      "isGit": true,
+      "branch": "master",
+      "commit": "fa218f3a83b6fe9f3a351680350c72cc40d0a38f",
+      "dirty": false,
+      "changedFiles": [],
+      "fingerprints": {},
+      "source": {
+        "digest": "0738ca1984fc396ae74eeaf1a04395e5241bbdfd75794fdc096f605f8fc0a12c",
+        "document": ".ai-harness/work-items/allocation-iteration/snapshots/0738ca1984fc396ae74eeaf1a04395e5241bbdfd75794fdc096f605f8fc0a12c.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": ".ai-harness/work-items/allocation-iteration/solution.md",
+    "evidence": [
+      "校验非负安全整数和非空稠密数组，以BigInt计算精确商及余数，按余数降序和索引升序补足后返回Number数组；增加边界、非法输入及调用方兼容测试"
+    ],
+    "completedAt": "2026-10-13T06:54:29.291Z"
+  },
+  "database": {
+    "impact": "none",
+    "status": "not-applicable",
+    "document": null,
+    "evidence": [
+      "TASK.md明确无数据库影响"
+    ],
+    "completedAt": "2026-10-13T06:54:29.295Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/allocation-iteration/plan.json",
+    "approved": true,
+    "approvalRef": "TASK.md中的已授权固定任务"
+  },
+  "verification": {
+    "status": "pass",
+    "evidence": [
+      "3d6fc480-03e5-4145-87cf-fe2161571855"
+    ],
+    "stages": [],
+    "source": {
+      "digest": "dd1c8d02405423e06c86ca4ddae61bb4c6e392270ecc3a6be1ea7c03c47da578",
+      "document": ".ai-harness/work-items/allocation-iteration/snapshots/dd1c8d02405423e06c86ca4ddae61bb4c6e392270ecc3a6be1ea7c03c47da578.json"
+    }
+  },
+  "review": {
+    "status": "pass",
+    "evidence": [
+      "7df8adbf-751e-4f36-a91c-66eb508ba153"
+    ],
+    "independent": false,
+    "source": {
+      "digest": "dd1c8d02405423e06c86ca4ddae61bb4c6e392270ecc3a6be1ea7c03c47da578",
+      "document": ".ai-harness/work-items/allocation-iteration/snapshots/dd1c8d02405423e06c86ca4ddae61bb4c6e392270ecc3a6be1ea7c03c47da578.json"
+    }
+  },
+  "acceptance": {
+    "status": "pass",
+    "evidence": [
+      "d04fa76a-528f-44c3-88f7-160835cc7cf5"
+    ],
+    "source": {
+      "digest": "dd1c8d02405423e06c86ca4ddae61bb4c6e392270ecc3a6be1ea7c03c47da578",
+      "document": ".ai-harness/work-items/allocation-iteration/snapshots/dd1c8d02405423e06c86ca4ddae61bb4c6e392270ecc3a6be1ea7c03c47da578.json"
+    }
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "not-applicable",
+    "evidence": [
+      "637a30c1-b51a-42a8-9efc-014d83788fdf"
+    ]
+  },
+  "blocked": null,
+  "delivery": {
+    "source": {
+      "digest": "dd1c8d02405423e06c86ca4ddae61bb4c6e392270ecc3a6be1ea7c03c47da578",
+      "document": ".ai-harness/work-items/allocation-iteration/snapshots/dd1c8d02405423e06c86ca4ddae61bb4c6e392270ecc3a6be1ea7c03c47da578.json"
+    },
+    "baseline": {
+      "digest": "0738ca1984fc396ae74eeaf1a04395e5241bbdfd75794fdc096f605f8fc0a12c",
+      "document": ".ai-harness/work-items/allocation-iteration/snapshots/0738ca1984fc396ae74eeaf1a04395e5241bbdfd75794fdc096f605f8fc0a12c.json"
+    },
+    "baselineAt": "2026-10-13T06:54:29.204Z",
+    "ownedChanges": [
+      {
+        "path": "src/allocate.mjs",
+        "before": "100644:4fbc85fe7906491da3cc550bc89e0121c64b7e09",
+        "after": "100644:ff8aa2d32c8c1b419fb6a33ff6ed18b0717cc9ef"
+      },
+      {
+        "path": "test/extra.test.mjs",
+        "before": null,
+        "after": "100644:5ceed5e5a1df7e2527b4c4999c254f073d9eba6a"
+      }
+    ],
+    "planDigest": "946d7dcbcb1c6f7104cee86e225de52e9dbb0c8ef585ab4750128fee5a7842e7",
+    "at": "2026-10-13T06:56:01.678Z",
+    "head": "fa218f3a83b6fe9f3a351680350c72cc40d0a38f"
+  },
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-10-13T06:54:29.081Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-10-13T06:54:29.091Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-10-13T06:54:29.286Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-10-13T06:54:29.326Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-10-13T06:54:29.330Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "VERIFYING",
+      "at": "2026-10-13T06:56:00.038Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "VERIFYING",
+      "to": "CODE_REVIEW",
+      "at": "2026-10-13T06:56:00.473Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "CODE_REVIEW",
+      "to": "READY_FOR_ACCEPTANCE",
+      "at": "2026-10-13T06:56:00.931Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "READY_FOR_ACCEPTANCE",
+      "to": "DONE",
+      "at": "2026-10-13T06:56:01.778Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-10-13T06:54:29.081Z",
+  "updatedAt": "2026-10-13T06:56:01.778Z"
+}

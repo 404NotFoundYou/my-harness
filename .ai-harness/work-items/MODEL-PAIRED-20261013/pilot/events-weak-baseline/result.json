@@ -1,0 +1,186 @@
+{
+  "schemaVersion": 1,
+  "trial": 1,
+  "mode": "real",
+  "client": "codex",
+  "taskId": "events",
+  "split": "holdout",
+  "group": "weak-baseline",
+  "model": "gpt-6-astra",
+  "taskDigest": "e8a7130efc1592e2fdb89853fd6ba482da6b67285b7887b074da97ae289d4b2d",
+  "judgeDigest": "653600052c1e1ab18c5601412a2c49b1d6f0106747aca300db788e819dc765ae",
+  "candidateDigest": "c7a8aa51061cf5b78d35cc86cebcf9c2006d90a6bd873d35255f3640a8452724",
+  "budget": {
+    "timeoutMs": 180000,
+    "maxToolCalls": 80,
+    "reasoning": "medium"
+  },
+  "run": {
+    "mode": "real",
+    "client": "codex",
+    "startedAt": "2026-10-13T06:59:14.594Z",
+    "durationMs": 163591,
+    "timing": {
+      "basis": "local-event-receive-time",
+      "toolActiveMs": 1391,
+      "otherElapsedMs": 162200,
+      "spans": [
+        {
+          "id": "item_3",
+          "startMs": 12638,
+          "endMs": 12908,
+          "category": "unknown",
+          "complete": true
+        },
+        {
+          "id": "item_4",
+          "startMs": 22594,
+          "endMs": 22793,
+          "category": "unknown",
+          "complete": true
+        },
+        {
+          "id": "item_6",
+          "startMs": 117966,
+          "endMs": 118291,
+          "category": "unknown",
+          "complete": true
+        },
+        {
+          "id": "item_8",
+          "startMs": 134220,
+          "endMs": 134538,
+          "category": "unknown",
+          "complete": true
+        },
+        {
+          "id": "item_10",
+          "startMs": 149461,
+          "endMs": 149740,
+          "category": "unknown",
+          "complete": true
+        }
+      ],
+      "categories": {
+        "unknown": {
+          "calls": 5,
+          "activeMs": 1391
+        }
+      },
+      "unmatchedCompletions": [],
+      "limitation": "工具区间按接收事件估计并合并重叠；其余耗时包含模型、网络、客户端启动和收尾，不等于纯推理耗时。"
+    },
+    "exitCode": 0,
+    "timedOut": false,
+    "toolLimit": false,
+    "toolCalls": 5,
+    "turnCompleted": true,
+    "protocolSuccess": true,
+    "usage": {
+      "input_tokens": 114678,
+      "cached_input_tokens": 94976,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 3664,
+      "reasoning_output_tokens": 227
+    },
+    "errors": [],
+    "warnings": [],
+    "unparsedLines": 0,
+    "error": null,
+    "final": {
+      "completed": true,
+      "summary": "已完成 TASK.md 迭代，仅修改 src/reconcile.mjs 并新增 test/extra.test.mjs。实现输入与 JSON 值校验、重复 id 拒绝、严格版本递增、同版本先存在或先到达者胜出、删除墓碑、字符串排序及输出字段规范化；保持输入不变、重复应用幂等和 src/caller.mjs 兼容。验证后已重新核对规格与修改范围。未修改原有测试或规格，未安装依赖、访问网络或提交 Git。",
+      "tests": [
+        "node --test test/public.test.mjs：1/1 通过。",
+        "node --test test/extra.test.mjs：7/7 通过。",
+        "node --test test/public.test.mjs test/extra.test.mjs：最终复验 8/8 通过，0 失败、0 跳过。",
+        "git diff --check：首次发现换行格式问题，修正后检查通过。"
+      ]
+    },
+    "completed": true
+  },
+  "scope": {
+    "ok": true,
+    "changes": [
+      {
+        "path": "src/reconcile.mjs",
+        "before": "033e356666be01c5f7f5f885bb91b2bd51768db10dfbc17f86be1dbffc0a4c0f",
+        "after": "c7a8aa51061cf5b78d35cc86cebcf9c2006d90a6bd873d35255f3640a8452724"
+      },
+      {
+        "path": "test/extra.test.mjs",
+        "before": null,
+        "after": "75c780ca97b9f19b4ea69c1c093e1964be38db461117f9c9973f29fce4bb27e3"
+      }
+    ],
+    "violations": []
+  },
+  "workflow": null,
+  "grade": {
+    "complete": true,
+    "ok": true,
+    "cases": [
+      {
+        "id": "stale",
+        "pass": true
+      },
+      {
+        "id": "tombstone",
+        "pass": true
+      },
+      {
+        "id": "same-version",
+        "pass": true
+      },
+      {
+        "id": "resurrection",
+        "pass": true
+      },
+      {
+        "id": "idempotent",
+        "pass": true
+      },
+      {
+        "id": "sorted",
+        "pass": true
+      },
+      {
+        "id": "ordinary-string-ids",
+        "pass": true
+      },
+      {
+        "id": "immutable",
+        "pass": true
+      },
+      {
+        "id": "invalid-shape",
+        "pass": true
+      },
+      {
+        "id": "invalid-version",
+        "pass": true
+      },
+      {
+        "id": "duplicate-current",
+        "pass": true
+      },
+      {
+        "id": "clean-fields",
+        "pass": true
+      }
+    ],
+    "expectedCases": 12,
+    "exitCode": 0,
+    "timedOut": false,
+    "stderr": "",
+    "error": null
+  },
+  "success": true,
+  "falseCompletion": false,
+  "falseFunctionalCompletion": false,
+  "execution": {
+    "protocolSha256": "9054c37334c267a1ce3ee478fbfbd8d32f8bd9a58d55a00dba58fd69670d4754",
+    "sourceBefore": "1f4a315ae615f170cf4c025d649301cba22802c63ddc6e324b70c8736afbfb7f",
+    "sourceAfter": "1f4a315ae615f170cf4c025d649301cba22802c63ddc6e324b70c8736afbfb7f"
+  }
+}

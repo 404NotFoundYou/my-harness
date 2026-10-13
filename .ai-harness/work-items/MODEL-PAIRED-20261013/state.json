@@ -1,0 +1,197 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 1,
+  "id": "MODEL-PAIRED-20261013",
+  "type": "ITERATION",
+  "title": "当前Harness同模型配对真实试验",
+  "status": "DONE",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/iteration.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户在明确六会话/180秒/80工具及真实模型调用计划后要求根据建议执行，授权此小规模试验；不授权追加轮次或模型配置与凭据变更"
+  },
+  "input": {
+    "references": [
+      "用户根据建议执行三题两组单轮六会话真实对照；沿用本机现有gpt-6-astra/custom配置，不改变凭据或模型提供方"
+    ],
+    "acceptance": [
+      "冻结同模型题集预算与CLI身份，最多6次真实会话，不自动重试，失败超时保留",
+      "六项记录完整且审计通过，配对报告区分功能与完整交付、失败、未知用量和单轮适用边界"
+    ],
+    "nonGoals": [],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": null,
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "main@c6ab40f，产品工作区干净，doctor通过；已读runner/experiment/run/audit/report入口与预算和复验规则；现有CLI0.156.0，model=gpt-6-astra/provider=custom/requires_openai_auth=false，内置login status Not logged in不能据此判定custom不可用；dry-run六会话通过，medium推理预算明确冻结。"
+    ],
+    "completedAt": "2026-10-13T06:41:13.689Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "c6ab40fc949afbee1ab6f979d3c895e2c0901897",
+      "dirty": false,
+      "changedFiles": [],
+      "fingerprints": {},
+      "source": {
+        "digest": "1f4a315ae615f170cf4c025d649301cba22802c63ddc6e324b70c8736afbfb7f",
+        "document": ".ai-harness/work-items/MODEL-PAIRED-20261013/snapshots/1f4a315ae615f170cf4c025d649301cba22802c63ddc6e324b70c8736afbfb7f.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": ".ai-harness/work-items/MODEL-PAIRED-20261013/solution.md",
+    "evidence": [
+      "复用冻结协议v4、现有runner/audit/report；单轮六会话预算已dry-run，真实provider认证与模型列表预检可用；验证入口只读实际产物并拒绝模拟或连接失败冒充收益。"
+    ],
+    "completedAt": "2026-10-13T06:47:51.855Z"
+  },
+  "database": {
+    "impact": "none",
+    "status": "not-applicable",
+    "document": null,
+    "evidence": [
+      "评测仅自有临时Git仓库和工作项产物，无数据库或业务数据变更。"
+    ],
+    "completedAt": "2026-10-13T06:47:51.954Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/MODEL-PAIRED-20261013/plan.json",
+    "approved": true,
+    "approvalRef": "用户根据建议执行授权已明确六会话真实试验，模型沿现有gpt-6-astra；不追加轮次、不更改凭据/全局配置/评分，仅工作项与隔离夹具写入"
+  },
+  "verification": {
+    "status": "pass",
+    "evidence": [
+      "d5be6675-f1e2-4008-95c5-6f2317de16e3"
+    ],
+    "stages": [],
+    "source": {
+      "digest": "1f4a315ae615f170cf4c025d649301cba22802c63ddc6e324b70c8736afbfb7f",
+      "document": ".ai-harness/work-items/MODEL-PAIRED-20261013/snapshots/1f4a315ae615f170cf4c025d649301cba22802c63ddc6e324b70c8736afbfb7f.json"
+    }
+  },
+  "review": {
+    "status": "pass",
+    "evidence": [
+      "7708bd19-943f-40fc-b7db-0ce2b5ece0d8"
+    ],
+    "independent": false,
+    "source": {
+      "digest": "1f4a315ae615f170cf4c025d649301cba22802c63ddc6e324b70c8736afbfb7f",
+      "document": ".ai-harness/work-items/MODEL-PAIRED-20261013/snapshots/1f4a315ae615f170cf4c025d649301cba22802c63ddc6e324b70c8736afbfb7f.json"
+    }
+  },
+  "acceptance": {
+    "status": "pass",
+    "evidence": [
+      "c1355d68-705c-496e-af68-98967baf3b09"
+    ],
+    "source": {
+      "digest": "1f4a315ae615f170cf4c025d649301cba22802c63ddc6e324b70c8736afbfb7f",
+      "document": ".ai-harness/work-items/MODEL-PAIRED-20261013/snapshots/1f4a315ae615f170cf4c025d649301cba22802c63ddc6e324b70c8736afbfb7f.json"
+    }
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "pass",
+    "evidence": [
+      "97443323-e0f7-4e4c-b6b2-3511625846a7"
+    ]
+  },
+  "blocked": null,
+  "delivery": {
+    "source": {
+      "digest": "1f4a315ae615f170cf4c025d649301cba22802c63ddc6e324b70c8736afbfb7f",
+      "document": ".ai-harness/work-items/MODEL-PAIRED-20261013/snapshots/1f4a315ae615f170cf4c025d649301cba22802c63ddc6e324b70c8736afbfb7f.json"
+    },
+    "baseline": {
+      "digest": "1f4a315ae615f170cf4c025d649301cba22802c63ddc6e324b70c8736afbfb7f",
+      "document": ".ai-harness/work-items/MODEL-PAIRED-20261013/snapshots/1f4a315ae615f170cf4c025d649301cba22802c63ddc6e324b70c8736afbfb7f.json"
+    },
+    "baselineAt": "2026-10-13T06:41:13.689Z",
+    "ownedChanges": [],
+    "planDigest": "4542311e9f0fa03052bb1a6eb25b8f8dcd9e13ad5037150b35bb730b24a907c8",
+    "at": "2026-10-13T07:13:23.920Z",
+    "head": "c6ab40fc949afbee1ab6f979d3c895e2c0901897"
+  },
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-10-13T06:41:13.396Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-10-13T06:41:13.495Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-10-13T06:41:13.850Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-10-13T06:47:52.411Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-10-13T06:47:52.500Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "VERIFYING",
+      "at": "2026-10-13T07:13:21.257Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "VERIFYING",
+      "to": "CODE_REVIEW",
+      "at": "2026-10-13T07:13:21.790Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "CODE_REVIEW",
+      "to": "READY_FOR_ACCEPTANCE",
+      "at": "2026-10-13T07:13:22.349Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "READY_FOR_ACCEPTANCE",
+      "to": "DONE",
+      "at": "2026-10-13T07:13:24.033Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-10-13T06:41:13.396Z",
+  "updatedAt": "2026-10-13T07:13:24.033Z"
+}

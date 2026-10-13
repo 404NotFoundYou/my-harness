@@ -1,0 +1,30 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { readFile, writeFile } from "node:fs/promises";
+import { auditExperiment } from "../../../benchmarks/audit.mjs";
+import { createComparisonReport } from "../../../benchmarks/report.mjs";
+import { sourceSnapshot } from "../../src/snapshot.mjs";
+
+const directory = path.dirname(fileURLToPath(import.meta.url));
+const root = path.resolve(directory, "../../..");
+const pilot = path.join(directory, "pilot");
+test("the real paired pilot retains every bounded trial and produces an evidence-backed comparison", async () => {
+  const protocol = JSON.parse(await readFile(path.join(pilot, "protocol.json"), "utf8"));
+  const audited = await auditExperiment(pilot);
+  assert.equal(audited.valid, true);
+  assert.equal(audited.mode, "real", "simulated framework runs cannot establish actual Harness effects");
+  assert.equal(audited.samples, 6, "all six sessions, including failures and timeouts, must remain in the denominator");
+  assert.equal(protocol.source, (await sourceSnapshot(root)).digest, "trial evidence must bind the intended current source");
+  assert.equal(protocol.suite, "core"); assert.equal(protocol.comparison, "paired"); assert.equal(protocol.repetitions, 1);
+  assert.deepEqual(protocol.budget, { timeoutMs: 180000, maxToolCalls: 80, reasoning: "medium" });
+  assert.deepEqual(protocol.groups.map(group => group.model), ["gpt-6-astra", "gpt-6-astra"], "only Harness use may differ between model groups");
+  assert.match(protocol.driverIdentity.sha256, /^[a-f0-9]{64}$/);
+  assert.ok(audited.rows.some(row => row.run.turnCompleted || row.run.toolCalls > 0), "connection-only failures cannot be described as a model effectiveness experiment");
+  const report = await createComparisonReport({ outputDirectory: pilot });
+  assert.equal(report.ok, true, "the report must reject missing, changed, or inconsistent real evidence");
+  assert.equal(report.mode, "real"); assert.equal(report.experiment.samples, 6);
+  await writeFile(path.join(directory, "audit.json"), JSON.stringify({ ...audited, rows: undefined }, null, 2) + "\n");
+  await writeFile(path.join(directory, "comparison.json"), JSON.stringify(report, null, 2) + "\n");
+});

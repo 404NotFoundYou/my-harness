@@ -1,0 +1,400 @@
+{
+  "ok": true,
+  "readOnly": true,
+  "schemaVersion": 1,
+  "mode": "real",
+  "source": "1f4a315ae615f170cf4c025d649301cba22802c63ddc6e324b70c8736afbfb7f",
+  "protocolSha256": "9054c37334c267a1ce3ee478fbfbd8d32f8bd9a58d55a00dba58fd69670d4754",
+  "experiment": {
+    "suite": "core",
+    "client": "codex",
+    "comparison": "paired",
+    "repetitions": 1,
+    "groups": [
+      {
+        "id": "weak-baseline",
+        "model": "gpt-6-astra",
+        "harness": false
+      },
+      {
+        "id": "weak-harness",
+        "model": "gpt-6-astra",
+        "harness": true
+      }
+    ],
+    "budget": {
+      "timeoutMs": 180000,
+      "maxToolCalls": 80,
+      "reasoning": "medium"
+    },
+    "createdAt": "2026-10-13T06:48:40.356Z",
+    "samples": 6
+  },
+  "direction": "weak-harness minus weak-baseline",
+  "pairs": [
+    {
+      "taskId": "csv",
+      "trial": 1,
+      "split": "development",
+      "baseline": {
+        "resultFile": "csv-weak-baseline/result.json",
+        "functional": true,
+        "sharedDelivery": false,
+        "fullDelivery": false,
+        "failures": [
+          "timeout",
+          "execution-failed",
+          "run-incomplete"
+        ],
+        "censored": true,
+        "censorUnknown": false,
+        "measurements": {
+          "durationMs": 180285,
+          "toolCalls": 4,
+          "inputTokens": null,
+          "outputTokens": null
+        },
+        "timing": {
+          "basis": "local-event-receive-time",
+          "toolActiveMs": 1011,
+          "otherElapsedMs": 179274,
+          "categories": [
+            {
+              "category": "unknown",
+              "calls": 4,
+              "activeMs": 1011
+            }
+          ]
+        }
+      },
+      "harness": {
+        "resultFile": "csv-weak-harness/result.json",
+        "functional": true,
+        "sharedDelivery": true,
+        "fullDelivery": true,
+        "failures": [],
+        "censored": false,
+        "censorUnknown": false,
+        "measurements": {
+          "durationMs": 135284,
+          "toolCalls": 6,
+          "inputTokens": 161853,
+          "outputTokens": 2746
+        },
+        "timing": {
+          "basis": "local-event-receive-time",
+          "toolActiveMs": 6216,
+          "otherElapsedMs": 129068,
+          "categories": [
+            {
+              "category": "unknown",
+              "calls": 1,
+              "activeMs": 159
+            },
+            {
+              "category": "planning",
+              "calls": 1,
+              "activeMs": 689
+            },
+            {
+              "category": "guidance",
+              "calls": 1,
+              "activeMs": 370
+            },
+            {
+              "category": "verification",
+              "calls": 2,
+              "activeMs": 1591
+            },
+            {
+              "category": "completion",
+              "calls": 1,
+              "activeMs": 3407
+            }
+          ]
+        }
+      },
+      "delta": {
+        "durationMs": -45001,
+        "toolCalls": 2,
+        "inputTokens": null,
+        "outputTokens": null
+      }
+    },
+    {
+      "taskId": "allocation",
+      "trial": 1,
+      "split": "development",
+      "baseline": {
+        "resultFile": "allocation-weak-baseline/result.json",
+        "functional": true,
+        "sharedDelivery": true,
+        "fullDelivery": true,
+        "failures": [],
+        "censored": false,
+        "censorUnknown": false,
+        "measurements": {
+          "durationMs": 174721,
+          "toolCalls": 6,
+          "inputTokens": 131661,
+          "outputTokens": 3193
+        },
+        "timing": {
+          "basis": "local-event-receive-time",
+          "toolActiveMs": 1653,
+          "otherElapsedMs": 173068,
+          "categories": [
+            {
+              "category": "unknown",
+              "calls": 6,
+              "activeMs": 1653
+            }
+          ]
+        }
+      },
+      "harness": {
+        "resultFile": "allocation-weak-harness/result.json",
+        "functional": true,
+        "sharedDelivery": true,
+        "fullDelivery": true,
+        "failures": [],
+        "censored": false,
+        "censorUnknown": false,
+        "measurements": {
+          "durationMs": 138712,
+          "toolCalls": 6,
+          "inputTokens": 161109,
+          "outputTokens": 2929
+        },
+        "timing": {
+          "basis": "local-event-receive-time",
+          "toolActiveMs": 6063,
+          "otherElapsedMs": 132649,
+          "categories": [
+            {
+              "category": "unknown",
+              "calls": 2,
+              "activeMs": 373
+            },
+            {
+              "category": "planning",
+              "calls": 1,
+              "activeMs": 791
+            },
+            {
+              "category": "verification",
+              "calls": 2,
+              "activeMs": 1500
+            },
+            {
+              "category": "completion",
+              "calls": 1,
+              "activeMs": 3399
+            }
+          ]
+        }
+      },
+      "delta": {
+        "durationMs": -36009,
+        "toolCalls": 0,
+        "inputTokens": 29448,
+        "outputTokens": -264
+      }
+    },
+    {
+      "taskId": "events",
+      "trial": 1,
+      "split": "holdout",
+      "baseline": {
+        "resultFile": "events-weak-baseline/result.json",
+        "functional": true,
+        "sharedDelivery": true,
+        "fullDelivery": true,
+        "failures": [],
+        "censored": false,
+        "censorUnknown": false,
+        "measurements": {
+          "durationMs": 163591,
+          "toolCalls": 5,
+          "inputTokens": 114678,
+          "outputTokens": 3664
+        },
+        "timing": {
+          "basis": "local-event-receive-time",
+          "toolActiveMs": 1391,
+          "otherElapsedMs": 162200,
+          "categories": [
+            {
+              "category": "unknown",
+              "calls": 5,
+              "activeMs": 1391
+            }
+          ]
+        }
+      },
+      "harness": {
+        "resultFile": "events-weak-harness/result.json",
+        "functional": true,
+        "sharedDelivery": false,
+        "fullDelivery": false,
+        "failures": [
+          "timeout",
+          "execution-failed",
+          "run-incomplete"
+        ],
+        "censored": true,
+        "censorUnknown": false,
+        "measurements": {
+          "durationMs": 180395,
+          "toolCalls": 7,
+          "inputTokens": null,
+          "outputTokens": null
+        },
+        "timing": {
+          "basis": "local-event-receive-time",
+          "toolActiveMs": 6257,
+          "otherElapsedMs": 174138,
+          "categories": [
+            {
+              "category": "unknown",
+              "calls": 3,
+              "activeMs": 491
+            },
+            {
+              "category": "planning",
+              "calls": 1,
+              "activeMs": 768
+            },
+            {
+              "category": "verification",
+              "calls": 2,
+              "activeMs": 1595
+            },
+            {
+              "category": "completion",
+              "calls": 1,
+              "activeMs": 3403
+            }
+          ]
+        }
+      },
+      "delta": {
+        "durationMs": 16804,
+        "toolCalls": 2,
+        "inputTokens": null,
+        "outputTokens": null
+      }
+    }
+  ],
+  "summary": {
+    "pairs": 3,
+    "censoredPairs": 2,
+    "unknownTruncationPairs": 0,
+    "outcomes": {
+      "functional": {
+        "baselineOnly": 0,
+        "harnessOnly": 0,
+        "bothPass": 3,
+        "bothFail": 0
+      },
+      "sharedDelivery": {
+        "baselineOnly": 1,
+        "harnessOnly": 1,
+        "bothPass": 1,
+        "bothFail": 0
+      },
+      "fullDelivery": {
+        "baselineOnly": 1,
+        "harnessOnly": 1,
+        "bothPass": 1,
+        "bothFail": 0
+      }
+    },
+    "measurements": {
+      "durationMs": {
+        "pairedSamples": 3,
+        "unknownPairs": 0,
+        "medianDelta": -36009
+      },
+      "toolCalls": {
+        "pairedSamples": 3,
+        "unknownPairs": 0,
+        "medianDelta": 2
+      },
+      "inputTokens": {
+        "pairedSamples": 1,
+        "unknownPairs": 2,
+        "medianDelta": 29448
+      },
+      "outputTokens": {
+        "pairedSamples": 1,
+        "unknownPairs": 2,
+        "medianDelta": -264
+      }
+    },
+    "failures": {
+      "baseline": {
+        "timeout": 1,
+        "execution-failed": 1,
+        "run-incomplete": 1
+      },
+      "harness": {
+        "timeout": 1,
+        "execution-failed": 1,
+        "run-incomplete": 1
+      }
+    },
+    "timings": {
+      "baseline": {
+        "observedSamples": 3,
+        "unknownSamples": 0,
+        "categories": [
+          {
+            "category": "unknown",
+            "calls": 15,
+            "activeMs": 4055
+          }
+        ]
+      },
+      "harness": {
+        "observedSamples": 3,
+        "unknownSamples": 0,
+        "categories": [
+          {
+            "category": "unknown",
+            "calls": 6,
+            "activeMs": 1023
+          },
+          {
+            "category": "planning",
+            "calls": 3,
+            "activeMs": 2248
+          },
+          {
+            "category": "guidance",
+            "calls": 1,
+            "activeMs": 370
+          },
+          {
+            "category": "verification",
+            "calls": 6,
+            "activeMs": 4686
+          },
+          {
+            "category": "completion",
+            "calls": 3,
+            "activeMs": 10209
+          }
+        ]
+      }
+    }
+  },
+  "limitations": [
+    "仅描述本次冻结实验；同题重复不是独立任务，不能据此证明通用能力或因果收益。",
+    "共同交付条件对两组相同；完整交付另含Harness流程门禁。strong-reference不计入配对分母。",
+    "耗时是观测区间；超时/工具预算截断不表示更快完成。缺失度量为未知，Token不换算货币费用。",
+    "失败类型可重叠，仅反映记录中的条件，不等于模型或网络根因。",
+    "工具类别区间可重叠，不相加为总耗时；其余耗时包含网络、启动和收尾，不等于纯推理耗时。",
+    "审计核验记录内部一致性；本报告不启动模型、不验证当前客户端或返回后的文件状态。"
+  ]
+}

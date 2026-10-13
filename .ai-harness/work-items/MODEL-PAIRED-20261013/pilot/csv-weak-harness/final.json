@@ -1,0 +1,9 @@
+{
+  "completed": true,
+  "summary": "已完成 TASK.md 迭代：修改 src/csv.mjs，实现严格 CSV 解析，支持 BOM、空字段与空行、三种记录换行、引号转义和非法语法校验，保持 src/caller.mjs 兼容；新增 test/extra.test.mjs。公共测试和新增测试共 7 项全部通过，无失败或跳过。Harness finish 成功，工作项为 DONE，check --ci 通过。未修改原有测试、规格或预填 JSON，未安装依赖、访问网络或提交 Git。",
+  "tests": [
+    "通过 Harness run 执行 node --test test/extra.test.mjs：6 项通过，0 失败，0 跳过。",
+    "node .ai-harness/bin/harness.mjs run --id csv-iteration --all --json：全部计划检查通过，实际执行 node --test test/public.test.mjs，1 项通过。",
+    "node .ai-harness/bin/harness.mjs check --ci --json：ok=true，无错误或警告。"
+  ]
+}

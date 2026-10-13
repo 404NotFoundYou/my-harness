@@ -1,0 +1,136 @@
+{
+  "valid": true,
+  "mode": "real",
+  "samples": 6,
+  "source": "1f4a315ae615f170cf4c025d649301cba22802c63ddc6e324b70c8736afbfb7f",
+  "groups": [
+    {
+      "group": "weak-baseline",
+      "samples": 3,
+      "functionalPassed": 3,
+      "completed": 2,
+      "falseCompletion": 0,
+      "timeouts": 1,
+      "durationMs": 518597,
+      "inputTokens": null,
+      "outputTokens": null,
+      "statistics": {
+        "functional": {
+          "passed": 3,
+          "samples": 3,
+          "rate": 1,
+          "interval95": [
+            0.4385029682449546,
+            1
+          ]
+        },
+        "sharedDelivery": {
+          "passed": 2,
+          "samples": 3,
+          "rate": 0.6666666666666666,
+          "interval95": [
+            0.2076596008020477,
+            0.9385080552796037
+          ]
+        },
+        "fullDelivery": {
+          "passed": 2,
+          "samples": 3,
+          "rate": 0.6666666666666666,
+          "interval95": [
+            0.2076596008020477,
+            0.9385080552796037
+          ]
+        },
+        "protocolFailures": 0,
+        "invalidFinals": 0,
+        "latency": {
+          "observed": 3,
+          "unknown": 0,
+          "medianMs": 174721,
+          "p95Ms": 179728.6
+        },
+        "usageSamples": 2,
+        "toolCategories": {
+          "unknown": {
+            "calls": 15,
+            "activeMs": 4055
+          }
+        },
+        "limitation": "Wilson 区间仅描述这些试次；同题重复并非独立任务。耗时包含被预算截断的样本，p95不是未截断完成时间；工具类别可重叠，缺失用量不计为零。"
+      }
+    },
+    {
+      "group": "weak-harness",
+      "samples": 3,
+      "functionalPassed": 3,
+      "completed": 2,
+      "falseCompletion": 0,
+      "timeouts": 1,
+      "durationMs": 454391,
+      "inputTokens": null,
+      "outputTokens": null,
+      "statistics": {
+        "functional": {
+          "passed": 3,
+          "samples": 3,
+          "rate": 1,
+          "interval95": [
+            0.4385029682449546,
+            1
+          ]
+        },
+        "sharedDelivery": {
+          "passed": 2,
+          "samples": 3,
+          "rate": 0.6666666666666666,
+          "interval95": [
+            0.2076596008020477,
+            0.9385080552796037
+          ]
+        },
+        "fullDelivery": {
+          "passed": 2,
+          "samples": 3,
+          "rate": 0.6666666666666666,
+          "interval95": [
+            0.2076596008020477,
+            0.9385080552796037
+          ]
+        },
+        "protocolFailures": 0,
+        "invalidFinals": 0,
+        "latency": {
+          "observed": 3,
+          "unknown": 0,
+          "medianMs": 138712,
+          "p95Ms": 176226.7
+        },
+        "usageSamples": 2,
+        "toolCategories": {
+          "unknown": {
+            "calls": 6,
+            "activeMs": 1023
+          },
+          "planning": {
+            "calls": 3,
+            "activeMs": 2248
+          },
+          "guidance": {
+            "calls": 1,
+            "activeMs": 370
+          },
+          "verification": {
+            "calls": 6,
+            "activeMs": 4686
+          },
+          "completion": {
+            "calls": 3,
+            "activeMs": 10209
+          }
+        },
+        "limitation": "Wilson 区间仅描述这些试次；同题重复并非独立任务。耗时包含被预算截断的样本，p95不是未截断完成时间；工具类别可重叠，缺失用量不计为零。"
+      }
+    }
+  ]
+}

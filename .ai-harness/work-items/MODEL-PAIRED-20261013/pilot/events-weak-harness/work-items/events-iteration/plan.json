@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "events-iteration",
+  "mode": "single",
+  "rationale": "校验稠密输入、记录字段及JSON值，用Map保留版本与删除墓碑，仅接受更高版本，投影规范字段并按id字符串比较排序；增加边界和调用方兼容回归测试",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "完成events固定迭代",
+      "module": "compact",
+      "status": "COMPLETED",
+      "attempt": 1,
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        "src/reconcile.mjs",
+        "test/extra.test.mjs"
+      ],
+      "verification": [
+        "{\"command\":\"node\",\"args\":[\"--test\",\"test/public.test.mjs\"]}"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            "--test",
+            "test/public.test.mjs"
+          ]
+        }
+      ],
+      "docsImpact": [
+        "N/A: 固定公开规格与文档不变"
+      ],
+      "reviewBatch": "R1",
+      "risk": "low",
+      "owner": "primary-ai",
+      "verificationStatus": "pass",
+      "reviewStatus": "pass",
+      "evidence": [
+        "6ca22702-923a-4d5c-8407-352184af00c3",
+        "b785ad9f-1677-47a9-822d-1de30204cb72"
+      ],
+      "deferralApproval": null,
+      "verificationSource": {
+        "digest": "200928a3ecca8be919d4510ef7a7443b83422cbba22b8c66b23047fc94b41ab2",
+        "document": ".ai-harness/work-items/events-iteration/snapshots/200928a3ecca8be919d4510ef7a7443b83422cbba22b8c66b23047fc94b41ab2.json"
+      },
+      "reviewSource": {
+        "digest": "200928a3ecca8be919d4510ef7a7443b83422cbba22b8c66b23047fc94b41ab2",
+        "document": ".ai-harness/work-items/events-iteration/snapshots/200928a3ecca8be919d4510ef7a7443b83422cbba22b8c66b23047fc94b41ab2.json"
+      }
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "完成events固定迭代",
+      "risk": "low",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": false
+    }
+  ],
+  "createdAt": "2026-10-13T07:02:45.437Z",
+  "updatedAt": "2026-10-13T07:04:38.737Z"
+}

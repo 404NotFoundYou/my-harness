@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "allocation-iteration",
+  "mode": "single",
+  "rationale": "校验非负安全整数和非空稠密数组，以BigInt计算精确商及余数，按余数降序和索引升序补足后返回Number数组；增加边界、非法输入及调用方兼容测试",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "完成allocation固定迭代",
+      "module": "compact",
+      "status": "COMPLETED",
+      "attempt": 1,
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        "src/allocate.mjs",
+        "test/extra.test.mjs"
+      ],
+      "verification": [
+        "{\"command\":\"node\",\"args\":[\"--test\",\"test/public.test.mjs\"]}"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            "--test",
+            "test/public.test.mjs"
+          ]
+        }
+      ],
+      "docsImpact": [
+        "N/A: 固定公开规格与文档不变"
+      ],
+      "reviewBatch": "R1",
+      "risk": "low",
+      "owner": "primary-ai",
+      "verificationStatus": "pass",
+      "reviewStatus": "pass",
+      "evidence": [
+        "d0c6bcee-9024-4f7b-85c4-e3d755c4a33b",
+        "0e86ef7a-1bb8-432d-9deb-f7cb7a3c48a3"
+      ],
+      "deferralApproval": null,
+      "verificationSource": {
+        "digest": "dd1c8d02405423e06c86ca4ddae61bb4c6e392270ecc3a6be1ea7c03c47da578",
+        "document": ".ai-harness/work-items/allocation-iteration/snapshots/dd1c8d02405423e06c86ca4ddae61bb4c6e392270ecc3a6be1ea7c03c47da578.json"
+      },
+      "reviewSource": {
+        "digest": "dd1c8d02405423e06c86ca4ddae61bb4c6e392270ecc3a6be1ea7c03c47da578",
+        "document": ".ai-harness/work-items/allocation-iteration/snapshots/dd1c8d02405423e06c86ca4ddae61bb4c6e392270ecc3a6be1ea7c03c47da578.json"
+      }
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "完成allocation固定迭代",
+      "risk": "low",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": false
+    }
+  ],
+  "createdAt": "2026-10-13T06:54:29.300Z",
+  "updatedAt": "2026-10-13T06:56:00.030Z"
+}

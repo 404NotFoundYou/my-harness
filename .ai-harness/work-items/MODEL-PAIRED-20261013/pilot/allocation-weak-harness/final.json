@@ -1,0 +1,9 @@
+{
+  "completed": true,
+  "summary": "已完成 TASK.md 迭代。src/allocate.mjs 使用 BigInt 实现精确最大余数法，包含输入校验、索引优先规则和零权重处理，保持输入不变及 caller 兼容；新增 test/extra.test.mjs 覆盖边界和回归场景。仅写入获准的产品文件，Harness 控制面通过 CLI 维护；未修改规格或原有测试，未安装依赖、访问网络或提交 Git。finish 已成功，工作项为 DONE，check --ci 通过。",
+  "tests": [
+    "通过 Harness 执行 node --test test/extra.test.mjs：6 项通过，0 失败、0 跳过；覆盖非法输入、稀疏数组、安全整数边界、精确余数排序、零权重、输入不变性、调用方兼容及小范围穷举。",
+    "node .ai-harness/bin/harness.mjs run --id allocation-iteration --all --json：通过；实际执行 node --test test/public.test.mjs，1 项通过，0 失败、0 跳过。",
+    "node .ai-harness/bin/harness.mjs check --ci --json：通过，ok=true，无错误或警告。"
+  ]
+}

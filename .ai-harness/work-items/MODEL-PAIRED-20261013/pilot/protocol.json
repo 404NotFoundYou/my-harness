@@ -1,0 +1,92 @@
+{
+  "schemaVersion": 4,
+  "suite": "core",
+  "client": "codex",
+  "comparison": "paired",
+  "repetitions": 1,
+  "groups": [
+    {
+      "id": "weak-baseline",
+      "model": "gpt-6-astra",
+      "harness": false
+    },
+    {
+      "id": "weak-harness",
+      "model": "gpt-6-astra",
+      "harness": true
+    }
+  ],
+  "budget": {
+    "timeoutMs": 180000,
+    "maxToolCalls": 80,
+    "reasoning": "medium"
+  },
+  "schedule": [
+    {
+      "taskId": "csv",
+      "group": "weak-baseline",
+      "trial": 1,
+      "directory": "csv-weak-baseline"
+    },
+    {
+      "taskId": "csv",
+      "group": "weak-harness",
+      "trial": 1,
+      "directory": "csv-weak-harness"
+    },
+    {
+      "taskId": "allocation",
+      "group": "weak-harness",
+      "trial": 1,
+      "directory": "allocation-weak-harness"
+    },
+    {
+      "taskId": "allocation",
+      "group": "weak-baseline",
+      "trial": 1,
+      "directory": "allocation-weak-baseline"
+    },
+    {
+      "taskId": "events",
+      "group": "weak-baseline",
+      "trial": 1,
+      "directory": "events-weak-baseline"
+    },
+    {
+      "taskId": "events",
+      "group": "weak-harness",
+      "trial": 1,
+      "directory": "events-weak-harness"
+    }
+  ],
+  "mode": "real",
+  "source": "1f4a315ae615f170cf4c025d649301cba22802c63ddc6e324b70c8736afbfb7f",
+  "tasks": [
+    {
+      "id": "csv",
+      "split": "development",
+      "taskDigest": "c3cfc33cfb3f2ac504fd63705cd1d03d2dc7f497017362037152af0e251ca223",
+      "judgeDigest": "30194704e69ab805f27ffa7fefb9849b9313f355a3da6ff5145e05fafc458561"
+    },
+    {
+      "id": "allocation",
+      "split": "development",
+      "taskDigest": "ea01ac42353ca41a94b7cf06dff7697634920789f8e9c40c20b00a1af077da5a",
+      "judgeDigest": "a860e70ff0b427bfd6bd0173ea3c42abfe4d72b54a61b2af2d0bca0c9b79e74b"
+    },
+    {
+      "id": "events",
+      "split": "holdout",
+      "taskDigest": "e8a7130efc1592e2fdb89853fd6ba482da6b67285b7887b074da97ae289d4b2d",
+      "judgeDigest": "653600052c1e1ab18c5601412a2c49b1d6f0106747aca300db788e819dc765ae"
+    }
+  ],
+  "driverIdentity": {
+    "kind": "cli",
+    "entry": "D:\\Program Files\\Nvm\\v22.20.0\\node_global\\node_modules\\@openai\\codex\\bin\\codex.js",
+    "sha256": "61b0194f3bb6534439c8d26a3ed57d0805f84b884588b761795323eeb92fcf70",
+    "nodeVersion": "v22.20.0"
+  },
+  "summaryVersion": 2,
+  "createdAt": "2026-10-13T06:48:40.356Z"
+}

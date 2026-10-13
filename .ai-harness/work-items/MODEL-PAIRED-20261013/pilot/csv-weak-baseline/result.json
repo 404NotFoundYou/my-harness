@@ -1,0 +1,164 @@
+{
+  "schemaVersion": 1,
+  "trial": 1,
+  "mode": "real",
+  "client": "codex",
+  "taskId": "csv",
+  "split": "development",
+  "group": "weak-baseline",
+  "model": "gpt-6-astra",
+  "taskDigest": "c3cfc33cfb3f2ac504fd63705cd1d03d2dc7f497017362037152af0e251ca223",
+  "judgeDigest": "30194704e69ab805f27ffa7fefb9849b9313f355a3da6ff5145e05fafc458561",
+  "candidateDigest": "3c4d97d4876f44f069388d46afbd7dcb0f85145c6eb42c234a5d07cffd43e8de",
+  "budget": {
+    "timeoutMs": 180000,
+    "maxToolCalls": 80,
+    "reasoning": "medium"
+  },
+  "run": {
+    "mode": "real",
+    "client": "codex",
+    "startedAt": "2026-10-13T06:48:40.862Z",
+    "durationMs": 180285,
+    "timing": {
+      "basis": "local-event-receive-time",
+      "toolActiveMs": 1011,
+      "otherElapsedMs": 179274,
+      "spans": [
+        {
+          "id": "item_3",
+          "startMs": 12399,
+          "endMs": 12549,
+          "category": "unknown",
+          "complete": true
+        },
+        {
+          "id": "item_4",
+          "startMs": 19546,
+          "endMs": 19771,
+          "category": "unknown",
+          "complete": true
+        },
+        {
+          "id": "item_6",
+          "startMs": 82833,
+          "endMs": 83174,
+          "category": "unknown",
+          "complete": true
+        },
+        {
+          "id": "item_8",
+          "startMs": 136776,
+          "endMs": 137071,
+          "category": "unknown",
+          "complete": true
+        }
+      ],
+      "categories": {
+        "unknown": {
+          "calls": 4,
+          "activeMs": 1011
+        }
+      },
+      "unmatchedCompletions": [],
+      "limitation": "工具区间按接收事件估计并合并重叠；其余耗时包含模型、网络、客户端启动和收尾，不等于纯推理耗时。"
+    },
+    "exitCode": 1,
+    "timedOut": true,
+    "toolLimit": false,
+    "toolCalls": 4,
+    "turnCompleted": false,
+    "protocolSuccess": false,
+    "usage": null,
+    "errors": [],
+    "warnings": [],
+    "unparsedLines": 0,
+    "error": null,
+    "final": null,
+    "completed": false
+  },
+  "scope": {
+    "ok": true,
+    "changes": [
+      {
+        "path": "src/csv.mjs",
+        "before": "dd51e6b8418a474ba38c772e6825c45edeeac7f628fdab3e83058a737955b3c2",
+        "after": "3c4d97d4876f44f069388d46afbd7dcb0f85145c6eb42c234a5d07cffd43e8de"
+      },
+      {
+        "path": "test/extra.test.mjs",
+        "before": null,
+        "after": "d4891f0746ffae8e3b6f023cff12a8ec977dd2487ff67c4fe643e1fe3aa27652"
+      }
+    ],
+    "violations": []
+  },
+  "workflow": null,
+  "grade": {
+    "complete": true,
+    "ok": true,
+    "cases": [
+      {
+        "id": "empty",
+        "pass": true
+      },
+      {
+        "id": "bom",
+        "pass": true
+      },
+      {
+        "id": "delimiters",
+        "pass": true
+      },
+      {
+        "id": "blank-rows",
+        "pass": true
+      },
+      {
+        "id": "quoted-fields",
+        "pass": true
+      },
+      {
+        "id": "escaped-quotes",
+        "pass": true
+      },
+      {
+        "id": "embedded-newline",
+        "pass": true
+      },
+      {
+        "id": "whitespace",
+        "pass": true
+      },
+      {
+        "id": "unterminated",
+        "pass": true
+      },
+      {
+        "id": "bare-quote",
+        "pass": true
+      },
+      {
+        "id": "after-quote",
+        "pass": true
+      },
+      {
+        "id": "input-type",
+        "pass": true
+      }
+    ],
+    "expectedCases": 12,
+    "exitCode": 0,
+    "timedOut": false,
+    "stderr": "",
+    "error": null
+  },
+  "success": false,
+  "falseCompletion": false,
+  "falseFunctionalCompletion": false,
+  "execution": {
+    "protocolSha256": "9054c37334c267a1ce3ee478fbfbd8d32f8bd9a58d55a00dba58fd69670d4754",
+    "sourceBefore": "1f4a315ae615f170cf4c025d649301cba22802c63ddc6e324b70c8736afbfb7f",
+    "sourceAfter": "1f4a315ae615f170cf4c025d649301cba22802c63ddc6e324b70c8736afbfb7f"
+  }
+}

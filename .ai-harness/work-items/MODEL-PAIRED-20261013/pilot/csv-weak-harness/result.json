@@ -1,0 +1,254 @@
+{
+  "schemaVersion": 1,
+  "trial": 1,
+  "mode": "real",
+  "client": "codex",
+  "taskId": "csv",
+  "split": "development",
+  "group": "weak-harness",
+  "model": "gpt-6-astra",
+  "taskDigest": "c3cfc33cfb3f2ac504fd63705cd1d03d2dc7f497017362037152af0e251ca223",
+  "judgeDigest": "30194704e69ab805f27ffa7fefb9849b9313f355a3da6ff5145e05fafc458561",
+  "candidateDigest": "7ff6ddfd0bdf91feac0f08f107d0bf395aa34378bd877018156a449dfce84372",
+  "budget": {
+    "timeoutMs": 180000,
+    "maxToolCalls": 80,
+    "reasoning": "medium"
+  },
+  "run": {
+    "mode": "real",
+    "client": "codex",
+    "startedAt": "2026-10-13T06:51:42.321Z",
+    "durationMs": 135284,
+    "timing": {
+      "basis": "local-event-receive-time",
+      "toolActiveMs": 6216,
+      "otherElapsedMs": 129068,
+      "spans": [
+        {
+          "id": "item_3",
+          "startMs": 10652,
+          "endMs": 10811,
+          "category": "unknown",
+          "complete": true
+        },
+        {
+          "id": "item_4",
+          "startMs": 24362,
+          "endMs": 25051,
+          "category": "planning",
+          "complete": true
+        },
+        {
+          "id": "item_5",
+          "startMs": 33829,
+          "endMs": 34199,
+          "category": "guidance",
+          "complete": true
+        },
+        {
+          "id": "item_7",
+          "startMs": 89179,
+          "endMs": 89814,
+          "category": "verification",
+          "complete": true
+        },
+        {
+          "id": "item_8",
+          "startMs": 96612,
+          "endMs": 97568,
+          "category": "verification",
+          "complete": true
+        },
+        {
+          "id": "item_10",
+          "startMs": 115952,
+          "endMs": 119359,
+          "category": "completion",
+          "complete": true
+        }
+      ],
+      "categories": {
+        "unknown": {
+          "calls": 1,
+          "activeMs": 159
+        },
+        "planning": {
+          "calls": 1,
+          "activeMs": 689
+        },
+        "guidance": {
+          "calls": 1,
+          "activeMs": 370
+        },
+        "verification": {
+          "calls": 2,
+          "activeMs": 1591
+        },
+        "completion": {
+          "calls": 1,
+          "activeMs": 3407
+        }
+      },
+      "unmatchedCompletions": [],
+      "limitation": "工具区间按接收事件估计并合并重叠；其余耗时包含模型、网络、客户端启动和收尾，不等于纯推理耗时。"
+    },
+    "exitCode": 0,
+    "timedOut": false,
+    "toolLimit": false,
+    "toolCalls": 6,
+    "turnCompleted": true,
+    "protocolSuccess": true,
+    "usage": {
+      "input_tokens": 161853,
+      "cached_input_tokens": 134656,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 2746,
+      "reasoning_output_tokens": 83
+    },
+    "errors": [],
+    "warnings": [],
+    "unparsedLines": 0,
+    "error": null,
+    "final": {
+      "completed": true,
+      "summary": "已完成 TASK.md 迭代：修改 src/csv.mjs，实现严格 CSV 解析，支持 BOM、空字段与空行、三种记录换行、引号转义和非法语法校验，保持 src/caller.mjs 兼容；新增 test/extra.test.mjs。公共测试和新增测试共 7 项全部通过，无失败或跳过。Harness finish 成功，工作项为 DONE，check --ci 通过。未修改原有测试、规格或预填 JSON，未安装依赖、访问网络或提交 Git。",
+      "tests": [
+        "通过 Harness run 执行 node --test test/extra.test.mjs：6 项通过，0 失败，0 跳过。",
+        "node .ai-harness/bin/harness.mjs run --id csv-iteration --all --json：全部计划检查通过，实际执行 node --test test/public.test.mjs，1 项通过。",
+        "node .ai-harness/bin/harness.mjs check --ci --json：ok=true，无错误或警告。"
+      ]
+    },
+    "completed": true
+  },
+  "scope": {
+    "ok": true,
+    "changes": [
+      {
+        "path": "src/csv.mjs",
+        "before": "dd51e6b8418a474ba38c772e6825c45edeeac7f628fdab3e83058a737955b3c2",
+        "after": "7ff6ddfd0bdf91feac0f08f107d0bf395aa34378bd877018156a449dfce84372"
+      },
+      {
+        "path": ".ai-harness/work-items/benchmark-begin-spec.json",
+        "before": null,
+        "after": "71091180bf247c89f9629119cff815d68a89580e5a8dbafccb2ffb7c68ef7b4d"
+      },
+      {
+        "path": ".ai-harness/work-items/csv-iteration/events.jsonl",
+        "before": null,
+        "after": "1ce8c06549b7ff5bc0c4d6d5362aefd3c21613dd5e8294df81c3b777fd011fb7"
+      },
+      {
+        "path": ".ai-harness/work-items/csv-iteration/evidence.jsonl",
+        "before": null,
+        "after": "8e854235d9ed856cfd9d237cd4b060642e037687be79ba75007907197e108371"
+      },
+      {
+        "path": ".ai-harness/work-items/csv-iteration/plan.json",
+        "before": null,
+        "after": "d748e2a0ce6d2dc14008a85d2a5175ff2e48461e9451d487e3a7931e227c317c"
+      },
+      {
+        "path": ".ai-harness/work-items/csv-iteration/snapshots/8fbbad15cbb72920ae8d3c6eb5e61fc34aef6d02c6d8dc78e30c9a1dbf184a64.json",
+        "before": null,
+        "after": "0d59103a03fe384813d18e2c895d7b5ebefdcd925234c49bcd6a532f1975d0ce"
+      },
+      {
+        "path": ".ai-harness/work-items/csv-iteration/snapshots/d029ad7d6ff454900a4d7130509cfe119158d7c92cf16a0ed673a230b26da0b1.json",
+        "before": null,
+        "after": "3b1fb87817e32eb9b409f9362a7e0f2733c727223fdd0ba0e8abe7013e7b4244"
+      },
+      {
+        "path": ".ai-harness/work-items/csv-iteration/solution.md",
+        "before": null,
+        "after": "96aa5f08e55b080b78affcad46a253ab70b5a971ee8b2331850151ae43243418"
+      },
+      {
+        "path": ".ai-harness/work-items/csv-iteration/state.json",
+        "before": null,
+        "after": "1147635ed2b50d58422e3603c747180f0c45405da310933af4de531656133d7f"
+      },
+      {
+        "path": "test/extra.test.mjs",
+        "before": null,
+        "after": "32e91eb85ceaa27e2407b6a14a085916a3520910b304b4667f74277f3f55d916"
+      }
+    ],
+    "violations": []
+  },
+  "workflow": {
+    "ok": true,
+    "errors": [],
+    "workItems": [
+      "csv-iteration"
+    ]
+  },
+  "grade": {
+    "complete": true,
+    "ok": true,
+    "cases": [
+      {
+        "id": "empty",
+        "pass": true
+      },
+      {
+        "id": "bom",
+        "pass": true
+      },
+      {
+        "id": "delimiters",
+        "pass": true
+      },
+      {
+        "id": "blank-rows",
+        "pass": true
+      },
+      {
+        "id": "quoted-fields",
+        "pass": true
+      },
+      {
+        "id": "escaped-quotes",
+        "pass": true
+      },
+      {
+        "id": "embedded-newline",
+        "pass": true
+      },
+      {
+        "id": "whitespace",
+        "pass": true
+      },
+      {
+        "id": "unterminated",
+        "pass": true
+      },
+      {
+        "id": "bare-quote",
+        "pass": true
+      },
+      {
+        "id": "after-quote",
+        "pass": true
+      },
+      {
+        "id": "input-type",
+        "pass": true
+      }
+    ],
+    "expectedCases": 12,
+    "exitCode": 0,
+    "timedOut": false,
+    "stderr": "",
+    "error": null
+  },
+  "success": true,
+  "falseCompletion": false,
+  "falseFunctionalCompletion": false,
+  "execution": {
+    "protocolSha256": "9054c37334c267a1ce3ee478fbfbd8d32f8bd9a58d55a00dba58fd69670d4754",
+    "sourceBefore": "1f4a315ae615f170cf4c025d649301cba22802c63ddc6e324b70c8736afbfb7f",
+    "sourceAfter": "1f4a315ae615f170cf4c025d649301cba22802c63ddc6e324b70c8736afbfb7f"
+  }
+}

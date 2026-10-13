@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "MODEL-PAIRED-20261013",
+  "mode": "single",
+  "rationale": "一个纵向实验目标，单AI协调已有六个隔离试次，不修改共享产品源码；确定性审计负责数据，模型只负责参试实现和结论裁量。",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "执行六会话试验并审计配对报告",
+      "module": "benchmark core paired pilot",
+      "status": "COMPLETED",
+      "attempt": 1,
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        ".ai-harness/work-items/MODEL-PAIRED-20261013/**"
+      ],
+      "verification": [
+        "node --test .ai-harness/work-items/MODEL-PAIRED-20261013/verify.test.mjs",
+        "node --check .ai-harness/work-items/MODEL-PAIRED-20261013/verify.test.mjs"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            "--test",
+            ".ai-harness/work-items/MODEL-PAIRED-20261013/verify.test.mjs"
+          ]
+        },
+        {
+          "id": "V2",
+          "command": "node",
+          "args": [
+            "--check",
+            ".ai-harness/work-items/MODEL-PAIRED-20261013/verify.test.mjs"
+          ]
+        }
+      ],
+      "docsImpact": [
+        ".ai-harness/work-items/MODEL-PAIRED-20261013/summary.md"
+      ],
+      "reviewBatch": "R1",
+      "risk": "medium",
+      "owner": "primary-ai",
+      "verificationStatus": "pass",
+      "reviewStatus": "pass",
+      "evidence": [
+        "2b8b9923-1535-4603-b2cc-c1cd3b3205c3",
+        "ea8abc15-a98e-46a8-a168-93bed5a414d4"
+      ],
+      "deferralApproval": null,
+      "verificationSource": {
+        "digest": "1f4a315ae615f170cf4c025d649301cba22802c63ddc6e324b70c8736afbfb7f",
+        "document": ".ai-harness/work-items/MODEL-PAIRED-20261013/snapshots/1f4a315ae615f170cf4c025d649301cba22802c63ddc6e324b70c8736afbfb7f.json"
+      },
+      "reviewSource": {
+        "digest": "1f4a315ae615f170cf4c025d649301cba22802c63ddc6e324b70c8736afbfb7f",
+        "document": ".ai-harness/work-items/MODEL-PAIRED-20261013/snapshots/1f4a315ae615f170cf4c025d649301cba22802c63ddc6e324b70c8736afbfb7f.json"
+      }
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "真实配对证据与结论边界",
+      "risk": "medium",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": false
+    }
+  ],
+  "createdAt": "2026-10-13T06:47:52.044Z",
+  "updatedAt": "2026-10-13T07:13:21.171Z"
+}

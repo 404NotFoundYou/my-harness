@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "csv-iteration",
+  "mode": "single",
+  "rationale": "在parseCsv内使用逐字符状态机区分字段起始、裸字段、引号字段和闭合引号，严格校验语法并保留换行及空白；新增边界和调用方兼容测试，不修改接口或依赖。",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "完成csv固定迭代",
+      "module": "compact",
+      "status": "COMPLETED",
+      "attempt": 1,
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        "src/csv.mjs",
+        "test/extra.test.mjs"
+      ],
+      "verification": [
+        "{\"command\":\"node\",\"args\":[\"--test\",\"test/public.test.mjs\"]}"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            "--test",
+            "test/public.test.mjs"
+          ]
+        }
+      ],
+      "docsImpact": [
+        "N/A: 固定公开规格与文档不变"
+      ],
+      "reviewBatch": "R1",
+      "risk": "low",
+      "owner": "primary-ai",
+      "verificationStatus": "pass",
+      "reviewStatus": "pass",
+      "evidence": [
+        "0ad7b608-f15f-4bbb-96ba-660aff9a93df",
+        "801b5b92-7da1-4215-b79b-f5106c01738d"
+      ],
+      "deferralApproval": null,
+      "verificationSource": {
+        "digest": "d029ad7d6ff454900a4d7130509cfe119158d7c92cf16a0ed673a230b26da0b1",
+        "document": ".ai-harness/work-items/csv-iteration/snapshots/d029ad7d6ff454900a4d7130509cfe119158d7c92cf16a0ed673a230b26da0b1.json"
+      },
+      "reviewSource": {
+        "digest": "d029ad7d6ff454900a4d7130509cfe119158d7c92cf16a0ed673a230b26da0b1",
+        "document": ".ai-harness/work-items/csv-iteration/snapshots/d029ad7d6ff454900a4d7130509cfe119158d7c92cf16a0ed673a230b26da0b1.json"
+      }
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "完成csv固定迭代",
+      "risk": "low",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": false
+    }
+  ],
+  "createdAt": "2026-10-13T06:52:07.249Z",
+  "updatedAt": "2026-10-13T06:53:39.558Z"
+}
