@@ -28,7 +28,20 @@ function median(values){
   const sorted=values.toSorted((a,b)=>a-b),middle=Math.floor(sorted.length/2);
   return sorted.length%2?sorted[middle]:sorted[middle-1]/2+sorted[middle]/2;
 }
-function normalizedTiming(value){
+function completionTiming(value,durationMs){
+  const lifecycle=value.lifecycle;
+  requireValue(lifecycle==null||(typeof lifecycle==="object"&&!Array.isArray(lifecycle)&&lifecycle.version===1),"INVALID_MEASUREMENT");
+  requireValue(value.spans==null||Array.isArray(value.spans),"INVALID_MEASUREMENT");
+  const point=raw=>{const at=measurement(raw);requireValue(at===null||durationMs===null||at<=durationMs,"INVALID_MEASUREMENT");return at;};
+  const ends=(value.spans||[]).filter(span=>span?.complete===true).map(span=>point(span.endMs)).filter(at=>at!==null);
+  const lastToolEndMs=ends.length?Math.max(...ends):null;
+  const firstProtocolEventMs=point(lifecycle?.firstProtocolEventMs),terminalEventMs=point(lifecycle?.terminalEventMs);
+  const processExitMs=point(lifecycle?.processExitMs),processCloseMs=point(lifecycle?.processCloseMs);
+  const gap=(later,earlier)=>later!==null&&earlier!==null&&later>=earlier?later-earlier:null;
+  return {firstProtocolEventMs,terminalEventMs,processExitMs,processCloseMs,lastToolEndMs,afterLastToolMs:gap(durationMs,lastToolEndMs),
+    terminalAfterLastToolMs:gap(terminalEventMs,lastToolEndMs),exitAfterTerminalMs:gap(processExitMs,terminalEventMs),closeAfterExitMs:gap(processCloseMs,processExitMs)};
+}
+function normalizedTiming(value,durationMs){
   if(value===undefined||value===null)return null;
   requireValue(typeof value==="object"&&!Array.isArray(value),"INVALID_MEASUREMENT");
   requireValue(value.basis===undefined||value.basis==="local-event-receive-time","INVALID_MEASUREMENT");
@@ -40,12 +53,12 @@ function normalizedTiming(value){
     requireValue(calls!==null&&activeMs!==null,"INVALID_MEASUREMENT");
     return {category,calls,activeMs};
   });
-  return {basis:value.basis??null,toolActiveMs:measurement(value.toolActiveMs),otherElapsedMs:measurement(value.otherElapsedMs),categories};
+  return {basis:value.basis??null,toolActiveMs:measurement(value.toolActiveMs),otherElapsedMs:measurement(value.otherElapsedMs),categories,completion:completionTiming(value,durationMs)};
 }
 function trial(row,entry){
   requireValue([row.grade.ok,row.scope.ok,row.run.completed,row.success].every(value=>typeof value==="boolean"));
   requireValue(typeof row.falseCompletion==="boolean","INVALID_MEASUREMENT");
-  for(const field of ["timedOut","toolLimit","protocolSuccess"])
+  for(const field of ["timedOut","toolLimit","protocolSuccess","turnCompleted"])
     requireValue(row.run[field]==null||typeof row.run[field]==="boolean","INVALID_MEASUREMENT");
   if(row.run.unparsedLines!=null)measurement(row.run.unparsedLines,true);
   requireValue(row.run.errors==null||Array.isArray(row.run.errors),"INVALID_MEASUREMENT");
@@ -55,7 +68,7 @@ function trial(row,entry){
   if(row.group==="weak-harness")requireValue(row.workflow?.ok==null||typeof row.workflow.ok==="boolean","INVALID_MEASUREMENT");
   const usage=row.run.usage;
   requireValue(usage===undefined||usage===null||(typeof usage==="object"&&!Array.isArray(usage)),"INVALID_MEASUREMENT");
-  const timing=normalizedTiming(row.run.timing);
+  const timing=normalizedTiming(row.run.timing,measurement(row.run.durationMs));
   const failures=[];
   if(!row.grade.ok)failures.push("functional-failed");
   if(!row.scope.ok)failures.push("scope-failed");
@@ -70,7 +83,7 @@ function trial(row,entry){
   return {resultFile:`${entry.directory}/result.json`,functional:row.grade.ok,sharedDelivery:Boolean(row.run.completed&&row.scope.ok&&row.grade.ok),fullDelivery:row.success,
     failures,censored,censorUnknown:!censored&&(row.run.timedOut==null||row.run.toolLimit==null),
     measurements:{durationMs:measurement(row.run.durationMs),toolCalls:measurement(row.run.toolCalls,true),inputTokens:measurement(usage?.input_tokens,true),outputTokens:measurement(usage?.output_tokens,true)},
-    timing};
+    timing,terminalObserved:row.run.turnCompleted??null};
 }
 function timingSummary(trials){
   const known=trials.filter(row=>row.timing?.categories!==null&&row.timing?.categories!==undefined),categories=new Map();
@@ -188,6 +201,17 @@ function markdown(value){
     if(!timing.categories.length)lines.push(`| ${side} / 未知 | 未知 | 未知 | ${timing.observedSamples} / ${timing.unknownSamples} |`);
     for(const entry of timing.categories)lines.push(`| ${side} / ${escape(entry.category)} | ${entry.calls} | ${entry.activeMs} | ${timing.observedSamples} / ${timing.unknownSamples} |`);
   }
+  lines.push("","## 会话结束时间点","","本地接收时间，单位ms；终态事件收到不等于完整交付。","",
+    "| 题目 / 轮次 / 组别 | 首个协议事件 | 完成协议事件 | 进程exit | 进程close |","| --- | ---: | --- | ---: | ---: |");
+  for(const pair of value.pairs)for(const side of ["baseline","harness"]){const row=pair[side],ending=row.timing?.completion;
+    const observed=row.terminalObserved===true?"已收到":row.terminalObserved===false?"未收到":"未知";
+    lines.push(`| ${escape(pair.taskId)} / ${pair.trial} / ${side} | ${number(ending?.firstProtocolEventMs??null)} | ${number(ending?.terminalEventMs??null)}（${observed}） | ${number(ending?.processExitMs??null)} | ${number(ending?.processCloseMs??null)} |`);
+  }
+  lines.push("","| 题目 / 轮次 / 组别 | 最后已结束工具 | 工具后观测间隔 | 完成事件至exit | exit至close |","| --- | ---: | ---: | ---: | ---: |");
+  for(const pair of value.pairs)for(const side of ["baseline","harness"]){const ending=pair[side].timing?.completion;
+    lines.push(`| ${escape(pair.taskId)} / ${pair.trial} / ${side} | ${number(ending?.lastToolEndMs??null)} | ${number(ending?.afterLastToolMs??null)} | ${number(ending?.exitAfterTerminalMs??null)} | ${number(ending?.closeAfterExitMs??null)} |`);
+  }
+  lines.push("","未记录的时间点保持未知；事件接收顺序反转时不计算该间隔。旧样本的工具后间隔可由已有spans恢复，不能解释为纯模型或网络耗时。");
   lines.push("","## 解释边界","",...value.limitations.map(text=>`- ${escape(text)}`),"");return lines.join("\n");
 }
 

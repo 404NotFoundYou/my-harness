@@ -1,0 +1,137 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "ITER-COMPLETION-TIMING-20261013",
+  "mode": "single",
+  "rationale": "一个结束阶段观测纵向目标，单AI修改相互依赖的驱动/计时/报告；独立上下文复核生命周期和证据兼容，历史实验只读。",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "补齐结束阶段并诊断历史六样本",
+      "module": "benchmark lifecycle observations",
+      "status": "COMPLETED",
+      "attempt": 1,
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        "benchmarks/timing.mjs",
+        "benchmarks/codex-driver.mjs",
+        "benchmarks/client-drivers.mjs",
+        "benchmarks/report.mjs",
+        "benchmarks/tests/driver-timing.test.mjs",
+        "benchmarks/tests/report.test.mjs",
+        ".ai-harness/work-items/ITER-COMPLETION-TIMING-20261013/**"
+      ],
+      "verification": [
+        "node --test benchmarks/tests/driver-timing.test.mjs benchmarks/tests/report.test.mjs",
+        "{\"command\":\"node\",\"timeoutMs\":600000,\"args\":[\"--test\",\"benchmarks/tests/driver-timing.test.mjs\",\"benchmarks/tests/driver-process.test.mjs\",\"benchmarks/tests/multifile.test.mjs\",\"benchmarks/tests/project-v2.test.mjs\",\"benchmarks/tests/report.test.mjs\",\"benchmarks/tests/resume.test.mjs\",\"benchmarks/tests/runner.test.mjs\",\"benchmarks/tests/spec-guidance.test.mjs\",\"benchmarks/tests/status.test.mjs\"]}",
+        "node --test .ai-harness/work-items/ITER-COMPLETION-TIMING-20261013/verify.test.mjs",
+        "node --check benchmarks/timing.mjs",
+        "node --check benchmarks/codex-driver.mjs",
+        "node --check benchmarks/client-drivers.mjs",
+        "node --check benchmarks/report.mjs"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            "--test",
+            "benchmarks/tests/driver-timing.test.mjs",
+            "benchmarks/tests/report.test.mjs"
+          ]
+        },
+        {
+          "id": "V2",
+          "command": "node",
+          "args": [
+            "--test",
+            "benchmarks/tests/driver-timing.test.mjs",
+            "benchmarks/tests/driver-process.test.mjs",
+            "benchmarks/tests/multifile.test.mjs",
+            "benchmarks/tests/project-v2.test.mjs",
+            "benchmarks/tests/report.test.mjs",
+            "benchmarks/tests/resume.test.mjs",
+            "benchmarks/tests/runner.test.mjs",
+            "benchmarks/tests/spec-guidance.test.mjs",
+            "benchmarks/tests/status.test.mjs"
+          ],
+          "timeoutMs": 600000
+        },
+        {
+          "id": "V3",
+          "command": "node",
+          "args": [
+            "--test",
+            ".ai-harness/work-items/ITER-COMPLETION-TIMING-20261013/verify.test.mjs"
+          ]
+        },
+        {
+          "id": "V4",
+          "command": "node",
+          "args": [
+            "--check",
+            "benchmarks/timing.mjs"
+          ]
+        },
+        {
+          "id": "V5",
+          "command": "node",
+          "args": [
+            "--check",
+            "benchmarks/codex-driver.mjs"
+          ]
+        },
+        {
+          "id": "V6",
+          "command": "node",
+          "args": [
+            "--check",
+            "benchmarks/client-drivers.mjs"
+          ]
+        },
+        {
+          "id": "V7",
+          "command": "node",
+          "args": [
+            "--check",
+            "benchmarks/report.mjs"
+          ]
+        }
+      ],
+      "docsImpact": [
+        "benchmarks/README.md"
+      ],
+      "reviewBatch": "R1",
+      "risk": "high",
+      "owner": "primary-ai",
+      "verificationStatus": "pass",
+      "reviewStatus": "pass",
+      "evidence": [
+        "3d802cd1-dadf-4ba5-b879-faf9b3922e3d",
+        "352b7413-d8bb-4359-b42f-4be8fa8a581c"
+      ],
+      "deferralApproval": null,
+      "verificationSource": {
+        "digest": "9d93c4763757e8a01f18f33bb53bd8a67ead48406d1ff83af3a13f747ea3f053",
+        "document": ".ai-harness/work-items/ITER-COMPLETION-TIMING-20261013/snapshots/9d93c4763757e8a01f18f33bb53bd8a67ead48406d1ff83af3a13f747ea3f053.json"
+      },
+      "reviewSource": {
+        "digest": "9d93c4763757e8a01f18f33bb53bd8a67ead48406d1ff83af3a13f747ea3f053",
+        "document": ".ai-harness/work-items/ITER-COMPLETION-TIMING-20261013/snapshots/9d93c4763757e8a01f18f33bb53bd8a67ead48406d1ff83af3a13f747ea3f053.json"
+      }
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "生命周期事件与历史审计独立复核",
+      "risk": "high",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": true
+    }
+  ],
+  "createdAt": "2026-10-13T07:50:56.769Z",
+  "updatedAt": "2026-10-13T08:23:46.159Z"
+}

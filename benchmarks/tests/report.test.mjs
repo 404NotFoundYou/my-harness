@@ -247,3 +247,45 @@ test("CLI emits redacted JSON or escaped Markdown without writing or invoking a 
   assert.equal(invoke(["--format","markdown","--format","json"]).status,1);
   assert.deepEqual(await tree(out),prior);
 });
+
+
+test("ending observations retain legacy unknowns and derive only the recorded tool tail",async()=>{
+  const out=await copy();
+  await rewriteRow(out,0,row=>{row.run.timing.spans=[{id:"t1",startMs:1,endMs:4,complete:true,category:"verification"}];});
+  const value=await report(out);assert.equal(value.ok,true);
+  const row=value.pairs[0].baseline;
+  assert.equal(row.terminalObserved,null,"a missing old completion observation cannot be converted to false");
+  assert.equal(row.timing.completion.lastToolEndMs,4);
+  assert.equal(row.timing.completion.afterLastToolMs,6);
+  for(const key of ["firstProtocolEventMs","terminalEventMs","processExitMs","processCloseMs","exitAfterTerminalMs","closeAfterExitMs"])
+    assert.equal(row.timing.completion[key],null,"legacy records did not capture "+key);
+});
+
+test("ending observations preserve zero and separate response completion from process exit",async()=>{
+  const out=await copy();
+  await rewriteRow(out,0,row=>{
+    row.run.turnCompleted=true;
+    row.run.timing.spans=[{endMs:4,complete:true}];
+    row.run.timing.lifecycle={version:1,firstProtocolEventMs:0,terminalEventMs:7,processExitMs:9,processCloseMs:10};
+  });
+  const value=await report(out);assert.equal(value.ok,true);
+  const row=value.pairs[0].baseline;
+  assert.equal(row.terminalObserved,true);
+  assert.deepEqual(row.timing.completion,{firstProtocolEventMs:0,terminalEventMs:7,processExitMs:9,processCloseMs:10,lastToolEndMs:4,afterLastToolMs:6,terminalAfterLastToolMs:3,exitAfterTerminalMs:2,closeAfterExitMs:1});
+});
+
+test("buffered terminal events observed after exit keep an unknown reversed interval",async()=>{
+  const out=await copy();
+  await rewriteRow(out,0,row=>{row.run.timing.lifecycle={version:1,firstProtocolEventMs:2,terminalEventMs:9,processExitMs:8,processCloseMs:10};});
+  const value=await report(out);assert.equal(value.ok,true,"late stdout is valid process behavior");
+  const ending=value.pairs[0].baseline.timing.completion;
+  assert.equal(ending.exitAfterTerminalMs,null,"a negative observation order is not zero process shutdown time");
+  assert.equal(ending.closeAfterExitMs,2);
+});
+
+test("invalid lifecycle versions and time values cannot produce a plausible ending report",async()=>{
+  for(const lifecycle of [{version:2},{version:1,terminalEventMs:-1},{version:1,processExitMs:"9"},{version:1,processCloseMs:11}]){
+    const out=await copy();await rewriteRow(out,0,row=>{row.run.timing.lifecycle=lifecycle;});
+    const value=await report(out);assert.equal(value.ok,false);assert.equal(value.error.code,"INVALID_MEASUREMENT");
+  }
+});

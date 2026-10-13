@@ -46,17 +46,18 @@ export function codexDriver(cli) {
         }
       }
       const timer = setTimeout(() => { timedOut = true; stop(); }, budget.timeoutMs);
-      function line(raw) {
+      function line(raw, at = Date.now()-started) {
         if (!raw.trim()) return;
         let event; try { event = JSON.parse(raw); } catch { unparsedLines++; protocolLines.push("! malformed JSONL"); return; }
         if (!event || Array.isArray(event) || typeof event.type !== "string") { unparsedLines++; protocolLines.push("! invalid event structure"); return; }
         event = redactProtocolValue(event);
         protocolLines.push(JSON.stringify(event));
         events.push(event);
+        timing.protocol(at, event.type === "turn.completed");
         if (event.item && ["command_execution","file_change","mcp_tool_call","web_search"].includes(event.item.type)) {
           toolIds.add(event.item.id);
-          if (event.type === "item.started") timing.start(event.item.id, Date.now()-started, toolCategory(event.item.type, event.item.command));
-          if (event.type === "item.completed") timing.end(event.item.id, Date.now()-started);
+          if (event.type === "item.started") timing.start(event.item.id, at, toolCategory(event.item.type, event.item.command));
+          if (event.type === "item.completed") timing.end(event.item.id, at);
           if (toolIds.size >= budget.maxToolCalls) { toolLimit = true; stop(); }
         }
       }
@@ -64,8 +65,11 @@ export function codexDriver(cli) {
       child.stderr.on("data", chunk => { stderr += chunk; });
       child.stdin.on("error", error => { spawnError ||= error.message; });
       child.once("error", error => { spawnError=error.message; });
+      child.once("exit", () => timing.exited(Date.now()-started));
       child.once("close", exitCode => {
-        clearTimeout(timer); if(pending.trim())line(pending);
+        const closedAt = Date.now()-started;
+        timing.closed(closedAt);
+        clearTimeout(timer); if(pending.trim())line(pending, closedAt);
         const durationMs = Date.now()-started;
         resolve({ mode: "real", client: "codex", startedAt, durationMs, timing: timing.summarize(durationMs), exitCode, timedOut, toolLimit, toolCalls:toolIds.size,
           ...codexProtocol(events), unparsedLines, error: spawnError ? redact(spawnError) : null,

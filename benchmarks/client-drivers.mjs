@@ -86,21 +86,25 @@ export function clientDriver(client, cli) {
         }
       };
       const timer = setTimeout(() => { timedOut = true; stop(); }, budget.timeoutMs);
-      const line = raw => {
+      const line = (raw, at = Date.now()-started) => {
         if (!raw.trim()) return;
         let event; try { event = JSON.parse(raw); } catch { unparsedLines++; protocolLines.push("! malformed JSONL"); return; }
         if (!event || Array.isArray(event) || typeof event.type !== "string") { unparsedLines++; protocolLines.push("! invalid event structure"); return; }
         event = redactProtocolValue(event);
         protocolLines.push(JSON.stringify(event));
-        reader.accept(event, Date.now()-started);
+        timing.protocol(at, event.type === "result");
+        reader.accept(event, at);
         if (reader.toolCalls >= budget.maxToolCalls) { toolLimit = true; stop(); }
       };
       child.stdout.on("data", chunk => { pending += chunk; const lines = pending.split(/\r?\n/); pending = lines.pop(); for (const value of lines) line(value); });
       child.stderr.on("data", chunk => { stderr += chunk; });
       child.stdin.on("error", failure => { error ||= redact(failure.message); });
       child.once("error", failure => { error = redact(failure.message); });
+      child.once("exit", () => timing.exited(Date.now()-started));
       child.once("close", exitCode => {
-        clearTimeout(timer); line(pending);
+        const closedAt = Date.now()-started;
+        timing.closed(closedAt);
+        clearTimeout(timer); line(pending, closedAt);
         const durationMs = Date.now()-started;
         const response = reader.finish();
         resolve({ mode: "real", client, startedAt, durationMs, exitCode, timedOut, toolLimit, error, toolCalls: reader.toolCalls, timing: timing.summarize(durationMs), unparsedLines, ...response,

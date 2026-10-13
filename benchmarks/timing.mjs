@@ -20,8 +20,15 @@ function activeTime(spans, durationMs) {
 
 export function createToolTiming() {
   const tools = new Map();
+  const lifecycle = { version: 1, firstProtocolEventMs: null, terminalEventMs: null, processExitMs: null, processCloseMs: null };
   const unmatchedEnds = new Set();
   return {
+    protocol(at, terminal = false) {
+      lifecycle.firstProtocolEventMs ??= at;
+      if (terminal) lifecycle.terminalEventMs = at;
+    },
+    exited(at) { lifecycle.processExitMs ??= at; },
+    closed(at) { lifecycle.processCloseMs ??= at; },
     start(id, at, category = "unknown") {
       if (typeof id === "string" && !tools.has(id)) tools.set(id, { id, startMs: at, endMs: null, category });
     },
@@ -38,7 +45,7 @@ export function createToolTiming() {
         const entries = spans.filter(span => span.category === category);
         return [category, { calls: entries.length, activeMs: activeTime(entries, durationMs) }];
       }));
-      return { basis: "local-event-receive-time", toolActiveMs, otherElapsedMs: Math.max(0, durationMs-toolActiveMs), spans, categories, unmatchedCompletions: [...unmatchedEnds],
+      return { basis: "local-event-receive-time", lifecycle: { ...lifecycle }, toolActiveMs, otherElapsedMs: Math.max(0, durationMs-toolActiveMs), spans, categories, unmatchedCompletions: [...unmatchedEnds],
         limitation: "工具区间按接收事件估计并合并重叠；其余耗时包含模型、网络、客户端启动和收尾，不等于纯推理耗时。" };
     },
   };
