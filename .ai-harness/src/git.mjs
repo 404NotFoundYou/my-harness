@@ -1,6 +1,6 @@
 import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
-import { readFile } from "node:fs/promises";
+import { lstat, readFile, readlink } from "node:fs/promises";
 import { exists } from "./filesystem.mjs";
 import { HarnessError, invariant } from "./errors.mjs";
 
@@ -83,8 +83,11 @@ export async function getGitBaseline(root, { includeFingerprints = true, exclude
 
 export async function fileFingerprint(root, relativePath) {
   try {
-    const content = await readFile(`${root}/${relativePath}`);
-    return createHash("sha256").update(content).digest("hex");
+    const target = `${root}/${relativePath}`;
+    const info = await lstat(target);
+    const content = info.isSymbolicLink() ? await readlink(target) : await readFile(target);
+    const fingerprint = createHash("sha256").update(content).digest("hex");
+    return info.isSymbolicLink() ? `symlink:${fingerprint}` : fingerprint;
   } catch (error) {
     if (error.code === "ENOENT") return null;
     throw error;

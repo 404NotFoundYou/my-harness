@@ -3,11 +3,12 @@ import assert from "node:assert/strict";
 import path from "node:path";
 import { tmpdir } from "node:os";
 import { createHash } from "node:crypto";
-import { chmod, mkdtemp, mkdir, readFile, rename, realpath, rm, writeFile } from "node:fs/promises";
+import { chmod, mkdtemp, mkdir, readFile, readlink, rename, realpath, rm, symlink, writeFile } from "node:fs/promises";
 import childProcess from "node:child_process";
 import { syncBuiltinESMExports } from "node:module";
-import { getGitBaseline, changedFilesSince } from "../src/git.mjs";
+import { getGitBaseline, changedFilesSince, fileFingerprint } from "../src/git.mjs";
 import { sourceSnapshot } from "../src/snapshot.mjs";
+import { collectScopeErrors } from "../src/scope.mjs";
 import { git } from "./helpers.mjs";
 
 async function fixture({commit=true}={}){
@@ -174,5 +175,39 @@ test("baseline metadata can exclude control paths without reading fingerprints",
     assert.deepEqual(state.changedFiles,["product.txt"]);
     assert.deepEqual(state.fingerprints,{});
     assert.equal(state.dirty,true);
+  }finally{await cleanup(root);}
+});
+
+test("link fingerprints follow Git-owned link text without reading a directory target",async()=>{
+  const root=await fixture(),outside=await fixture();
+  try{
+    const linked=path.join(root,"directory-link");
+    await symlink(outside,linked,process.platform === "win32" ? "junction" : "dir");
+    const expected="symlink:"+createHash("sha256").update(await readlink(linked)).digest("hex");
+    assert.equal(await fileFingerprint(root,"directory-link"),expected,"directory links must not be read as file contents during intake");
+    await writeFile(path.join(outside,"tracked.txt"),"outside changes are not changes to the Git-owned link\n");
+    assert.equal(await fileFingerprint(root,"directory-link"),expected,"referent contents must not change link identity");
+  }finally{await cleanup(root);await cleanup(outside);}
+});
+
+test("legacy dirty-file baselines cannot absorb an out-of-scope replacement by a link with the same text",async()=>{
+  const root=await fixture();
+  try{
+    await mkdir(path.join(root,"link-target"));
+    const file=path.join(root,"tracked.txt"),target=path.join(root,"link-target");
+    const probe=path.join(root,"probe-link");
+    await symlink(target,probe,process.platform === "win32" ? "junction" : "dir");
+    const text=await readlink(probe);
+    await rm(probe);
+    await writeFile(file,text);
+    const baseline=await getGitBaseline(root);
+    const item={id:"LEGACY-TYPE",status:"IMPLEMENTING",baseline:{completedAt:new Date().toISOString(),repository:baseline}};
+    const plan={tasks:[{writeScopes:["approved.txt"],docsImpact:["N/A: scope guard fixture"]}]};
+    assert.deepEqual((await collectScopeErrors(root,[{item,plan}],[item])).errors,[],"unchanged dirty bytes retain old regular-file baseline compatibility");
+    await rm(file);
+    await symlink(target,file,process.platform === "win32" ? "junction" : "dir");
+    const checked=await collectScopeErrors(root,[{item,plan}],[item]);
+    assert.ok(checked.changedFiles.includes("tracked.txt"),"regular-file to link replacement must remain visible to legacy scopes");
+    assert.ok(checked.errors.some(message=>message.includes("tracked.txt")),"type changes outside the approved scope cannot be inherited from dirty bytes");
   }finally{await cleanup(root);}
 });

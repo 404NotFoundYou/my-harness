@@ -1,0 +1,106 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "BUG-RUNTIME-CI-20261013",
+  "mode": "single",
+  "rationale": "单AI连续实现跨平台Runtime缺陷，独立上下文高风险复核；提交后完整远端矩阵作为用户目标最终确认。",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "修复链接指纹与规范化临时测试目录",
+      "module": "Git基线与安装回归",
+      "status": "COMPLETED",
+      "attempt": 2,
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        ".ai-harness/src/git.mjs",
+        ".ai-harness/tests/git-state.test.mjs",
+        ".ai-harness/tests/installer.test.mjs"
+      ],
+      "verification": [
+        "node --test .ai-harness/tests/git-state.test.mjs",
+        "node --test .ai-harness/tests/installer.test.mjs",
+        "{\"args\":[\".ai-harness/tests/run.mjs\"],\"timeoutMs\":600000,\"command\":\"node\"}",
+        "node --check .ai-harness/src/git.mjs",
+        "node --check .ai-harness/tests/installer.test.mjs"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            "--test",
+            ".ai-harness/tests/git-state.test.mjs"
+          ]
+        },
+        {
+          "id": "V2",
+          "command": "node",
+          "args": [
+            "--test",
+            ".ai-harness/tests/installer.test.mjs"
+          ]
+        },
+        {
+          "id": "V3",
+          "command": "node",
+          "args": [
+            ".ai-harness/tests/run.mjs"
+          ],
+          "timeoutMs": 600000
+        },
+        {
+          "id": "V4",
+          "command": "node",
+          "args": [
+            "--check",
+            ".ai-harness/src/git.mjs"
+          ]
+        },
+        {
+          "id": "V5",
+          "command": "node",
+          "args": [
+            "--check",
+            ".ai-harness/tests/installer.test.mjs"
+          ]
+        }
+      ],
+      "docsImpact": [
+        "N/A: 恢复Git链接元数据与现有安装路径保护语义，公开命令和规则不变；修复及远端验收边界见方案"
+      ],
+      "reviewBatch": "R1",
+      "risk": "high",
+      "owner": "primary-ai",
+      "verificationStatus": "pass",
+      "reviewStatus": "pass",
+      "evidence": [
+        "287c89c1-79e8-4c51-bfd8-e2545d09d477",
+        "a6f21297-7409-4222-bc21-b733e5e5bf97"
+      ],
+      "deferralApproval": null,
+      "verificationSource": {
+        "digest": "1f4a315ae615f170cf4c025d649301cba22802c63ddc6e324b70c8736afbfb7f",
+        "document": ".ai-harness/work-items/BUG-RUNTIME-CI-20261013/snapshots/1f4a315ae615f170cf4c025d649301cba22802c63ddc6e324b70c8736afbfb7f.json"
+      },
+      "reviewSource": {
+        "digest": "1f4a315ae615f170cf4c025d649301cba22802c63ddc6e324b70c8736afbfb7f",
+        "document": ".ai-harness/work-items/BUG-RUNTIME-CI-20261013/snapshots/1f4a315ae615f170cf4c025d649301cba22802c63ddc6e324b70c8736afbfb7f.json"
+      }
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "链接指纹与竞态复现独立复核",
+      "risk": "high",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": true
+    }
+  ],
+  "createdAt": "2026-10-13T05:50:00.172Z",
+  "updatedAt": "2026-10-13T06:16:46.373Z",
+  "revision": 2
+}

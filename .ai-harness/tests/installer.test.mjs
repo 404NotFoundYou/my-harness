@@ -1,8 +1,9 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { cp, mkdir, mkdtemp, readFile, readdir, rm, symlink, writeFile } from "node:fs/promises";
+import { cp, mkdir, mkdtemp, readFile, readdir, realpath, rm, symlink, writeFile } from "node:fs/promises";
 import fsPromises from "node:fs/promises";
 import { tmpdir } from "node:os";
+import os from "node:os";
 import path from "node:path";
 import { syncBuiltinESMExports } from "node:module";
 import { cleanup, git, sourceRoot } from "./helpers.mjs";
@@ -11,7 +12,7 @@ import { exists } from "../src/filesystem.mjs";
 import { inspectManagedBlock } from "../src/managed-block.mjs";
 
 async function temporaryTarget(prefix) {
-  return mkdtemp(path.join(tmpdir(), prefix));
+  return realpath(await mkdtemp(path.join(tmpdir(), prefix)));
 }
 
 async function readInstructions(root) {
@@ -889,5 +890,38 @@ test("staging cleanup failure after publication cannot report a rollback while l
   } finally {
     context.mock.restoreAll(); syncBuiltinESMExports();
     await cleanup(target);
+  }
+});
+
+test("fault injection still protects concurrent edits when the system temp path is a directory alias", async (context) => {
+  const tempRoot = await fsPromises.realpath(tmpdir());
+  const holder = await fsPromises.realpath(await mkdtemp(path.join(tempRoot, "ai-harness-temp-alias-holder-")));
+  const actual = await fsPromises.realpath(await mkdtemp(path.join(tempRoot, "ai-harness-temp-alias-actual-")));
+  const alias = path.join(holder, "alias");
+  const hardlink = fsPromises.link;
+  let injected = false;
+  try {
+    await symlink(actual, alias, process.platform === "win32" ? "junction" : "dir");
+    context.mock.method(os, "tmpdir", () => alias);
+    syncBuiltinESMExports();
+    const target = await temporaryTarget("ai-harness-temp-alias-target-");
+    const agents = path.join(target, "AGENTS.md");
+    await writeFile(agents, "# Original rules\n");
+    context.mock.method(fsPromises, "link", async (from, to) => {
+      if (!injected && String(to) === agents) {
+        injected = true;
+        await writeFile(agents, "# Concurrent save through a temp alias\n");
+        throw Object.assign(new Error("controlled alias-path publication failure"), { code: "EIO" });
+      }
+      return hardlink(from, to);
+    });
+    syncBuiltinESMExports();
+    await assert.rejects(() => installRuntime(sourceRoot, target), { code: "INSTALL_ROLLBACK_FAILED" });
+    assert.equal(injected, true, "fault injection must compare the same canonical path as the installer");
+    assert.equal(await readFile(agents, "utf8"), "# Concurrent save through a temp alias\n");
+  } finally {
+    context.mock.restoreAll(); syncBuiltinESMExports();
+    assert.equal(path.dirname(holder), tempRoot); assert.equal(path.dirname(actual), tempRoot);
+    await cleanup(holder); await cleanup(actual);
   }
 });

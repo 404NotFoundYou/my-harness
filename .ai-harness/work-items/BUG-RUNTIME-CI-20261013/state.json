@@ -1,0 +1,298 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 2,
+  "id": "BUG-RUNTIME-CI-20261013",
+  "type": "BUGFIX",
+  "title": "修复Runtime跨平台CI失败",
+  "status": "DONE",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/bugfix.md",
+    ".ai-harness/policies/verification.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户本轮好的继续确认上述CI修复及推送、完整矩阵验证路径；必要可逆修改与独立高风险复核"
+  },
+  "input": {
+    "references": [
+      "用户确认继续修复58110f1的远端CI失败，推送修复并确认两条完整矩阵通过"
+    ],
+    "acceptance": [
+      "定位真实失败测试与根因，补回归并保留失败证据",
+      "AI Harness与Harness source tests完整矩阵成功，取消任务不算通过"
+    ],
+    "nonGoals": [],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": {
+    "actual": "58110f1的Ubuntu Node20 Runtime tests失败，Windows Node24 runtime compatibility失败，其余部分矩阵取消",
+    "expected": "Runtime在Linux和Windows Node20/22/24通过，流程门禁及基准框架回归无退化",
+    "reproduction": "读取GitHub失败任务115142277065与115142276872日志，在对应条件复现失败"
+  },
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "main@58110f1，启动时产品工作区干净，doctor通过。已通过现有凭据在内存中读取两项原始日志：Linux目录链接指纹EISDIR；Windows安装测试7项注入未触发。未输出或保存凭据；基准框架非失败源。"
+    ],
+    "completedAt": "2026-10-13T05:47:49.429Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "58110f1c4345c011d4d6ac02387d89fc4daf8791",
+      "dirty": false,
+      "changedFiles": [],
+      "fingerprints": {},
+      "source": {
+        "digest": "a30be6b4dfe34d1220d3cbec8657064e99a51b1e55a711dac3af1e43ecd0427b",
+        "document": ".ai-harness/work-items/BUG-RUNTIME-CI-20261013/snapshots/a30be6b4dfe34d1220d3cbec8657064e99a51b1e55a711dac3af1e43ecd0427b.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": ".ai-harness/work-items/BUG-RUNTIME-CI-20261013/solution.md",
+    "evidence": [
+      "已读Git指纹导出与getGitBaseline、scope旧基线调用，安装器规范化路径及故障注入调用；以两平台原始CI日志为根因线索，用目录链接/临时目录别名建立受控复现。"
+    ],
+    "completedAt": "2026-10-13T05:49:59.986Z"
+  },
+  "database": {
+    "impact": "none",
+    "status": "not-applicable",
+    "document": null,
+    "evidence": [
+      "仅本地Git链接指纹与测试目录路径规范化，无数据库或Schema影响。"
+    ],
+    "completedAt": "2026-10-13T05:50:00.092Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/BUG-RUNTIME-CI-20261013/plan.json",
+    "approved": true,
+    "approvalRef": "用户好的继续授权真实CI根因修复、回归、独立高风险复核与推送后完整矩阵确认"
+  },
+  "verification": {
+    "status": "pass",
+    "evidence": [
+      "e033be32-2909-4682-9e72-5db9c3af1071",
+      "6f2309f1-1cc9-4da2-922a-ff94b12f527e",
+      "db88a8a7-9b0a-4481-ae47-9a2ad4a48754",
+      "e70c9369-6d1e-4a42-b4e0-7f34d76a2b8d"
+    ],
+    "stages": [
+      {
+        "stage": "static",
+        "status": "pass",
+        "evidence": [
+          "e033be32-2909-4682-9e72-5db9c3af1071"
+        ],
+        "command": null,
+        "revision": 2,
+        "source": {
+          "digest": "1f4a315ae615f170cf4c025d649301cba22802c63ddc6e324b70c8736afbfb7f",
+          "document": ".ai-harness/work-items/BUG-RUNTIME-CI-20261013/snapshots/1f4a315ae615f170cf4c025d649301cba22802c63ddc6e324b70c8736afbfb7f.json"
+        },
+        "planDigest": "23d36ad727c0b3c71292c4a5f4408a6a4836dd7b3067e0c8f340934d6bed881d"
+      },
+      {
+        "stage": "sandbox",
+        "status": "pass",
+        "evidence": [
+          "6f2309f1-1cc9-4da2-922a-ff94b12f527e"
+        ],
+        "command": null,
+        "revision": 2,
+        "source": {
+          "digest": "1f4a315ae615f170cf4c025d649301cba22802c63ddc6e324b70c8736afbfb7f",
+          "document": ".ai-harness/work-items/BUG-RUNTIME-CI-20261013/snapshots/1f4a315ae615f170cf4c025d649301cba22802c63ddc6e324b70c8736afbfb7f.json"
+        },
+        "planDigest": "23d36ad727c0b3c71292c4a5f4408a6a4836dd7b3067e0c8f340934d6bed881d"
+      },
+      {
+        "stage": "reproduction",
+        "status": "pass",
+        "evidence": [
+          "db88a8a7-9b0a-4481-ae47-9a2ad4a48754"
+        ],
+        "command": "40e3ec37-cdab-4867-b2c0-3439e345d2eb",
+        "revision": 2,
+        "source": {
+          "digest": "1f4a315ae615f170cf4c025d649301cba22802c63ddc6e324b70c8736afbfb7f",
+          "document": ".ai-harness/work-items/BUG-RUNTIME-CI-20261013/snapshots/1f4a315ae615f170cf4c025d649301cba22802c63ddc6e324b70c8736afbfb7f.json"
+        },
+        "planDigest": "23d36ad727c0b3c71292c4a5f4408a6a4836dd7b3067e0c8f340934d6bed881d"
+      },
+      {
+        "stage": "regression",
+        "status": "pass",
+        "evidence": [
+          "e70c9369-6d1e-4a42-b4e0-7f34d76a2b8d"
+        ],
+        "command": "0627f76b-c865-4fba-a98f-9d0059908425",
+        "revision": 2,
+        "source": {
+          "digest": "1f4a315ae615f170cf4c025d649301cba22802c63ddc6e324b70c8736afbfb7f",
+          "document": ".ai-harness/work-items/BUG-RUNTIME-CI-20261013/snapshots/1f4a315ae615f170cf4c025d649301cba22802c63ddc6e324b70c8736afbfb7f.json"
+        },
+        "planDigest": "23d36ad727c0b3c71292c4a5f4408a6a4836dd7b3067e0c8f340934d6bed881d"
+      }
+    ],
+    "source": {
+      "digest": "1f4a315ae615f170cf4c025d649301cba22802c63ddc6e324b70c8736afbfb7f",
+      "document": ".ai-harness/work-items/BUG-RUNTIME-CI-20261013/snapshots/1f4a315ae615f170cf4c025d649301cba22802c63ddc6e324b70c8736afbfb7f.json"
+    }
+  },
+  "review": {
+    "status": "pass",
+    "evidence": [
+      "722a45ca-09aa-46eb-bd3b-a16b4a418353"
+    ],
+    "independent": true,
+    "source": {
+      "digest": "1f4a315ae615f170cf4c025d649301cba22802c63ddc6e324b70c8736afbfb7f",
+      "document": ".ai-harness/work-items/BUG-RUNTIME-CI-20261013/snapshots/1f4a315ae615f170cf4c025d649301cba22802c63ddc6e324b70c8736afbfb7f.json"
+    }
+  },
+  "acceptance": {
+    "status": "pass",
+    "evidence": [
+      "3e80d5ec-1fe1-4ed3-9534-3ff3a24d1bee"
+    ],
+    "source": {
+      "digest": "1f4a315ae615f170cf4c025d649301cba22802c63ddc6e324b70c8736afbfb7f",
+      "document": ".ai-harness/work-items/BUG-RUNTIME-CI-20261013/snapshots/1f4a315ae615f170cf4c025d649301cba22802c63ddc6e324b70c8736afbfb7f.json"
+    }
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "not-applicable",
+    "evidence": [
+      "45b3f216-fe22-4f1b-9ea3-77d440ab2f5c"
+    ]
+  },
+  "blocked": null,
+  "delivery": {
+    "source": {
+      "digest": "1f4a315ae615f170cf4c025d649301cba22802c63ddc6e324b70c8736afbfb7f",
+      "document": ".ai-harness/work-items/BUG-RUNTIME-CI-20261013/snapshots/1f4a315ae615f170cf4c025d649301cba22802c63ddc6e324b70c8736afbfb7f.json"
+    },
+    "baseline": {
+      "digest": "a30be6b4dfe34d1220d3cbec8657064e99a51b1e55a711dac3af1e43ecd0427b",
+      "document": ".ai-harness/work-items/BUG-RUNTIME-CI-20261013/snapshots/a30be6b4dfe34d1220d3cbec8657064e99a51b1e55a711dac3af1e43ecd0427b.json"
+    },
+    "baselineAt": "2026-10-13T05:47:49.429Z",
+    "ownedChanges": [
+      {
+        "path": ".ai-harness/src/git.mjs",
+        "before": "100644:0cd6ded881aeb56cbd1d072fc8fd8f469018cd9f",
+        "after": "100644:72eda1206fb65b97d50786427417854ab754fd56"
+      },
+      {
+        "path": ".ai-harness/tests/git-state.test.mjs",
+        "before": "100644:85e94ae4ea996ad194e038e0672194e65dc7fe28",
+        "after": "100644:50efd6a0518e66cacc1c12658a0e20ed16063072"
+      },
+      {
+        "path": ".ai-harness/tests/installer.test.mjs",
+        "before": "100644:f62b91a0b2c61f9aa8de1ceb0c23167053463153",
+        "after": "100644:c0afdd92924d3f9f00a430d94f1a113e2f0156af"
+      }
+    ],
+    "planDigest": "23d36ad727c0b3c71292c4a5f4408a6a4836dd7b3067e0c8f340934d6bed881d",
+    "at": "2026-10-13T06:19:09.295Z",
+    "head": "58110f1c4345c011d4d6ac02387d89fc4daf8791"
+  },
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-10-13T05:36:58.328Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-10-13T05:36:58.424Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-10-13T05:47:49.605Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-10-13T05:50:00.523Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-10-13T05:50:00.609Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "VERIFYING",
+      "at": "2026-10-13T06:07:46.778Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "VERIFYING",
+      "to": "CODE_REVIEW",
+      "at": "2026-10-13T06:07:48.338Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "CODE_REVIEW",
+      "to": "IMPLEMENTING",
+      "at": "2026-10-13T06:08:55.861Z",
+      "reason": "独立复核实测旧基线普通文件到链接类型替换被同哈希漏检，保留旧普通指纹并区分链接类型，补范围回归后复验。",
+      "action": "reopen",
+      "revision": 2
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "VERIFYING",
+      "at": "2026-10-13T06:16:46.460Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "VERIFYING",
+      "to": "CODE_REVIEW",
+      "at": "2026-10-13T06:16:48.042Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "CODE_REVIEW",
+      "to": "READY_FOR_ACCEPTANCE",
+      "at": "2026-10-13T06:19:07.546Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "READY_FOR_ACCEPTANCE",
+      "to": "DONE",
+      "at": "2026-10-13T06:19:09.396Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-10-13T05:36:58.328Z",
+  "updatedAt": "2026-10-13T06:19:09.396Z"
+}

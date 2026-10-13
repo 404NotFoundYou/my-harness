@@ -1,0 +1,226 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 1,
+  "id": "BUG-RUNTIME-CI-20261013",
+  "type": "BUGFIX",
+  "title": "修复Runtime跨平台CI失败",
+  "status": "CODE_REVIEW",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/bugfix.md",
+    ".ai-harness/policies/verification.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户本轮好的继续确认上述CI修复及推送、完整矩阵验证路径；必要可逆修改与独立高风险复核"
+  },
+  "input": {
+    "references": [
+      "用户确认继续修复58110f1的远端CI失败，推送修复并确认两条完整矩阵通过"
+    ],
+    "acceptance": [
+      "定位真实失败测试与根因，补回归并保留失败证据",
+      "AI Harness与Harness source tests完整矩阵成功，取消任务不算通过"
+    ],
+    "nonGoals": [],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": {
+    "actual": "58110f1的Ubuntu Node20 Runtime tests失败，Windows Node24 runtime compatibility失败，其余部分矩阵取消",
+    "expected": "Runtime在Linux和Windows Node20/22/24通过，流程门禁及基准框架回归无退化",
+    "reproduction": "读取GitHub失败任务115142277065与115142276872日志，在对应条件复现失败"
+  },
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "main@58110f1，启动时产品工作区干净，doctor通过。已通过现有凭据在内存中读取两项原始日志：Linux目录链接指纹EISDIR；Windows安装测试7项注入未触发。未输出或保存凭据；基准框架非失败源。"
+    ],
+    "completedAt": "2026-10-13T05:47:49.429Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "58110f1c4345c011d4d6ac02387d89fc4daf8791",
+      "dirty": false,
+      "changedFiles": [],
+      "fingerprints": {},
+      "source": {
+        "digest": "a30be6b4dfe34d1220d3cbec8657064e99a51b1e55a711dac3af1e43ecd0427b",
+        "document": ".ai-harness/work-items/BUG-RUNTIME-CI-20261013/snapshots/a30be6b4dfe34d1220d3cbec8657064e99a51b1e55a711dac3af1e43ecd0427b.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": ".ai-harness/work-items/BUG-RUNTIME-CI-20261013/solution.md",
+    "evidence": [
+      "已读Git指纹导出与getGitBaseline、scope旧基线调用，安装器规范化路径及故障注入调用；以两平台原始CI日志为根因线索，用目录链接/临时目录别名建立受控复现。"
+    ],
+    "completedAt": "2026-10-13T05:49:59.986Z"
+  },
+  "database": {
+    "impact": "none",
+    "status": "not-applicable",
+    "document": null,
+    "evidence": [
+      "仅本地Git链接指纹与测试目录路径规范化，无数据库或Schema影响。"
+    ],
+    "completedAt": "2026-10-13T05:50:00.092Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/BUG-RUNTIME-CI-20261013/plan.json",
+    "approved": true,
+    "approvalRef": "用户好的继续授权真实CI根因修复、回归、独立高风险复核与推送后完整矩阵确认"
+  },
+  "verification": {
+    "status": "pass",
+    "evidence": [
+      "05041f92-646f-4fb4-b4d0-ac78103ecff4",
+      "3ba5a3be-5c93-4e1b-8660-53e48b2da935",
+      "d2efebf7-9310-41b6-91ec-7d12cf64ee34",
+      "126d80fb-7cf6-4b4c-8a09-ba619a38df4a"
+    ],
+    "stages": [
+      {
+        "stage": "static",
+        "status": "pass",
+        "evidence": [
+          "05041f92-646f-4fb4-b4d0-ac78103ecff4"
+        ],
+        "command": null,
+        "revision": 1,
+        "source": {
+          "digest": "fea277541646717a1df6ac3fdae80d3da16d8edc42806af85f62488d12278d8f",
+          "document": ".ai-harness/work-items/BUG-RUNTIME-CI-20261013/snapshots/fea277541646717a1df6ac3fdae80d3da16d8edc42806af85f62488d12278d8f.json"
+        },
+        "planDigest": "23b3e54ad1d1155f213eb65897bbe0d7b4c63bf42a4d218077a9d93f10698e36"
+      },
+      {
+        "stage": "sandbox",
+        "status": "pass",
+        "evidence": [
+          "3ba5a3be-5c93-4e1b-8660-53e48b2da935"
+        ],
+        "command": null,
+        "revision": 1,
+        "source": {
+          "digest": "fea277541646717a1df6ac3fdae80d3da16d8edc42806af85f62488d12278d8f",
+          "document": ".ai-harness/work-items/BUG-RUNTIME-CI-20261013/snapshots/fea277541646717a1df6ac3fdae80d3da16d8edc42806af85f62488d12278d8f.json"
+        },
+        "planDigest": "23b3e54ad1d1155f213eb65897bbe0d7b4c63bf42a4d218077a9d93f10698e36"
+      },
+      {
+        "stage": "reproduction",
+        "status": "pass",
+        "evidence": [
+          "d2efebf7-9310-41b6-91ec-7d12cf64ee34"
+        ],
+        "command": "643f3bb3-01a6-4061-bfbc-9cc73735e147",
+        "revision": 1,
+        "source": {
+          "digest": "fea277541646717a1df6ac3fdae80d3da16d8edc42806af85f62488d12278d8f",
+          "document": ".ai-harness/work-items/BUG-RUNTIME-CI-20261013/snapshots/fea277541646717a1df6ac3fdae80d3da16d8edc42806af85f62488d12278d8f.json"
+        },
+        "planDigest": "23b3e54ad1d1155f213eb65897bbe0d7b4c63bf42a4d218077a9d93f10698e36"
+      },
+      {
+        "stage": "regression",
+        "status": "pass",
+        "evidence": [
+          "126d80fb-7cf6-4b4c-8a09-ba619a38df4a"
+        ],
+        "command": "8b08f1e6-c79f-44f9-ae17-c29c8f3be3f2",
+        "revision": 1,
+        "source": {
+          "digest": "fea277541646717a1df6ac3fdae80d3da16d8edc42806af85f62488d12278d8f",
+          "document": ".ai-harness/work-items/BUG-RUNTIME-CI-20261013/snapshots/fea277541646717a1df6ac3fdae80d3da16d8edc42806af85f62488d12278d8f.json"
+        },
+        "planDigest": "23b3e54ad1d1155f213eb65897bbe0d7b4c63bf42a4d218077a9d93f10698e36"
+      }
+    ],
+    "source": {
+      "digest": "fea277541646717a1df6ac3fdae80d3da16d8edc42806af85f62488d12278d8f",
+      "document": ".ai-harness/work-items/BUG-RUNTIME-CI-20261013/snapshots/fea277541646717a1df6ac3fdae80d3da16d8edc42806af85f62488d12278d8f.json"
+    }
+  },
+  "review": {
+    "status": "fail",
+    "evidence": [
+      "e6378c6e-23b4-44cf-b248-11bf627cbf28"
+    ],
+    "independent": true
+  },
+  "acceptance": {
+    "status": "pending",
+    "evidence": []
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "not-applicable",
+    "evidence": [
+      "23dc7f1c-8c6d-444c-87d4-d724736786db"
+    ]
+  },
+  "blocked": null,
+  "delivery": null,
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-10-13T05:36:58.328Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-10-13T05:36:58.424Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-10-13T05:47:49.605Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-10-13T05:50:00.523Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-10-13T05:50:00.609Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "VERIFYING",
+      "at": "2026-10-13T06:07:46.778Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "VERIFYING",
+      "to": "CODE_REVIEW",
+      "at": "2026-10-13T06:07:48.338Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-10-13T05:36:58.328Z",
+  "updatedAt": "2026-10-13T06:08:55.761Z"
+}
