@@ -1,0 +1,203 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 1,
+  "id": "ANALYSIS-PROJECT-20261013",
+  "type": "ANALYSIS",
+  "title": "当前项目剩余问题检查",
+  "status": "ANSWERED",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/analysis.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户本轮授权项目检查；仅控制面写入，产品文件只读"
+  },
+  "input": {
+    "references": [
+      "用户要求检查当前项目还存在的问题；以当前工作区为准进行只读核查"
+    ],
+    "acceptance": [
+      "按优先级列出有代码位置、触发条件和影响说明的问题，区分静态判断、实际命令结果和未验证事项"
+    ],
+    "nonGoals": [],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": null,
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "main@15d1e37；当前产品改动为 installer.mjs、installer.test.mjs 和 usage.md；已有安装边界 BUG 项处于 IMPLEMENTING；doctor 本轮通过。以当前工作树源码、配置、CI 及测试文件为准，只读检查。"
+    ],
+    "completedAt": "2026-10-13T01:17:54.349Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "15d1e37b62f8e5d4d67ca3f5d68c073878d1cc6d",
+      "dirty": true,
+      "changedFiles": [
+        ".ai-harness/src/installer.mjs",
+        ".ai-harness/tests/installer.test.mjs",
+        "docs/guides/usage.md"
+      ],
+      "fingerprints": {},
+      "source": {
+        "digest": "30824bd8bd53dbff19359dea6be8adf13e79ab4e551431512987008e54af034c",
+        "document": ".ai-harness/work-items/ANALYSIS-PROJECT-20261013/snapshots/30824bd8bd53dbff19359dea6be8adf13e79ab4e551431512987008e54af034c.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "pending",
+    "document": null,
+    "evidence": [],
+    "completedAt": null
+  },
+  "database": {
+    "status": "pending",
+    "document": null,
+    "evidence": [],
+    "completedAt": null,
+    "impact": "unknown"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/ANALYSIS-PROJECT-20261013/plan.json",
+    "approved": false,
+    "approvalRef": null
+  },
+  "verification": {
+    "status": "pending",
+    "evidence": [],
+    "stages": []
+  },
+  "review": {
+    "status": "pending",
+    "evidence": [],
+    "independent": false
+  },
+  "acceptance": {
+    "status": "pending",
+    "evidence": []
+  },
+  "analysis": {
+    "status": "pass",
+    "evidence": [
+      "e29f60b5-336a-4e1e-bab5-c008087d2022"
+    ],
+    "conclusions": [
+      {
+        "id": "669216a5-d8d1-40d8-854e-fefe94daad41",
+        "status": "PROVEN",
+        "text": "P1 返工后的证据检查误报：collectEvidenceErrors 查找最新工作项审查时不按 revision 过滤，并在 review 为 pending 时仍比较 independent；旧修订独立审查后 reopen/replan 重置 independent=false，合法新状态被报为不一致。当前 BUG 项为 revision=3，旧独立失败审查为 revision=1；本轮普通 check 实际退出 1。",
+        "evidence": [
+          ".ai-harness/src/checker.mjs:256-261；.ai-harness/src/workflow.mjs:630-639；.ai-harness/src/verification.mjs:206-209；BUG-INSTALL-WRITE-BOUNDARY-20261012/state.json 与 evidence.jsonl；本分析命令 e6a4b53a-6aff-4650-ac33-234bf250a83f，exitCode=1，错误为工作项 review 的独立复核标记与最新证据不一致。"
+        ]
+      },
+      {
+        "id": "35b98a41-6402-4cc5-86d9-855cd8235021",
+        "status": "INFERRED",
+        "text": "P1 新项目初始化仍有暂存目录外写路径：stagingRoot 直接使用 .ai-harness/backups/init-UUID，未在 mkdir/writeFile 前校验其父目录。若 backups 已通过项目忽略规则隐藏的链接指向外部，或在 Git 基线读取后被替换成外部链接，默认文档会先被写到项目外；finally 的 realpath 检查只能事后报错。此结论未动态复现。",
+        "evidence": [
+          ".ai-harness/src/installer.mjs:891,903-914,936；:191-195 清理时才 realpath；.ai-harness/src/cli.mjs:240-246 的 init 调用没有额外目标父目录校验；现有 installer.test.mjs:686-733 只覆盖 docs 链接，没有覆盖暂存父目录。"
+        ]
+      },
+      {
+        "id": "317558aa-61d8-4b4a-8a49-804f30e855a7",
+        "status": "INFERRED",
+        "text": "P1 安装回滚可能移走并发创建的目录或链接：已有普通目标迁入备份后，如果另一进程在同一路径创建目录或链接，独占发布会失败；回滚先 rename 新对象到 quarantine，只对普通文件执行恢复。目录/链接会留在备份中，原路径消失，违反并发改动留在目标路径的意图。此结论未动态复现。",
+        "evidence": [
+          ".ai-harness/src/installer.mjs:604-619 的迁移与独占发布；:630-643 在 moved=true 时进入回滚，先迁移再仅恢复普通文件；:655-657 保留备份但不恢复原路径；现有 installer.test.mjs:135-201 保护普通文件并发保存。"
+        ]
+      },
+      {
+        "id": "7b0b2967-3e3c-4f5c-ac11-d086681fbada",
+        "status": "INFERRED",
+        "text": "P2 非 Windows 基准驱动超时/工具额度中断只杀 CLI 主进程：spawn 未建立可回收进程组，stop 分支只 child.kill(SIGKILL)。工具后代可能继续运行；继承 stdout/stderr 管道时会使等待 close 的 Promise 无法按预算结束，关闭管道后继续运行时又可能干扰评分或清理。旧分析提出的问题在当前代码仍存在，此结论未在 POSIX 动态复现。",
+        "evidence": [
+          "benchmarks/codex-driver.mjs:32,38-43,55,62-69；benchmarks/client-drivers.mjs:74,78-83,91,97-106；benchmarks/runner.mjs:196-246 在 driver 返回后才检查、评分和清理。"
+        ]
+      },
+      {
+        "id": "e5afa33d-8e7c-492b-9b50-a3424b05f59a",
+        "status": "PROVEN",
+        "text": "本轮环境为 Windows Node v22.20.0；doctor 通过，installer、evidence、checker、两个基准驱动及安装测试文件共六个语法检查通过。这些检查只证明健康与语法，不证明并发、链接边界或真实模型效果。",
+        "evidence": [],
+        "commands": [
+          "a3b8f318-8065-4806-92a2-ed920c951741",
+          "aca9f931-56ae-4a8d-b0bf-9b6d0591d79b",
+          "73c0f15c-cd76-4f79-9dbe-d7ca6935d00c",
+          "59dc2b1b-3260-4dae-a171-d55fab1e5a0d",
+          "80eaa7b8-6ca1-4e6e-a216-e2999c431b11",
+          "1b5a4cc6-e0a5-40b0-a658-871f93c896dd",
+          "12a2a3b0-b1ef-4d36-971e-fa5fb4077d3d",
+          "e1c033f6-5e59-427a-bbdf-3113730ee10c"
+        ]
+      },
+      {
+        "id": "b47a1bbc-ed35-4b76-ad8f-23267d26143a",
+        "status": "UNKNOWN",
+        "text": "未运行 Runtime/benchmark 全量测试、链接与并发的隔离动态复现、POSIX 子进程存活验证或真实模型实验；这些运行时结果未知。当前分析不修改产品代码，不关闭既有 BUG 项，也不能将已通过语法和 doctor 声称为项目 CI 通过。",
+        "evidence": []
+      },
+      {
+        "id": "fe1e895d-3b1a-4e35-9a76-1ed95635b505",
+        "status": "PROPOSAL",
+        "text": "建议顺序：先修复 checker 对旧修订独立审查的误报，使合法返工和锁恢复可正常校验；再在既有安装边界修复项中补暂存父目录链接与回滚非普通对象用例，并完成独立高风险审查；最后补 POSIX 基准驱动的进程树终止和超时回归。",
+        "evidence": [
+          "上述四条当前代码发现及普通 check 的实际失败；修复应另走开发型工作项，本轮不执行产品修改。"
+        ]
+      }
+    ],
+    "unknowns": [
+      ".ai-harness/policies/analysis.md 限制 ANALYSIS 命令为只读查询和 node --check，禁止测试/构建与副作用脚本；本机为 Windows，POSIX 进程回收尚无本次运行证据。"
+    ],
+    "source": {
+      "digest": "30824bd8bd53dbff19359dea6be8adf13e79ab4e551431512987008e54af034c",
+      "document": ".ai-harness/work-items/ANALYSIS-PROJECT-20261013/snapshots/30824bd8bd53dbff19359dea6be8adf13e79ab4e551431512987008e54af034c.json"
+    }
+  },
+  "documentation": {
+    "status": "pending",
+    "evidence": []
+  },
+  "blocked": null,
+  "delivery": null,
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-10-13T01:14:08.953Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-10-13T01:17:38.961Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "ANALYZING",
+      "at": "2026-10-13T01:18:03.258Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "ANALYZING",
+      "to": "ANSWERED",
+      "at": "2026-10-13T01:30:24.726Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-10-13T01:14:08.953Z",
+  "updatedAt": "2026-10-13T01:30:24.726Z"
+}

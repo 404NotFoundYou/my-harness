@@ -1,0 +1,92 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "BUG-INSTALL-WRITE-BOUNDARY-20261012",
+  "mode": "single",
+  "rationale": "安装边界的一次纵向修复，单 AI 实施和独立高风险审查，测试与实现相互依赖。",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "保护安装与初始化目标",
+      "module": ".ai-harness/src/installer.mjs",
+      "status": "IN_REVIEW",
+      "attempt": 1,
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        ".ai-harness/src/installer.mjs",
+        ".ai-harness/tests/installer.test.mjs",
+        "docs/guides/usage.md"
+      ],
+      "verification": [
+        "node --test .ai-harness/tests/installer.test.mjs",
+        "node --test .ai-harness/tests/installer-checkout.test.mjs",
+        "node .ai-harness/tests/run.mjs",
+        "node --check .ai-harness/src/installer.mjs"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            "--test",
+            ".ai-harness/tests/installer.test.mjs"
+          ]
+        },
+        {
+          "id": "V2",
+          "command": "node",
+          "args": [
+            "--test",
+            ".ai-harness/tests/installer-checkout.test.mjs"
+          ]
+        },
+        {
+          "id": "V3",
+          "command": "node",
+          "args": [
+            ".ai-harness/tests/run.mjs"
+          ]
+        },
+        {
+          "id": "V4",
+          "command": "node",
+          "args": [
+            "--check",
+            ".ai-harness/src/installer.mjs"
+          ]
+        }
+      ],
+      "docsImpact": [
+        "docs/guides/usage.md"
+      ],
+      "reviewBatch": "R1",
+      "risk": "high",
+      "owner": "primary-ai",
+      "verificationStatus": "pass",
+      "reviewStatus": "fail",
+      "evidence": [
+        "a3f8783e-55c6-4376-97f9-12aa2413bbd8",
+        "9b0332ad-6b83-4cea-be79-6df079efb2b9"
+      ],
+      "deferralApproval": null,
+      "verificationSource": {
+        "digest": "0e0b1cee7e0716484c0ddd143ad7ce929f598942a879e56e836d472961149b8c",
+        "document": ".ai-harness/work-items/BUG-INSTALL-WRITE-BOUNDARY-20261012/snapshots/0e0b1cee7e0716484c0ddd143ad7ce929f598942a879e56e836d472961149b8c.json"
+      }
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "安装及初始化目标写入",
+      "risk": "high",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": true
+    }
+  ],
+  "createdAt": "2026-10-12T09:07:08.177Z",
+  "updatedAt": "2026-10-13T02:36:49.390Z",
+  "revision": 3
+}

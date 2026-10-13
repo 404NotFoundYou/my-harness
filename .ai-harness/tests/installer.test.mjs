@@ -1,8 +1,10 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { cp, mkdir, mkdtemp, readFile, rm, symlink, writeFile } from "node:fs/promises";
+import { cp, mkdir, mkdtemp, readFile, readdir, rm, symlink, writeFile } from "node:fs/promises";
+import fsPromises from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
+import { syncBuiltinESMExports } from "node:module";
 import { cleanup, git, sourceRoot } from "./helpers.mjs";
 import { installationFiles, installRuntime, initializeProject, uninstallRuntime } from "../src/installer.mjs";
 import { exists } from "../src/filesystem.mjs";
@@ -68,6 +70,143 @@ test("existing instruction files are merged losslessly and reinstall is byte-ide
     assert.ok(second.operations.every((operation) => operation.action === "skip"));
     assert.deepEqual(await readInstructions(target), installed);
   } finally {
+    await cleanup(target);
+  }
+});
+
+test("install refuses a concurrent edit made after the target was planned", async (context) => {
+  const target = await temporaryTarget("ai-harness-install-drift-");
+  const agentsPath = path.join(target, "AGENTS.md");
+  const concurrent = "# Saved while installation was backing up\n";
+  const rename = fsPromises.rename;
+  let injected = false;
+  try {
+    await writeFile(agentsPath, "# Existing rules\n");
+    context.mock.method(fsPromises, "rename", async (from, to) => {
+      const result = await rename(from, to);
+      if (!injected && String(to).includes(`${path.sep}backups${path.sep}`) && path.basename(to) === "AGENTS.md") {
+        injected = true;
+        await writeFile(agentsPath, concurrent);
+      }
+      return result;
+    });
+    syncBuiltinESMExports();
+    await assert.rejects(() => installRuntime(sourceRoot, target), { code: "INSTALL_ROLLBACK_FAILED" });
+    assert.equal(injected, true);
+    assert.equal(await readFile(agentsPath, "utf8"), concurrent);
+  } finally {
+    context.mock.restoreAll();
+    syncBuiltinESMExports();
+    await cleanup(target);
+  }
+});
+
+test("install does not replace an edit made at the final target mutation", async (context) => {
+  const target = await temporaryTarget("ai-harness-install-late-drift-");
+  const agentsPath = path.join(target, "AGENTS.md");
+  const concurrent = "# Saved at the final target mutation\n";
+  const rename = fsPromises.rename;
+  const remove = fsPromises.rm;
+  let injected = false;
+  try {
+    await writeFile(agentsPath, "# Existing rules\n");
+    const inject = async () => {
+      if (!injected) { injected = true; await writeFile(agentsPath, concurrent); }
+    };
+    context.mock.method(fsPromises, "rename", async (from, to) => {
+      if (String(from) === agentsPath && String(to).includes(`${path.sep}backups${path.sep}`)) await inject();
+      return rename(from, to);
+    });
+    context.mock.method(fsPromises, "rm", async (file, options) => {
+      if (String(file) === agentsPath) await inject();
+      return remove(file, options);
+    });
+    syncBuiltinESMExports();
+    await assert.rejects(() => installRuntime(sourceRoot, target));
+    assert.equal(injected, true);
+    assert.equal(await readFile(agentsPath, "utf8"), concurrent);
+  } finally {
+    context.mock.restoreAll();
+    syncBuiltinESMExports();
+    await cleanup(target);
+  }
+});
+
+test("install rollback preserves a concurrent edit to an already installed file", async (context) => {
+  const target = await temporaryTarget("ai-harness-install-rollback-drift-");
+  const agentsPath = path.join(target, "AGENTS.md");
+  const concurrent = "# Saved after the first installation write\n";
+  const rename = fsPromises.rename;
+  const hardlink = fsPromises.link;
+  try {
+    await writeFile(agentsPath, "# Existing rules\n");
+    context.mock.method(fsPromises, "rename", async (from, to) => {
+      if (path.dirname(to) === target && path.basename(to) === "CLAUDE.md") {
+        await writeFile(agentsPath, concurrent);
+        throw Object.assign(new Error("injected install failure"), { code: "EIO" });
+      }
+      return rename(from, to);
+    });
+    context.mock.method(fsPromises, "link", async (from, to) => {
+      if (String(to) === path.join(target, "CLAUDE.md")) {
+        await writeFile(agentsPath, concurrent);
+        throw Object.assign(new Error("injected install failure"), { code: "EIO" });
+      }
+      return hardlink(from, to);
+    });
+    syncBuiltinESMExports();
+    let failure;
+    try { await installRuntime(sourceRoot, target); } catch (error) { failure = error; }
+    assert.equal(failure?.code, "INSTALL_ROLLBACK_FAILED");
+    assert.equal(await readFile(agentsPath, "utf8"), concurrent);
+    assert.equal(await exists(path.join(target, failure.details.backup, "AGENTS.md")), true);
+  } finally {
+    context.mock.restoreAll();
+    syncBuiltinESMExports();
+    await cleanup(target);
+  }
+});
+
+test("rollback keeps an edit made at its final target mutation", async (context) => {
+  const target = await temporaryTarget("ai-harness-rollback-late-drift-");
+  const agentsPath = path.join(target, "AGENTS.md");
+  const concurrent = "# Saved during rollback\n";
+  const rename = fsPromises.rename;
+  const hardlink = fsPromises.link;
+  const remove = fsPromises.rm;
+  let failing = false, injected = false;
+  try {
+    await writeFile(agentsPath, "# Existing rules\n");
+    const inject = async () => {
+      if (failing && !injected) { injected = true; await writeFile(agentsPath, concurrent); }
+    };
+    context.mock.method(fsPromises, "rename", async (from, to) => {
+      if (path.dirname(to) === target && path.basename(to) === "CLAUDE.md") {
+        failing = true;
+        throw Object.assign(new Error("injected install failure"), { code: "EIO" });
+      }
+      if (String(from) === agentsPath && String(to).includes(`${path.sep}backups${path.sep}`)) await inject();
+      return rename(from, to);
+    });
+    context.mock.method(fsPromises, "link", async (from, to) => {
+      if (String(to) === path.join(target, "CLAUDE.md")) {
+        failing = true;
+        throw Object.assign(new Error("injected install failure"), { code: "EIO" });
+      }
+      return hardlink(from, to);
+    });
+    context.mock.method(fsPromises, "rm", async (file, options) => {
+      if (String(file) === agentsPath) await inject();
+      return remove(file, options);
+    });
+    syncBuiltinESMExports();
+    await assert.rejects(() => installRuntime(sourceRoot, target));
+    assert.equal(failing, true);
+    assert.equal(injected, true);
+    assert.equal(await readFile(agentsPath, "utf8"), concurrent);
+  } finally {
+    context.mock.restoreAll();
+    syncBuiltinESMExports();
     await cleanup(target);
   }
 });
@@ -544,6 +683,56 @@ test("an existing empty instruction file is backed up before adoption", async ()
   }
 });
 
+test("new project init refuses a linked docs directory without writing outside the project", async (context) => {
+  const target = await temporaryTarget("ai-harness-init-link-");
+  const outside = await temporaryTarget("ai-harness-init-outside-");
+  try {
+    await installRuntime(sourceRoot, target);
+    git(target, ["init"]);
+    try {
+      await symlink(outside, path.join(target, "docs"), process.platform === "win32" ? "junction" : "dir");
+    } catch (error) {
+      context.skip(`Current platform cannot create a directory link: ${error.code}`);
+      return;
+    }
+    await assert.rejects(() => initializeProject(target, { mode: "new", docsMode: "default" }), { code: "SYMLINK_WRITE" });
+    assert.deepEqual(await readdir(outside), []);
+    assert.equal(await exists(path.join(target, ".ai-harness", "project.json")), false);
+  } finally {
+    await cleanup(target);
+    await cleanup(outside);
+  }
+});
+
+test("new project init never copies through a docs directory linked during template preparation", async (context) => {
+  const target = await temporaryTarget("ai-harness-init-swap-");
+  const outside = await temporaryTarget("ai-harness-init-swap-outside-");
+  const read = fsPromises.readFile;
+  let linked = false;
+  try {
+    await installRuntime(sourceRoot, target);
+    git(target, ["init"]);
+    context.mock.method(fsPromises, "readFile", async (file, ...args) => {
+      const content = await read(file, ...args);
+      if (!linked && String(file).includes(`${path.sep}templates${path.sep}new-project${path.sep}docs${path.sep}`)) {
+        linked = true;
+        await symlink(outside, path.join(target, "docs"), process.platform === "win32" ? "junction" : "dir");
+      }
+      return content;
+    });
+    syncBuiltinESMExports();
+    await assert.rejects(() => initializeProject(target, { mode: "new", docsMode: "default" }));
+    assert.equal(linked, true);
+    assert.deepEqual(await readdir(outside), []);
+    assert.equal(await exists(path.join(target, ".ai-harness", "project.json")), false);
+  } finally {
+    context.mock.restoreAll();
+    syncBuiltinESMExports();
+    await cleanup(target);
+    await cleanup(outside);
+  }
+});
+
 test("new project init creates templates but refuses conflicting docs", async () => {
   const target = await temporaryTarget("ai-harness-new-");
   try {
@@ -567,5 +756,138 @@ test("new project init creates templates but refuses conflicting docs", async ()
     assert.equal(await exists(path.join(conflicting, ".ai-harness", "project.json")), false);
   } finally {
     await cleanup(conflicting);
+  }
+});
+
+test("default docs mode refuses an existing docs directory without changing its contents", async () => {
+  const target = await temporaryTarget("ai-harness-existing-docs-");
+  try {
+    await installRuntime(sourceRoot, target);
+    git(target, ["init"]);
+    await mkdir(path.join(target, "docs"));
+    await writeFile(path.join(target, "docs", "notes.md"), "local notes\n");
+    await assert.rejects(() => initializeProject(target, { mode: "new", docsMode: "default" }), { code: "DOCS_CONFLICT" });
+    assert.deepEqual(await readdir(path.join(target, "docs")), ["notes.md"]);
+    assert.equal(await readFile(path.join(target, "docs", "notes.md"), "utf8"), "local notes\n");
+    assert.equal(await exists(path.join(target, ".ai-harness", "project.json")), false);
+  } finally { await cleanup(target); }
+});
+
+test("default docs refuses a linked backup parent before writing any template outside the project", async () => {
+  const target = await temporaryTarget("ai-harness-init-backup-link-");
+  const outside = await temporaryTarget("ai-harness-init-backup-outside-");
+  try {
+    await installRuntime(sourceRoot, target);
+    git(target, ["init"]);
+    await writeFile(path.join(target, ".git", "info", "exclude"), "\n.ai-harness/backups\n", { flag: "a" });
+    await symlink(outside, path.join(target, ".ai-harness", "backups"), process.platform === "win32" ? "junction" : "dir");
+    await assert.rejects(() => initializeProject(target, { mode: "new", docsMode: "default" }), { code: "SYMLINK_WRITE" });
+    assert.deepEqual(await readdir(outside), [], "rejection must happen before the first external write");
+    assert.equal(await exists(path.join(target, "docs")), false);
+    assert.equal(await exists(path.join(target, ".ai-harness", "project.json")), false);
+  } finally { await cleanup(target); await cleanup(outside); }
+});
+
+test("template preparation cannot redirect staging or remove a concurrent backup link", async (context) => {
+  const target = await temporaryTarget("ai-harness-init-backup-swap-");
+  const outside = await temporaryTarget("ai-harness-init-backup-swap-outside-");
+  const read = fsPromises.readFile;
+  const backupParent = path.join(target, ".ai-harness", "backups");
+  let injected = false;
+  try {
+    await installRuntime(sourceRoot, target);
+    git(target, ["init"]);
+    context.mock.method(fsPromises, "readFile", async (file, ...args) => {
+      const content = await read(file, ...args);
+      if (!injected && String(file).includes(path.join("templates", "new-project", "docs") + path.sep)) {
+        injected = true;
+        await symlink(outside, backupParent, process.platform === "win32" ? "junction" : "dir");
+      }
+      return content;
+    });
+    syncBuiltinESMExports();
+    await assert.rejects(() => initializeProject(target, { mode: "new", docsMode: "default" }), { code: "SYMLINK_WRITE" });
+    assert.equal(injected, true);
+    assert.deepEqual(await readdir(outside), [], "a staging-parent swap must never receive template bytes");
+    assert.equal((await fsPromises.lstat(backupParent)).isSymbolicLink(), true, "cleanup must preserve a concurrently created link");
+    assert.equal(await exists(path.join(target, ".ai-harness", "project.json")), false);
+  } finally {
+    context.mock.restoreAll(); syncBuiltinESMExports();
+    await cleanup(target); await cleanup(outside);
+  }
+});
+
+for (const phase of ["publication", "later failure"]) {
+  for (const kind of ["directory", "link"]) {
+    test(`rollback preserves a concurrent ${kind} at its original path after ${phase}`, async (context) => {
+      const target = await temporaryTarget("ai-harness-install-object-drift-");
+      const outside = await temporaryTarget("ai-harness-install-object-outside-");
+      const agentsPath = path.join(target, "AGENTS.md");
+      const original = "# Existing user rules\n";
+      const hardlink = fsPromises.link;
+      let injected = false;
+      try {
+        await writeFile(agentsPath, original);
+        await writeFile(path.join(outside, "notes.md"), "concurrent user data\n");
+        context.mock.method(fsPromises, "link", async (from, to) => {
+          const trigger = phase === "publication" ? agentsPath : path.join(target, "CLAUDE.md");
+          if (!injected && String(to) === trigger) {
+            injected = true;
+            if (phase === "later failure") await fsPromises.unlink(agentsPath);
+            if (kind === "directory") {
+              await mkdir(agentsPath);
+              await writeFile(path.join(agentsPath, "notes.md"), "concurrent user data\n");
+            } else await symlink(outside, agentsPath, process.platform === "win32" ? "junction" : "dir");
+            if (phase === "later failure") throw Object.assign(new Error("controlled later install failure"), { code: "EIO" });
+          }
+          return hardlink(from, to);
+        });
+        syncBuiltinESMExports();
+        let failure;
+        try { await installRuntime(sourceRoot, target); } catch (error) { failure = error; }
+        assert.equal(injected, true);
+        assert.equal(failure?.code, "INSTALL_ROLLBACK_FAILED");
+        const info = await fsPromises.lstat(agentsPath);
+        assert.equal(kind === "link" ? info.isSymbolicLink() : info.isDirectory(), true);
+        assert.equal(await readFile(path.join(agentsPath, "notes.md"), "utf8"), "concurrent user data\n",
+          "rollback must keep foreign objects usable through their original path");
+        assert.equal(await readFile(path.join(target, failure.details.backup, "AGENTS.md"), "utf8"), original);
+      } finally {
+        context.mock.restoreAll(); syncBuiltinESMExports();
+        await cleanup(target); await cleanup(outside);
+      }
+    });
+  }
+}
+
+test("staging cleanup failure after publication cannot report a rollback while leaving installed files", async (context) => {
+  const target = await temporaryTarget("ai-harness-install-stage-failure-");
+  const remove = fsPromises.rm;
+  const unlink = fsPromises.unlink;
+  let injected = false;
+  const failCleanup = () => {
+    injected = true;
+    throw Object.assign(new Error("controlled staging cleanup failure"), { code: "EIO" });
+  };
+  try {
+    context.mock.method(fsPromises, "unlink", async (file, ...args) => {
+      if (!injected && String(file).includes(path.sep + ".staged" + path.sep)) failCleanup();
+      return unlink(file, ...args);
+    });
+    context.mock.method(fsPromises, "rm", async (file, ...args) => {
+      if (!injected && path.basename(String(file)) === ".staged") failCleanup();
+      return remove(file, ...args);
+    });
+    syncBuiltinESMExports();
+    let failure;
+    try { await installRuntime(sourceRoot, target); } catch (error) { failure = error; }
+    assert.equal(injected, true);
+    assert.equal(failure?.code, "INSTALL_ROLLED_BACK");
+    const files = [...await installationFiles(sourceRoot), "AGENTS.md", "CLAUDE.md", "GEMINI.md", ".ai-harness/install-receipt.json"];
+    for (const relative of files) assert.equal(await exists(path.join(target, relative)), false,
+      "successful rollback must undo every published file: " + relative);
+  } finally {
+    context.mock.restoreAll(); syncBuiltinESMExports();
+    await cleanup(target);
   }
 });

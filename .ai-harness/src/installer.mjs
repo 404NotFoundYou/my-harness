@@ -1,16 +1,20 @@
 import { createHash, randomUUID } from "node:crypto";
 import {
+  link,
   lstat,
   mkdir,
   readFile,
   readdir,
   realpath,
+  rename,
   rmdir,
   rm,
   stat,
+  unlink,
+  writeFile,
 } from "node:fs/promises";
 import path from "node:path";
-import { atomicWriteJson, copyFileAtomic, exists, readJson, writeFileAtomic } from "./filesystem.mjs";
+import { atomicWriteJson, copyFileAtomic, exists, readJson, resolveProjectPath, writeFileAtomic } from "./filesystem.mjs";
 import { getGitBaseline } from "./git.mjs";
 import { HarnessError, invariant } from "./errors.mjs";
 import { inspectManagedBlock, mergeManagedFile, removeManagedBlock } from "./managed-block.mjs";
@@ -155,6 +159,44 @@ async function assertWritableParents(targetRoot, relative) {
     if (!(await exists(cursor))) break;
     const info = await lstat(cursor);
     invariant(!info.isSymbolicLink(), "TARGET_SYMLINK", `安装目标父路径是符号链接：${relative}`);
+  }
+}
+
+async function fileInfo(target) {
+  try { return await lstat(target); } catch (error) {
+    if (error.code === "ENOENT") return null;
+    throw error;
+  }
+}
+
+async function assertInstallOperationUnchanged(targetRoot, operation) {
+  await assertWritableParents(targetRoot, operation.relative);
+  const info = await fileInfo(operation.targetPath);
+  invariant(Boolean(info) === operation.existing && (!info || (info.isFile() && !info.isSymbolicLink())),
+    "INSTALL_TARGET_CHANGED", `安装目标类型在执行前已变化：${operation.relative}`);
+  if (info) invariant(hash(await readFile(operation.targetPath)) === operation.snapshotHash,
+    "INSTALL_TARGET_CHANGED", `安装目标内容在执行前已变化：${operation.relative}`);
+}
+
+async function publishExclusive(stagingPath, targetPath, content) {
+  await mkdir(path.dirname(stagingPath), { recursive: true });
+  await writeFile(stagingPath, content, { flag: "wx" });
+  await link(stagingPath, targetPath);
+}
+
+async function discardInstallBackup(targetRoot, backupRoot, removeEmptyParent = false) {
+  if (await fileInfo(backupRoot)) {
+    const resolved = await realpath(backupRoot);
+    invariant(inside(targetRoot, resolved), "INSTALL_BACKUP_INVALID", "安装备份不在目标项目内。" );
+    await rm(backupRoot, { recursive: true, force: true });
+  }
+  if (removeEmptyParent) {
+    const parent = path.dirname(backupRoot);
+    const info = await fileInfo(parent);
+    if (info?.isDirectory() && !info.isSymbolicLink()) {
+      try { await rmdir(parent); }
+      catch (error) { if (!["ENOENT", "ENOTEMPTY", "EEXIST"].includes(error.code)) throw error; }
+    }
   }
 }
 
@@ -551,26 +593,72 @@ export async function installRuntime(sourceRoot, target, { dryRun = false, force
 
   const transactionId = randomUUID();
   const backupRoot = path.join(targetRoot, ".ai-harness", "backups", transactionId);
+  const backupsDirectoryExisted = await exists(path.dirname(backupRoot));
   const applied = [];
   try {
+    await assertWritableParents(targetRoot, `.ai-harness/backups/${transactionId}/placeholder`);
+    for (const operation of operations) await assertInstallOperationUnchanged(targetRoot, operation);
     for (const operation of operations) {
+      await assertInstallOperationUnchanged(targetRoot, operation);
       if (operation.action === "skip") continue;
+      const entry = { operation, moved: false, written: false };
+      applied.push(entry);
       if (operation.existing) {
         const backupPath = path.join(backupRoot, operation.relative);
-        await copyFileAtomic(operation.targetPath, backupPath);
-        await rm(operation.targetPath, { force: true });
+        await mkdir(path.dirname(backupPath), { recursive: true });
+        await rename(operation.targetPath, backupPath);
+        entry.moved = true;
+        invariant(hash(await readFile(backupPath)) === operation.snapshotHash,
+          "INSTALL_TARGET_CHANGED", `安装目标在迁移到备份期间已变化：${operation.relative}`);
       }
-      applied.push(operation);
-      if (operation.content) await writeFileAtomic(operation.targetPath, operation.content);
-      else await writeFileAtomic(operation.targetPath, operation.sourceContent);
+      await assertWritableParents(targetRoot, operation.relative);
+      await mkdir(path.dirname(operation.targetPath), { recursive: true });
+      await assertWritableParents(targetRoot, operation.relative);
+      await publishExclusive(path.join(backupRoot, ".staged", `${randomUUID()}.tmp`),
+        operation.targetPath, operation.content || operation.sourceContent);
+      entry.written = true;
     }
+    for (const operation of operations.filter((entry) => entry.action === "skip")) await assertInstallOperationUnchanged(targetRoot, operation);
+    await discardInstallBackup(targetRoot, path.join(backupRoot, ".staged"));
+    if (!operations.some((entry) => entry.existing && entry.action !== "skip")) await discardInstallBackup(targetRoot, backupRoot, !backupsDirectoryExisted);
   } catch (error) {
-    for (const operation of [...applied].reverse()) {
-      await rm(operation.targetPath, { force: true });
-      const backupPath = path.join(backupRoot, operation.relative);
-      if (await exists(backupPath)) await copyFileAtomic(backupPath, operation.targetPath);
+    const rollbackErrors = [];
+    for (const { operation, moved, written } of [...applied].reverse()) {
+      try {
+        const backupPath = path.join(backupRoot, operation.relative);
+        const backupInfo = await fileInfo(backupPath);
+        if (!moved && !written && !backupInfo) continue;
+        if (operation.existing) invariant(backupInfo?.isFile() && !backupInfo.isSymbolicLink(),
+          "INSTALL_BACKUP_INVALID", `安装备份丢失或类型改变：${operation.relative}`);
+        await assertWritableParents(targetRoot, operation.relative);
+        const targetInfo = await fileInfo(operation.targetPath);
+        if (targetInfo) {
+          invariant(written && targetInfo.isFile() && !targetInfo.isSymbolicLink(),
+            "INSTALL_TARGET_CHANGED", `并发目标已保留在原路径，备份未删除：${operation.relative}`);
+          const quarantine = path.join(backupRoot, ".rollback", operation.relative);
+          await mkdir(path.dirname(quarantine), { recursive: true });
+          await rename(operation.targetPath, quarantine);
+          const quarantined = await fileInfo(quarantine);
+          if (!quarantined?.isFile() || quarantined.isSymbolicLink() ||
+            hash(await readFile(quarantine)) !== hash(operation.content || operation.sourceContent)) {
+            if (quarantined?.isFile() && !quarantined.isSymbolicLink()) await link(quarantine, operation.targetPath);
+            throw new HarnessError("INSTALL_TARGET_CHANGED", `并发编辑已保留在目标与备份，未覆盖：${operation.relative}`);
+          }
+          if (operation.existing) await link(backupPath, operation.targetPath);
+          await unlink(quarantine);
+        } else {
+          invariant(!written, "INSTALL_TARGET_CHANGED", `已安装目标在回滚前被删除：${operation.relative}`);
+          if (operation.existing) await link(backupPath, operation.targetPath);
+        }
+      } catch (rollbackError) {
+        rollbackErrors.push({ relative: operation.relative, cause: rollbackError.message });
+      }
     }
-    await rm(backupRoot, { recursive: true, force: true });
+    if (rollbackErrors.length) throw new HarnessError("INSTALL_ROLLBACK_FAILED", "安装失败且回滚不完整；备份已保留。", {
+      cause: error.message, backup: path.relative(targetRoot, backupRoot).replaceAll("\\", "/"), rollbackErrors,
+    });
+    await discardInstallBackup(targetRoot, backupRoot, !backupsDirectoryExisted);
+    if (error instanceof HarnessError) throw error;
     throw new HarnessError("INSTALL_ROLLED_BACK", "安装失败，已回滚本次已应用文件。", {
       cause: error.message,
     });
@@ -797,6 +885,7 @@ export async function uninstallRuntime(sourceRoot, target, { dryRun = false, con
 }
 
 export async function initializeProject(root, { mode, docsMode, force = false }) {
+  root = await realpath(root);
   invariant(["new", "existing"].includes(mode), "INVALID_PROJECT_MODE", "项目模式必须是 new 或 existing。" );
   invariant(["default", "existing"].includes(docsMode), "INVALID_DOCS_MODE", "文档模式必须是 default 或 existing。" );
   const manifest = JSON.parse(await readFile(path.join(root, ".ai-harness", "manifest.json"), "utf8"));
@@ -814,23 +903,44 @@ export async function initializeProject(root, { mode, docsMode, force = false })
   if (mode === "new" && docsMode === "default") {
     const templateRoot = path.join(root, ".ai-harness", "templates", "new-project");
     const templateFiles = await listFiles(templateRoot);
-    const conflicts = [];
-    for (const relative of templateFiles) {
-      const targetPath = path.join(root, relative);
-      if (await exists(targetPath)) {
-        const [templateContent, targetContent] = await Promise.all([
-          readFile(path.join(templateRoot, relative)),
-          readFile(targetPath),
-        ]);
-        if (hash(templateContent) !== hash(targetContent)) conflicts.push(relative);
+    const docsPath = await resolveProjectPath(root, "docs", { forWrite: true });
+    invariant(!(await fileInfo(docsPath)), "DOCS_CONFLICT", "默认文档需要全新的 docs 目录；已有文档请使用 existing 模式。" );
+    const stagingRelative = `.ai-harness/backups/init-${randomUUID()}`;
+    const stagingRoot = await resolveProjectPath(root, stagingRelative, { forWrite: true });
+    const backupsDirectoryExisted = await exists(path.dirname(stagingRoot));
+    const rootFiles = [];
+    try {
+      for (const relative of templateFiles) {
+        const content = await readFile(path.join(templateRoot, relative));
+        if (relative.startsWith("docs/")) {
+          const staged = await resolveProjectPath(root, `${stagingRelative}/${relative}`, { forWrite: true });
+          await mkdir(path.dirname(staged), { recursive: true });
+          await writeFile(staged, content, { flag: "wx" });
+        } else {
+          const targetPath = await resolveProjectPath(root, relative, { forWrite: true });
+          const info = await fileInfo(targetPath);
+          invariant(!info || (info.isFile() && !info.isSymbolicLink()), "DOCS_CONFLICT", `默认文档目标不是普通文件：${relative}`);
+          if (info) invariant(hash(await readFile(targetPath)) === hash(content), "DOCS_CONFLICT", `现有文档与模板冲突：${relative}`);
+          rootFiles.push({ targetPath, content, existed: Boolean(info) });
+        }
       }
-    }
-    invariant(conflicts.length === 0, "DOCS_CONFLICT", "新项目默认文档与现有文件冲突；请改用 existing 文档模式或人工处理。", {
-      files: conflicts,
-    });
-    for (const relative of templateFiles) {
-      const targetPath = path.join(root, relative);
-      if (!(await exists(targetPath))) await copyFileAtomic(path.join(templateRoot, relative), targetPath);
+      await resolveProjectPath(root, "docs", { forWrite: true });
+      invariant(!(await fileInfo(docsPath)), "DOCS_CONFLICT", "初始化期间 docs 目录已出现，未覆盖。" );
+      for (const { targetPath, content, existed } of rootFiles) {
+        const info = await fileInfo(targetPath);
+        invariant(Boolean(info) === existed && (!info || (info.isFile() && !info.isSymbolicLink())),
+          "DOCS_TARGET_CHANGED", `默认文档目标类型在初始化期间变化：${targetPath}`);
+        if (info) invariant(hash(await readFile(targetPath)) === hash(content), "DOCS_TARGET_CHANGED", `默认文档内容在初始化期间变化：${targetPath}`);
+        else {
+          const staged = await resolveProjectPath(root, `${stagingRelative}/.root-${randomUUID()}.tmp`, { forWrite: true });
+          await publishExclusive(staged, targetPath, content);
+        }
+      }
+      await resolveProjectPath(root, "docs", { forWrite: true });
+      invariant(!(await fileInfo(docsPath)), "DOCS_CONFLICT", "初始化期间 docs 目录已出现，未覆盖。" );
+      await rename(path.join(stagingRoot, "docs"), docsPath);
+    } finally {
+      await discardInstallBackup(root, stagingRoot, !backupsDirectoryExisted);
     }
   }
   await mkdir(path.join(root, ".ai-harness", "work-items"), { recursive: true });

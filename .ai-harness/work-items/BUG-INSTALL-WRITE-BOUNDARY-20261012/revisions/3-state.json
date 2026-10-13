@@ -1,0 +1,184 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 3,
+  "id": "BUG-INSTALL-WRITE-BOUNDARY-20261012",
+  "type": "BUGFIX",
+  "title": "安装与初始化目标写入边界",
+  "status": "IMPLEMENTING",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/bugfix.md",
+    ".ai-harness/policies/verification.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户 2026-10-12 确认按审查建议执行可逆修复、回归和独立审查"
+  },
+  "input": {
+    "references": [
+      "用户确认按分析项 ANALYSIS-PROJECT-20261012 修复前两项 P1"
+    ],
+    "acceptance": [
+      "init --mode new --docs default 拒绝 docs 链接父目录且外部目录不变",
+      "install 规划后目标文件变化时拒绝覆盖并保留并发修改，原安装卸载行为不回退"
+    ],
+    "nonGoals": [],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": {
+    "actual": "初始化未校验默认文档父目录链接；安装规划后覆盖前不复核目标内容",
+    "expected": "项目外路径不能写入；并发修改不能被旧计划覆盖",
+    "reproduction": "临时安装项目：docs 链接到外部目录；对安装备份与替换之间插入目标文件变更"
+  },
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "main@15d1e37，除先前 ANALYSIS 控制面外无产品改动；已读 installer 完整导出接口与 CLI 调用、filesystem 路径工具及 installer 回归；Node 22 Windows。"
+    ],
+    "completedAt": "2026-10-12T09:02:50.793Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "15d1e37b62f8e5d4d67ca3f5d68c073878d1cc6d",
+      "dirty": false,
+      "changedFiles": [],
+      "fingerprints": {},
+      "source": {
+        "digest": "5fc789879294ce7c1fd5b8f8a19037cf720a5446a503760becc0263c5981d5f1",
+        "document": ".ai-harness/work-items/BUG-INSTALL-WRITE-BOUNDARY-20261012/snapshots/5fc789879294ce7c1fd5b8f8a19037cf720a5446a503760becc0263c5981d5f1.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": ".ai-harness/work-items/BUG-INSTALL-WRITE-BOUNDARY-20261012/solution.md",
+    "evidence": [
+      "安装及初始化两个写入路径的根因、复现、限制和验证计划已记录；已读 CLI 调用和 filesystem 公共工具。"
+    ],
+    "completedAt": "2026-10-12T09:06:46.628Z"
+  },
+  "database": {
+    "impact": "none",
+    "status": "not-applicable",
+    "document": null,
+    "evidence": [
+      "仅 CLI 本地文件写入路径校验，无数据库、持久化模型或查询路径变化。"
+    ],
+    "completedAt": "2026-10-12T09:06:57.310Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/BUG-INSTALL-WRITE-BOUNDARY-20261012/plan.json",
+    "approved": true,
+    "approvalRef": "用户 2026-10-12 明确授权收紧默认 docs 兼容行为以避免越界写入，独立复核失败后返工"
+  },
+  "verification": {
+    "status": "pending",
+    "evidence": [],
+    "stages": []
+  },
+  "review": {
+    "status": "pending",
+    "evidence": [],
+    "independent": false
+  },
+  "acceptance": {
+    "status": "pending",
+    "evidence": []
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "pending",
+    "evidence": []
+  },
+  "blocked": null,
+  "delivery": null,
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-10-12T09:02:29.978Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-10-12T09:02:39.074Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-10-12T09:02:59.047Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-10-12T09:08:14.471Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-10-12T09:08:27.211Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "VERIFYING",
+      "at": "2026-10-12T09:24:55.811Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "VERIFYING",
+      "to": "CODE_REVIEW",
+      "at": "2026-10-12T09:26:28.589Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "CODE_REVIEW",
+      "to": "IMPLEMENTING",
+      "at": "2026-10-12T09:40:54.601Z",
+      "reason": "独立高风险审查复现最后检查与写入/删除之间的三条竞态，需补测试与返工",
+      "action": "reopen",
+      "revision": 2
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-10-12T09:51:00.648Z",
+      "reason": "独立审查发现现有逐文件路径复核不足；用户授权收紧默认 docs 兼容行为，需要同步使用指南",
+      "action": "replan",
+      "revision": 3
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-10-12T09:51:35.557Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-10-12T09:51:45.042Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-10-12T09:02:29.978Z",
+  "updatedAt": "2026-10-13T02:36:49.392Z"
+}

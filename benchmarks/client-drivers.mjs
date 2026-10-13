@@ -71,14 +71,19 @@ export function clientDriver(client, cli) {
     const result = await new Promise(resolve => {
       const started = Date.now(), startedAt = new Date(started).toISOString();
       const timing = createToolTiming(), reader = createClientEventReader(client, timing);
-      const child = spawn(script ? process.execPath : cli, script ? [cli, ...args] : args, { cwd: root, shell: false, windowsHide: true, stdio: ["pipe", "pipe", "pipe"] });
+      const child = spawn(script ? process.execPath : cli, script ? [cli, ...args] : args, { cwd: root, shell: false, windowsHide: true, detached: process.platform !== "win32", stdio: ["pipe", "pipe", "pipe"] });
       child.stdout.setEncoding("utf8"); child.stderr.setEncoding("utf8");
       let stderr = "", pending = "", timedOut = false, toolLimit = false, error = null, unparsedLines = 0;
       const protocolLines = [];
       const stop = () => {
-        if (child.exitCode !== null || !child.pid) return;
-        if (process.platform === "win32") spawnSync("taskkill", ["/PID", String(child.pid), "/T", "/F"], { windowsHide: true, stdio: "ignore" });
-        else child.kill("SIGKILL");
+        if (!child.pid) return;
+        if (process.platform === "win32") {
+          if (child.exitCode !== null) return;
+          spawnSync("taskkill", ["/PID", String(child.pid), "/T", "/F"], { windowsHide: true, stdio: "ignore" });
+        } else {
+          try { process.kill(-child.pid, "SIGKILL"); }
+          catch (error) { if (error.code !== "ESRCH") throw error; }
+        }
       };
       const timer = setTimeout(() => { timedOut = true; stop(); }, budget.timeoutMs);
       const line = raw => {

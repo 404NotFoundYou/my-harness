@@ -4,7 +4,8 @@ import { readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { beginWorkItem, finishWorkItem } from "../src/compact.mjs";
 import { runRecordedCommand } from "../src/evidence.mjs";
-import { checkProject } from "../src/checker.mjs";
+import { checkProject, collectEvidenceErrors } from "../src/checker.mjs";
+import { invalidateResults } from "../src/verification.mjs";
 import { getWorkGuide } from "../src/guide.mjs";
 import {
   addAnalysisConclusion, addTask, approvePlan, completeBaseline, createWorkItemState,
@@ -165,7 +166,7 @@ test("final review rework archives the prior plan and replan allows an authorize
     const command = await run(root, "REPLAN");
     await verifying(root, "REPLAN", command);
     await transitionWorkItem(root, "REPLAN", "CODE_REVIEW");
-    await recordResult(root, "REPLAN", { kind: "review", status: "fail", summary: "needs another case" });
+    await recordResult(root, "REPLAN", { kind: "review", status: "fail", independent: true, summary: "independent review needs another case" });
     assert.equal((await getWorkGuide(root, "REPLAN")).next.code, "reopen-work");
     await reopenWorkItem(root, "REPLAN", { reason: "add the missing case", replan: true });
     assert.equal((await loadWorkItem(root, "REPLAN")).plan.approved, false);
@@ -176,6 +177,8 @@ test("final review rework archives the prior plan and replan allows an authorize
     await transitionWorkItem(root, "REPLAN", "PLANNED");
     await transitionWorkItem(root, "REPLAN", "IMPLEMENTING");
     assert.equal((await loadPlan(root, "REPLAN")).tasks.length, 2);
+    const checked = await checkProject(root);
+    assert.equal(checked.ok, true, "archived independent review must not reject an authorized new revision: " + checked.errors.join("; "));
   } finally { await cleanup(root); }
 });
 
@@ -265,5 +268,25 @@ test("Windows npm runs an actual package test through the recorded executor", { 
     assert.equal(command.status, "pass", command.command.stderr.text);
     assert.equal(command.command.launch.executable, process.execPath);
     assert.equal((await finishWorkItem(root, "NPM", verdict(command.id))).status, "DONE");
+  } finally { await cleanup(root); }
+});
+
+test("invalidated review stops carrying independence while current review still requires consistent evidence", async () => {
+  const root = await createInstalledProject();
+  try {
+    await beginWorkItem(root, options("REVIEW-RESET"));
+    await writeFile(path.join(root, "sample.mjs"), "const valid = 1;\n");
+    const command = await run(root, "REVIEW-RESET");
+    await verifying(root, "REVIEW-RESET", command);
+    await transitionWorkItem(root, "REVIEW-RESET", "CODE_REVIEW");
+    await recordResult(root, "REVIEW-RESET", { kind: "review", status: "pass", independent: true, summary: "independent current review" });
+    const item = await loadWorkItem(root, "REVIEW-RESET");
+    const plan = await loadPlan(root, "REVIEW-RESET");
+    item.review.independent = false;
+    assert.ok((await collectEvidenceErrors(root, item, plan)).some(message => message.includes("独立复核标记")),
+      "a claimed current review cannot contradict its evidence");
+    invalidateResults(item, plan);
+    assert.deepEqual(await collectEvidenceErrors(root, item, plan), [],
+      "a pending verdict has no current review whose independence can be compared");
   } finally { await cleanup(root); }
 });

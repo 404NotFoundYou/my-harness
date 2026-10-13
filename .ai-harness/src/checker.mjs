@@ -253,11 +253,12 @@ export async function collectEvidenceErrors(root, item, plan) {
       }
       continue;
     }
-    const latest = events.findLast((event) => event.kind === kind && (event.taskId ?? null) === null);
+    const latest = events.findLast((event) => event.kind === kind && (event.taskId ?? null) === null &&
+      (event.revision || 1) === (item.revision || 1));
     if (result.status !== "pending" && (!latest || latest.status !== result.status)) {
       errors.push(`工作项 ${kind} 状态与最新证据不一致。`);
     }
-    if (kind === "review" && latest && Boolean(latest.independent) !== result.independent) {
+    if (kind === "review" && result.status !== "pending" && latest && Boolean(latest.independent) !== result.independent) {
       errors.push("工作项 review 的独立复核标记与最新证据不一致。");
     }
   }

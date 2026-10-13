@@ -1,0 +1,104 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "BUG-CHECK-EXECUTION-20261013",
+  "mode": "single",
+  "rationale": "单 AI 连续实现两类项目运行缺陷，已有安装项继续原计划；高风险独立复核在最终实现与真实验证后进行。",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "修复返工证据与基准 CLI 预算中断",
+      "module": "Runtime checker 与基准客户端",
+      "status": "IN_PROGRESS",
+      "attempt": 1,
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        ".ai-harness/src/checker.mjs",
+        ".ai-harness/tests/reliability.test.mjs",
+        "benchmarks/codex-driver.mjs",
+        "benchmarks/client-drivers.mjs",
+        "benchmarks/tests/driver-process.test.mjs"
+      ],
+      "verification": [
+        "node --test .ai-harness/tests/reliability.test.mjs",
+        "node --test benchmarks/tests/driver-process.test.mjs",
+        "node benchmarks/tests/run.mjs",
+        "node --check .ai-harness/src/checker.mjs",
+        "node --check benchmarks/codex-driver.mjs",
+        "node --check benchmarks/client-drivers.mjs"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            "--test",
+            ".ai-harness/tests/reliability.test.mjs"
+          ]
+        },
+        {
+          "id": "V2",
+          "command": "node",
+          "args": [
+            "--test",
+            "benchmarks/tests/driver-process.test.mjs"
+          ]
+        },
+        {
+          "id": "V3",
+          "command": "node",
+          "args": [
+            "benchmarks/tests/run.mjs"
+          ]
+        },
+        {
+          "id": "V4",
+          "command": "node",
+          "args": [
+            "--check",
+            ".ai-harness/src/checker.mjs"
+          ]
+        },
+        {
+          "id": "V5",
+          "command": "node",
+          "args": [
+            "--check",
+            "benchmarks/codex-driver.mjs"
+          ]
+        },
+        {
+          "id": "V6",
+          "command": "node",
+          "args": [
+            "--check",
+            "benchmarks/client-drivers.mjs"
+          ]
+        }
+      ],
+      "docsImpact": [
+        "N/A: 恢复既有返工校验与预算中断契约，公开命令和评分规则不变"
+      ],
+      "reviewBatch": "R1",
+      "risk": "high",
+      "owner": "primary-ai",
+      "verificationStatus": "pending",
+      "reviewStatus": "pending",
+      "evidence": [],
+      "deferralApproval": null
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "证据与进程生命周期独立复核",
+      "risk": "high",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": true
+    }
+  ],
+  "createdAt": "2026-10-13T01:47:09.005Z",
+  "updatedAt": "2026-10-13T01:48:17.863Z"
+}

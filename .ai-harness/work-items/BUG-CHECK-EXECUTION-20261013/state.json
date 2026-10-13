@@ -1,0 +1,320 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 3,
+  "id": "BUG-CHECK-EXECUTION-20261013",
+  "type": "BUGFIX",
+  "title": "修复返工证据校验与基准进程回收",
+  "status": "DONE",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/bugfix.md",
+    ".ai-harness/policies/verification.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户本轮明确要求根据四项建议修复，授权必要可逆修改、回归和项目规定的独立复核"
+  },
+  "input": {
+    "references": [
+      "用户要求执行 ANALYSIS-PROJECT-20261013 的四项修复建议；安装两项续用既有 BUG 项"
+    ],
+    "acceptance": [
+      "旧修订独立审查不影响合法返工，当前有效审查不一致仍明确拒绝",
+      "基准驱动预算中断回收 CLI 及工具子进程，失败明确记录且评分前完成终止"
+    ],
+    "nonGoals": [],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": {
+    "actual": "返工后普通 check 被旧独立审查误报；非 Windows 基准预算中断只结束 CLI 主进程",
+    "expected": "只比较当前有效审查；预算中断结束本次进程树并按预算返回失败结果",
+    "reproduction": "独立 review 后 reopen/replan 再 check；受控 CLI 启动工具后代并触发超时或工具上限"
+  },
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "main@15d1e37；以本轮分析冻结的当前工作区为基线，保留 installer、安装测试、usage.md 的既有修改。doctor 通过；四项根因与未知已登记于 ANALYSIS-PROJECT-20261013。"
+    ],
+    "completedAt": "2026-10-13T01:40:25.355Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "15d1e37b62f8e5d4d67ca3f5d68c073878d1cc6d",
+      "dirty": true,
+      "changedFiles": [
+        ".ai-harness/src/installer.mjs",
+        ".ai-harness/tests/installer.test.mjs",
+        "docs/guides/usage.md"
+      ],
+      "fingerprints": {},
+      "source": {
+        "digest": "30824bd8bd53dbff19359dea6be8adf13e79ab4e551431512987008e54af034c",
+        "document": ".ai-harness/work-items/BUG-CHECK-EXECUTION-20261013/snapshots/30824bd8bd53dbff19359dea6be8adf13e79ab4e551431512987008e54af034c.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": ".ai-harness/work-items/BUG-CHECK-EXECUTION-20261013/solution.md",
+    "evidence": [
+      "已阅读 checker 结果校验与调用方、返工和失效逻辑、驱动协议及运行清理顺序；以失败回归证明四项根因，保持公开接口与预算。"
+    ],
+    "completedAt": "2026-10-13T01:47:08.829Z"
+  },
+  "database": {
+    "impact": "none",
+    "status": "not-applicable",
+    "document": null,
+    "evidence": [
+      "仅本地 Runtime 证据校验、基准 CLI 进程生命周期与回归，无数据库、Schema 或查询影响。"
+    ],
+    "completedAt": "2026-10-13T01:47:08.925Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/BUG-CHECK-EXECUTION-20261013/plan.json",
+    "approved": true,
+    "approvalRef": "用户授权的同一回归目标，改用策略允许的直接 Node test 命令；无执行权限扩张"
+  },
+  "verification": {
+    "status": "pass",
+    "evidence": [
+      "e6448396-a323-43fb-b5df-fd8c0e9e0c03",
+      "5a660222-433c-43c8-8698-73066f4196f2",
+      "ef5c1c0b-24cf-430a-823e-55f075466f5e",
+      "1a2d023e-6733-4b37-a131-9894ad45488a"
+    ],
+    "stages": [
+      {
+        "stage": "static",
+        "status": "pass",
+        "evidence": [
+          "e6448396-a323-43fb-b5df-fd8c0e9e0c03"
+        ],
+        "command": null,
+        "revision": 3,
+        "source": {
+          "digest": "a30be6b4dfe34d1220d3cbec8657064e99a51b1e55a711dac3af1e43ecd0427b",
+          "document": ".ai-harness/work-items/BUG-CHECK-EXECUTION-20261013/snapshots/a30be6b4dfe34d1220d3cbec8657064e99a51b1e55a711dac3af1e43ecd0427b.json"
+        },
+        "planDigest": "ec1646be17732f58f6480a00f7ed6969383ece81fe41aab9549c217b1e5c7c63"
+      },
+      {
+        "stage": "sandbox",
+        "status": "pass",
+        "evidence": [
+          "5a660222-433c-43c8-8698-73066f4196f2"
+        ],
+        "command": null,
+        "revision": 3,
+        "source": {
+          "digest": "a30be6b4dfe34d1220d3cbec8657064e99a51b1e55a711dac3af1e43ecd0427b",
+          "document": ".ai-harness/work-items/BUG-CHECK-EXECUTION-20261013/snapshots/a30be6b4dfe34d1220d3cbec8657064e99a51b1e55a711dac3af1e43ecd0427b.json"
+        },
+        "planDigest": "ec1646be17732f58f6480a00f7ed6969383ece81fe41aab9549c217b1e5c7c63"
+      },
+      {
+        "stage": "reproduction",
+        "status": "pass",
+        "evidence": [
+          "ef5c1c0b-24cf-430a-823e-55f075466f5e"
+        ],
+        "command": "82c3b296-ff58-4b15-a2e3-88ed8e9924bd",
+        "revision": 3,
+        "source": {
+          "digest": "a30be6b4dfe34d1220d3cbec8657064e99a51b1e55a711dac3af1e43ecd0427b",
+          "document": ".ai-harness/work-items/BUG-CHECK-EXECUTION-20261013/snapshots/a30be6b4dfe34d1220d3cbec8657064e99a51b1e55a711dac3af1e43ecd0427b.json"
+        },
+        "planDigest": "ec1646be17732f58f6480a00f7ed6969383ece81fe41aab9549c217b1e5c7c63"
+      },
+      {
+        "stage": "regression",
+        "status": "pass",
+        "evidence": [
+          "1a2d023e-6733-4b37-a131-9894ad45488a"
+        ],
+        "command": "c458a90f-969b-44f6-96cb-968797933d2a",
+        "revision": 3,
+        "source": {
+          "digest": "a30be6b4dfe34d1220d3cbec8657064e99a51b1e55a711dac3af1e43ecd0427b",
+          "document": ".ai-harness/work-items/BUG-CHECK-EXECUTION-20261013/snapshots/a30be6b4dfe34d1220d3cbec8657064e99a51b1e55a711dac3af1e43ecd0427b.json"
+        },
+        "planDigest": "ec1646be17732f58f6480a00f7ed6969383ece81fe41aab9549c217b1e5c7c63"
+      }
+    ],
+    "source": {
+      "digest": "a30be6b4dfe34d1220d3cbec8657064e99a51b1e55a711dac3af1e43ecd0427b",
+      "document": ".ai-harness/work-items/BUG-CHECK-EXECUTION-20261013/snapshots/a30be6b4dfe34d1220d3cbec8657064e99a51b1e55a711dac3af1e43ecd0427b.json"
+    }
+  },
+  "review": {
+    "status": "pass",
+    "evidence": [
+      "db86c4bc-b9eb-4145-a662-24019143be5e"
+    ],
+    "independent": true,
+    "source": {
+      "digest": "a30be6b4dfe34d1220d3cbec8657064e99a51b1e55a711dac3af1e43ecd0427b",
+      "document": ".ai-harness/work-items/BUG-CHECK-EXECUTION-20261013/snapshots/a30be6b4dfe34d1220d3cbec8657064e99a51b1e55a711dac3af1e43ecd0427b.json"
+    }
+  },
+  "acceptance": {
+    "status": "pass",
+    "evidence": [
+      "fa749773-8a80-423b-ae67-bdf841e0a0d3"
+    ],
+    "source": {
+      "digest": "a30be6b4dfe34d1220d3cbec8657064e99a51b1e55a711dac3af1e43ecd0427b",
+      "document": ".ai-harness/work-items/BUG-CHECK-EXECUTION-20261013/snapshots/a30be6b4dfe34d1220d3cbec8657064e99a51b1e55a711dac3af1e43ecd0427b.json"
+    }
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "not-applicable",
+    "evidence": [
+      "e0dbc83d-ff7b-4ccc-abe1-aadd13107b4c"
+    ]
+  },
+  "blocked": null,
+  "delivery": {
+    "source": {
+      "digest": "a30be6b4dfe34d1220d3cbec8657064e99a51b1e55a711dac3af1e43ecd0427b",
+      "document": ".ai-harness/work-items/BUG-CHECK-EXECUTION-20261013/snapshots/a30be6b4dfe34d1220d3cbec8657064e99a51b1e55a711dac3af1e43ecd0427b.json"
+    },
+    "baseline": {
+      "digest": "a39faea136b4551c1c8b3289917d0d8b6ad87cb692b21af6811b44e180571669",
+      "document": ".ai-harness/work-items/BUG-CHECK-EXECUTION-20261013/snapshots/a39faea136b4551c1c8b3289917d0d8b6ad87cb692b21af6811b44e180571669.json"
+    },
+    "baselineAt": "2026-10-13T01:40:25.355Z",
+    "ownedChanges": [
+      {
+        "path": ".ai-harness/src/checker.mjs",
+        "before": "100644:3363f4697c3b659d243408a4fe87f1a285f066d1",
+        "after": "100644:8356c8894a0e8acab48b299f7f1f8cce518f4a93"
+      },
+      {
+        "path": ".ai-harness/tests/reliability.test.mjs",
+        "before": "100644:40b67462612969340668cf3aeb5cabae46f677cb",
+        "after": "100644:aff704f964d17efe704c537dc98d94f7a095bc23"
+      },
+      {
+        "path": "benchmarks/client-drivers.mjs",
+        "before": "100644:5542776a736686ee5d444218ae9abeb82cd08f5c",
+        "after": "100644:9692c879e8a308cdb69b45f9107a810288461bac"
+      },
+      {
+        "path": "benchmarks/codex-driver.mjs",
+        "before": "100644:5a54afa7a5c6b9634c83b0b67693eba0eccbc702",
+        "after": "100644:ba8e7e225a7112a9cc39fca0c392e3727372348a"
+      },
+      {
+        "path": "benchmarks/tests/driver-process.test.mjs",
+        "before": null,
+        "after": "100644:69f50f91807fb58c28af40b7b8944febf66b4edd"
+      }
+    ],
+    "planDigest": "ec1646be17732f58f6480a00f7ed6969383ece81fe41aab9549c217b1e5c7c63",
+    "at": "2026-10-13T03:10:10.568Z",
+    "head": "15d1e37b62f8e5d4d67ca3f5d68c073878d1cc6d"
+  },
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-10-13T01:40:25.086Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-10-13T01:40:25.178Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-10-13T01:40:25.568Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-10-13T01:47:40.258Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-10-13T01:47:40.341Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-10-13T02:22:30.690Z",
+      "reason": "基准 tests/run.mjs 包装入口被命令策略拒绝执行；按其实际标准 Node test 文件清单改为允许的直接 node --test，不增加执行权限或绕过策略。",
+      "action": "replan",
+      "revision": 2
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-10-13T02:22:31.100Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-10-13T02:22:31.181Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "IMPLEMENTING",
+      "at": "2026-10-13T02:36:49.921Z",
+      "reason": "独立复核发现相关安装项需返工，整体源码将变化；补齐POSIX测试CLI救援和显式超时，再按新修订复验。",
+      "action": "reopen",
+      "revision": 3
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "VERIFYING",
+      "at": "2026-10-13T03:04:19.208Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "VERIFYING",
+      "to": "CODE_REVIEW",
+      "at": "2026-10-13T03:04:21.823Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "CODE_REVIEW",
+      "to": "READY_FOR_ACCEPTANCE",
+      "at": "2026-10-13T03:10:06.939Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "READY_FOR_ACCEPTANCE",
+      "to": "DONE",
+      "at": "2026-10-13T03:10:10.668Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-10-13T01:40:25.086Z",
+  "updatedAt": "2026-10-13T03:10:10.668Z"
+}

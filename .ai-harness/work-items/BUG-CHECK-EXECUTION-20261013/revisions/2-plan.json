@@ -1,0 +1,119 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "BUG-CHECK-EXECUTION-20261013",
+  "mode": "single",
+  "rationale": "单 AI 连续实现两类项目运行缺陷，已有安装项继续原计划；高风险独立复核在最终实现与真实验证后进行。",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "修复返工证据与基准 CLI 预算中断",
+      "module": "Runtime checker 与基准客户端",
+      "status": "IN_REVIEW",
+      "attempt": 1,
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        ".ai-harness/src/checker.mjs",
+        ".ai-harness/tests/reliability.test.mjs",
+        "benchmarks/codex-driver.mjs",
+        "benchmarks/client-drivers.mjs",
+        "benchmarks/tests/driver-process.test.mjs"
+      ],
+      "verification": [
+        "node --test .ai-harness/tests/reliability.test.mjs",
+        "node --test benchmarks/tests/driver-process.test.mjs",
+        "{\"args\":[\"--test\",\"benchmarks/tests/driver-process.test.mjs\",\"benchmarks/tests/multifile.test.mjs\",\"benchmarks/tests/project-v2.test.mjs\",\"benchmarks/tests/report.test.mjs\",\"benchmarks/tests/resume.test.mjs\",\"benchmarks/tests/runner.test.mjs\",\"benchmarks/tests/spec-guidance.test.mjs\",\"benchmarks/tests/status.test.mjs\"],\"command\":\"node\"}",
+        "node --check .ai-harness/src/checker.mjs",
+        "node --check benchmarks/codex-driver.mjs",
+        "node --check benchmarks/client-drivers.mjs"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            "--test",
+            ".ai-harness/tests/reliability.test.mjs"
+          ]
+        },
+        {
+          "id": "V2",
+          "command": "node",
+          "args": [
+            "--test",
+            "benchmarks/tests/driver-process.test.mjs"
+          ]
+        },
+        {
+          "id": "V3",
+          "command": "node",
+          "args": [
+            "--test",
+            "benchmarks/tests/driver-process.test.mjs",
+            "benchmarks/tests/multifile.test.mjs",
+            "benchmarks/tests/project-v2.test.mjs",
+            "benchmarks/tests/report.test.mjs",
+            "benchmarks/tests/resume.test.mjs",
+            "benchmarks/tests/runner.test.mjs",
+            "benchmarks/tests/spec-guidance.test.mjs",
+            "benchmarks/tests/status.test.mjs"
+          ]
+        },
+        {
+          "id": "V4",
+          "command": "node",
+          "args": [
+            "--check",
+            ".ai-harness/src/checker.mjs"
+          ]
+        },
+        {
+          "id": "V5",
+          "command": "node",
+          "args": [
+            "--check",
+            "benchmarks/codex-driver.mjs"
+          ]
+        },
+        {
+          "id": "V6",
+          "command": "node",
+          "args": [
+            "--check",
+            "benchmarks/client-drivers.mjs"
+          ]
+        }
+      ],
+      "docsImpact": [
+        "N/A: 恢复既有返工校验与预算中断契约，公开命令和评分规则不变"
+      ],
+      "reviewBatch": "R1",
+      "risk": "high",
+      "owner": "primary-ai",
+      "verificationStatus": "pass",
+      "reviewStatus": "pending",
+      "evidence": [
+        "22eb44fd-f403-415b-a839-e53765904ea1"
+      ],
+      "deferralApproval": null,
+      "verificationSource": {
+        "digest": "0e0b1cee7e0716484c0ddd143ad7ce929f598942a879e56e836d472961149b8c",
+        "document": ".ai-harness/work-items/BUG-CHECK-EXECUTION-20261013/snapshots/0e0b1cee7e0716484c0ddd143ad7ce929f598942a879e56e836d472961149b8c.json"
+      }
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "证据与进程生命周期独立复核",
+      "risk": "high",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": true
+    }
+  ],
+  "createdAt": "2026-10-13T01:47:09.005Z",
+  "updatedAt": "2026-10-13T02:28:55.999Z",
+  "revision": 2
+}

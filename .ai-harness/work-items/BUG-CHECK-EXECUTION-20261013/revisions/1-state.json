@@ -1,0 +1,148 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 1,
+  "id": "BUG-CHECK-EXECUTION-20261013",
+  "type": "BUGFIX",
+  "title": "修复返工证据校验与基准进程回收",
+  "status": "IMPLEMENTING",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/bugfix.md",
+    ".ai-harness/policies/verification.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户本轮明确要求根据四项建议修复，授权必要可逆修改、回归和项目规定的独立复核"
+  },
+  "input": {
+    "references": [
+      "用户要求执行 ANALYSIS-PROJECT-20261013 的四项修复建议；安装两项续用既有 BUG 项"
+    ],
+    "acceptance": [
+      "旧修订独立审查不影响合法返工，当前有效审查不一致仍明确拒绝",
+      "基准驱动预算中断回收 CLI 及工具子进程，失败明确记录且评分前完成终止"
+    ],
+    "nonGoals": [],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": {
+    "actual": "返工后普通 check 被旧独立审查误报；非 Windows 基准预算中断只结束 CLI 主进程",
+    "expected": "只比较当前有效审查；预算中断结束本次进程树并按预算返回失败结果",
+    "reproduction": "独立 review 后 reopen/replan 再 check；受控 CLI 启动工具后代并触发超时或工具上限"
+  },
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "main@15d1e37；以本轮分析冻结的当前工作区为基线，保留 installer、安装测试、usage.md 的既有修改。doctor 通过；四项根因与未知已登记于 ANALYSIS-PROJECT-20261013。"
+    ],
+    "completedAt": "2026-10-13T01:40:25.355Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "15d1e37b62f8e5d4d67ca3f5d68c073878d1cc6d",
+      "dirty": true,
+      "changedFiles": [
+        ".ai-harness/src/installer.mjs",
+        ".ai-harness/tests/installer.test.mjs",
+        "docs/guides/usage.md"
+      ],
+      "fingerprints": {},
+      "source": {
+        "digest": "30824bd8bd53dbff19359dea6be8adf13e79ab4e551431512987008e54af034c",
+        "document": ".ai-harness/work-items/BUG-CHECK-EXECUTION-20261013/snapshots/30824bd8bd53dbff19359dea6be8adf13e79ab4e551431512987008e54af034c.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": ".ai-harness/work-items/BUG-CHECK-EXECUTION-20261013/solution.md",
+    "evidence": [
+      "已阅读 checker 结果校验与调用方、返工和失效逻辑、驱动协议及运行清理顺序；以失败回归证明四项根因，保持公开接口与预算。"
+    ],
+    "completedAt": "2026-10-13T01:47:08.829Z"
+  },
+  "database": {
+    "impact": "none",
+    "status": "not-applicable",
+    "document": null,
+    "evidence": [
+      "仅本地 Runtime 证据校验、基准 CLI 进程生命周期与回归，无数据库、Schema 或查询影响。"
+    ],
+    "completedAt": "2026-10-13T01:47:08.925Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/BUG-CHECK-EXECUTION-20261013/plan.json",
+    "approved": true,
+    "approvalRef": "用户本轮明确授权按建议进行修复；完整计划涵盖高风险独立复核和当前范围回归"
+  },
+  "verification": {
+    "status": "pending",
+    "evidence": [],
+    "stages": []
+  },
+  "review": {
+    "status": "pending",
+    "evidence": [],
+    "independent": false
+  },
+  "acceptance": {
+    "status": "pending",
+    "evidence": []
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "pending",
+    "evidence": []
+  },
+  "blocked": null,
+  "delivery": null,
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-10-13T01:40:25.086Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-10-13T01:40:25.178Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-10-13T01:40:25.568Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-10-13T01:47:40.258Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-10-13T01:47:40.341Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-10-13T01:40:25.086Z",
+  "updatedAt": "2026-10-13T01:48:17.864Z"
+}

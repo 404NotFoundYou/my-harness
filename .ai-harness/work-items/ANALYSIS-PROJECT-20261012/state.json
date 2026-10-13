@@ -1,0 +1,185 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 1,
+  "id": "ANALYSIS-PROJECT-20261012",
+  "type": "ANALYSIS",
+  "title": "当前项目问题审查",
+  "status": "ANSWERED",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/analysis.md"
+  ],
+  "authorization": {
+    "mode": "approval-required",
+    "source": "用户授权只读项目检查"
+  },
+  "input": {
+    "references": [
+      "检查当前项目还存在什么问题；当前 main 工作区、Runtime、基准测试及 CI"
+    ],
+    "acceptance": [
+      "列出有文件行号和触发证据的主要可操作问题；区分已验证、推断和未覆盖范围"
+    ],
+    "nonGoals": [],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": null,
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "main@15d1e37；工作树起始干净；Node 22.20.0；检查 Runtime、benchmarks、CI，产品文件只读"
+    ],
+    "completedAt": "2026-10-12T07:24:30.459Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "15d1e37b62f8e5d4d67ca3f5d68c073878d1cc6d",
+      "dirty": false,
+      "changedFiles": [],
+      "fingerprints": {},
+      "source": {
+        "digest": "5fc789879294ce7c1fd5b8f8a19037cf720a5446a503760becc0263c5981d5f1",
+        "document": ".ai-harness/work-items/ANALYSIS-PROJECT-20261012/snapshots/5fc789879294ce7c1fd5b8f8a19037cf720a5446a503760becc0263c5981d5f1.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "pending",
+    "document": null,
+    "evidence": [],
+    "completedAt": null
+  },
+  "database": {
+    "status": "pending",
+    "document": null,
+    "evidence": [],
+    "completedAt": null,
+    "impact": "unknown"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/ANALYSIS-PROJECT-20261012/plan.json",
+    "approved": false,
+    "approvalRef": null
+  },
+  "verification": {
+    "status": "pending",
+    "evidence": [],
+    "stages": []
+  },
+  "review": {
+    "status": "pending",
+    "evidence": [],
+    "independent": false
+  },
+  "acceptance": {
+    "status": "pending",
+    "evidence": []
+  },
+  "analysis": {
+    "status": "pass",
+    "evidence": [
+      "20f9a377-0880-42c1-8ca2-20754cefa921"
+    ],
+    "conclusions": [
+      {
+        "id": "b5ae5c75-406d-47a9-98cd-986e078a9518",
+        "status": "INFERRED",
+        "text": "P1 安装目标在预检到实际覆盖之间发生并发修改时，installRuntime 仍按旧计划写入；新内容会从工作文件中丢失（备份可能留有副本），回滚也可能覆盖并发保存。",
+        "evidence": [
+          ".ai-harness/src/installer.mjs:483-524 只在规划阶段计算目标内容和 snapshotHash；:555-575 应用阶段未重新校验；:711-739 卸载实现具有相反的复核逻辑。",
+          ".ai-harness/tests/installer.test.mjs:284-305 只覆盖卸载并发修改，未覆盖安装侧。"
+        ]
+      },
+      {
+        "id": "1b4a38b2-c273-4d67-9d96-79fbb0a2a259",
+        "status": "INFERRED",
+        "text": "P1 新项目 init --docs default 遇到 docs 目录为指向仓库外的符号链接/联接时，会沿该父路径将默认文档写到仓库外；悬空文件链接还可能被当成不存在而替换。",
+        "evidence": [
+          ".ai-harness/src/installer.mjs:814-835 模板写入只用 exists、path.join 和 copyFileAtomic，未检查父路径或符号链接；.ai-harness/src/filesystem.mjs:18-25 的 exists 跟随链接，:153-166 的写入使用目标父路径；.ai-harness/src/filesystem.mjs:72-113 提供了项目内解析器却未被该分支使用。",
+          ".ai-harness/tests/installer.test.mjs:548-569 仅测试正常初始化与已有文件冲突。"
+        ]
+      },
+      {
+        "id": "a54578aa-f36b-4434-8d50-6710d01c966d",
+        "status": "INFERRED",
+        "text": "P2 基准实验在非 Windows 超时或工具额度耗尽时只向 CLI 主进程发 SIGKILL，不回收其工具子进程；残留命令可能继续写临时参与者目录，导致 close 延迟或清理/评分竞态。",
+        "evidence": [
+          "benchmarks/codex-driver.mjs:32-43,55,62-71；benchmarks/client-drivers.mjs:74-83,91,97-106；两处 POSIX 分支均为 child.kill('SIGKILL')，没有独立进程组；benchmarks/runner.mjs:196-246 紧接运行后检查、评分和清理。"
+        ]
+      },
+      {
+        "id": "6d6f8f35-dd61-499c-b401-788603ca15dd",
+        "status": "PROVEN",
+        "text": "效果证据尚不足：已归档的真实模型对照中，Harness 组完整完成为 1/3，弱模型原流程为 3/3；本仓库 README 对 1.11.0 明说未运行新的真实模型实验。因此不能把框架测试通过等同于当前实际提效。",
+        "evidence": [
+          ".ai-harness/work-items/MODEL-BENCHMARK-001/comparison.md:1-21 保存 2026-09-14 两轮结果和限制；README.md:29 记载 1.11.0 未运行新的真实模型实验。"
+        ]
+      },
+      {
+        "id": "008c9baa-a206-4eb1-acb8-ca941502fc50",
+        "status": "UNKNOWN",
+        "text": "本轮未执行安装并发写入、链接目录初始化、POSIX 子进程存活的动态复现，也未运行 Runtime/benchmarks 全量测试；这些行为结论目前是代码路径推断。",
+        "evidence": []
+      },
+      {
+        "id": "c6cf6cb1-e505-4897-8953-eae7f2899973",
+        "status": "PROVEN",
+        "text": "证据定位更正：1.11.0 未运行新真实模型实验的声明位于 README.md 第 33 行，前条记录中的第 29 行是笔误；已归档两轮完整交付对照见 comparison.md 第 14-18 行。",
+        "evidence": [
+          "README.md:33；.ai-harness/work-items/MODEL-BENCHMARK-001/comparison.md:14-18。"
+        ]
+      }
+    ],
+    "unknowns": [
+      "ANALYSIS 的 run 白名单不允许测试/构建；只读检查不应被表述为动态验证。"
+    ],
+    "source": {
+      "digest": "5fc789879294ce7c1fd5b8f8a19037cf720a5446a503760becc0263c5981d5f1",
+      "document": ".ai-harness/work-items/ANALYSIS-PROJECT-20261012/snapshots/5fc789879294ce7c1fd5b8f8a19037cf720a5446a503760becc0263c5981d5f1.json"
+    }
+  },
+  "documentation": {
+    "status": "pending",
+    "evidence": []
+  },
+  "blocked": null,
+  "delivery": null,
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-10-12T07:24:10.002Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-10-12T07:24:20.540Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "ANALYZING",
+      "at": "2026-10-12T07:24:41.872Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "ANALYZING",
+      "to": "ANSWERED",
+      "at": "2026-10-12T07:36:43.488Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-10-12T07:24:10.002Z",
+  "updatedAt": "2026-10-12T07:36:43.488Z"
+}

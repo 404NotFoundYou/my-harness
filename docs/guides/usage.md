@@ -16,7 +16,7 @@ node <HARNESS_REPO>/.ai-harness/bin/harness.mjs install --target <TARGET> --json
 - 普通 Runtime/CI 文件内容不同时为 `conflict`，默认在任何写入前失败；`--dry-run` 只返回完整操作计划。
 - 托管块内容被改动时默认报 `MANAGED_BLOCK_MODIFIED`；`--force` 只修复该块。标记缺失一半、重复或不独占一行时报 `MANAGED_BLOCK_MALFORMED`，`--force` 也不覆盖。
 - `--force` 可在明确授权后备份并替换普通冲突文件，但不会替换托管块外的项目规则。
-- 新项目使用 `init --mode new --docs default`。
+- 新项目在不存在 `docs` 目录时使用 `init --mode new --docs default`；默认文档先在项目内完整准备，再发布 `docs`，已有目录（即使部分文件与模板相同）也会拒绝，需改用 `--docs existing` 并沿用既有文档。
 - 已有项目使用 `init --mode existing --docs existing`。
 - 运行开发工作项前，先建立包含 Harness、初始代码和文档的 Git 提交。
 

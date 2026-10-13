@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "BUG-INSTALL-WRITE-BOUNDARY-20261012",
+  "mode": "single",
+  "rationale": "安装边界的一次纵向修复，单 AI 实施和独立高风险审查，测试与实现相互依赖。",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "保护安装与初始化目标",
+      "module": ".ai-harness/src/installer.mjs",
+      "status": "IN_PROGRESS",
+      "attempt": 2,
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        ".ai-harness/src/installer.mjs",
+        ".ai-harness/tests/installer.test.mjs"
+      ],
+      "verification": [
+        "node --test .ai-harness/tests/installer.test.mjs",
+        "node --test .ai-harness/tests/installer-checkout.test.mjs",
+        "node .ai-harness/tests/run.mjs",
+        "node --check .ai-harness/src/installer.mjs"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            "--test",
+            ".ai-harness/tests/installer.test.mjs"
+          ]
+        },
+        {
+          "id": "V2",
+          "command": "node",
+          "args": [
+            "--test",
+            ".ai-harness/tests/installer-checkout.test.mjs"
+          ]
+        },
+        {
+          "id": "V3",
+          "command": "node",
+          "args": [
+            ".ai-harness/tests/run.mjs"
+          ]
+        },
+        {
+          "id": "V4",
+          "command": "node",
+          "args": [
+            "--check",
+            ".ai-harness/src/installer.mjs"
+          ]
+        }
+      ],
+      "docsImpact": [
+        "N/A: 修复已有不越界及保留用户编辑语义，方案和边界记录于本工作项 solution.md"
+      ],
+      "reviewBatch": "R1",
+      "risk": "high",
+      "owner": "primary-ai",
+      "verificationStatus": "pending",
+      "reviewStatus": "pending",
+      "evidence": [],
+      "deferralApproval": null
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "安装及初始化目标写入",
+      "risk": "high",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": true
+    }
+  ],
+  "createdAt": "2026-10-12T09:07:08.177Z",
+  "updatedAt": "2026-10-12T09:46:41.665Z",
+  "revision": 2
+}
