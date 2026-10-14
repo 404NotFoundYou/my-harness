@@ -1,0 +1,252 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 2,
+  "id": "ITER-CI-EVIDENCE-GUIDANCE-20261014",
+  "type": "ITERATION",
+  "title": "修复模拟启动竞态并明确BUGFIX阶段证据诊断",
+  "status": "DONE",
+  "flags": [
+    "api"
+  ],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/iteration.md",
+    ".ai-harness/policies/api.md"
+  ],
+  "authorization": {
+    "mode": "approval-required",
+    "source": "用户根据已说明的CI修复和阶段证据引导建议要求进行修改，授权本地实现及无模型验证；不包含新的模型费用、发布或推送。"
+  },
+  "input": {
+    "references": [
+      "Windows/Node22源码CI的模拟中断测试发生未决Promise取消；开发题的复现引用成功但未匹配计划检查，finish只返回笼统COMMAND_EVIDENCE_INVALID。"
+    ],
+    "acceptance": [
+      "慢文件准备不能使模拟子进程在监听器注册前结束，预算/进程组中断断言仍有效。guide及命令引用错误明确展示匹配当前代码和计划的成功检查与引用依据，未匹配、失败、过期命令继续拒绝，合法阶段引用能够DONE；历史实验不变。"
+    ],
+    "nonGoals": [
+      "不修改预算、模型、评分、权限或证据通过条件，不新增真实模型调用，不用holdout调参。"
+    ],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": null,
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "main@6f5fd2f，产品工作区初始干净；已读模拟进程测试及驱动、guide/verification/compact导出和直接调用方、对应测试和CLI文档。CI原日志记录首项Promise未决取消，开发题归档记录阶段命令不匹配计划。"
+    ],
+    "completedAt": "2026-10-14T05:47:50.272Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "6f5fd2f6e3a45353655706dd71e408deb9b79c4d",
+      "dirty": false,
+      "changedFiles": [],
+      "fingerprints": {},
+      "source": {
+        "digest": "9d93c4763757e8a01f18f33bb53bd8a67ead48406d1ff83af3a13f747ea3f053",
+        "document": ".ai-harness/work-items/ITER-CI-EVIDENCE-GUIDANCE-20261014/snapshots/9d93c4763757e8a01f18f33bb53bd8a67ead48406d1ff83af3a13f747ea3f053.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": ".ai-harness/work-items/ITER-CI-EVIDENCE-GUIDANCE-20261014/solution.md",
+    "evidence": [
+      "采用现有验证报告和命令匹配机制，仅附加CLI诊断字段；完整流程覆盖接口兼容、定向复现和无模型回归。"
+    ],
+    "completedAt": "2026-10-14T05:47:50.570Z"
+  },
+  "database": {
+    "impact": "none",
+    "status": "not-applicable",
+    "document": null,
+    "evidence": [
+      "测试夹具及只读诊断元数据，不涉及数据库或业务存储。"
+    ],
+    "completedAt": "2026-10-14T05:47:50.667Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/ITER-CI-EVIDENCE-GUIDANCE-20261014/plan.json",
+    "approved": true,
+    "approvalRef": "用户已授权本地修复和验证，同一测试范围的入口调整已核对。"
+  },
+  "verification": {
+    "status": "pass",
+    "evidence": [
+      "774c6035-e76e-4cad-8010-789f5ac8d868"
+    ],
+    "stages": [],
+    "source": {
+      "digest": "b7bcb820cf7a84c0a914c48304629b610b3d3059d5dfebba48c2dd0da5e07719",
+      "document": ".ai-harness/work-items/ITER-CI-EVIDENCE-GUIDANCE-20261014/snapshots/b7bcb820cf7a84c0a914c48304629b610b3d3059d5dfebba48c2dd0da5e07719.json"
+    }
+  },
+  "review": {
+    "status": "pass",
+    "evidence": [
+      "526ae52a-02de-4eea-b236-e78eabb17eaf"
+    ],
+    "independent": false,
+    "source": {
+      "digest": "b7bcb820cf7a84c0a914c48304629b610b3d3059d5dfebba48c2dd0da5e07719",
+      "document": ".ai-harness/work-items/ITER-CI-EVIDENCE-GUIDANCE-20261014/snapshots/b7bcb820cf7a84c0a914c48304629b610b3d3059d5dfebba48c2dd0da5e07719.json"
+    }
+  },
+  "acceptance": {
+    "status": "pass",
+    "evidence": [
+      "b708ac9e-efdc-4e76-9f79-98e71b7c29e0"
+    ],
+    "source": {
+      "digest": "b7bcb820cf7a84c0a914c48304629b610b3d3059d5dfebba48c2dd0da5e07719",
+      "document": ".ai-harness/work-items/ITER-CI-EVIDENCE-GUIDANCE-20261014/snapshots/b7bcb820cf7a84c0a914c48304629b610b3d3059d5dfebba48c2dd0da5e07719.json"
+    }
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "pass",
+    "evidence": [
+      "df05a19d-d1a3-4b0d-93b2-f837f5e37df2"
+    ]
+  },
+  "blocked": null,
+  "delivery": {
+    "source": {
+      "digest": "b7bcb820cf7a84c0a914c48304629b610b3d3059d5dfebba48c2dd0da5e07719",
+      "document": ".ai-harness/work-items/ITER-CI-EVIDENCE-GUIDANCE-20261014/snapshots/b7bcb820cf7a84c0a914c48304629b610b3d3059d5dfebba48c2dd0da5e07719.json"
+    },
+    "baseline": {
+      "digest": "9d93c4763757e8a01f18f33bb53bd8a67ead48406d1ff83af3a13f747ea3f053",
+      "document": ".ai-harness/work-items/ITER-CI-EVIDENCE-GUIDANCE-20261014/snapshots/9d93c4763757e8a01f18f33bb53bd8a67ead48406d1ff83af3a13f747ea3f053.json"
+    },
+    "baselineAt": "2026-10-14T05:47:50.272Z",
+    "ownedChanges": [
+      {
+        "path": ".ai-harness/src/guide.mjs",
+        "before": "100644:7a4a19adb1f580df4a97afc717a02ff3ced177f1",
+        "after": "100644:ba162a6a80d8aa17d1c402f27f695897da89bd28"
+      },
+      {
+        "path": ".ai-harness/src/verification.mjs",
+        "before": "100644:a1e920215d9ee4be361852f7ba7f9386375ee5bb",
+        "after": "100644:f73f26378d9e99e67434492ef45aeba6c2b2bd58"
+      },
+      {
+        "path": ".ai-harness/tests/compact.test.mjs",
+        "before": "100644:b4f5c9c49a4f06e55cc5b41b5bfd646312ac48ed",
+        "after": "100644:146ea46ee24e5630b4a5b5f880c1046c93e14bd4"
+      },
+      {
+        "path": ".ai-harness/tests/guide.test.mjs",
+        "before": "100644:846a74e5db5466ad55e90cb5c24bf758de54076e",
+        "after": "100644:9864845136e34516b74bd95f0f23a8bbbf977f1e"
+      },
+      {
+        "path": "benchmarks/tests/driver-process.test.mjs",
+        "before": "100644:69f50f91807fb58c28af40b7b8944febf66b4edd",
+        "after": "100644:0b84e41ab66f799c96c2422d7fa4fbfc0bba437f"
+      },
+      {
+        "path": "docs/guides/usage.md",
+        "before": "100644:76d8852458127991f9876dde0598cdeb23d60f12",
+        "after": "100644:35b64ba88c412833cb21595460e836263db3b3ea"
+      }
+    ],
+    "planDigest": "bf6134f870203ccd82048c2270e699e4f2f5a59386469a220b81623249b84939",
+    "at": "2026-10-14T06:09:26.676Z",
+    "head": "6f5fd2f6e3a45353655706dd71e408deb9b79c4d"
+  },
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-10-14T05:44:14.499Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-10-14T05:47:50.029Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-10-14T05:47:50.473Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-10-14T05:47:51.153Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-10-14T05:47:51.252Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-10-14T06:02:08.077Z",
+      "reason": "基准run.mjs入口被Runtime策略拒绝；改为直接列出同一9个测试文件。完整Runtime测试覆盖guide/compact，去掉重复窄检查；新计划重新验证，旧结果保留。",
+      "action": "replan",
+      "revision": 2
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-10-14T06:02:08.529Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-10-14T06:02:08.625Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "VERIFYING",
+      "at": "2026-10-14T06:09:22.629Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "VERIFYING",
+      "to": "CODE_REVIEW",
+      "at": "2026-10-14T06:09:23.529Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "CODE_REVIEW",
+      "to": "READY_FOR_ACCEPTANCE",
+      "at": "2026-10-14T06:09:24.332Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "READY_FOR_ACCEPTANCE",
+      "to": "DONE",
+      "at": "2026-10-14T06:09:26.810Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-10-14T05:44:14.499Z",
+  "updatedAt": "2026-10-14T06:09:26.810Z"
+}

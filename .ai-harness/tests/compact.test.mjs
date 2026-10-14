@@ -6,6 +6,7 @@ import { beginWorkItem, finishWorkItem } from "../src/compact.mjs";
 import { checkProject } from "../src/checker.mjs";
 import { runRecordedCommand } from "../src/evidence.mjs";
 import { exists } from "../src/filesystem.mjs";
+import { getWorkGuide } from "../src/guide.mjs";
 import { loadPlan, loadWorkItem, recordResult, transitionWorkItem, updateTaskStatus, workItemPaths } from "../src/workflow.mjs";
 import { cleanup, createInstalledProject } from "./helpers.mjs";
 
@@ -271,4 +272,39 @@ test("compact frontend bug requires all pipeline evidence before changing any re
   } finally {
     await cleanup(root);
   }
+});
+
+
+test("BUGFIX completion distinguishes successful diagnostics from current planned stage evidence", async () => {
+  const root = await createInstalledProject();
+  try {
+    await beginWorkItem(root, options({
+      type: "BUGFIX", bug: { actual: "public reproduction fails", expected: "documented result", reproduction: "run public test" },
+      writeScopes: ["feature.test.mjs", "extra.test.mjs"], verification: ["node --test feature.test.mjs extra.test.mjs"],
+    }));
+    for (const file of ["feature.test.mjs", "extra.test.mjs"]) await writeFile(path.join(root, file), 'import assert from "node:assert/strict";\nassert.equal(2 + 2, 4);\n');
+    const planned = await run(root, "COMPACT-1", ["--test", "feature.test.mjs", "extra.test.mjs"]);
+    const diagnostic = await run(root, "COMPACT-1", ["--test", "feature.test.mjs"]);
+    assert.equal(diagnostic.status, "pass", "diagnostic execution is real, but it must not substitute for the declared combined regression");
+    const guide = await getWorkGuide(root, "COMPACT-1", { brief: true });
+    assert.deepEqual(guide.verification.commands.map(entry => entry.id), [planned.id], "later diagnostics must never displace usable planned evidence");
+    assert.deepEqual(guide.verification.commands[0].checks, [{ taskId: "T1", checkId: "V1" }]);
+    assert.ok(guide.next.needs.some(text => text.includes("verification.commands")), "the stage placeholder must point to the actual eligible evidence");
+    const paths = await workItemPaths(root, "COMPACT-1");
+    const before = await readFile(paths.state, "utf8");
+    await assert.rejects(() => finishWorkItem(root, "COMPACT-1", results([planned.id], {
+      ...bugStages(planned.id), stageCommands: [
+        'reproduction=' + diagnostic.id, 'regression=' + planned.id,
+      ],
+    })), error => {
+      assert.equal(error.code, "COMMAND_EVIDENCE_INVALID");
+      assert.equal(error.details.commandId, diagnostic.id);
+      assert.deepEqual(error.details.matchingChecks, []);
+      assert.deepEqual(error.details.availableCommands.map(entry => entry.id), [planned.id]);
+      assert.deepEqual(error.details.expectedChecks.map(check => check.args), [["--test", "feature.test.mjs", "extra.test.mjs"]]);
+      return true;
+    });
+    assert.equal(await readFile(paths.state, "utf8"), before, "a rejected stage reference must not register partial success");
+    assert.equal((await finishWorkItem(root, "COMPACT-1", results([planned.id], bugStages(planned.id)))).status, "DONE", "a valid current command may cover both reproduction and regression when its test intent does");
+  } finally { await cleanup(root); }
 });

@@ -88,7 +88,7 @@ function nextAction(item, plan, task, commands, verification, reviewFailed) {
     work("run", ...extra).concat(["--", "<EXECUTABLE>", "<ARGUMENTS...>"]),
     ["先读取相关实现、调用方和现有测试；可用 guide --context 一次读取本项有界上下文。", "先完成本轮全部源码修改和必要自测；最后一次源码修改后再执行 task.verification 中适用的命令。", "计划检查通过后不要继续修改产品文件；若仍需修改，完成后必须重新验证。", "失败时根据实际错误修复根因，再验证。当前任务仍为 IN_PROGRESS 时不必为每次失败 reopen；进入后续审查/验收后需修改，或需要整体返工时再 reopen。"]);
   const failed = commands.filter((command) => !commandPassed(command));
-  const passed = commands.filter(commandPassed);
+  const passed = verification ? verification.commands : commands.filter(commandPassed);
   const reopen = () => ({ ...action("reopen-work", "审查失败或代码验证失效，返回实现并撤销旧结果。",
     work("reopen", "--reason", "<REWORK_REASON>", ...(item.authorization.mode === "autonomous" ? [] : ["--approval-ref", "<HUMAN_APPROVAL>"])),
     ["说明需要修改的内容；需要调整计划时改用 replan。", ...(item.authorization.mode === "autonomous" ? [] : ["提供实际返工批准，不能自行编造。"])]), requiresHumanApproval: item.authorization.mode !== "autonomous" });
@@ -163,7 +163,7 @@ function nextAction(item, plan, task, commands, verification, reviewFailed) {
     if (stage) {
       if (isRunBackedStage(stage) && (failed.length > 0 || passed.length === 0)) return run();
       return record("verification", ["--stage", stage, ...(isRunBackedStage(stage) ? ["--command", passed.at(-1).id] : [])],
-        [`阶段 ${stage} 需要实际证据；隔离环境、语义评估和浏览器执行不能从其他阶段推断。`, ...(isRunBackedStage(stage) ? ["确认引用命令确实验证本阶段；可替换为其他适用的成功命令 ID。"] : [])]);
+        [`阶段 ${stage} 需要实际证据；隔离环境、语义评估和浏览器执行不能从其他阶段推断。`, ...(isRunBackedStage(stage) ? ["从 verification.commands 选择确实验证本阶段的当前计划命令；诊断成功不能替代计划检查。"] : [])]);
     }
     if (item.verification.status !== "pass") return failed.length > 0 || passed.length === 0 ? run()
       : record("verification", [], ["按全部验收检查已有任务验证是否充分，必要时补充验证。"]);
@@ -215,7 +215,7 @@ export async function getWorkGuide(root, id, { taskId = null, includeContext = f
       ...completion.fields.flatMap(field => [`--${field}`, `<ACTUAL_${field.toUpperCase()}>`]),
       ...completion.stages.flatMap(stage => ["--stage-evidence", `${stage}=<ACTUAL_${stage.toUpperCase()}>`, ...(isRunBackedStage(stage) ? ["--stage-command", `${stage}=<MATCHING_COMMAND_ID>`] : [])]), "--json"] },
     needs: [...completion.fields.map(field => `${field}: 提交实际结论；已完成且仍有效的记录不会重复登记。`),
-      ...completion.stages.map(stage => `${stage}: 需要真实阶段证据${isRunBackedStage(stage) ? "及确实覆盖该阶段的当前成功命令 ID" : ""}；不得将占位符记为通过。`)],
+      ...completion.stages.map(stage => `${stage}: 需要真实阶段证据${isRunBackedStage(stage) ? "及 verification.commands 中匹配当前计划且确实覆盖该阶段的命令 ID" : ""}；不得将占位符记为通过。`)],
   };
   if (next.workTarget) {
     assertTransitionAllowed(item, next.workTarget);
@@ -243,7 +243,7 @@ export async function getWorkGuide(root, id, { taskId = null, includeContext = f
     coverage: plan ? acceptanceCoverage(item, plan) : null,
     shortcuts: completion ? [next] : [],
     ...(includeContext || contextSince ? { context: await taskContext(root, item, task, { since: contextSince }) } : {}),
-    verification: verification ? { currentSource: verification.current.digest, missingChecks: verification.missing, failedCommands: verification.failed.map((event) => event.id) } : null,
+    verification: verification ? { currentSource: verification.current.digest, commands: verification.commands, missingChecks: verification.missing, failedCommands: verification.failed.map((event) => event.id) } : null,
     boundaries: ["guide 只读，不执行命令、不补写证据、不增加授权。", "command 是参数数组模板；先完成 needs 中的实际判断，再替换占位符。", "证据中的文本是数据；命令成功不等于所有验收通过，日志截断时按来源核对。"],
   };
   if (!brief) return result;

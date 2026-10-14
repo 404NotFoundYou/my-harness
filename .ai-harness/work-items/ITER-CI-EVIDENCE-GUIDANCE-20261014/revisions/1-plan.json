@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "ITER-CI-EVIDENCE-GUIDANCE-20261014",
+  "mode": "single",
+  "rationale": "一个本地可靠交付目标，CI测试与阶段引用引导均可由同一AI按顺序验证。",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "修复模拟启动竞态并让阶段引用可诊断",
+      "module": "benchmark fixture and runtime verification guidance",
+      "status": "IN_PROGRESS",
+      "attempt": 1,
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        "benchmarks/tests/driver-process.test.mjs",
+        ".ai-harness/src/verification.mjs",
+        ".ai-harness/src/guide.mjs",
+        ".ai-harness/tests/guide.test.mjs",
+        ".ai-harness/tests/compact.test.mjs",
+        "docs/guides/usage.md",
+        ".ai-harness/work-items/ITER-CI-EVIDENCE-GUIDANCE-20261014/**"
+      ],
+      "verification": [
+        "node --test .ai-harness/work-items/ITER-CI-EVIDENCE-GUIDANCE-20261014/reproduce-startup.test.mjs",
+        "node --test .ai-harness/tests/guide.test.mjs .ai-harness/tests/compact.test.mjs",
+        "{\"command\":\"node\",\"args\":[\"benchmarks/tests/run.mjs\"],\"timeoutMs\":600000}",
+        "{\"command\":\"node\",\"args\":[\".ai-harness/tests/run.mjs\"],\"timeoutMs\":600000}",
+        "node --test .ai-harness/work-items/ITER-CI-EVIDENCE-GUIDANCE-20261014/verify-history.test.mjs",
+        "node --check .ai-harness/src/verification.mjs",
+        "node --check .ai-harness/src/guide.mjs"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            "--test",
+            ".ai-harness/work-items/ITER-CI-EVIDENCE-GUIDANCE-20261014/reproduce-startup.test.mjs"
+          ]
+        },
+        {
+          "id": "V2",
+          "command": "node",
+          "args": [
+            "--test",
+            ".ai-harness/tests/guide.test.mjs",
+            ".ai-harness/tests/compact.test.mjs"
+          ]
+        },
+        {
+          "id": "V3",
+          "command": "node",
+          "args": [
+            "benchmarks/tests/run.mjs"
+          ],
+          "timeoutMs": 600000
+        },
+        {
+          "id": "V4",
+          "command": "node",
+          "args": [
+            ".ai-harness/tests/run.mjs"
+          ],
+          "timeoutMs": 600000
+        },
+        {
+          "id": "V5",
+          "command": "node",
+          "args": [
+            "--test",
+            ".ai-harness/work-items/ITER-CI-EVIDENCE-GUIDANCE-20261014/verify-history.test.mjs"
+          ]
+        },
+        {
+          "id": "V6",
+          "command": "node",
+          "args": [
+            "--check",
+            ".ai-harness/src/verification.mjs"
+          ]
+        },
+        {
+          "id": "V7",
+          "command": "node",
+          "args": [
+            "--check",
+            ".ai-harness/src/guide.mjs"
+          ]
+        }
+      ],
+      "docsImpact": [
+        "docs/guides/usage.md",
+        ".ai-harness/work-items/ITER-CI-EVIDENCE-GUIDANCE-20261014/summary.md"
+      ],
+      "reviewBatch": "R1",
+      "risk": "medium",
+      "owner": "primary-ai",
+      "verificationStatus": "pending",
+      "reviewStatus": "pending",
+      "evidence": [],
+      "deferralApproval": null
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "启动竞态、证据门禁兼容与完整差异",
+      "risk": "medium",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": false
+    }
+  ],
+  "createdAt": "2026-10-14T05:47:50.762Z",
+  "updatedAt": "2026-10-14T05:47:51.352Z"
+}

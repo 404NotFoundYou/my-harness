@@ -4,7 +4,7 @@ import { EventEmitter } from "node:events";
 import { PassThrough } from "node:stream";
 import childProcess from "node:child_process";
 import { syncBuiltinESMExports } from "node:module";
-import { mkdtemp, readFile, realpath, rm, writeFile } from "node:fs/promises";
+import fsPromises, { mkdtemp, readFile, realpath, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { clientDriver } from "../client-drivers.mjs";
@@ -41,11 +41,21 @@ for (const client of ["codex", "claude", "gemini"]) {
         child.emit("close", child.exitCode);
       };
       child.kill = () => { close(); return true; };
-      const watchdog = setTimeout(close, 250);
+      let watchdog;
       try {
         Object.defineProperty(process, "platform", { ...descriptor, value: "linux" });
+        if (client === "codex" && scenario === "timeout") {
+          const write = fsPromises.writeFile;
+          context.mock.method(fsPromises, "writeFile", async (...args) => {
+            // Slow setup must not consume the spawned child's fallback budget.
+            if (String(args[0]).includes("response.schema.json")) await new Promise(resolve => setTimeout(resolve, 350));
+            return write(...args);
+          });
+        }
         context.mock.method(childProcess, "spawn", (_command, _args, spawnOptions) => {
           options = spawnOptions;
+          // Schema preparation can be slow; the fallback owns only a spawned child.
+          watchdog = setTimeout(close, 250);
           if (scenario === "tool-limit") queueMicrotask(() => child.stdout.write(JSON.stringify(toolEvent(client)) + "\n"));
           return child;
         });

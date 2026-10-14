@@ -1,0 +1,129 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "ITER-CI-EVIDENCE-GUIDANCE-20261014",
+  "mode": "single",
+  "rationale": "一个本地可靠交付目标，CI测试与阶段引用引导均可由同一AI按顺序验证。",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "修复模拟启动竞态并让阶段引用可诊断",
+      "module": "benchmark fixture and runtime verification guidance",
+      "status": "COMPLETED",
+      "attempt": 1,
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        "benchmarks/tests/driver-process.test.mjs",
+        ".ai-harness/src/verification.mjs",
+        ".ai-harness/src/guide.mjs",
+        ".ai-harness/tests/guide.test.mjs",
+        ".ai-harness/tests/compact.test.mjs",
+        "docs/guides/usage.md",
+        ".ai-harness/work-items/ITER-CI-EVIDENCE-GUIDANCE-20261014/**"
+      ],
+      "verification": [
+        "node --test .ai-harness/work-items/ITER-CI-EVIDENCE-GUIDANCE-20261014/reproduce-startup.test.mjs",
+        "{\"command\":\"node\",\"args\":[\"--test\",\"benchmarks/tests/driver-process.test.mjs\",\"benchmarks/tests/driver-timing.test.mjs\",\"benchmarks/tests/multifile.test.mjs\",\"benchmarks/tests/project-v2.test.mjs\",\"benchmarks/tests/report.test.mjs\",\"benchmarks/tests/resume.test.mjs\",\"benchmarks/tests/runner.test.mjs\",\"benchmarks/tests/spec-guidance.test.mjs\",\"benchmarks/tests/status.test.mjs\"],\"timeoutMs\":600000}",
+        "{\"command\":\"node\",\"args\":[\".ai-harness/tests/run.mjs\"],\"timeoutMs\":600000}",
+        "node --test .ai-harness/work-items/ITER-CI-EVIDENCE-GUIDANCE-20261014/verify-history.test.mjs",
+        "node --check .ai-harness/src/verification.mjs",
+        "node --check .ai-harness/src/guide.mjs"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            "--test",
+            ".ai-harness/work-items/ITER-CI-EVIDENCE-GUIDANCE-20261014/reproduce-startup.test.mjs"
+          ]
+        },
+        {
+          "id": "V2",
+          "command": "node",
+          "args": [
+            "--test",
+            "benchmarks/tests/driver-process.test.mjs",
+            "benchmarks/tests/driver-timing.test.mjs",
+            "benchmarks/tests/multifile.test.mjs",
+            "benchmarks/tests/project-v2.test.mjs",
+            "benchmarks/tests/report.test.mjs",
+            "benchmarks/tests/resume.test.mjs",
+            "benchmarks/tests/runner.test.mjs",
+            "benchmarks/tests/spec-guidance.test.mjs",
+            "benchmarks/tests/status.test.mjs"
+          ],
+          "timeoutMs": 600000
+        },
+        {
+          "id": "V3",
+          "command": "node",
+          "args": [
+            ".ai-harness/tests/run.mjs"
+          ],
+          "timeoutMs": 600000
+        },
+        {
+          "id": "V4",
+          "command": "node",
+          "args": [
+            "--test",
+            ".ai-harness/work-items/ITER-CI-EVIDENCE-GUIDANCE-20261014/verify-history.test.mjs"
+          ]
+        },
+        {
+          "id": "V5",
+          "command": "node",
+          "args": [
+            "--check",
+            ".ai-harness/src/verification.mjs"
+          ]
+        },
+        {
+          "id": "V6",
+          "command": "node",
+          "args": [
+            "--check",
+            ".ai-harness/src/guide.mjs"
+          ]
+        }
+      ],
+      "docsImpact": [
+        "docs/guides/usage.md",
+        ".ai-harness/work-items/ITER-CI-EVIDENCE-GUIDANCE-20261014/summary.md"
+      ],
+      "reviewBatch": "R1",
+      "risk": "medium",
+      "owner": "primary-ai",
+      "verificationStatus": "pass",
+      "reviewStatus": "pass",
+      "evidence": [
+        "60d7417d-4025-491e-9d69-e1ca05a992c8",
+        "ea82fe2b-4a05-4564-9171-dab725d9bfc6"
+      ],
+      "deferralApproval": null,
+      "verificationSource": {
+        "digest": "b7bcb820cf7a84c0a914c48304629b610b3d3059d5dfebba48c2dd0da5e07719",
+        "document": ".ai-harness/work-items/ITER-CI-EVIDENCE-GUIDANCE-20261014/snapshots/b7bcb820cf7a84c0a914c48304629b610b3d3059d5dfebba48c2dd0da5e07719.json"
+      },
+      "reviewSource": {
+        "digest": "b7bcb820cf7a84c0a914c48304629b610b3d3059d5dfebba48c2dd0da5e07719",
+        "document": ".ai-harness/work-items/ITER-CI-EVIDENCE-GUIDANCE-20261014/snapshots/b7bcb820cf7a84c0a914c48304629b610b3d3059d5dfebba48c2dd0da5e07719.json"
+      }
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "启动竞态、证据门禁兼容与完整差异",
+      "risk": "medium",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": false
+    }
+  ],
+  "createdAt": "2026-10-14T05:47:50.762Z",
+  "updatedAt": "2026-10-14T06:09:22.536Z",
+  "revision": 2
+}

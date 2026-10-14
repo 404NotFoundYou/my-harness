@@ -137,7 +137,12 @@ export async function verificationReport(root, item, plan, { taskId = null, snap
     (!event.taskId || event.taskId === check.taskId)));
   const missingStages = requiredVerificationStages(item).filter((name) =>
     !stageIsCurrent(item, item.verification.stages?.find((entry) => entry.stage === name), current, digest, evidence));
-  return { ok: required.length > 0 && missing.length === 0 && failed.length === 0, current, planDigest: digest, successful, missing, failed, missingStages };
+  const commands = successful.flatMap(event => {
+    const checks = matchingChecks(plan, event.taskId, event.command.executable, event.command.args, event.command.checkTimeoutMs);
+    return checks.length ? [{ id: event.id, taskId: event.taskId, checks, executable: event.command.executable, args: event.command.args,
+      ...(event.command.checkTimeoutMs === undefined ? {} : { timeoutMs: event.command.checkTimeoutMs }) }] : [];
+  });
+  return { ok: required.length > 0 && missing.length === 0 && failed.length === 0, current, planDigest: digest, successful, commands, missing, failed, missingStages };
 }
 
 export async function assertVerification(root, item, plan, options = {}) {
@@ -181,12 +186,24 @@ export async function assertCommandEvidence(root, item, plan, commandId, options
     (later.revision || 1) === (item.revision || 1) && (!later.taskId || later.taskId === event.taskId) &&
     (!later.taskId || (later.taskAttempt || 1) === (event.taskAttempt || 1)) &&
     commandEvidenceKey(later.command) === commandEvidenceKey(command));
-  invariant(event?.kind === "command" && event.status === "pass" && command.exitCode === 0 && !command.timedOut && !command.spawnError && !command.signal &&
+  const valid = event?.kind === "command" && event.status === "pass" && command.exitCode === 0 && !command.timedOut && !command.spawnError && !command.signal &&
     (event.revision || 1) === (item.revision || 1) && (!task || (event.taskAttempt || 1) === (task.attempt || 1)) &&
     (!options.taskId || event.taskId === options.taskId) && command.planDigest === planDigest(item, plan) &&
     command.source?.digest === current.digest && command.sourceAfter?.digest === current.digest && !subsequentFailure &&
-    commandEvidenceKey(command) && matchingChecks(plan, event.taskId, command.executable, command.args, command.checkTimeoutMs).length > 0,
-  "COMMAND_EVIDENCE_INVALID", "命令证据必须匹配计划验证、当前代码和计划版本，且没有随后失败。" );
+    commandEvidenceKey(command) && matchingChecks(plan, event.taskId, command.executable, command.args, command.checkTimeoutMs).length > 0;
+  if (!valid) {
+    const taskId = options.taskId || event?.taskId || null;
+    const report = await verificationReport(root, item, plan, { taskId, snapshot: current, events });
+    invariant(false, "COMMAND_EVIDENCE_INVALID", "命令证据必须匹配计划验证、当前代码和计划版本，且没有随后失败。", {
+      commandId,
+      actualCommand: command ? { executable: command.executable, args: command.args } : null,
+      matchingChecks: command ? matchingChecks(plan, event.taskId, command.executable, command.args, command.checkTimeoutMs) : [],
+      expectedChecks: plan.tasks.filter(task => (!taskId || task.id === taskId) && task.status !== "DEFERRED")
+        .flatMap(task => checksFor(task).map(check => ({ taskId: task.id, checkId: check.id, command: check.command, args: check.args,
+          ...(check.timeoutMs === undefined ? {} : { timeoutMs: check.timeoutMs }) }))),
+      availableCommands: report.commands,
+    });
+  }
   await loadSnapshot(root, event.command.source);
   await loadSnapshot(root, event.command.sourceAfter);
   return event;

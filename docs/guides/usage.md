@@ -109,6 +109,8 @@ BUGFIX 保留远端引入的完整验证流水线。完成实际验证后，在�
 
 这是参数清单，追加到同一条 `finish` 命令；PowerShell 换行时仍需反引号。带 `frontend` 时还需 `--stage-evidence "browser=实际浏览器探针结果"`。Runtime 先检查全部必需阶段和命令引用，再按原流水线顺序登记；缺失时在更新结果前拒绝，不把普通测试推断为隔离或浏览器验证。同一个命令确实覆盖复现和回归时可复用其 ID。
 
+复现和回归的引用命令还必须匹配任务计划中的检查参数及超时预算。`guide --id <ID> --task T1 --brief --json` 的 `verification.commands` 列出当前代码、计划和任务尝试下匹配检查的成功命令 ID 与 `checks`，完整 guide 也保留该字段；从中选择确实覆盖该阶段的命令。若计划只声明 `node --test test/public.test.mjs test/extra.test.mjs`，单独运行公共测试即使成功也只是诊断证据，不能作为阶段完成引用。`COMMAND_EVIDENCE_INVALID` 的 `details` 会列出实际命令、匹配检查、预期检查及当前可用证据；修改源码、变更计划或后续失败会使旧推荐失效，实际收尾仍重新校验。
+
 方案保存在 `.ai-harness/work-items/<ID>/solution.md`，任务固定为 T1、审查批次 R1。`--verify` 提供实际验证命令，或包含 `command` / `args` 的 JSON 字符串；Runtime 编译为 V1、V2 等检查，不执行 shell 展开。可用 `run --id <ID> --task T1 --check V1` 直接执行计划，或通过原有透传方式执行完全匹配的命令。诊断命令可以留证，但不能代替未运行的计划检查。
 
 也可以执行 `begin --spec task.json --json`，读取项目内UTF-8 JSON（允许BOM），避免路径列表和命令参数的shell转义。定义字段如下；授权来源与验收必须填写本次真实信息：

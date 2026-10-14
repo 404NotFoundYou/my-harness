@@ -1,0 +1,143 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 1,
+  "id": "ITER-CI-EVIDENCE-GUIDANCE-20261014",
+  "type": "ITERATION",
+  "title": "修复模拟启动竞态并明确BUGFIX阶段证据诊断",
+  "status": "IMPLEMENTING",
+  "flags": [
+    "api"
+  ],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/iteration.md",
+    ".ai-harness/policies/api.md"
+  ],
+  "authorization": {
+    "mode": "approval-required",
+    "source": "用户根据已说明的CI修复和阶段证据引导建议要求进行修改，授权本地实现及无模型验证；不包含新的模型费用、发布或推送。"
+  },
+  "input": {
+    "references": [
+      "Windows/Node22源码CI的模拟中断测试发生未决Promise取消；开发题的复现引用成功但未匹配计划检查，finish只返回笼统COMMAND_EVIDENCE_INVALID。"
+    ],
+    "acceptance": [
+      "慢文件准备不能使模拟子进程在监听器注册前结束，预算/进程组中断断言仍有效。guide及命令引用错误明确展示匹配当前代码和计划的成功检查与引用依据，未匹配、失败、过期命令继续拒绝，合法阶段引用能够DONE；历史实验不变。"
+    ],
+    "nonGoals": [
+      "不修改预算、模型、评分、权限或证据通过条件，不新增真实模型调用，不用holdout调参。"
+    ],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": null,
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "main@6f5fd2f，产品工作区初始干净；已读模拟进程测试及驱动、guide/verification/compact导出和直接调用方、对应测试和CLI文档。CI原日志记录首项Promise未决取消，开发题归档记录阶段命令不匹配计划。"
+    ],
+    "completedAt": "2026-10-14T05:47:50.272Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "6f5fd2f6e3a45353655706dd71e408deb9b79c4d",
+      "dirty": false,
+      "changedFiles": [],
+      "fingerprints": {},
+      "source": {
+        "digest": "9d93c4763757e8a01f18f33bb53bd8a67ead48406d1ff83af3a13f747ea3f053",
+        "document": ".ai-harness/work-items/ITER-CI-EVIDENCE-GUIDANCE-20261014/snapshots/9d93c4763757e8a01f18f33bb53bd8a67ead48406d1ff83af3a13f747ea3f053.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": ".ai-harness/work-items/ITER-CI-EVIDENCE-GUIDANCE-20261014/solution.md",
+    "evidence": [
+      "采用现有验证报告和命令匹配机制，仅附加CLI诊断字段；完整流程覆盖接口兼容、定向复现和无模型回归。"
+    ],
+    "completedAt": "2026-10-14T05:47:50.570Z"
+  },
+  "database": {
+    "impact": "none",
+    "status": "not-applicable",
+    "document": null,
+    "evidence": [
+      "测试夹具及只读诊断元数据，不涉及数据库或业务存储。"
+    ],
+    "completedAt": "2026-10-14T05:47:50.667Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/ITER-CI-EVIDENCE-GUIDANCE-20261014/plan.json",
+    "approved": true,
+    "approvalRef": "用户2026-10-14根据建议进行修改，已授权此范围实现与无模型验证。"
+  },
+  "verification": {
+    "status": "pending",
+    "evidence": [],
+    "stages": []
+  },
+  "review": {
+    "status": "pending",
+    "evidence": [],
+    "independent": false
+  },
+  "acceptance": {
+    "status": "pending",
+    "evidence": []
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "pending",
+    "evidence": []
+  },
+  "blocked": null,
+  "delivery": null,
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-10-14T05:44:14.499Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-10-14T05:47:50.029Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-10-14T05:47:50.473Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-10-14T05:47:51.153Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-10-14T05:47:51.252Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-10-14T05:44:14.499Z",
+  "updatedAt": "2026-10-14T05:47:51.354Z"
+}

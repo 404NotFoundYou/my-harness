@@ -362,3 +362,26 @@ test("inconsistent persisted progress never produces a next-step recommendation"
     await assert.rejects(() => getWorkGuide(root, id), { code: "GUIDE_STATE_INVALID" });
   } finally { await cleanup(root); }
 });
+
+
+test("guide exposes only current planned successes and retracts them after source changes", async () => {
+  const root = await createInstalledProject();
+  try {
+    await implementing(root);
+    await writeFile(path.join(root, "sample.mjs"), "export const value = 1;\n");
+    const planned = await run(root);
+    const diagnostic = await run(root, ["--check", "sample.mjs"]);
+    assert.equal(diagnostic.status, "pass");
+    const before = await snapshot(root);
+    for (const brief of [false, true]) {
+      const guide = await getWorkGuide(root, id, { brief });
+      assert.deepEqual(guide.verification.commands.map(entry => entry.id), [planned.id], "guide may list successful diagnostics as history, but stage choices must match the current plan");
+      assert.deepEqual(guide.verification.commands[0].checks, [{ taskId: "T1", checkId: "V1" }]);
+      assert.deepEqual(await snapshot(root), before, "evidence recommendations must remain read-only");
+    }
+    await writeFile(path.join(root, "sample.mjs"), "export const value = 2;\n");
+    assert.deepEqual((await getWorkGuide(root, id, { brief: true })).verification.commands, [], "a code edit invalidates previous stage recommendations");
+    const current = await run(root);
+    assert.deepEqual((await getWorkGuide(root, id)).verification.commands.map(entry => entry.id), [current.id]);
+  } finally { await cleanup(root); }
+});
