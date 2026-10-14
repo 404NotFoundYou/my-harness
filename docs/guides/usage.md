@@ -133,7 +133,7 @@ BUGFIX 保留远端引入的完整验证流水线。完成实际验证后，在�
 }
 ```
 
-Schema位于 `.ai-harness/schemas/begin-spec.schema.json`。完整填写的旧 spec 继续使用 `begin --spec task.json --json`。需要由模型判断的 `risk` / `approach` 可以在 JSON 中保留空字符串，并用 `begin --spec task.json --risk low --approach "实际方案" --json` 填充；CLI 只能填空，字段已有非空值时拒绝覆盖。除这两个 judgment 参数外，`--spec` 不与其他 CLI 任务定义参数混用，未知字段在创建前拒绝。旧CLI继续使用重复 `--writes` / `--verify`；疑似把多个完整路径拼成一个逗号字符串时会在创建前提示纠正。确为包含逗号的字面路径，可在JSON数组中明确保留为一个元素。`N/A：理由` 会规范化为 `N/A: 理由`。
+Schema位于 `.ai-harness/schemas/begin-spec.schema.json`。完整填写的旧 spec 继续使用 `begin --spec task.json --json`。需要由模型判断的 `risk` / `approach` 可以在 JSON 中保留空字符串，并用 `begin --spec task.json --risk low --approach "实际方案" --json` 填充；CLI 只能填空，字段已有非空值时拒绝覆盖。BUGFIX 的 `bug.actual` / `bug.expected` / `bug.reproduction` 也可保留空字符串，并分别用 `--actual` / `--expected` / `--reproduction` 提供实际观察、公开期望和复现方法；仅 BUGFIX 可使用这三个参数，字段已填时拒绝覆盖。未填全或错误类型在创建工作项前拒绝，输入 JSON 不会被改写。这些声明不代表任何验证阶段通过，仍须实际复现、修复、回归和阶段证据。除上述判断字段外，`--spec` 不与其他 CLI 任务定义参数混用，未知字段在创建前拒绝。旧CLI继续使用重复 `--writes` / `--verify`；疑似把多个完整路径拼成一个逗号字符串时会在创建前提示纠正。确为包含逗号的字面路径，可在JSON数组中明确保留为一个元素。`N/A：理由` 会规范化为 `N/A: 理由`。
 
 新项使用策略路由版本2，确定无数据库影响且无显式database标志时不加载完整数据库细则；影响未知或required时仍加载。用 `policies --id <ID>` 查看实际列表。建项前已完成影响判断时可用 `policies --type ITERATION --database-impact none`；该参数不替代工作项中的正式判断。旧项沿用原路由，不改写历史记录。
 

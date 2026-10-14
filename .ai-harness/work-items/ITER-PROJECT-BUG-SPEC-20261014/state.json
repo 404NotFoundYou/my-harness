@@ -1,0 +1,247 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 1,
+  "id": "ITER-PROJECT-BUG-SPEC-20261014",
+  "type": "ITERATION",
+  "title": "工程BUG题只读结构化入口与简短收尾",
+  "status": "DONE",
+  "flags": [
+    "api"
+  ],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/iteration.md",
+    ".ai-harness/policies/api.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户根据已说明的本地代码/提示/文档修改及无模型验证建议要求执行，不授权新增模型调用、费用、部署或推送。"
+  },
+  "input": {
+    "references": [
+      "project-v2 Harness重复手拼begin参数并触发N/A理由错误，查询finish帮助但未真正收尾；现有core只读spec只支持risk/approach填空，无法保持BUGFIX判断字段未填写而不修改预填文件。"
+    ],
+    "acceptance": [
+      "project-v2 Harness从只读spec填充实际判断并合法创建BUGFIX，实际复现/修复/回归及四阶段证据可到DONE；缺失、空、错误或覆盖已填判断仍拒绝且无部分工作项，输入修改/删除/链接替换为scope violation；core与旧project/baseline提示、题目/隐藏判定/预算和历史字节保持原样，全部无模型回归及check --ci通过。"
+    ],
+    "nonGoals": [
+      "不预填通过结论，不由runner代替参试模型完成工作项，不修改权限/评分/预算，不执行真实模型试验。"
+    ],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": null,
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "main@2b145a3，初始产品工作区干净；doctor通过。已读input/CLI/compact调用及spec-input测试，runner/experiment和核心/多文件测试，spec输入schema与usage；现有project路径有明确兼容断言，采用仅project-v2启用。"
+    ],
+    "completedAt": "2026-10-14T07:34:18.816Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "2b145a31608728b035d505a38320aadeb27d9774",
+      "dirty": false,
+      "changedFiles": [],
+      "fingerprints": {},
+      "source": {
+        "digest": "b7bcb820cf7a84c0a914c48304629b610b3d3059d5dfebba48c2dd0da5e07719",
+        "document": ".ai-harness/work-items/ITER-PROJECT-BUG-SPEC-20261014/snapshots/b7bcb820cf7a84c0a914c48304629b610b3d3059d5dfebba48c2dd0da5e07719.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": ".ai-harness/work-items/ITER-PROJECT-BUG-SPEC-20261014/solution.md",
+    "evidence": [
+      "仅增加空BUG判断的兼容CLI入口及project-v2确定性模板；旧project/core不改，权限和完成阶段门禁不改，基于开发题参数返工记录。"
+    ],
+    "completedAt": "2026-10-14T07:34:19.105Z"
+  },
+  "database": {
+    "impact": "none",
+    "status": "not-applicable",
+    "document": null,
+    "evidence": [
+      "本地输入校验、评测提示和隔离测试夹具，无数据库或真实业务数据变化。"
+    ],
+    "completedAt": "2026-10-14T07:34:19.194Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/ITER-PROJECT-BUG-SPEC-20261014/plan.json",
+    "approved": true,
+    "approvalRef": "用户授权按已建议范围执行本地修改与无模型验证；兼容CLI填空规则和仅project-v2提示调整符合范围。"
+  },
+  "verification": {
+    "status": "pass",
+    "evidence": [
+      "344d02e9-b7f2-4a1b-a926-5610394542e8"
+    ],
+    "stages": [],
+    "source": {
+      "digest": "502e2cb4a9ca4c60189ee01d52c78f5979cdbdf57dd651ecc71e97778fd1dccc",
+      "document": ".ai-harness/work-items/ITER-PROJECT-BUG-SPEC-20261014/snapshots/502e2cb4a9ca4c60189ee01d52c78f5979cdbdf57dd651ecc71e97778fd1dccc.json"
+    }
+  },
+  "review": {
+    "status": "pass",
+    "evidence": [
+      "414b8ce7-56e6-4b3b-a819-5d77b390bb81"
+    ],
+    "independent": false,
+    "source": {
+      "digest": "502e2cb4a9ca4c60189ee01d52c78f5979cdbdf57dd651ecc71e97778fd1dccc",
+      "document": ".ai-harness/work-items/ITER-PROJECT-BUG-SPEC-20261014/snapshots/502e2cb4a9ca4c60189ee01d52c78f5979cdbdf57dd651ecc71e97778fd1dccc.json"
+    }
+  },
+  "acceptance": {
+    "status": "pass",
+    "evidence": [
+      "218a22d6-d734-4c89-9bac-ec258b14a51e"
+    ],
+    "source": {
+      "digest": "502e2cb4a9ca4c60189ee01d52c78f5979cdbdf57dd651ecc71e97778fd1dccc",
+      "document": ".ai-harness/work-items/ITER-PROJECT-BUG-SPEC-20261014/snapshots/502e2cb4a9ca4c60189ee01d52c78f5979cdbdf57dd651ecc71e97778fd1dccc.json"
+    }
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "pass",
+    "evidence": [
+      "2e1e46ab-945d-44d6-b7cf-a7e894225c10"
+    ]
+  },
+  "blocked": null,
+  "delivery": {
+    "source": {
+      "digest": "502e2cb4a9ca4c60189ee01d52c78f5979cdbdf57dd651ecc71e97778fd1dccc",
+      "document": ".ai-harness/work-items/ITER-PROJECT-BUG-SPEC-20261014/snapshots/502e2cb4a9ca4c60189ee01d52c78f5979cdbdf57dd651ecc71e97778fd1dccc.json"
+    },
+    "baseline": {
+      "digest": "b7bcb820cf7a84c0a914c48304629b610b3d3059d5dfebba48c2dd0da5e07719",
+      "document": ".ai-harness/work-items/ITER-PROJECT-BUG-SPEC-20261014/snapshots/b7bcb820cf7a84c0a914c48304629b610b3d3059d5dfebba48c2dd0da5e07719.json"
+    },
+    "baselineAt": "2026-10-14T07:34:18.816Z",
+    "ownedChanges": [
+      {
+        "path": ".ai-harness/schemas/begin-spec.schema.json",
+        "before": "100644:66963827b18820c473566b4c94716a7ee870673e",
+        "after": "100644:235460e33c920790b4901042b2f429448713d045"
+      },
+      {
+        "path": ".ai-harness/src/cli.mjs",
+        "before": "100644:1a892ff256a22b982b86eacb3fe94eb6363c60be",
+        "after": "100644:486b8fc47d948df223201a8bfca228872f75204e"
+      },
+      {
+        "path": ".ai-harness/src/input.mjs",
+        "before": "100644:ae4a063d2d04ef339b603e91fb1ea74664f84b8d",
+        "after": "100644:b9a5153e3fb53227a33856b50e3b4a6034a97b87"
+      },
+      {
+        "path": ".ai-harness/tests/spec-input.test.mjs",
+        "before": "100644:569d07e7f5732c92935d9bb5bfd1f874fa51d818",
+        "after": "100644:442652eb91de6ce0165e8249f59f5ab8586aa621"
+      },
+      {
+        "path": "benchmarks/README.md",
+        "before": "100644:5627f8f937a9d9497c6b0546889b1bc687732584",
+        "after": "100644:9f6025b814fd158f57e5d682d122822a994debe8"
+      },
+      {
+        "path": "benchmarks/experiment.mjs",
+        "before": "100644:18b7376281f38fedf7c4c74f5c9964b63e27fba7",
+        "after": "100644:dbe72e8eb294b6050628463375947993f1b08a57"
+      },
+      {
+        "path": "benchmarks/runner.mjs",
+        "before": "100644:f1cd9aa4f41ac6906633823853ec1b208c9ccc6b",
+        "after": "100644:b0f172e2d4a34b54aae4cc28bff793637386343b"
+      },
+      {
+        "path": "benchmarks/tests/spec-guidance.test.mjs",
+        "before": "100644:de036027775781e5425f964078432420f78e2ce4",
+        "after": "100644:8365a0ff625dff0cf0c0b3f2678f554f75a80e35"
+      },
+      {
+        "path": "docs/guides/usage.md",
+        "before": "100644:35b64ba88c412833cb21595460e836263db3b3ea",
+        "after": "100644:49b486c0c528fda44c87722cfb020b1816d9848d"
+      }
+    ],
+    "planDigest": "d56d4bb122292e3175d7fb57d35522b41800faa19ad9849b1f7524c09d60cc37",
+    "at": "2026-10-14T08:20:30.568Z",
+    "head": "2b145a31608728b035d505a38320aadeb27d9774"
+  },
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-10-14T07:30:56.263Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-10-14T07:34:18.581Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-10-14T07:34:19.013Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-10-14T07:34:19.652Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-10-14T07:34:19.743Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "VERIFYING",
+      "at": "2026-10-14T08:20:26.348Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "VERIFYING",
+      "to": "CODE_REVIEW",
+      "at": "2026-10-14T08:20:27.309Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "CODE_REVIEW",
+      "to": "READY_FOR_ACCEPTANCE",
+      "at": "2026-10-14T08:20:28.145Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "READY_FOR_ACCEPTANCE",
+      "to": "DONE",
+      "at": "2026-10-14T08:20:30.703Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-10-14T07:30:56.263Z",
+  "updatedAt": "2026-10-14T08:20:30.703Z"
+}

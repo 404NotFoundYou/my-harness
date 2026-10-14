@@ -1,0 +1,159 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "ITER-PROJECT-BUG-SPEC-20261014",
+  "mode": "single",
+  "rationale": "一个纵向工程BUG入口与真实证据收尾目标，单AI顺序实现和验证。",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "实现只读工程BUG输入和明确的阶段收尾",
+      "module": "spec input and project-v2 workflow guidance",
+      "status": "COMPLETED",
+      "attempt": 1,
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        ".ai-harness/src/input.mjs",
+        ".ai-harness/src/cli.mjs",
+        ".ai-harness/schemas/begin-spec.schema.json",
+        ".ai-harness/tests/spec-input.test.mjs",
+        "benchmarks/runner.mjs",
+        "benchmarks/experiment.mjs",
+        "benchmarks/tests/spec-guidance.test.mjs",
+        "benchmarks/README.md",
+        "docs/guides/usage.md",
+        ".ai-harness/work-items/ITER-PROJECT-BUG-SPEC-20261014/**"
+      ],
+      "verification": [
+        "node --test .ai-harness/tests/spec-input.test.mjs",
+        "node --test benchmarks/tests/spec-guidance.test.mjs",
+        "{\"command\":\"node\",\"args\":[\".ai-harness/tests/run.mjs\"],\"timeoutMs\":600000}",
+        "{\"command\":\"node\",\"args\":[\"--test\",\"benchmarks/tests/driver-process.test.mjs\",\"benchmarks/tests/driver-timing.test.mjs\",\"benchmarks/tests/multifile.test.mjs\",\"benchmarks/tests/project-v2.test.mjs\",\"benchmarks/tests/report.test.mjs\",\"benchmarks/tests/resume.test.mjs\",\"benchmarks/tests/runner.test.mjs\",\"benchmarks/tests/spec-guidance.test.mjs\",\"benchmarks/tests/status.test.mjs\"],\"timeoutMs\":600000}",
+        "node --test .ai-harness/work-items/ITER-PROJECT-BUG-SPEC-20261014/verify-history.test.mjs",
+        "node --check .ai-harness/src/input.mjs",
+        "node --check .ai-harness/src/cli.mjs",
+        "node --check benchmarks/runner.mjs",
+        "node --check benchmarks/experiment.mjs"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            "--test",
+            ".ai-harness/tests/spec-input.test.mjs"
+          ]
+        },
+        {
+          "id": "V2",
+          "command": "node",
+          "args": [
+            "--test",
+            "benchmarks/tests/spec-guidance.test.mjs"
+          ]
+        },
+        {
+          "id": "V3",
+          "command": "node",
+          "args": [
+            ".ai-harness/tests/run.mjs"
+          ],
+          "timeoutMs": 600000
+        },
+        {
+          "id": "V4",
+          "command": "node",
+          "args": [
+            "--test",
+            "benchmarks/tests/driver-process.test.mjs",
+            "benchmarks/tests/driver-timing.test.mjs",
+            "benchmarks/tests/multifile.test.mjs",
+            "benchmarks/tests/project-v2.test.mjs",
+            "benchmarks/tests/report.test.mjs",
+            "benchmarks/tests/resume.test.mjs",
+            "benchmarks/tests/runner.test.mjs",
+            "benchmarks/tests/spec-guidance.test.mjs",
+            "benchmarks/tests/status.test.mjs"
+          ],
+          "timeoutMs": 600000
+        },
+        {
+          "id": "V5",
+          "command": "node",
+          "args": [
+            "--test",
+            ".ai-harness/work-items/ITER-PROJECT-BUG-SPEC-20261014/verify-history.test.mjs"
+          ]
+        },
+        {
+          "id": "V6",
+          "command": "node",
+          "args": [
+            "--check",
+            ".ai-harness/src/input.mjs"
+          ]
+        },
+        {
+          "id": "V7",
+          "command": "node",
+          "args": [
+            "--check",
+            ".ai-harness/src/cli.mjs"
+          ]
+        },
+        {
+          "id": "V8",
+          "command": "node",
+          "args": [
+            "--check",
+            "benchmarks/runner.mjs"
+          ]
+        },
+        {
+          "id": "V9",
+          "command": "node",
+          "args": [
+            "--check",
+            "benchmarks/experiment.mjs"
+          ]
+        }
+      ],
+      "docsImpact": [
+        "docs/guides/usage.md",
+        "benchmarks/README.md",
+        ".ai-harness/work-items/ITER-PROJECT-BUG-SPEC-20261014/summary.md"
+      ],
+      "reviewBatch": "R1",
+      "risk": "medium",
+      "owner": "primary-ai",
+      "verificationStatus": "pass",
+      "reviewStatus": "pass",
+      "evidence": [
+        "abd40652-bc35-4923-b16a-575d8a5bea46",
+        "dcd4276c-054b-4538-89de-c925a56e8e80"
+      ],
+      "deferralApproval": null,
+      "verificationSource": {
+        "digest": "502e2cb4a9ca4c60189ee01d52c78f5979cdbdf57dd651ecc71e97778fd1dccc",
+        "document": ".ai-harness/work-items/ITER-PROJECT-BUG-SPEC-20261014/snapshots/502e2cb4a9ca4c60189ee01d52c78f5979cdbdf57dd651ecc71e97778fd1dccc.json"
+      },
+      "reviewSource": {
+        "digest": "502e2cb4a9ca4c60189ee01d52c78f5979cdbdf57dd651ecc71e97778fd1dccc",
+        "document": ".ai-harness/work-items/ITER-PROJECT-BUG-SPEC-20261014/snapshots/502e2cb4a9ca4c60189ee01d52c78f5979cdbdf57dd651ecc71e97778fd1dccc.json"
+      }
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "判断字段授权边界、评测兼容与全差异",
+      "risk": "medium",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": false
+    }
+  ],
+  "createdAt": "2026-10-14T07:34:19.286Z",
+  "updatedAt": "2026-10-14T08:20:26.253Z"
+}

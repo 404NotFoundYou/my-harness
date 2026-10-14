@@ -68,7 +68,13 @@ async function filesAt(root, prefix = "") {
   return files;
 }
 
-export async function createParticipant(task, { sourceRoot, harness }) {
+function projectBeginGuidance(task) {
+  const id = task.id + "-bugfix";
+  return `不要修改项目相对路径${beginSpecPath}；它已预填writeScopes、公共verification及docsImpact的N/A理由。先运行公共测试确认实际/期望与复现方法，再判断risk和approach，运行node .ai-harness/bin/harness.mjs begin --spec ${beginSpecPath} --risk <low或medium> --approach "<实际方案>" --actual "<观察到的实际错误>" --expected "<公开期望>" --reproduction "<实际复现方法>" --json。\n` +
+    `创建后用run --id ${id} --task T1 --check V1 --json保留修复前失败，完成实现和必要额外测试；最后用run --id ${id} --all --json执行当前计划检查，通过后不要继续改产品文件。用guide --id ${id} --task T1 --brief --json取得finish模板；保留static/sandbox/reproduction/regression真实阶段证据，从verification.commands选择确实覆盖复现/回归的当前计划命令。立即finish并check --ci，两者通过后尽快返回结构化最终结果；未完成如实说明，不把帮助查询当作收尾。\n`;
+}
+
+export async function createParticipant(task, { sourceRoot, harness, suite = "core" }) {
   if (task.writableFiles !== undefined) taskManifest(task);
   const root = await temporary("ai-harness-bench-");
   try {
@@ -81,7 +87,7 @@ export async function createParticipant(task, { sourceRoot, harness }) {
       : "使用简体中文。完成TASK.md中的已授权普通迭代，必要可逆实现自主推进。范围以TASK.md为准；不安装依赖、不使用网络、不提交Git、不修改登录配置。公共验证通过后核对规格，未完成必须如实说明。\n";
     const guidance = harness && task.writableFiles === undefined
       ? `不要修改项目相对路径${beginSpecPath}；它已预填writeScopes、verification及docsImpact的N/A理由。判断risk和approach后，运行node .ai-harness/bin/harness.mjs begin --spec ${beginSpecPath} --risk <low或medium> --approach "<实际方案>" --json。创建后用guide --id ${task.id}-iteration --task T1 --brief --json；先完成实现和必要额外测试，最后运行run --all。计划检查通过后不要再修改产品文件，立即finish并check --ci。\n`
-      : "";
+      : harness && suite === "project-v2" ? projectBeginGuidance(task) : "";
     await writeFile(path.join(root, "AGENTS.md"), instructions + guidance);
     git(root, ["init"]);
     git(root, ["config", "user.name", "Harness Benchmark"]);
@@ -165,12 +171,12 @@ export async function gradeCandidate(task, implementation) {
   } finally { await cleanupSandbox(root); }
 }
 
-export function participantPrompt(task, group, runBudget = budget) {
+export function participantPrompt(task, group, runBudget = budget, suite = "core") {
   if (task.writableFiles !== undefined) {
     return `请完成TASK.md中的BUGFIX，先读规格、${Object.keys(task.files).filter(file=>file.startsWith("src/")).join("、")}和公共测试，实际复现再修复与回归。\n` +
       `只有${writableFilesFor(task).join("、")}和新增test/extra.test.mjs可写（Harness组另可通过CLI维护工作项控制面）。不得修改原测试、规格、调用方或固定依赖，不安装依赖、不访问网络、不提交Git。无需询问已授权实现选择。\n` +
       `预算${runBudget.timeoutMs/1000}秒、${runBudget.maxToolCalls}次工具调用；到期如实报告未完成。最终按结构化格式报告completed、summary和实际运行的tests。\n` +
-      (group.harness ? "本组已安装并初始化Harness，按AGENTS使用BUGFIX路径，记录实际/期望、复现和根因，保留static/sandbox/reproduction/regression阶段；复现与回归引用真实run命令。guide可查看缺失证据，finish提交真实审查与验收，最终check --ci。\n" : "按项目规范保留复现、修复和回归证据。\n");
+      (group.harness && suite === "project-v2" ? projectBeginGuidance(task) : group.harness ? "本组已安装并初始化Harness，按AGENTS使用BUGFIX路径，记录实际/期望、复现和根因，保留static/sandbox/reproduction/regression阶段；复现与回归引用真实run命令。guide可查看缺失证据，finish提交真实审查与验收，最终check --ci。\n" : "按项目规范保留复现、修复和回归证据。\n");
   }
   return `请在当前临时项目完成TASK.md中的迭代，先读规格、实现、src/caller.mjs和公共测试，然后实现并验证。\n` +
     `只有${task.entry}和新增test/extra.test.mjs可写（Harness组另可通过CLI维护工作项控制面）。不要修改原有测试或规格，不安装依赖、不访问网络、不提交Git。无需询问已授权的实现选择。\n` +
@@ -178,20 +184,21 @@ export function participantPrompt(task, group, runBudget = budget) {
     (group.harness ? `本组已安装并初始化Harness。${beginSpecPath}已预填公开写入范围和公共验证命令，不要编辑该JSON；根据实际方案判断risk(low/medium)与approach后，通过node .ai-harness/bin/harness.mjs begin --spec ${beginSpecPath} --risk <low或medium> --approach "<实际方案>" --json提交。创建后用guide --id ${task.id}-iteration --task T1 --brief --json查看缺失事项；先完成实现和必要额外测试，最后用run --id ${task.id}-iteration --all --json执行全部计划检查。检查通过后不要再修改产品文件，立即按guide的finish模板收尾并执行check --ci；两者均通过后返回结构化最终结果，未完成如实报告。\n` : "按当前项目规范直接实施与验证。\n");
 }
 
-export async function runCase({ task, group, sourceRoot, outputDirectory, driver, runBudget = budget, trial = 1, execution = null, beforePublish = null }) {
+export async function runCase({ task, group, sourceRoot, outputDirectory, driver, runBudget = budget, trial = 1, execution = null, beforePublish = null, suite = "core" }) {
   await mkdir(outputDirectory);
-  const participant = await createParticipant(task, { sourceRoot, harness: group.harness });
+  const participant = await createParticipant(task, { sourceRoot, harness: group.harness, suite });
   try {
-    if(group.harness&&task.writableFiles===undefined){
-      const spec={schemaVersion:1,id:`${task.id}-iteration`,type:"ITERATION",title:`完成${task.id}固定迭代`,references:["TASK.md"],
+    if(group.harness&&(task.writableFiles===undefined||suite==="project-v2")){
+      const bugfix = task.writableFiles !== undefined;
+      const spec={schemaVersion:1,id:bugfix?`${task.id}-bugfix`:`${task.id}-iteration`,type:bugfix?"BUGFIX":"ITERATION",title:bugfix?`修复${task.id}固定BUG`:`完成${task.id}固定迭代`,references:["TASK.md"],
         acceptance:["保持TASK.md的公开契约并通过test/public.test.mjs"],authorizationSource:"TASK.md中的已授权固定任务",
-        risk:"",approach:"",databaseEvidence:"TASK.md明确无数据库影响",writeScopes:[task.entry,"test/extra.test.mjs"],
+        risk:"",approach:"",...(bugfix?{bug:{actual:"",expected:"",reproduction:""}}:{}),databaseEvidence:"TASK.md明确无数据库影响",writeScopes:[...writableFilesFor(task),"test/extra.test.mjs"],
         verification:[{command:"node",args:["--test","test/public.test.mjs"]}],docsImpact:["N/A: 固定公开规格与文档不变"]};
       const content=JSON.stringify(spec,null,2)+"\n";
       await writeFile(path.join(participant.root,beginSpecPath),content,{flag:"wx"});
       participant.frozenBeginSpec={path:beginSpecPath,sha256:hash(content)};
     }
-    const prompt = participantPrompt(task, group, runBudget);
+    const prompt = participantPrompt(task, group, runBudget, suite);
     await writeFile(path.join(outputDirectory, "prompt.txt"), prompt);
     const run = await driver({ root: participant.root, model: group.model, prompt, budget: {...runBudget}, outputDirectory });
     const scope = await inspectChanges(participant, task, group.harness);

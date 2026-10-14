@@ -115,7 +115,7 @@ export async function runExperiment({ plan, sourceRoot, outputDirectory, driver,
         await save("execution.json",ledger);
         const task=tasks.find(task=>task.id===entry.taskId),group=protocol.groups.find(group=>group.id===entry.group);
         onProgress({event:"started",...entry,model:group.model});
-        await runCase({task,group,trial:entry.trial,sourceRoot,outputDirectory:destination,driver,runBudget:{...protocol.budget},execution:{protocolSha256:ledger.protocolSha256,sourceBefore:source},beforePublish:assertSource});
+        await runCase({task,group,trial:entry.trial,suite:protocol.suite,sourceRoot,outputDirectory:destination,driver,runBudget:{...protocol.budget},execution:{protocolSha256:ledger.protocolSha256,sourceBefore:source},beforePublish:assertSource});
         await assertSource();
         const current=await readExecution(outputDirectory,protocol);
         ledger=current.ledger;rows=current.rows;

@@ -18,12 +18,19 @@ export async function loadBeginSpec(root, relative, judgments = {}) {
   const unknown = Object.keys(spec).filter(key => !SPEC_KEYS.has(key));
   invariant(unknown.length === 0, "UNKNOWN_SPEC_FIELDS", "任务定义包含未知字段，未创建工作项。", { fields: unknown });
   invariant(spec.schemaVersion === 1, "INVALID_BEGIN_SPEC", "任务定义 schemaVersion 必须为 1。" );
-  for (const key of ["risk", "approach"]) {
+  const bugFields = ["actual", "expected", "reproduction"];
+  if (bugFields.some(key => judgments[key] !== undefined)) {
+    invariant(spec.type === "BUGFIX", "SPEC_OPTION_CONFLICT", "--actual、--expected 和 --reproduction 仅适用于 BUGFIX spec。" );
+    invariant(spec.bug && typeof spec.bug === "object" && !Array.isArray(spec.bug), "INVALID_BEGIN_SPEC", "bug 必须保留为对象字段。" );
+  }
+  for (const key of ["risk", "approach", ...bugFields]) {
     if (judgments[key] === undefined) continue;
     invariant(typeof judgments[key] === "string" && judgments[key].trim(), "INVALID_BEGIN_SPEC", `${key} CLI judgment 必须是非空字符串。`);
-    invariant(typeof spec[key] === "string", "INVALID_BEGIN_SPEC", `${key} 必须保留为字符串字段。`);
-    invariant(!spec[key].trim(), "SPEC_JUDGMENT_CONFLICT", `任务定义中的 ${key} 已有值，不能由命令行覆盖。`, { field: key });
-    spec[key] = judgments[key];
+    const target = bugFields.includes(key) ? spec.bug : spec;
+    const field = bugFields.includes(key) ? `bug.${key}` : key;
+    invariant(typeof target[key] === "string", "INVALID_BEGIN_SPEC", `${field} 必须保留为字符串字段。`);
+    invariant(!target[key].trim(), "SPEC_JUDGMENT_CONFLICT", `任务定义中的 ${field} 已有值，不能由命令行覆盖。`, { field });
+    target[key] = judgments[key];
   }
   for (const key of ["id", "type", "title", "authorizationSource", "risk", "approach", "databaseEvidence"]) invariant(typeof spec[key] === "string" && spec[key].trim(), "INVALID_BEGIN_SPEC", `${key} 必须是非空字符串。`);
   for (const key of ["references", "acceptance", "writeScopes", "verification", "docsImpact"]) {

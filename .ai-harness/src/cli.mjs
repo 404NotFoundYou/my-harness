@@ -143,7 +143,7 @@ function helpText() {
   run --id ID [--task T] --all  顺序执行已声明检查；唯一可执行任务可省略 --task
 
 普通任务：
-  begin --spec task.json [--risk low|medium --approach TEXT] [--json]
+  begin --spec task.json [--risk low|medium --approach TEXT] [--actual TEXT --expected TEXT --reproduction TEXT] [--json]
                                   项目内UTF-8 JSON；judgment 参数只填充空字段
   begin --id ID --type ITERATION|BUGFIX --title TITLE --input SOURCE --acceptance CONDITION
         --authorization-source SOURCE --risk low|medium --approach TEXT --database-evidence TEXT
@@ -271,9 +271,9 @@ export async function runCli(argv, io = { stdout: console.log, stderr: console.e
   }
   if (command === "start" || command === "begin") {
     if (command === "begin" && one(parsed, "spec")) {
-      invariant(Object.keys(parsed.options).every(key => ["spec", "risk", "approach", "json"].includes(key)) && parsed.positional.length === 1 && parsed.passthrough.length === 0, "SPEC_OPTION_CONFLICT", "--spec 只能额外接受 --risk 和 --approach；其余完整定义请保留在 JSON。" );
+      invariant(Object.keys(parsed.options).every(key => ["spec", "risk", "approach", "actual", "expected", "reproduction", "json"].includes(key)) && parsed.positional.length === 1 && parsed.passthrough.length === 0, "SPEC_OPTION_CONFLICT", "--spec 只能填充空 judgment（risk/approach，BUGFIX另有actual/expected/reproduction）；其余完整定义请保留在 JSON。" );
       const judgments = {};
-      for (const key of ["risk", "approach"]) if (parsed.options[key] !== undefined) judgments[key] = one(parsed, key, { required: true });
+      for (const key of ["risk", "approach", "actual", "expected", "reproduction"]) if (parsed.options[key] !== undefined) judgments[key] = one(parsed, key, { required: true });
       emit(io, parsed, await beginWorkItem(root, await loadBeginSpec(root, one(parsed, "spec", { required: true }), judgments)));
       return 0;
     }

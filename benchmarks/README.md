@@ -55,6 +55,8 @@ node benchmarks/run.mjs --cli '<CLI路径>' --weak '<模型标识>' --suite proj
 node benchmarks/run.mjs --cli '<CLI路径>' --weak '<模型标识>' --suite project-v2 --comparison paired --repetitions 1 --out .ai-harness/work-items/<工作项>/project-v2-comparison --dry-run
 ```
 
+当前源码仅对显式 `project-v2` 的 Harness 组增加只读工程 BUGFIX 输入：固定 Git 基线后生成 `.ai-harness/work-items/benchmark-begin-spec.json`，预填公开任务 ID、写入范围、公共验证命令、授权及文档 N/A 理由。`risk` / `approach` 和 `bug.actual` / `bug.expected` / `bug.reproduction` 留空，参试模型须基于实际复现通过 CLI 提交；任何修改、删除或链接身份替换都会被判为 scope violation。提示明确记录修复前失败、完成实现后最后运行计划检查、用 `guide --brief` 的适用计划证据收尾四阶段并执行 `check --ci`。runner 不替模型完成工作项，旧 `project`、core、baseline、公开输入、隐藏判定及180秒/80工具预算保持原语义；这是当前提示/输入变化，真实模型效果尚未复测。
+
 这些仍是合成夹具，development与holdout的划分只限制调参范围；本地参考解、模拟实验及审计通过不代表任何真实模型收益。正式对照须另行取得模型费用和环境授权，且不可将新增holdout结果用于调参。
 
 v3在协议中冻结题目入口、导出、类型和精确可写清单，并保留源码、题目、判定器和预算哈希。各试次保存 `candidate-files.json`，逐文件记录present正文及原字节SHA-256，或missing/invalid状态；result保存规范化manifest的整体哈希。路径父组件和文件都不能经过链接/junction，无效UTF-8拒绝，BOM及换行字节保留；非预期IO错误中断并保留不完整实验。候选必须恰好覆盖声明文件，不接受只读文件或额外路径。
