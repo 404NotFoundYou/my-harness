@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "MODEL-COMPLETION-PAIRED-20261014",
+  "mode": "single",
+  "rationale": "单AI协调一个纵向实验，沿用现有runner/audit/report和隔离沙箱，gpt-6-astra同模型两组、core三题、paired单轮、每会话180000ms和80工具medium档。先dry-run冻结输入，宿主按明确授权执行现有模型入口，不伪装测试绕过命令策略；验证脚本只读取实际产物、审计哈希和结束阶段计时。仅写本工作项；不要求Harness胜出或将单轮推广为普遍性能结论。",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "新计时字段六会话真实配对复测与结束阶段诊断",
+      "module": "compact",
+      "status": "COMPLETED",
+      "attempt": 1,
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        ".ai-harness/work-items/MODEL-COMPLETION-PAIRED-20261014/**"
+      ],
+      "verification": [
+        "node --test .ai-harness/work-items/MODEL-COMPLETION-PAIRED-20261014/verify.test.mjs",
+        "node --check .ai-harness/work-items/MODEL-COMPLETION-PAIRED-20261014/verify.test.mjs"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            "--test",
+            ".ai-harness/work-items/MODEL-COMPLETION-PAIRED-20261014/verify.test.mjs"
+          ]
+        },
+        {
+          "id": "V2",
+          "command": "node",
+          "args": [
+            "--check",
+            ".ai-harness/work-items/MODEL-COMPLETION-PAIRED-20261014/verify.test.mjs"
+          ]
+        }
+      ],
+      "docsImpact": [
+        ".ai-harness/work-items/MODEL-COMPLETION-PAIRED-20261014/summary.md"
+      ],
+      "reviewBatch": "R1",
+      "risk": "medium",
+      "owner": "primary-ai",
+      "verificationStatus": "pass",
+      "reviewStatus": "pass",
+      "evidence": [
+        "d9183289-6ef7-4495-9eb3-194b6dba360c",
+        "f1d2dd9b-5fa6-46b4-9ef7-dfd2ac3d0648"
+      ],
+      "deferralApproval": null,
+      "verificationSource": {
+        "digest": "9d93c4763757e8a01f18f33bb53bd8a67ead48406d1ff83af3a13f747ea3f053",
+        "document": ".ai-harness/work-items/MODEL-COMPLETION-PAIRED-20261014/snapshots/9d93c4763757e8a01f18f33bb53bd8a67ead48406d1ff83af3a13f747ea3f053.json"
+      },
+      "reviewSource": {
+        "digest": "9d93c4763757e8a01f18f33bb53bd8a67ead48406d1ff83af3a13f747ea3f053",
+        "document": ".ai-harness/work-items/MODEL-COMPLETION-PAIRED-20261014/snapshots/9d93c4763757e8a01f18f33bb53bd8a67ead48406d1ff83af3a13f747ea3f053.json"
+      }
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "新计时字段六会话真实配对复测与结束阶段诊断",
+      "risk": "medium",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": false
+    }
+  ],
+  "createdAt": "2026-10-14T02:03:36.179Z",
+  "updatedAt": "2026-10-14T02:30:58.081Z"
+}

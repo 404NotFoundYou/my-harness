@@ -1,0 +1,31 @@
+{
+  "Executable": "D:\\Program Files\\nodejs\\node.exe",
+  "Arguments": [
+    "benchmarks/run.mjs",
+    "--cli",
+    "D:/Program Files/nodejs/node_global/node_modules/@openai/codex/bin/codex.js",
+    "--weak",
+    "gpt-6-astra",
+    "--client",
+    "codex",
+    "--suite",
+    "core",
+    "--comparison",
+    "paired",
+    "--repetitions",
+    "1",
+    "--timeout-ms",
+    "180000",
+    "--max-tools",
+    "80",
+    "--out",
+    ".ai-harness/work-items/MODEL-COMPLETION-PAIRED-20261014/pilot"
+  ],
+  "Authorization": "用户2026-10-14明确授权所建议的六会话和费用",
+  "StartedAt": "2026-10-14T02:09:01.0153566Z",
+  "CompletedAt": "2026-10-14T02:21:37.6296238Z",
+  "ExitCode": 0,
+  "MaximumModelSessions": 6,
+  "AutomaticRetries": 0,
+  "Entry": "host-direct-authorized-model-experiment"
+}

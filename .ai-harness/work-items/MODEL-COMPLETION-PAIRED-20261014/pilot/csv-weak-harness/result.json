@@ -1,0 +1,258 @@
+{
+  "schemaVersion": 1,
+  "trial": 1,
+  "mode": "real",
+  "client": "codex",
+  "taskId": "csv",
+  "split": "development",
+  "group": "weak-harness",
+  "model": "gpt-6-astra",
+  "taskDigest": "c3cfc33cfb3f2ac504fd63705cd1d03d2dc7f497017362037152af0e251ca223",
+  "judgeDigest": "30194704e69ab805f27ffa7fefb9849b9313f355a3da6ff5145e05fafc458561",
+  "candidateDigest": "2dc600989f31c16fb926dcd2f704b8fdd3d2c4389f54dc3baea941737d1b77ac",
+  "budget": {
+    "timeoutMs": 180000,
+    "maxToolCalls": 80,
+    "reasoning": "medium"
+  },
+  "run": {
+    "mode": "real",
+    "client": "codex",
+    "startedAt": "2026-10-14T02:10:39.007Z",
+    "durationMs": 127770,
+    "timing": {
+      "basis": "local-event-receive-time",
+      "lifecycle": {
+        "version": 1,
+        "firstProtocolEventMs": 1065,
+        "terminalEventMs": 127467,
+        "processExitMs": 127770,
+        "processCloseMs": 127770
+      },
+      "toolActiveMs": 6575,
+      "otherElapsedMs": 121195,
+      "spans": [
+        {
+          "id": "item_2",
+          "startMs": 9980,
+          "endMs": 10115,
+          "category": "unknown",
+          "complete": true
+        },
+        {
+          "id": "item_4",
+          "startMs": 23953,
+          "endMs": 24734,
+          "category": "planning",
+          "complete": true
+        },
+        {
+          "id": "item_5",
+          "startMs": 34818,
+          "endMs": 34946,
+          "category": "unknown",
+          "complete": true
+        },
+        {
+          "id": "item_6",
+          "startMs": 78866,
+          "endMs": 79584,
+          "category": "verification",
+          "complete": true
+        },
+        {
+          "id": "item_7",
+          "startMs": 88622,
+          "endMs": 89803,
+          "category": "verification",
+          "complete": true
+        },
+        {
+          "id": "item_9",
+          "startMs": 108734,
+          "endMs": 112366,
+          "category": "completion",
+          "complete": true
+        }
+      ],
+      "categories": {
+        "unknown": {
+          "calls": 2,
+          "activeMs": 263
+        },
+        "planning": {
+          "calls": 1,
+          "activeMs": 781
+        },
+        "verification": {
+          "calls": 2,
+          "activeMs": 1899
+        },
+        "completion": {
+          "calls": 1,
+          "activeMs": 3632
+        }
+      },
+      "unmatchedCompletions": [],
+      "limitation": "工具区间按接收事件估计并合并重叠；其余耗时包含模型、网络、客户端启动和收尾，不等于纯推理耗时。"
+    },
+    "exitCode": 0,
+    "timedOut": false,
+    "toolLimit": false,
+    "toolCalls": 6,
+    "turnCompleted": true,
+    "protocolSuccess": true,
+    "usage": {
+      "input_tokens": 163717,
+      "cached_input_tokens": 137600,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 2651,
+      "reasoning_output_tokens": 30
+    },
+    "errors": [],
+    "warnings": [],
+    "unparsedLines": 0,
+    "error": null,
+    "final": {
+      "completed": true,
+      "summary": "已实现 src/csv.mjs 的严格 CSV 解析，并新增 test/extra.test.mjs，覆盖输入类型、BOM、空字段与空行、换行、引号转义、非法语法及调用方兼容性。未修改原有测试、规格或预填 JSON，未安装依赖、访问网络或提交 Git。Harness finish 成功，工作项为 DONE，check --ci 通过。另有非功能格式问题：git diff --check 将 src/csv.mjs 末行 CRLF 报为尾随空白；遵循计划检查通过后不再修改产品文件的要求，保留并如实披露。",
+      "tests": [
+        "通过 Harness 实际运行 node --test test/extra.test.mjs：6 项通过，0 失败，0 跳过。",
+        "node .ai-harness/bin/harness.mjs run --id csv-iteration --all --json：通过；实际执行 node --test test/public.test.mjs，1 项通过，0 失败，0 跳过。",
+        "git diff --check：未通过，src/csv.mjs 第 50 行报告尾随空白。",
+        "node .ai-harness/bin/harness.mjs check --ci --json：通过，ok=true，无错误或警告。"
+      ]
+    },
+    "completed": true
+  },
+  "scope": {
+    "ok": true,
+    "changes": [
+      {
+        "path": "src/csv.mjs",
+        "before": "dd51e6b8418a474ba38c772e6825c45edeeac7f628fdab3e83058a737955b3c2",
+        "after": "2dc600989f31c16fb926dcd2f704b8fdd3d2c4389f54dc3baea941737d1b77ac"
+      },
+      {
+        "path": ".ai-harness/work-items/benchmark-begin-spec.json",
+        "before": null,
+        "after": "71091180bf247c89f9629119cff815d68a89580e5a8dbafccb2ffb7c68ef7b4d"
+      },
+      {
+        "path": ".ai-harness/work-items/csv-iteration/events.jsonl",
+        "before": null,
+        "after": "e46778c53de13a744fd76426cdd82bcd331c5b11258a8b28e967a1c711f6612b"
+      },
+      {
+        "path": ".ai-harness/work-items/csv-iteration/evidence.jsonl",
+        "before": null,
+        "after": "bd17361628713614320d1cb3bf5212577d4fa104ac13a77cdc51b59f80ab7f88"
+      },
+      {
+        "path": ".ai-harness/work-items/csv-iteration/plan.json",
+        "before": null,
+        "after": "503702f0065004237a83504638e17ea423620cad170cef74eaae097512558028"
+      },
+      {
+        "path": ".ai-harness/work-items/csv-iteration/snapshots/72815462df8176400e1146fc4e81d4b6268e91a0a16ac4e074bbadf04f3c4f1e.json",
+        "before": null,
+        "after": "7bb086b97e6ec70a8c36140f9fe6e65edf29e4866a5a5937f89207f3a2fc7fa8"
+      },
+      {
+        "path": ".ai-harness/work-items/csv-iteration/snapshots/c04871f9118d2f4affc9ed0e548df00f78c7b5055a8ddd5225e7e3d43bcfd1b5.json",
+        "before": null,
+        "after": "c86b792b0a3eaf8adfeab279a218207b02cc52ad17f591b5e90ad872c3b92197"
+      },
+      {
+        "path": ".ai-harness/work-items/csv-iteration/solution.md",
+        "before": null,
+        "after": "d05e93ccda5bad305772ccadb531f377df017e192d41b719580f318aded04c05"
+      },
+      {
+        "path": ".ai-harness/work-items/csv-iteration/state.json",
+        "before": null,
+        "after": "0f7d738a32b739b07783bb810c5f3ddf1eda50c3e2322a364918904ee0020956"
+      },
+      {
+        "path": "test/extra.test.mjs",
+        "before": null,
+        "after": "8ac447ecae6aef0d5e25bfec60bdcc6045eab38ad574fdf419a26f4177ffb6f6"
+      }
+    ],
+    "violations": []
+  },
+  "workflow": {
+    "ok": true,
+    "errors": [],
+    "workItems": [
+      "csv-iteration"
+    ]
+  },
+  "grade": {
+    "complete": true,
+    "ok": true,
+    "cases": [
+      {
+        "id": "empty",
+        "pass": true
+      },
+      {
+        "id": "bom",
+        "pass": true
+      },
+      {
+        "id": "delimiters",
+        "pass": true
+      },
+      {
+        "id": "blank-rows",
+        "pass": true
+      },
+      {
+        "id": "quoted-fields",
+        "pass": true
+      },
+      {
+        "id": "escaped-quotes",
+        "pass": true
+      },
+      {
+        "id": "embedded-newline",
+        "pass": true
+      },
+      {
+        "id": "whitespace",
+        "pass": true
+      },
+      {
+        "id": "unterminated",
+        "pass": true
+      },
+      {
+        "id": "bare-quote",
+        "pass": true
+      },
+      {
+        "id": "after-quote",
+        "pass": true
+      },
+      {
+        "id": "input-type",
+        "pass": true
+      }
+    ],
+    "expectedCases": 12,
+    "exitCode": 0,
+    "timedOut": false,
+    "stderr": "",
+    "error": null
+  },
+  "success": true,
+  "falseCompletion": false,
+  "falseFunctionalCompletion": false,
+  "execution": {
+    "protocolSha256": "932a27f94b32827299be6f3eb45491df193d853461fbc8e088c464acfc755cd6",
+    "sourceBefore": "9d93c4763757e8a01f18f33bb53bd8a67ead48406d1ff83af3a13f747ea3f053",
+    "sourceAfter": "9d93c4763757e8a01f18f33bb53bd8a67ead48406d1ff83af3a13f747ea3f053"
+  }
+}

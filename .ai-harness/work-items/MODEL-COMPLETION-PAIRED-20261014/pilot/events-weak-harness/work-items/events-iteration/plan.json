@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "events-iteration",
+  "mode": "single",
+  "rationale": "使用Map按id归并，完整校验稠密数组、记录和JSON值，只接受严格更高版本并保留删除墓碑，构造规范字段输出并按字符串比较排序；新增边界及调用方回归测试",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "完成events固定迭代",
+      "module": "compact",
+      "status": "COMPLETED",
+      "attempt": 1,
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        "src/reconcile.mjs",
+        "test/extra.test.mjs"
+      ],
+      "verification": [
+        "{\"command\":\"node\",\"args\":[\"--test\",\"test/public.test.mjs\"]}"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            "--test",
+            "test/public.test.mjs"
+          ]
+        }
+      ],
+      "docsImpact": [
+        "N/A: 固定公开规格与文档不变"
+      ],
+      "reviewBatch": "R1",
+      "risk": "low",
+      "owner": "primary-ai",
+      "verificationStatus": "pass",
+      "reviewStatus": "pass",
+      "evidence": [
+        "a990086c-e0ab-4413-99d4-8c8a3183dace",
+        "8f2f3132-48bb-4d36-b55e-06d566ed220e"
+      ],
+      "deferralApproval": null,
+      "verificationSource": {
+        "digest": "f570f3e61a91a670fee801a5f08615241841f292185c18bc305fca7130bb49e4",
+        "document": ".ai-harness/work-items/events-iteration/snapshots/f570f3e61a91a670fee801a5f08615241841f292185c18bc305fca7130bb49e4.json"
+      },
+      "reviewSource": {
+        "digest": "f570f3e61a91a670fee801a5f08615241841f292185c18bc305fca7130bb49e4",
+        "document": ".ai-harness/work-items/events-iteration/snapshots/f570f3e61a91a670fee801a5f08615241841f292185c18bc305fca7130bb49e4.json"
+      }
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "完成events固定迭代",
+      "risk": "low",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": false
+    }
+  ],
+  "createdAt": "2026-10-14T02:19:41.709Z",
+  "updatedAt": "2026-10-14T02:21:17.575Z"
+}

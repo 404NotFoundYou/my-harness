@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 4,
+  "suite": "core",
+  "client": "codex",
+  "comparison": "paired",
+  "repetitions": 1,
+  "groups": [
+    {
+      "id": "weak-baseline",
+      "model": "gpt-6-astra",
+      "harness": false
+    },
+    {
+      "id": "weak-harness",
+      "model": "gpt-6-astra",
+      "harness": true
+    }
+  ],
+  "budget": {
+    "timeoutMs": 180000,
+    "maxToolCalls": 80,
+    "reasoning": "medium"
+  },
+  "schedule": [
+    {
+      "taskId": "csv",
+      "group": "weak-baseline",
+      "trial": 1,
+      "directory": "csv-weak-baseline"
+    },
+    {
+      "taskId": "csv",
+      "group": "weak-harness",
+      "trial": 1,
+      "directory": "csv-weak-harness"
+    },
+    {
+      "taskId": "allocation",
+      "group": "weak-harness",
+      "trial": 1,
+      "directory": "allocation-weak-harness"
+    },
+    {
+      "taskId": "allocation",
+      "group": "weak-baseline",
+      "trial": 1,
+      "directory": "allocation-weak-baseline"
+    },
+    {
+      "taskId": "events",
+      "group": "weak-baseline",
+      "trial": 1,
+      "directory": "events-weak-baseline"
+    },
+    {
+      "taskId": "events",
+      "group": "weak-harness",
+      "trial": 1,
+      "directory": "events-weak-harness"
+    }
+  ],
+  "modelCalls": 6,
+  "dryRun": true
+}

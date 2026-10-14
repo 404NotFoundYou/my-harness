@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "allocation-iteration",
+  "mode": "single",
+  "rationale": "保持allocate导出和caller兼容，校验非负安全整数与非空稠密数组，用BigInt计算精确商余数并按余数降序及索引升序补齐，通过公共测试和新增边界回归测试验证。",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "完成allocation固定迭代",
+      "module": "compact",
+      "status": "COMPLETED",
+      "attempt": 1,
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        "src/allocate.mjs",
+        "test/extra.test.mjs"
+      ],
+      "verification": [
+        "{\"command\":\"node\",\"args\":[\"--test\",\"test/public.test.mjs\"]}"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            "--test",
+            "test/public.test.mjs"
+          ]
+        }
+      ],
+      "docsImpact": [
+        "N/A: 固定公开规格与文档不变"
+      ],
+      "reviewBatch": "R1",
+      "risk": "low",
+      "owner": "primary-ai",
+      "verificationStatus": "pass",
+      "reviewStatus": "pass",
+      "evidence": [
+        "935b7175-d5f5-4207-a88c-b327a8256faf",
+        "5824944b-668c-4238-83ad-52aaa4bd50e5"
+      ],
+      "deferralApproval": null,
+      "verificationSource": {
+        "digest": "7ba8b6e1daf13c99bd8bffeac73b15e57c08bc0326210429d2264c088596964a",
+        "document": ".ai-harness/work-items/allocation-iteration/snapshots/7ba8b6e1daf13c99bd8bffeac73b15e57c08bc0326210429d2264c088596964a.json"
+      },
+      "reviewSource": {
+        "digest": "7ba8b6e1daf13c99bd8bffeac73b15e57c08bc0326210429d2264c088596964a",
+        "document": ".ai-harness/work-items/allocation-iteration/snapshots/7ba8b6e1daf13c99bd8bffeac73b15e57c08bc0326210429d2264c088596964a.json"
+      }
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "完成allocation固定迭代",
+      "risk": "low",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": false
+    }
+  ],
+  "createdAt": "2026-10-14T02:13:10.005Z",
+  "updatedAt": "2026-10-14T02:14:35.104Z"
+}

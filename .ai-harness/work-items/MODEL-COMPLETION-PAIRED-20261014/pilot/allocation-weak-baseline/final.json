@@ -1,0 +1,10 @@
+{
+  "completed": true,
+  "summary": "已完成 TASK.md 迭代，仅修改 src/allocate.mjs 并新增 test/extra.test.mjs。使用 BigInt 实现精确最大余数法，校验非负安全整数和非空稠密数组，正确处理零权重及同余数索引优先，保持输入不变和 caller.mjs 兼容。公共验证后已逐项核对规格。差异检查发现的换行问题已修复并复验通过。未修改原有测试或规格，未安装依赖、访问网络或提交 Git。",
+  "tests": [
+    "node --test test/public.test.mjs：1/1 通过。",
+    "node --test test/extra.test.mjs：6/6 通过，覆盖精确分配、安全整数边界、非法输入、零权重、输入不变、调用方兼容及 2604 组小范围穷举。",
+    "node --test test/public.test.mjs test/extra.test.mjs：最终复验 7/7 通过，无失败、无跳过。",
+    "git diff --check：修复换行问题后通过。"
+  ]
+}

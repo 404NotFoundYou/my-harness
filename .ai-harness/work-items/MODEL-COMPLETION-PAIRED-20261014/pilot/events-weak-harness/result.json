@@ -1,0 +1,259 @@
+{
+  "schemaVersion": 1,
+  "trial": 1,
+  "mode": "real",
+  "client": "codex",
+  "taskId": "events",
+  "split": "holdout",
+  "group": "weak-harness",
+  "model": "gpt-6-astra",
+  "taskDigest": "e8a7130efc1592e2fdb89853fd6ba482da6b67285b7887b074da97ae289d4b2d",
+  "judgeDigest": "653600052c1e1ab18c5601412a2c49b1d6f0106747aca300db788e819dc765ae",
+  "candidateDigest": "0ff55a57c46e4ada30597c53ad761c163574142910c6d488eef81d829fbea314",
+  "budget": {
+    "timeoutMs": 180000,
+    "maxToolCalls": 80,
+    "reasoning": "medium"
+  },
+  "run": {
+    "mode": "real",
+    "client": "codex",
+    "startedAt": "2026-10-14T02:19:13.814Z",
+    "durationMs": 142591,
+    "timing": {
+      "basis": "local-event-receive-time",
+      "lifecycle": {
+        "version": 1,
+        "firstProtocolEventMs": 1099,
+        "terminalEventMs": 142261,
+        "processExitMs": 142591,
+        "processCloseMs": 142591
+      },
+      "toolActiveMs": 6210,
+      "otherElapsedMs": 136381,
+      "spans": [
+        {
+          "id": "item_2",
+          "startMs": 8364,
+          "endMs": 8535,
+          "category": "unknown",
+          "complete": true
+        },
+        {
+          "id": "item_4",
+          "startMs": 27328,
+          "endMs": 28238,
+          "category": "planning",
+          "complete": true
+        },
+        {
+          "id": "item_5",
+          "startMs": 35103,
+          "endMs": 35324,
+          "category": "unknown",
+          "complete": true
+        },
+        {
+          "id": "item_6",
+          "startMs": 94692,
+          "endMs": 95260,
+          "category": "verification",
+          "complete": true
+        },
+        {
+          "id": "item_7",
+          "startMs": 104684,
+          "endMs": 105625,
+          "category": "verification",
+          "complete": true
+        },
+        {
+          "id": "item_9",
+          "startMs": 122489,
+          "endMs": 125888,
+          "category": "completion",
+          "complete": true
+        }
+      ],
+      "categories": {
+        "unknown": {
+          "calls": 2,
+          "activeMs": 392
+        },
+        "planning": {
+          "calls": 1,
+          "activeMs": 910
+        },
+        "verification": {
+          "calls": 2,
+          "activeMs": 1509
+        },
+        "completion": {
+          "calls": 1,
+          "activeMs": 3399
+        }
+      },
+      "unmatchedCompletions": [],
+      "limitation": "工具区间按接收事件估计并合并重叠；其余耗时包含模型、网络、客户端启动和收尾，不等于纯推理耗时。"
+    },
+    "exitCode": 0,
+    "timedOut": false,
+    "toolLimit": false,
+    "toolCalls": 6,
+    "turnCompleted": true,
+    "protocolSuccess": true,
+    "usage": {
+      "input_tokens": 169546,
+      "cached_input_tokens": 141312,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 3568,
+      "reasoning_output_tokens": 148
+    },
+    "errors": [],
+    "warnings": [],
+    "unparsedLines": 0,
+    "error": null,
+    "final": {
+      "completed": true,
+      "summary": "已完成 src/reconcile.mjs，并新增 test/extra.test.mjs：实现输入校验、严格版本递增、同版本先存在或先到达者优先、删除墓碑、字符串排序及规范字段输出，保持 caller 兼容。公共测试和新增测试全部通过；Harness finish 已达到 DONE，check --ci 通过。未修改原有测试或规格，未安装依赖、访问网络或提交 Git。保留一项非功能性问题：git diff --check 报告 src/reconcile.mjs 第58行空白警告；遵照计划检查通过后不再修改产品文件的要求，未继续修改。",
+      "tests": [
+        "通过 Harness 执行 node --test test/extra.test.mjs：5项通过，0项失败，0项跳过。",
+        "node .ai-harness/bin/harness.mjs run --id events-iteration --all --json：通过；实际执行 node --test test/public.test.mjs，1项通过。",
+        "git diff --check：未通过，报告 src/reconcile.mjs 第58行 trailing whitespace。",
+        "node .ai-harness/bin/harness.mjs finish --id events-iteration … --json：成功，工作项状态 DONE。",
+        "node .ai-harness/bin/harness.mjs check --ci --json：通过，errors 和 warnings 均为空。"
+      ]
+    },
+    "completed": true
+  },
+  "scope": {
+    "ok": true,
+    "changes": [
+      {
+        "path": "src/reconcile.mjs",
+        "before": "033e356666be01c5f7f5f885bb91b2bd51768db10dfbc17f86be1dbffc0a4c0f",
+        "after": "0ff55a57c46e4ada30597c53ad761c163574142910c6d488eef81d829fbea314"
+      },
+      {
+        "path": ".ai-harness/work-items/benchmark-begin-spec.json",
+        "before": null,
+        "after": "96af4dc9cb311c38fbc8240f916bc7b3dc684f0546a6493fda3e22c4cd2b95cd"
+      },
+      {
+        "path": ".ai-harness/work-items/events-iteration/events.jsonl",
+        "before": null,
+        "after": "8f9da8b5aee0d2df9dd2ccb81c38708b522512b206ba1e4fa53dd031136f1cae"
+      },
+      {
+        "path": ".ai-harness/work-items/events-iteration/evidence.jsonl",
+        "before": null,
+        "after": "df68428088cc9aa8b254c74cd4504d010a959977fa11db17bbb749d410a1b41e"
+      },
+      {
+        "path": ".ai-harness/work-items/events-iteration/plan.json",
+        "before": null,
+        "after": "79f6b8587b5d993a68cd0b2c1dec6c9e00c097c244ab01e86ed9ef7d8e6dc2bd"
+      },
+      {
+        "path": ".ai-harness/work-items/events-iteration/snapshots/6ee7299c16e4f68df1e0cd75b1e4824362ea886aa1af906bfdc8cd64547c412b.json",
+        "before": null,
+        "after": "f1f4d909d9308f98e3b704a9c57ac3af8e39568def521f1df63802864d5947c5"
+      },
+      {
+        "path": ".ai-harness/work-items/events-iteration/snapshots/f570f3e61a91a670fee801a5f08615241841f292185c18bc305fca7130bb49e4.json",
+        "before": null,
+        "after": "c69da5a274d57014eb4ce11f86b3b5b1fa63f2419015d362742bb201073aeec1"
+      },
+      {
+        "path": ".ai-harness/work-items/events-iteration/solution.md",
+        "before": null,
+        "after": "9594cf92bd43e16a6191f6167502f797db9bb630616733ea6127b02bfe6cddb1"
+      },
+      {
+        "path": ".ai-harness/work-items/events-iteration/state.json",
+        "before": null,
+        "after": "3a44e1e504a03b9f7df37764ec208eef57cf92d4eca75362af57ec24a717f32f"
+      },
+      {
+        "path": "test/extra.test.mjs",
+        "before": null,
+        "after": "6bee46714c52582a2abf51b1bff9646c6a071ac35b737267a775834a02d2bcc6"
+      }
+    ],
+    "violations": []
+  },
+  "workflow": {
+    "ok": true,
+    "errors": [],
+    "workItems": [
+      "events-iteration"
+    ]
+  },
+  "grade": {
+    "complete": true,
+    "ok": true,
+    "cases": [
+      {
+        "id": "stale",
+        "pass": true
+      },
+      {
+        "id": "tombstone",
+        "pass": true
+      },
+      {
+        "id": "same-version",
+        "pass": true
+      },
+      {
+        "id": "resurrection",
+        "pass": true
+      },
+      {
+        "id": "idempotent",
+        "pass": true
+      },
+      {
+        "id": "sorted",
+        "pass": true
+      },
+      {
+        "id": "ordinary-string-ids",
+        "pass": true
+      },
+      {
+        "id": "immutable",
+        "pass": true
+      },
+      {
+        "id": "invalid-shape",
+        "pass": true
+      },
+      {
+        "id": "invalid-version",
+        "pass": true
+      },
+      {
+        "id": "duplicate-current",
+        "pass": true
+      },
+      {
+        "id": "clean-fields",
+        "pass": true
+      }
+    ],
+    "expectedCases": 12,
+    "exitCode": 0,
+    "timedOut": false,
+    "stderr": "",
+    "error": null
+  },
+  "success": true,
+  "falseCompletion": false,
+  "falseFunctionalCompletion": false,
+  "execution": {
+    "protocolSha256": "932a27f94b32827299be6f3eb45491df193d853461fbc8e088c464acfc755cd6",
+    "sourceBefore": "9d93c4763757e8a01f18f33bb53bd8a67ead48406d1ff83af3a13f747ea3f053",
+    "sourceAfter": "9d93c4763757e8a01f18f33bb53bd8a67ead48406d1ff83af3a13f747ea3f053"
+  }
+}

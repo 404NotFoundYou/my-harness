@@ -1,0 +1,196 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 1,
+  "id": "MODEL-COMPLETION-PAIRED-20261014",
+  "type": "ITERATION",
+  "title": "新计时字段六会话真实配对复测与结束阶段诊断",
+  "status": "DONE",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/iteration.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户明确授权执行所建议的最多六个新增模型会话及其费用；不授权追加轮次、替换模型提供方、凭据变更、部署或发布。"
+  },
+  "input": {
+    "references": [
+      "用户2026-10-14在明确三题、两组、单轮六会话、180秒和80工具预算及新增模型费用后明确回复授权你执行。"
+    ],
+    "acceptance": [
+      "六个计划内真实独立会话记录齐全，失败和超时不遗漏、不补跑；模型、CLI、源码和预算冻结一致，审计valid且报告保留四个生命周期锚点及未知值；结束阶段结论只依据本轮记录；旧实验和产品源码不变。"
+    ],
+    "nonGoals": [],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": null,
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "用户2026-10-14在明确三题、两组、单轮六会话、180秒和80工具预算及新增模型费用后明确回复授权你执行。"
+    ],
+    "completedAt": "2026-10-14T02:03:36.082Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "607197fd7183c90eef265f737ea442f1e1126fe2",
+      "dirty": false,
+      "changedFiles": [],
+      "fingerprints": {},
+      "source": {
+        "digest": "9d93c4763757e8a01f18f33bb53bd8a67ead48406d1ff83af3a13f747ea3f053",
+        "document": ".ai-harness/work-items/MODEL-COMPLETION-PAIRED-20261014/snapshots/9d93c4763757e8a01f18f33bb53bd8a67ead48406d1ff83af3a13f747ea3f053.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": ".ai-harness/work-items/MODEL-COMPLETION-PAIRED-20261014/solution.md",
+    "evidence": [
+      "单AI协调一个纵向实验，沿用现有runner/audit/report和隔离沙箱，gpt-6-astra同模型两组、core三题、paired单轮、每会话180000ms和80工具medium档。先dry-run冻结输入，宿主按明确授权执行现有模型入口，不伪装测试绕过命令策略；验证脚本只读取实际产物、审计哈希和结束阶段计时。仅写本工作项；不要求Harness胜出或将单轮推广为普遍性能结论。"
+    ],
+    "completedAt": "2026-10-14T02:03:36.170Z"
+  },
+  "database": {
+    "impact": "none",
+    "status": "not-applicable",
+    "document": null,
+    "evidence": [
+      "仅自有临时Git沙箱及本工作项证据产物，不涉及数据库、业务数据或产品接口变化。"
+    ],
+    "completedAt": "2026-10-14T02:03:36.174Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/MODEL-COMPLETION-PAIRED-20261014/plan.json",
+    "approved": true,
+    "approvalRef": "用户明确授权执行所建议的最多六个新增模型会话及其费用；不授权追加轮次、替换模型提供方、凭据变更、部署或发布。"
+  },
+  "verification": {
+    "status": "pass",
+    "evidence": [
+      "bade18bb-e521-455c-bb4f-87c7571bc89d"
+    ],
+    "stages": [],
+    "source": {
+      "digest": "9d93c4763757e8a01f18f33bb53bd8a67ead48406d1ff83af3a13f747ea3f053",
+      "document": ".ai-harness/work-items/MODEL-COMPLETION-PAIRED-20261014/snapshots/9d93c4763757e8a01f18f33bb53bd8a67ead48406d1ff83af3a13f747ea3f053.json"
+    }
+  },
+  "review": {
+    "status": "pass",
+    "evidence": [
+      "7b49e507-894c-479f-bcf8-1a4670293d5d"
+    ],
+    "independent": false,
+    "source": {
+      "digest": "9d93c4763757e8a01f18f33bb53bd8a67ead48406d1ff83af3a13f747ea3f053",
+      "document": ".ai-harness/work-items/MODEL-COMPLETION-PAIRED-20261014/snapshots/9d93c4763757e8a01f18f33bb53bd8a67ead48406d1ff83af3a13f747ea3f053.json"
+    }
+  },
+  "acceptance": {
+    "status": "pass",
+    "evidence": [
+      "cc617713-f80e-4842-8ef0-4d386d2b896f"
+    ],
+    "source": {
+      "digest": "9d93c4763757e8a01f18f33bb53bd8a67ead48406d1ff83af3a13f747ea3f053",
+      "document": ".ai-harness/work-items/MODEL-COMPLETION-PAIRED-20261014/snapshots/9d93c4763757e8a01f18f33bb53bd8a67ead48406d1ff83af3a13f747ea3f053.json"
+    }
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "pass",
+    "evidence": [
+      "e7f87e57-332e-40e0-b58e-52e4a988d4a8"
+    ]
+  },
+  "blocked": null,
+  "delivery": {
+    "source": {
+      "digest": "9d93c4763757e8a01f18f33bb53bd8a67ead48406d1ff83af3a13f747ea3f053",
+      "document": ".ai-harness/work-items/MODEL-COMPLETION-PAIRED-20261014/snapshots/9d93c4763757e8a01f18f33bb53bd8a67ead48406d1ff83af3a13f747ea3f053.json"
+    },
+    "baseline": {
+      "digest": "9d93c4763757e8a01f18f33bb53bd8a67ead48406d1ff83af3a13f747ea3f053",
+      "document": ".ai-harness/work-items/MODEL-COMPLETION-PAIRED-20261014/snapshots/9d93c4763757e8a01f18f33bb53bd8a67ead48406d1ff83af3a13f747ea3f053.json"
+    },
+    "baselineAt": "2026-10-14T02:03:36.082Z",
+    "ownedChanges": [],
+    "planDigest": "ea89310ada8914fc617b696a0dd4cf594c0a3fe03bf1df7f990effffd8308fe2",
+    "at": "2026-10-14T02:30:59.904Z",
+    "head": "607197fd7183c90eef265f737ea442f1e1126fe2"
+  },
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-10-14T02:03:35.967Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-10-14T02:03:35.977Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-10-14T02:03:36.164Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-10-14T02:03:36.201Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-10-14T02:03:36.206Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "VERIFYING",
+      "at": "2026-10-14T02:30:58.088Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "VERIFYING",
+      "to": "CODE_REVIEW",
+      "at": "2026-10-14T02:30:58.353Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "CODE_REVIEW",
+      "to": "READY_FOR_ACCEPTANCE",
+      "at": "2026-10-14T02:30:58.611Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "READY_FOR_ACCEPTANCE",
+      "to": "DONE",
+      "at": "2026-10-14T02:31:00.010Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-10-14T02:03:35.967Z",
+  "updatedAt": "2026-10-14T02:31:00.010Z"
+}

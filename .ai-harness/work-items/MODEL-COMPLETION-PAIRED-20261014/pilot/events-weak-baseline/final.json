@@ -1,0 +1,11 @@
+{
+  "completed": true,
+  "summary": "已实现并按 TASK.md 核对：严格输入校验、重复 ID 检查、版本递增更新、同版本先存在或先到达者胜出、删除墓碑、JavaScript 字符串排序、规范化输出及幂等性；保持 caller.mjs 兼容且不修改输入。仅修改 src/reconcile.mjs，新增 test/extra.test.mjs。未修改原有测试或规格，未安装依赖、访问网络或提交 Git。",
+  "tests": [
+    "node --test test/public.test.mjs：1/1 通过。",
+    "node --test test/extra.test.mjs：首次 7/8 通过；修复测试辅助函数对 undefined 的默认值替换问题并补充删除载荷测试后，9/9 通过。",
+    "node --test test/public.test.mjs test/extra.test.mjs：最终 10/10 通过，0 失败、0 跳过。",
+    "git diff --check：清理行尾空白后通过。",
+    "git diff --name-only 与 git ls-files --others --exclude-standard：确认仅两个授权文件发生变更；Git 提示无法读取用户级 ignore 文件，但仍输出了检查结果。"
+  ]
+}

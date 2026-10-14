@@ -1,0 +1,11 @@
+{
+  "completed": true,
+  "summary": "已完成 TASK.md 迭代，仅修改 src/csv.mjs 并新增 test/extra.test.mjs。实现严格类型检查、单个开头 BOM 移除、空字段与空记录保留、三种记录分隔符、引号转义与原始换行保留，以及非法引号的 SyntaxError 校验；已核对规格并验证 src/caller.mjs 兼容性。未修改原有测试或规格，未安装依赖、访问网络或提交 Git。换行格式警告已修复；Git 提示无法读取工作区外全局忽略文件，不影响测试结果。",
+  "tests": [
+    "node --test test/public.test.mjs：1/1 通过。",
+    "node --test test/extra.test.mjs：7/7 通过。",
+    "node --test：8/8 通过。",
+    "换行修复后运行 node --test test/public.test.mjs test/extra.test.mjs：8/8 通过，无失败、无跳过。",
+    "git diff --check：修复换行后通过。"
+  ]
+}

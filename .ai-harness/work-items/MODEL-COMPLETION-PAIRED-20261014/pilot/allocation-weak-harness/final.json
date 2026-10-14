@@ -1,0 +1,10 @@
+{
+  "completed": true,
+  "summary": "已实现 TASK.md 要求：使用 BigInt 精确执行最大余数法，校验非法输入，同余数按原索引优先，保持输入不变及 caller 兼容。仅修改 src/allocate.mjs、新增 test/extra.test.mjs；Harness 控制面通过 CLI 维护。finish 已完成，工作项状态为 DONE，check --ci 通过。未修改原有测试或规格，未安装依赖、访问网络或提交 Git。另有非阻断格式问题：git diff --check 报告末行 CRLF 尾随空白；遵照计划检查通过后不再修改产品文件的要求予以保留。",
+  "tests": [
+    "node --test test/extra.test.mjs（通过 Harness run 执行）：6 项通过，0 失败、0 跳过；包含安全整数边界、非法输入、零权重、余数优先级、输入不变性、调用方兼容及 1984 组穷举。",
+    "node .ai-harness/bin/harness.mjs run --id allocation-iteration --all --json：全部计划检查通过，实际执行公共测试 node --test test/public.test.mjs，1 项通过。",
+    "git diff --check：未通过，src/allocate.mjs 第 35 行 CRLF 被报告为尾随空白。",
+    "node .ai-harness/bin/harness.mjs check --ci --json：通过，ok=true，错误和警告均为空。"
+  ]
+}

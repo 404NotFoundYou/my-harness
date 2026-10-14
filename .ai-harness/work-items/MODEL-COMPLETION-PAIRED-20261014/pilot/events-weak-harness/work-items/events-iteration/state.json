@@ -1,0 +1,207 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 1,
+  "id": "events-iteration",
+  "type": "ITERATION",
+  "title": "完成events固定迭代",
+  "status": "DONE",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/iteration.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "TASK.md中的已授权固定任务"
+  },
+  "input": {
+    "references": [
+      "TASK.md"
+    ],
+    "acceptance": [
+      "保持TASK.md的公开契约并通过test/public.test.mjs"
+    ],
+    "nonGoals": [],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": null,
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "TASK.md"
+    ],
+    "completedAt": "2026-10-14T02:19:41.590Z",
+    "repository": {
+      "isGit": true,
+      "branch": "master",
+      "commit": "b872d91d1c28e037362d47571d788c67400f9d9e",
+      "dirty": false,
+      "changedFiles": [],
+      "fingerprints": {},
+      "source": {
+        "digest": "6ee7299c16e4f68df1e0cd75b1e4824362ea886aa1af906bfdc8cd64547c412b",
+        "document": ".ai-harness/work-items/events-iteration/snapshots/6ee7299c16e4f68df1e0cd75b1e4824362ea886aa1af906bfdc8cd64547c412b.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": ".ai-harness/work-items/events-iteration/solution.md",
+    "evidence": [
+      "使用Map按id归并，完整校验稠密数组、记录和JSON值，只接受严格更高版本并保留删除墓碑，构造规范字段输出并按字符串比较排序；新增边界及调用方回归测试"
+    ],
+    "completedAt": "2026-10-14T02:19:41.698Z"
+  },
+  "database": {
+    "impact": "none",
+    "status": "not-applicable",
+    "document": null,
+    "evidence": [
+      "TASK.md明确无数据库影响"
+    ],
+    "completedAt": "2026-10-14T02:19:41.704Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/events-iteration/plan.json",
+    "approved": true,
+    "approvalRef": "TASK.md中的已授权固定任务"
+  },
+  "verification": {
+    "status": "pass",
+    "evidence": [
+      "7aa2d1fd-f2c5-4302-b97d-ca030c0df0ea"
+    ],
+    "stages": [],
+    "source": {
+      "digest": "f570f3e61a91a670fee801a5f08615241841f292185c18bc305fca7130bb49e4",
+      "document": ".ai-harness/work-items/events-iteration/snapshots/f570f3e61a91a670fee801a5f08615241841f292185c18bc305fca7130bb49e4.json"
+    }
+  },
+  "review": {
+    "status": "pass",
+    "evidence": [
+      "7b78f539-bec0-4b20-92ba-eb86ad223361"
+    ],
+    "independent": false,
+    "source": {
+      "digest": "f570f3e61a91a670fee801a5f08615241841f292185c18bc305fca7130bb49e4",
+      "document": ".ai-harness/work-items/events-iteration/snapshots/f570f3e61a91a670fee801a5f08615241841f292185c18bc305fca7130bb49e4.json"
+    }
+  },
+  "acceptance": {
+    "status": "pass",
+    "evidence": [
+      "832e76a0-3430-4deb-9833-8aa4465220da"
+    ],
+    "source": {
+      "digest": "f570f3e61a91a670fee801a5f08615241841f292185c18bc305fca7130bb49e4",
+      "document": ".ai-harness/work-items/events-iteration/snapshots/f570f3e61a91a670fee801a5f08615241841f292185c18bc305fca7130bb49e4.json"
+    }
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "not-applicable",
+    "evidence": [
+      "84bca2a5-b5ff-499e-b3c8-19f6ffdd5526"
+    ]
+  },
+  "blocked": null,
+  "delivery": {
+    "source": {
+      "digest": "f570f3e61a91a670fee801a5f08615241841f292185c18bc305fca7130bb49e4",
+      "document": ".ai-harness/work-items/events-iteration/snapshots/f570f3e61a91a670fee801a5f08615241841f292185c18bc305fca7130bb49e4.json"
+    },
+    "baseline": {
+      "digest": "6ee7299c16e4f68df1e0cd75b1e4824362ea886aa1af906bfdc8cd64547c412b",
+      "document": ".ai-harness/work-items/events-iteration/snapshots/6ee7299c16e4f68df1e0cd75b1e4824362ea886aa1af906bfdc8cd64547c412b.json"
+    },
+    "baselineAt": "2026-10-14T02:19:41.590Z",
+    "ownedChanges": [
+      {
+        "path": "src/reconcile.mjs",
+        "before": "100644:b4de0021569b1bea712d169283c1d6092ce545fa",
+        "after": "100644:0b4da2f24d60a480a478d06a5bcfb96597fa1d16"
+      },
+      {
+        "path": "test/extra.test.mjs",
+        "before": null,
+        "after": "100644:d3a690b841d66978c3824aa4d65f547fbb85634a"
+      }
+    ],
+    "planDigest": "1835310b299e4840bc7aa8c85d3003f417b2c377014844ad52b2be11996e0d25",
+    "at": "2026-10-14T02:21:19.206Z",
+    "head": "b872d91d1c28e037362d47571d788c67400f9d9e"
+  },
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-10-14T02:19:41.451Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-10-14T02:19:41.462Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-10-14T02:19:41.692Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-10-14T02:19:41.731Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-10-14T02:19:41.735Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "VERIFYING",
+      "at": "2026-10-14T02:21:17.580Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "VERIFYING",
+      "to": "CODE_REVIEW",
+      "at": "2026-10-14T02:21:18.028Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "CODE_REVIEW",
+      "to": "READY_FOR_ACCEPTANCE",
+      "at": "2026-10-14T02:21:18.474Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "READY_FOR_ACCEPTANCE",
+      "to": "DONE",
+      "at": "2026-10-14T02:21:19.307Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-10-14T02:19:41.451Z",
+  "updatedAt": "2026-10-14T02:21:19.307Z"
+}

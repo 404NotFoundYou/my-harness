@@ -1,0 +1,283 @@
+{
+  "source": "9d93c4763757e8a01f18f33bb53bd8a67ead48406d1ff83af3a13f747ea3f053",
+  "driverIdentity": {
+    "kind": "cli",
+    "entry": "D:\\Program Files\\Nvm\\v22.20.0\\node_global\\node_modules\\@openai\\codex\\bin\\codex.js",
+    "sha256": "61b0194f3bb6534439c8d26a3ed57d0805f84b884588b761795323eeb92fcf70",
+    "nodeVersion": "v22.20.0"
+  },
+  "samples": 6,
+  "historicalFilesUnchanged": 79,
+  "timeline": [
+    {
+      "taskId": "csv",
+      "group": "weak-baseline",
+      "trial": 1,
+      "resultFile": "csv-weak-baseline/result.json",
+      "functional": true,
+      "sharedDelivery": true,
+      "fullDelivery": true,
+      "workflow": null,
+      "timedOut": false,
+      "toolLimit": false,
+      "completed": true,
+      "terminalObserved": true,
+      "exitCode": 0,
+      "durationMs": 95603,
+      "toolCalls": 4,
+      "toolActiveMs": 1145,
+      "lifecycle": {
+        "version": 1,
+        "firstProtocolEventMs": 1442,
+        "terminalEventMs": 95066,
+        "processExitMs": 95603,
+        "processCloseMs": 95603
+      },
+      "completion": {
+        "firstProtocolEventMs": 1442,
+        "terminalEventMs": 95066,
+        "processExitMs": 95603,
+        "processCloseMs": 95603,
+        "lastToolEndMs": 83263,
+        "afterLastToolMs": 12340,
+        "terminalAfterLastToolMs": 11803,
+        "exitAfterTerminalMs": 537,
+        "closeAfterExitMs": 0
+      },
+      "phase": "客户端正常完成",
+      "previous": {
+        "durationMs": 180285,
+        "lastToolEndMs": 137071,
+        "afterLastToolMs": 43214,
+        "fullDelivery": false,
+        "timedOut": true,
+        "terminalObserved": false
+      }
+    },
+    {
+      "taskId": "csv",
+      "group": "weak-harness",
+      "trial": 1,
+      "resultFile": "csv-weak-harness/result.json",
+      "functional": true,
+      "sharedDelivery": true,
+      "fullDelivery": true,
+      "workflow": true,
+      "timedOut": false,
+      "toolLimit": false,
+      "completed": true,
+      "terminalObserved": true,
+      "exitCode": 0,
+      "durationMs": 127770,
+      "toolCalls": 6,
+      "toolActiveMs": 6575,
+      "lifecycle": {
+        "version": 1,
+        "firstProtocolEventMs": 1065,
+        "terminalEventMs": 127467,
+        "processExitMs": 127770,
+        "processCloseMs": 127770
+      },
+      "completion": {
+        "firstProtocolEventMs": 1065,
+        "terminalEventMs": 127467,
+        "processExitMs": 127770,
+        "processCloseMs": 127770,
+        "lastToolEndMs": 112366,
+        "afterLastToolMs": 15404,
+        "terminalAfterLastToolMs": 15101,
+        "exitAfterTerminalMs": 303,
+        "closeAfterExitMs": 0
+      },
+      "phase": "客户端正常完成",
+      "previous": {
+        "durationMs": 135284,
+        "lastToolEndMs": 119359,
+        "afterLastToolMs": 15925,
+        "fullDelivery": true,
+        "timedOut": false,
+        "terminalObserved": true
+      }
+    },
+    {
+      "taskId": "allocation",
+      "group": "weak-harness",
+      "trial": 1,
+      "resultFile": "allocation-weak-harness/result.json",
+      "functional": true,
+      "sharedDelivery": true,
+      "fullDelivery": true,
+      "workflow": true,
+      "timedOut": false,
+      "toolLimit": false,
+      "completed": true,
+      "terminalObserved": true,
+      "exitCode": 0,
+      "durationMs": 122032,
+      "toolCalls": 6,
+      "toolActiveMs": 6402,
+      "lifecycle": {
+        "version": 1,
+        "firstProtocolEventMs": 1068,
+        "terminalEventMs": 121742,
+        "processExitMs": 122032,
+        "processCloseMs": 122032
+      },
+      "completion": {
+        "firstProtocolEventMs": 1068,
+        "terminalEventMs": 121742,
+        "processExitMs": 122032,
+        "processCloseMs": 122032,
+        "lastToolEndMs": 108399,
+        "afterLastToolMs": 13633,
+        "terminalAfterLastToolMs": 13343,
+        "exitAfterTerminalMs": 290,
+        "closeAfterExitMs": 0
+      },
+      "phase": "客户端正常完成",
+      "previous": {
+        "durationMs": 138712,
+        "lastToolEndMs": 122952,
+        "afterLastToolMs": 15760,
+        "fullDelivery": true,
+        "timedOut": false,
+        "terminalObserved": true
+      }
+    },
+    {
+      "taskId": "allocation",
+      "group": "weak-baseline",
+      "trial": 1,
+      "resultFile": "allocation-weak-baseline/result.json",
+      "functional": true,
+      "sharedDelivery": true,
+      "fullDelivery": true,
+      "workflow": null,
+      "timedOut": false,
+      "toolLimit": false,
+      "completed": true,
+      "terminalObserved": true,
+      "exitCode": 0,
+      "durationMs": 107953,
+      "toolCalls": 5,
+      "toolActiveMs": 1227,
+      "lifecycle": {
+        "version": 1,
+        "firstProtocolEventMs": 1035,
+        "terminalEventMs": 107464,
+        "processExitMs": 107953,
+        "processCloseMs": 107953
+      },
+      "completion": {
+        "firstProtocolEventMs": 1035,
+        "terminalEventMs": 107464,
+        "processExitMs": 107953,
+        "processCloseMs": 107953,
+        "lastToolEndMs": 94763,
+        "afterLastToolMs": 13190,
+        "terminalAfterLastToolMs": 12701,
+        "exitAfterTerminalMs": 489,
+        "closeAfterExitMs": 0
+      },
+      "phase": "客户端正常完成",
+      "previous": {
+        "durationMs": 174721,
+        "lastToolEndMs": 157136,
+        "afterLastToolMs": 17585,
+        "fullDelivery": true,
+        "timedOut": false,
+        "terminalObserved": true
+      }
+    },
+    {
+      "taskId": "events",
+      "group": "weak-baseline",
+      "trial": 1,
+      "resultFile": "events-weak-baseline/result.json",
+      "functional": true,
+      "sharedDelivery": true,
+      "fullDelivery": true,
+      "workflow": null,
+      "timedOut": false,
+      "toolLimit": false,
+      "completed": true,
+      "terminalObserved": true,
+      "exitCode": 0,
+      "durationMs": 150709,
+      "toolCalls": 5,
+      "toolActiveMs": 1621,
+      "lifecycle": {
+        "version": 1,
+        "firstProtocolEventMs": 1087,
+        "terminalEventMs": 150440,
+        "processExitMs": 150709,
+        "processCloseMs": 150709
+      },
+      "completion": {
+        "firstProtocolEventMs": 1087,
+        "terminalEventMs": 150440,
+        "processExitMs": 150709,
+        "processCloseMs": 150709,
+        "lastToolEndMs": 131246,
+        "afterLastToolMs": 19463,
+        "terminalAfterLastToolMs": 19194,
+        "exitAfterTerminalMs": 269,
+        "closeAfterExitMs": 0
+      },
+      "phase": "客户端正常完成",
+      "previous": {
+        "durationMs": 163591,
+        "lastToolEndMs": 149740,
+        "afterLastToolMs": 13851,
+        "fullDelivery": true,
+        "timedOut": false,
+        "terminalObserved": true
+      }
+    },
+    {
+      "taskId": "events",
+      "group": "weak-harness",
+      "trial": 1,
+      "resultFile": "events-weak-harness/result.json",
+      "functional": true,
+      "sharedDelivery": true,
+      "fullDelivery": true,
+      "workflow": true,
+      "timedOut": false,
+      "toolLimit": false,
+      "completed": true,
+      "terminalObserved": true,
+      "exitCode": 0,
+      "durationMs": 142591,
+      "toolCalls": 6,
+      "toolActiveMs": 6210,
+      "lifecycle": {
+        "version": 1,
+        "firstProtocolEventMs": 1099,
+        "terminalEventMs": 142261,
+        "processExitMs": 142591,
+        "processCloseMs": 142591
+      },
+      "completion": {
+        "firstProtocolEventMs": 1099,
+        "terminalEventMs": 142261,
+        "processExitMs": 142591,
+        "processCloseMs": 142591,
+        "lastToolEndMs": 125888,
+        "afterLastToolMs": 16703,
+        "terminalAfterLastToolMs": 16373,
+        "exitAfterTerminalMs": 330,
+        "closeAfterExitMs": 0
+      },
+      "phase": "客户端正常完成",
+      "previous": {
+        "durationMs": 180395,
+        "lastToolEndMs": 161445,
+        "afterLastToolMs": 18950,
+        "fullDelivery": false,
+        "timedOut": true,
+        "terminalObserved": false
+      }
+    }
+  ]
+}

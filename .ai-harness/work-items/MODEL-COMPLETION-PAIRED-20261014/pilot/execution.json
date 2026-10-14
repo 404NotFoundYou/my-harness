@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "protocolSha256": "932a27f94b32827299be6f3eb45491df193d853461fbc8e088c464acfc755cd6",
+  "trials": [
+    {
+      "directory": "csv-weak-baseline",
+      "status": "completed",
+      "startedAt": "2026-10-14T02:09:01.432Z",
+      "resultSha256": "08e11ad978a5129c95c933757b487a8d41560a57b2928aead090b7bcbcec69dc"
+    },
+    {
+      "directory": "csv-weak-harness",
+      "status": "completed",
+      "startedAt": "2026-10-14T02:10:37.890Z",
+      "resultSha256": "ff276b561e5b7d060f1237e124d6a583b675b069188b690c304eb55d92ed8a71"
+    },
+    {
+      "directory": "allocation-weak-harness",
+      "status": "completed",
+      "startedAt": "2026-10-14T02:12:47.869Z",
+      "resultSha256": "b4931ce6dc88f7536b21eac53e356ba35b71beebdbedded26e3cbd068ec43642"
+    },
+    {
+      "directory": "allocation-weak-baseline",
+      "status": "completed",
+      "startedAt": "2026-10-14T02:14:52.075Z",
+      "resultSha256": "a80f4696cfeb7bbbdbca7690e5f258f7dc41079045007a283e106d910a471078"
+    },
+    {
+      "directory": "events-weak-baseline",
+      "status": "completed",
+      "startedAt": "2026-10-14T02:16:40.995Z",
+      "resultSha256": "0d1fb40e2b6cc7ab1835cc2cb407e016e16aae9e8ef7a3ca9da5c96af9cf858f"
+    },
+    {
+      "directory": "events-weak-harness",
+      "status": "completed",
+      "startedAt": "2026-10-14T02:19:12.723Z",
+      "resultSha256": "e0aff5e4330d0c2b41efae42251e5559abf028b1ed00cbbc7a05bb58c2cc8dd4"
+    }
+  ]
+}

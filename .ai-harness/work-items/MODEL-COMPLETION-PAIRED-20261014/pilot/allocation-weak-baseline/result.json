@@ -1,0 +1,193 @@
+{
+  "schemaVersion": 1,
+  "trial": 1,
+  "mode": "real",
+  "client": "codex",
+  "taskId": "allocation",
+  "split": "development",
+  "group": "weak-baseline",
+  "model": "gpt-6-astra",
+  "taskDigest": "ea01ac42353ca41a94b7cf06dff7697634920789f8e9c40c20b00a1af077da5a",
+  "judgeDigest": "a860e70ff0b427bfd6bd0173ea3c42abfe4d72b54a61b2af2d0bca0c9b79e74b",
+  "candidateDigest": "e25b5164ed5de04a27351484fdc92d405b2861e6a527a60da690fefd66ca0a80",
+  "budget": {
+    "timeoutMs": 180000,
+    "maxToolCalls": 80,
+    "reasoning": "medium"
+  },
+  "run": {
+    "mode": "real",
+    "client": "codex",
+    "startedAt": "2026-10-14T02:14:52.399Z",
+    "durationMs": 107953,
+    "timing": {
+      "basis": "local-event-receive-time",
+      "lifecycle": {
+        "version": 1,
+        "firstProtocolEventMs": 1035,
+        "terminalEventMs": 107464,
+        "processExitMs": 107953,
+        "processCloseMs": 107953
+      },
+      "toolActiveMs": 1227,
+      "otherElapsedMs": 106726,
+      "spans": [
+        {
+          "id": "item_3",
+          "startMs": 10332,
+          "endMs": 10475,
+          "category": "unknown",
+          "complete": true
+        },
+        {
+          "id": "item_4",
+          "startMs": 16067,
+          "endMs": 16246,
+          "category": "unknown",
+          "complete": true
+        },
+        {
+          "id": "item_6",
+          "startMs": 74537,
+          "endMs": 74876,
+          "category": "unknown",
+          "complete": true
+        },
+        {
+          "id": "item_8",
+          "startMs": 85852,
+          "endMs": 86156,
+          "category": "unknown",
+          "complete": true
+        },
+        {
+          "id": "item_9",
+          "startMs": 94501,
+          "endMs": 94763,
+          "category": "unknown",
+          "complete": true
+        }
+      ],
+      "categories": {
+        "unknown": {
+          "calls": 5,
+          "activeMs": 1227
+        }
+      },
+      "unmatchedCompletions": [],
+      "limitation": "工具区间按接收事件估计并合并重叠；其余耗时包含模型、网络、客户端启动和收尾，不等于纯推理耗时。"
+    },
+    "exitCode": 0,
+    "timedOut": false,
+    "toolLimit": false,
+    "toolCalls": 5,
+    "turnCompleted": true,
+    "protocolSuccess": true,
+    "usage": {
+      "input_tokens": 115266,
+      "cached_input_tokens": 79744,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 2806,
+      "reasoning_output_tokens": 129
+    },
+    "errors": [],
+    "warnings": [],
+    "unparsedLines": 0,
+    "error": null,
+    "final": {
+      "completed": true,
+      "summary": "已完成 TASK.md 迭代，仅修改 src/allocate.mjs 并新增 test/extra.test.mjs。使用 BigInt 实现精确最大余数法，校验非负安全整数和非空稠密数组，正确处理零权重及同余数索引优先，保持输入不变和 caller.mjs 兼容。公共验证后已逐项核对规格。差异检查发现的换行问题已修复并复验通过。未修改原有测试或规格，未安装依赖、访问网络或提交 Git。",
+      "tests": [
+        "node --test test/public.test.mjs：1/1 通过。",
+        "node --test test/extra.test.mjs：6/6 通过，覆盖精确分配、安全整数边界、非法输入、零权重、输入不变、调用方兼容及 2604 组小范围穷举。",
+        "node --test test/public.test.mjs test/extra.test.mjs：最终复验 7/7 通过，无失败、无跳过。",
+        "git diff --check：修复换行问题后通过。"
+      ]
+    },
+    "completed": true
+  },
+  "scope": {
+    "ok": true,
+    "changes": [
+      {
+        "path": "src/allocate.mjs",
+        "before": "60d9d7242829bbca87e702ca6d0488d81c7b702d7f5ded0f0c62620de580547b",
+        "after": "e25b5164ed5de04a27351484fdc92d405b2861e6a527a60da690fefd66ca0a80"
+      },
+      {
+        "path": "test/extra.test.mjs",
+        "before": null,
+        "after": "bfa14028ecf5794019cd65d759a7b8cdeb24df06b260ec2a70bf517986f96958"
+      }
+    ],
+    "violations": []
+  },
+  "workflow": null,
+  "grade": {
+    "complete": true,
+    "ok": true,
+    "cases": [
+      {
+        "id": "conservation",
+        "pass": true
+      },
+      {
+        "id": "remainder-order",
+        "pass": true
+      },
+      {
+        "id": "zero-weight",
+        "pass": true
+      },
+      {
+        "id": "zero-total",
+        "pass": true
+      },
+      {
+        "id": "zero-sum",
+        "pass": true
+      },
+      {
+        "id": "invalid-total",
+        "pass": true
+      },
+      {
+        "id": "invalid-weights",
+        "pass": true
+      },
+      {
+        "id": "immutable",
+        "pass": true
+      },
+      {
+        "id": "large-total",
+        "pass": true
+      },
+      {
+        "id": "large-weights",
+        "pass": true
+      },
+      {
+        "id": "exact-order",
+        "pass": true
+      },
+      {
+        "id": "many-shares",
+        "pass": true
+      }
+    ],
+    "expectedCases": 12,
+    "exitCode": 0,
+    "timedOut": false,
+    "stderr": "",
+    "error": null
+  },
+  "success": true,
+  "falseCompletion": false,
+  "falseFunctionalCompletion": false,
+  "execution": {
+    "protocolSha256": "932a27f94b32827299be6f3eb45491df193d853461fbc8e088c464acfc755cd6",
+    "sourceBefore": "9d93c4763757e8a01f18f33bb53bd8a67ead48406d1ff83af3a13f747ea3f053",
+    "sourceAfter": "9d93c4763757e8a01f18f33bb53bd8a67ead48406d1ff83af3a13f747ea3f053"
+  }
+}

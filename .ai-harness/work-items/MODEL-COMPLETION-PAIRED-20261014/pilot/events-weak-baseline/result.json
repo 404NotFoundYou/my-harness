@@ -1,0 +1,194 @@
+{
+  "schemaVersion": 1,
+  "trial": 1,
+  "mode": "real",
+  "client": "codex",
+  "taskId": "events",
+  "split": "holdout",
+  "group": "weak-baseline",
+  "model": "gpt-6-astra",
+  "taskDigest": "e8a7130efc1592e2fdb89853fd6ba482da6b67285b7887b074da97ae289d4b2d",
+  "judgeDigest": "653600052c1e1ab18c5601412a2c49b1d6f0106747aca300db788e819dc765ae",
+  "candidateDigest": "64afbb36f984cf3b9a7a0df86d79042215630595ac02e2a5cb7e1f5e2f4eeefd",
+  "budget": {
+    "timeoutMs": 180000,
+    "maxToolCalls": 80,
+    "reasoning": "medium"
+  },
+  "run": {
+    "mode": "real",
+    "client": "codex",
+    "startedAt": "2026-10-14T02:16:41.310Z",
+    "durationMs": 150709,
+    "timing": {
+      "basis": "local-event-receive-time",
+      "lifecycle": {
+        "version": 1,
+        "firstProtocolEventMs": 1087,
+        "terminalEventMs": 150440,
+        "processExitMs": 150709,
+        "processCloseMs": 150709
+      },
+      "toolActiveMs": 1621,
+      "otherElapsedMs": 149088,
+      "spans": [
+        {
+          "id": "item_3",
+          "startMs": 11810,
+          "endMs": 11982,
+          "category": "unknown",
+          "complete": true
+        },
+        {
+          "id": "item_4",
+          "startMs": 18052,
+          "endMs": 18266,
+          "category": "unknown",
+          "complete": true
+        },
+        {
+          "id": "item_6",
+          "startMs": 92594,
+          "endMs": 92952,
+          "category": "unknown",
+          "complete": true
+        },
+        {
+          "id": "item_8",
+          "startMs": 119202,
+          "endMs": 119744,
+          "category": "unknown",
+          "complete": true
+        },
+        {
+          "id": "item_10",
+          "startMs": 130911,
+          "endMs": 131246,
+          "category": "unknown",
+          "complete": true
+        }
+      ],
+      "categories": {
+        "unknown": {
+          "calls": 5,
+          "activeMs": 1621
+        }
+      },
+      "unmatchedCompletions": [],
+      "limitation": "工具区间按接收事件估计并合并重叠；其余耗时包含模型、网络、客户端启动和收尾，不等于纯推理耗时。"
+    },
+    "exitCode": 0,
+    "timedOut": false,
+    "toolLimit": false,
+    "toolCalls": 5,
+    "turnCompleted": true,
+    "protocolSuccess": true,
+    "usage": {
+      "input_tokens": 121123,
+      "cached_input_tokens": 99456,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 4188,
+      "reasoning_output_tokens": 236
+    },
+    "errors": [],
+    "warnings": [],
+    "unparsedLines": 0,
+    "error": null,
+    "final": {
+      "completed": true,
+      "summary": "已实现并按 TASK.md 核对：严格输入校验、重复 ID 检查、版本递增更新、同版本先存在或先到达者胜出、删除墓碑、JavaScript 字符串排序、规范化输出及幂等性；保持 caller.mjs 兼容且不修改输入。仅修改 src/reconcile.mjs，新增 test/extra.test.mjs。未修改原有测试或规格，未安装依赖、访问网络或提交 Git。",
+      "tests": [
+        "node --test test/public.test.mjs：1/1 通过。",
+        "node --test test/extra.test.mjs：首次 7/8 通过；修复测试辅助函数对 undefined 的默认值替换问题并补充删除载荷测试后，9/9 通过。",
+        "node --test test/public.test.mjs test/extra.test.mjs：最终 10/10 通过，0 失败、0 跳过。",
+        "git diff --check：清理行尾空白后通过。",
+        "git diff --name-only 与 git ls-files --others --exclude-standard：确认仅两个授权文件发生变更；Git 提示无法读取用户级 ignore 文件，但仍输出了检查结果。"
+      ]
+    },
+    "completed": true
+  },
+  "scope": {
+    "ok": true,
+    "changes": [
+      {
+        "path": "src/reconcile.mjs",
+        "before": "033e356666be01c5f7f5f885bb91b2bd51768db10dfbc17f86be1dbffc0a4c0f",
+        "after": "64afbb36f984cf3b9a7a0df86d79042215630595ac02e2a5cb7e1f5e2f4eeefd"
+      },
+      {
+        "path": "test/extra.test.mjs",
+        "before": null,
+        "after": "d8e8a840c257bbc5cfe38c72a8b5957d6d2c3754f292606dce2945c287b707cb"
+      }
+    ],
+    "violations": []
+  },
+  "workflow": null,
+  "grade": {
+    "complete": true,
+    "ok": true,
+    "cases": [
+      {
+        "id": "stale",
+        "pass": true
+      },
+      {
+        "id": "tombstone",
+        "pass": true
+      },
+      {
+        "id": "same-version",
+        "pass": true
+      },
+      {
+        "id": "resurrection",
+        "pass": true
+      },
+      {
+        "id": "idempotent",
+        "pass": true
+      },
+      {
+        "id": "sorted",
+        "pass": true
+      },
+      {
+        "id": "ordinary-string-ids",
+        "pass": true
+      },
+      {
+        "id": "immutable",
+        "pass": true
+      },
+      {
+        "id": "invalid-shape",
+        "pass": true
+      },
+      {
+        "id": "invalid-version",
+        "pass": true
+      },
+      {
+        "id": "duplicate-current",
+        "pass": true
+      },
+      {
+        "id": "clean-fields",
+        "pass": true
+      }
+    ],
+    "expectedCases": 12,
+    "exitCode": 0,
+    "timedOut": false,
+    "stderr": "",
+    "error": null
+  },
+  "success": true,
+  "falseCompletion": false,
+  "falseFunctionalCompletion": false,
+  "execution": {
+    "protocolSha256": "932a27f94b32827299be6f3eb45491df193d853461fbc8e088c464acfc755cd6",
+    "sourceBefore": "9d93c4763757e8a01f18f33bb53bd8a67ead48406d1ff83af3a13f747ea3f053",
+    "sourceAfter": "9d93c4763757e8a01f18f33bb53bd8a67ead48406d1ff83af3a13f747ea3f053"
+  }
+}

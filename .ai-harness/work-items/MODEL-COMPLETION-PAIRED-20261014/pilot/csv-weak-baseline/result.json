@@ -1,0 +1,187 @@
+{
+  "schemaVersion": 1,
+  "trial": 1,
+  "mode": "real",
+  "client": "codex",
+  "taskId": "csv",
+  "split": "development",
+  "group": "weak-baseline",
+  "model": "gpt-6-astra",
+  "taskDigest": "c3cfc33cfb3f2ac504fd63705cd1d03d2dc7f497017362037152af0e251ca223",
+  "judgeDigest": "30194704e69ab805f27ffa7fefb9849b9313f355a3da6ff5145e05fafc458561",
+  "candidateDigest": "3069a029c23145baee44ec23f09fdb0c306c495c6b8b93a308cd247ee0b2de51",
+  "budget": {
+    "timeoutMs": 180000,
+    "maxToolCalls": 80,
+    "reasoning": "medium"
+  },
+  "run": {
+    "mode": "real",
+    "client": "codex",
+    "startedAt": "2026-10-14T02:09:01.687Z",
+    "durationMs": 95603,
+    "timing": {
+      "basis": "local-event-receive-time",
+      "lifecycle": {
+        "version": 1,
+        "firstProtocolEventMs": 1442,
+        "terminalEventMs": 95066,
+        "processExitMs": 95603,
+        "processCloseMs": 95603
+      },
+      "toolActiveMs": 1145,
+      "otherElapsedMs": 94458,
+      "spans": [
+        {
+          "id": "item_3",
+          "startMs": 10632,
+          "endMs": 10784,
+          "category": "unknown",
+          "complete": true
+        },
+        {
+          "id": "item_4",
+          "startMs": 17020,
+          "endMs": 17204,
+          "category": "unknown",
+          "complete": true
+        },
+        {
+          "id": "item_6",
+          "startMs": 70130,
+          "endMs": 70648,
+          "category": "unknown",
+          "complete": true
+        },
+        {
+          "id": "item_8",
+          "startMs": 82972,
+          "endMs": 83263,
+          "category": "unknown",
+          "complete": true
+        }
+      ],
+      "categories": {
+        "unknown": {
+          "calls": 4,
+          "activeMs": 1145
+        }
+      },
+      "unmatchedCompletions": [],
+      "limitation": "工具区间按接收事件估计并合并重叠；其余耗时包含模型、网络、客户端启动和收尾，不等于纯推理耗时。"
+    },
+    "exitCode": 0,
+    "timedOut": false,
+    "toolLimit": false,
+    "toolCalls": 4,
+    "turnCompleted": true,
+    "protocolSuccess": true,
+    "usage": {
+      "input_tokens": 93878,
+      "cached_input_tokens": 61312,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 2505,
+      "reasoning_output_tokens": 77
+    },
+    "errors": [],
+    "warnings": [],
+    "unparsedLines": 0,
+    "error": null,
+    "final": {
+      "completed": true,
+      "summary": "已完成 TASK.md 迭代，仅修改 src/csv.mjs 并新增 test/extra.test.mjs。实现严格类型检查、单个开头 BOM 移除、空字段与空记录保留、三种记录分隔符、引号转义与原始换行保留，以及非法引号的 SyntaxError 校验；已核对规格并验证 src/caller.mjs 兼容性。未修改原有测试或规格，未安装依赖、访问网络或提交 Git。换行格式警告已修复；Git 提示无法读取工作区外全局忽略文件，不影响测试结果。",
+      "tests": [
+        "node --test test/public.test.mjs：1/1 通过。",
+        "node --test test/extra.test.mjs：7/7 通过。",
+        "node --test：8/8 通过。",
+        "换行修复后运行 node --test test/public.test.mjs test/extra.test.mjs：8/8 通过，无失败、无跳过。",
+        "git diff --check：修复换行后通过。"
+      ]
+    },
+    "completed": true
+  },
+  "scope": {
+    "ok": true,
+    "changes": [
+      {
+        "path": "src/csv.mjs",
+        "before": "dd51e6b8418a474ba38c772e6825c45edeeac7f628fdab3e83058a737955b3c2",
+        "after": "3069a029c23145baee44ec23f09fdb0c306c495c6b8b93a308cd247ee0b2de51"
+      },
+      {
+        "path": "test/extra.test.mjs",
+        "before": null,
+        "after": "b691c09dcf8e2f3f15c0228eaa7831ab1d22f72028f01141120ae46c64ab3fc4"
+      }
+    ],
+    "violations": []
+  },
+  "workflow": null,
+  "grade": {
+    "complete": true,
+    "ok": true,
+    "cases": [
+      {
+        "id": "empty",
+        "pass": true
+      },
+      {
+        "id": "bom",
+        "pass": true
+      },
+      {
+        "id": "delimiters",
+        "pass": true
+      },
+      {
+        "id": "blank-rows",
+        "pass": true
+      },
+      {
+        "id": "quoted-fields",
+        "pass": true
+      },
+      {
+        "id": "escaped-quotes",
+        "pass": true
+      },
+      {
+        "id": "embedded-newline",
+        "pass": true
+      },
+      {
+        "id": "whitespace",
+        "pass": true
+      },
+      {
+        "id": "unterminated",
+        "pass": true
+      },
+      {
+        "id": "bare-quote",
+        "pass": true
+      },
+      {
+        "id": "after-quote",
+        "pass": true
+      },
+      {
+        "id": "input-type",
+        "pass": true
+      }
+    ],
+    "expectedCases": 12,
+    "exitCode": 0,
+    "timedOut": false,
+    "stderr": "",
+    "error": null
+  },
+  "success": true,
+  "falseCompletion": false,
+  "falseFunctionalCompletion": false,
+  "execution": {
+    "protocolSha256": "932a27f94b32827299be6f3eb45491df193d853461fbc8e088c464acfc755cd6",
+    "sourceBefore": "9d93c4763757e8a01f18f33bb53bd8a67ead48406d1ff83af3a13f747ea3f053",
+    "sourceAfter": "9d93c4763757e8a01f18f33bb53bd8a67ead48406d1ff83af3a13f747ea3f053"
+  }
+}

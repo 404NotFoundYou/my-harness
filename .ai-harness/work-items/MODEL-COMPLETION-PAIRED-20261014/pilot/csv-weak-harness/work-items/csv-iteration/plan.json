@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "csv-iteration",
+  "mode": "single",
+  "rationale": "保持parseCsv接口，以单次扫描状态机处理字段起始、裸字段、引号内和闭合引号状态，严格校验非法输入；新增规格边界及调用方兼容测试",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "完成csv固定迭代",
+      "module": "compact",
+      "status": "COMPLETED",
+      "attempt": 1,
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        "src/csv.mjs",
+        "test/extra.test.mjs"
+      ],
+      "verification": [
+        "{\"command\":\"node\",\"args\":[\"--test\",\"test/public.test.mjs\"]}"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            "--test",
+            "test/public.test.mjs"
+          ]
+        }
+      ],
+      "docsImpact": [
+        "N/A: 固定公开规格与文档不变"
+      ],
+      "reviewBatch": "R1",
+      "risk": "low",
+      "owner": "primary-ai",
+      "verificationStatus": "pass",
+      "reviewStatus": "pass",
+      "evidence": [
+        "1868f830-dfc5-483c-afd6-053af5287c3c",
+        "503c4e6e-c5b0-4009-98b7-79971ccf8150"
+      ],
+      "deferralApproval": null,
+      "verificationSource": {
+        "digest": "72815462df8176400e1146fc4e81d4b6268e91a0a16ac4e074bbadf04f3c4f1e",
+        "document": ".ai-harness/work-items/csv-iteration/snapshots/72815462df8176400e1146fc4e81d4b6268e91a0a16ac4e074bbadf04f3c4f1e.json"
+      },
+      "reviewSource": {
+        "digest": "72815462df8176400e1146fc4e81d4b6268e91a0a16ac4e074bbadf04f3c4f1e",
+        "document": ".ai-harness/work-items/csv-iteration/snapshots/72815462df8176400e1146fc4e81d4b6268e91a0a16ac4e074bbadf04f3c4f1e.json"
+      }
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "完成csv固定迭代",
+      "risk": "low",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": false
+    }
+  ],
+  "createdAt": "2026-10-14T02:11:03.428Z",
+  "updatedAt": "2026-10-14T02:12:29.102Z"
+}
