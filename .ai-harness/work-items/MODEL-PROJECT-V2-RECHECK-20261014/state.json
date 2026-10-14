@@ -1,0 +1,196 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 1,
+  "id": "MODEL-PROJECT-V2-RECHECK-20261014",
+  "type": "ITERATION",
+  "title": "阶段证据引导修复后project-v2六会话真实复测",
+  "status": "DONE",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/iteration.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户2026-10-14根据明确六会话及其费用的建议要求执行，授权本轮最多六个新增独立会话；不含追加轮次、失败重试、模型/提供方/凭据变更、发布或推送。"
+  },
+  "input": {
+    "references": [
+      "用户在明确fd89635需先通过全部CI、project-v2三题同模型两组单轮六个新增会话及其费用、180秒和80工具预算后要求根据建议执行。"
+    ],
+    "acceptance": [
+      "远端两条CI及六个源码矩阵均success才启动；六个真实会话记录齐全且失败/超时不遗漏或补跑；模型、CLI、源码、题目和预算冻结一致，审计valid与报告成功；功能和BUGFIX阶段、计划命令引用、完整交付分开报告，与上轮逐项比较；产品与历史实验不变，holdout不用于调参。"
+    ],
+    "nonGoals": [],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": null,
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "用户在明确fd89635需先通过全部CI、project-v2三题同模型两组单轮六个新增会话及其费用、180秒和80工具预算后要求根据建议执行。"
+    ],
+    "completedAt": "2026-10-14T06:27:28.701Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "fd89635495d70a837c310784d458793f3b9234e3",
+      "dirty": false,
+      "changedFiles": [],
+      "fingerprints": {},
+      "source": {
+        "digest": "b7bcb820cf7a84c0a914c48304629b610b3d3059d5dfebba48c2dd0da5e07719",
+        "document": ".ai-harness/work-items/MODEL-PROJECT-V2-RECHECK-20261014/snapshots/b7bcb820cf7a84c0a914c48304629b610b3d3059d5dfebba48c2dd0da5e07719.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": ".ai-harness/work-items/MODEL-PROJECT-V2-RECHECK-20261014/solution.md",
+    "evidence": [
+      "单AI协调一个有界实验，复用现有runner/audit/report。先确认fd89635全部CI通过，冻结project-v2/paired/repetitions1，两组gpt-6-astra、180000ms/80工具/medium及CLI和源码；明确授权的模型入口由宿主直接执行，不伪装成测试绕过策略。验证脚本仅读取产物，审计原始协议/候选/阶段和命令引用，保存与旧三对结果的对照以及实际finish反馈。验收不要求Harness胜出，旧未完成保持真实状态。"
+    ],
+    "completedAt": "2026-10-14T06:27:28.818Z"
+  },
+  "database": {
+    "impact": "none",
+    "status": "not-applicable",
+    "document": null,
+    "evidence": [
+      "仅隔离合成BUG沙箱和本工作项实验产物，无数据库、业务数据或公共产品接口变化。"
+    ],
+    "completedAt": "2026-10-14T06:27:28.823Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/MODEL-PROJECT-V2-RECHECK-20261014/plan.json",
+    "approved": true,
+    "approvalRef": "用户2026-10-14根据明确六会话及其费用的建议要求执行，授权本轮最多六个新增独立会话；不含追加轮次、失败重试、模型/提供方/凭据变更、发布或推送。"
+  },
+  "verification": {
+    "status": "pass",
+    "evidence": [
+      "0ad2c717-6915-415d-8fb6-9546f79a1a70"
+    ],
+    "stages": [],
+    "source": {
+      "digest": "b7bcb820cf7a84c0a914c48304629b610b3d3059d5dfebba48c2dd0da5e07719",
+      "document": ".ai-harness/work-items/MODEL-PROJECT-V2-RECHECK-20261014/snapshots/b7bcb820cf7a84c0a914c48304629b610b3d3059d5dfebba48c2dd0da5e07719.json"
+    }
+  },
+  "review": {
+    "status": "pass",
+    "evidence": [
+      "c7a07df6-0fca-4a56-b8fe-3254752ce629"
+    ],
+    "independent": false,
+    "source": {
+      "digest": "b7bcb820cf7a84c0a914c48304629b610b3d3059d5dfebba48c2dd0da5e07719",
+      "document": ".ai-harness/work-items/MODEL-PROJECT-V2-RECHECK-20261014/snapshots/b7bcb820cf7a84c0a914c48304629b610b3d3059d5dfebba48c2dd0da5e07719.json"
+    }
+  },
+  "acceptance": {
+    "status": "pass",
+    "evidence": [
+      "6ea8a63a-19a0-4706-8072-d03af609c82a"
+    ],
+    "source": {
+      "digest": "b7bcb820cf7a84c0a914c48304629b610b3d3059d5dfebba48c2dd0da5e07719",
+      "document": ".ai-harness/work-items/MODEL-PROJECT-V2-RECHECK-20261014/snapshots/b7bcb820cf7a84c0a914c48304629b610b3d3059d5dfebba48c2dd0da5e07719.json"
+    }
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "pass",
+    "evidence": [
+      "7da92866-7f1c-4678-8195-1c6049ac6588"
+    ]
+  },
+  "blocked": null,
+  "delivery": {
+    "source": {
+      "digest": "b7bcb820cf7a84c0a914c48304629b610b3d3059d5dfebba48c2dd0da5e07719",
+      "document": ".ai-harness/work-items/MODEL-PROJECT-V2-RECHECK-20261014/snapshots/b7bcb820cf7a84c0a914c48304629b610b3d3059d5dfebba48c2dd0da5e07719.json"
+    },
+    "baseline": {
+      "digest": "b7bcb820cf7a84c0a914c48304629b610b3d3059d5dfebba48c2dd0da5e07719",
+      "document": ".ai-harness/work-items/MODEL-PROJECT-V2-RECHECK-20261014/snapshots/b7bcb820cf7a84c0a914c48304629b610b3d3059d5dfebba48c2dd0da5e07719.json"
+    },
+    "baselineAt": "2026-10-14T06:27:28.701Z",
+    "ownedChanges": [],
+    "planDigest": "225446ad01bb1bdcc959cd3d8bd0c4e5d84e5a1386bb95f47bc14b47d66bdf94",
+    "at": "2026-10-14T07:02:23.227Z",
+    "head": "fd89635495d70a837c310784d458793f3b9234e3"
+  },
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-10-14T06:27:28.546Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-10-14T06:27:28.559Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-10-14T06:27:28.812Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-10-14T06:27:28.854Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-10-14T06:27:28.859Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "VERIFYING",
+      "at": "2026-10-14T07:02:20.829Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "VERIFYING",
+      "to": "CODE_REVIEW",
+      "at": "2026-10-14T07:02:21.165Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "CODE_REVIEW",
+      "to": "READY_FOR_ACCEPTANCE",
+      "at": "2026-10-14T07:02:21.488Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "READY_FOR_ACCEPTANCE",
+      "to": "DONE",
+      "at": "2026-10-14T07:02:23.362Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-10-14T06:27:28.546Z",
+  "updatedAt": "2026-10-14T07:02:23.362Z"
+}

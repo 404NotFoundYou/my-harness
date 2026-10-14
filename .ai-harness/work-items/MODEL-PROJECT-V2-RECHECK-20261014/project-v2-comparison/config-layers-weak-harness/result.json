@@ -1,0 +1,242 @@
+{
+  "schemaVersion": 2,
+  "trial": 1,
+  "mode": "real",
+  "client": "codex",
+  "taskId": "config-layers",
+  "split": "development",
+  "group": "weak-harness",
+  "model": "gpt-6-astra",
+  "taskDigest": "b59d9d1cdfbb96a51a94b13a1ae010eb2c2871fabf3dbc3ce7c97154132d7219",
+  "judgeDigest": "9ad2a2e4e70363a6ac2bda94da9fe1a3653e051c9079cf11665cd3db47d3b459",
+  "candidateDigest": "31b879db221123274137889c2c5a9edae3c1808711f85742573cccea912594a6",
+  "budget": {
+    "timeoutMs": 180000,
+    "maxToolCalls": 80,
+    "reasoning": "medium"
+  },
+  "run": {
+    "mode": "real",
+    "client": "codex",
+    "startedAt": "2026-10-14T06:38:37.470Z",
+    "durationMs": 180366,
+    "timing": {
+      "basis": "local-event-receive-time",
+      "lifecycle": {
+        "version": 1,
+        "firstProtocolEventMs": 1114,
+        "terminalEventMs": null,
+        "processExitMs": 180366,
+        "processCloseMs": 180366
+      },
+      "toolActiveMs": 2848,
+      "otherElapsedMs": 177518,
+      "spans": [
+        {
+          "id": "item_3",
+          "startMs": 24887,
+          "endMs": 25152,
+          "category": "runtime-other",
+          "complete": true
+        },
+        {
+          "id": "item_4",
+          "startMs": 49836,
+          "endMs": 50027,
+          "category": "planning",
+          "complete": true
+        },
+        {
+          "id": "item_5",
+          "startMs": 74947,
+          "endMs": 75617,
+          "category": "planning",
+          "complete": true
+        },
+        {
+          "id": "item_6",
+          "startMs": 93522,
+          "endMs": 94229,
+          "category": "verification",
+          "complete": true
+        },
+        {
+          "id": "item_7",
+          "startMs": 112867,
+          "endMs": 113090,
+          "category": "unknown",
+          "complete": true
+        },
+        {
+          "id": "item_9",
+          "startMs": 155542,
+          "endMs": 156334,
+          "category": "verification",
+          "complete": true
+        }
+      ],
+      "categories": {
+        "runtime-other": {
+          "calls": 1,
+          "activeMs": 265
+        },
+        "planning": {
+          "calls": 2,
+          "activeMs": 861
+        },
+        "verification": {
+          "calls": 2,
+          "activeMs": 1499
+        },
+        "unknown": {
+          "calls": 1,
+          "activeMs": 223
+        }
+      },
+      "unmatchedCompletions": [],
+      "limitation": "工具区间按接收事件估计并合并重叠；其余耗时包含模型、网络、客户端启动和收尾，不等于纯推理耗时。"
+    },
+    "exitCode": 1,
+    "timedOut": true,
+    "toolLimit": false,
+    "toolCalls": 6,
+    "turnCompleted": false,
+    "protocolSuccess": false,
+    "usage": null,
+    "errors": [],
+    "warnings": [],
+    "unparsedLines": 0,
+    "error": null,
+    "final": null,
+    "completed": false
+  },
+  "scope": {
+    "ok": true,
+    "changes": [
+      {
+        "path": ".ai-harness/work-items/config-layers-fix/events.jsonl",
+        "before": null,
+        "after": "8a2553689b8a857ee6ff6fd2aae8d824ff486156320d9284d51275dc2f5e308c"
+      },
+      {
+        "path": ".ai-harness/work-items/config-layers-fix/evidence.jsonl",
+        "before": null,
+        "after": "96d80d64a6c06a4fe027f46e2b32b6a57cef30a3a09ba561adb174753413a9ee"
+      },
+      {
+        "path": ".ai-harness/work-items/config-layers-fix/plan.json",
+        "before": null,
+        "after": "f8e965c43fb6ca8b7c77f0c452a9182ceb9ec97b4145cc044a52de17efb95d05"
+      },
+      {
+        "path": ".ai-harness/work-items/config-layers-fix/snapshots/64e1223f37bf0f0162576a576e99b25c1a1130b3d617391821e9b449638202ce.json",
+        "before": null,
+        "after": "7f6c410aca15f15d544e56fed48a1a5c10a8928a1da4183d0423af668718921f"
+      },
+      {
+        "path": ".ai-harness/work-items/config-layers-fix/snapshots/75c83ed039fb4b86624642eb40f9fbfcc92e92cb19c734a1d3e8438482b2a4ea.json",
+        "before": null,
+        "after": "020a562ff9f0884e2372c61d4c51f5f9691bf35e58c491e325cb750bb26afb93"
+      },
+      {
+        "path": ".ai-harness/work-items/config-layers-fix/solution.md",
+        "before": null,
+        "after": "87cc01e38bd4f78f95792669a9fdf91453803b3cad247f58cc8169f1f30707a3"
+      },
+      {
+        "path": ".ai-harness/work-items/config-layers-fix/state.json",
+        "before": null,
+        "after": "4ceeb67ca2b69aac6939d0ca7b02c5000f2380049be3978f1084831e40935446"
+      },
+      {
+        "path": "test/extra.test.mjs",
+        "before": null,
+        "after": "f5661f708ec2c3f57ed58938058babfe52d25dd3aff97264589b53baa1b6a57b"
+      }
+    ],
+    "violations": []
+  },
+  "workflow": {
+    "ok": false,
+    "errors": [
+      "CI 不接受未完成工作项：config-layers-fix:IMPLEMENTING"
+    ],
+    "workItems": [
+      "config-layers-fix"
+    ]
+  },
+  "grade": {
+    "complete": true,
+    "ok": false,
+    "cases": [
+      {
+        "id": "priority-over-input",
+        "pass": false,
+        "error": "Case failed"
+      },
+      {
+        "id": "disabled-layer",
+        "pass": true
+      },
+      {
+        "id": "equal-priority-id-order",
+        "pass": false,
+        "error": "Case failed"
+      },
+      {
+        "id": "sorted-keys",
+        "pass": true
+      },
+      {
+        "id": "null-is-value",
+        "pass": true
+      },
+      {
+        "id": "empty-and-disabled",
+        "pass": false,
+        "error": "Case failed"
+      },
+      {
+        "id": "input-immutable",
+        "pass": false,
+        "error": "Case failed"
+      },
+      {
+        "id": "prototype-key",
+        "pass": false,
+        "error": "Case failed"
+      },
+      {
+        "id": "source-not-aliased",
+        "pass": true
+      },
+      {
+        "id": "ordered-layers-contract",
+        "pass": false,
+        "error": "Case failed"
+      },
+      {
+        "id": "resolve-config-contract",
+        "pass": false,
+        "error": "Case failed"
+      },
+      {
+        "id": "caller-shape",
+        "pass": true
+      }
+    ],
+    "expectedCases": 12,
+    "exitCode": 1,
+    "timedOut": false,
+    "stderr": "",
+    "error": null
+  },
+  "success": false,
+  "falseCompletion": false,
+  "falseFunctionalCompletion": false,
+  "execution": {
+    "protocolSha256": "19d6ea6aac75fb3f78acef62a24997847d5045d05bfcb6307f5e92d0e43a4521",
+    "sourceBefore": "b7bcb820cf7a84c0a914c48304629b610b3d3059d5dfebba48c2dd0da5e07719",
+    "sourceAfter": "b7bcb820cf7a84c0a914c48304629b610b3d3059d5dfebba48c2dd0da5e07719"
+  }
+}

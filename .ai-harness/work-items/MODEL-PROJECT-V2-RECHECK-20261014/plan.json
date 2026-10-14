@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "MODEL-PROJECT-V2-RECHECK-20261014",
+  "mode": "single",
+  "rationale": "单AI协调一个有界实验，复用现有runner/audit/report。先确认fd89635全部CI通过，冻结project-v2/paired/repetitions1，两组gpt-6-astra、180000ms/80工具/medium及CLI和源码；明确授权的模型入口由宿主直接执行，不伪装成测试绕过策略。验证脚本仅读取产物，审计原始协议/候选/阶段和命令引用，保存与旧三对结果的对照以及实际finish反馈。验收不要求Harness胜出，旧未完成保持真实状态。",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "阶段证据引导修复后project-v2六会话真实复测",
+      "module": "compact",
+      "status": "COMPLETED",
+      "attempt": 1,
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        ".ai-harness/work-items/MODEL-PROJECT-V2-RECHECK-20261014/**"
+      ],
+      "verification": [
+        "node --test .ai-harness/work-items/MODEL-PROJECT-V2-RECHECK-20261014/verify.test.mjs",
+        "node --check .ai-harness/work-items/MODEL-PROJECT-V2-RECHECK-20261014/verify.test.mjs"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            "--test",
+            ".ai-harness/work-items/MODEL-PROJECT-V2-RECHECK-20261014/verify.test.mjs"
+          ]
+        },
+        {
+          "id": "V2",
+          "command": "node",
+          "args": [
+            "--check",
+            ".ai-harness/work-items/MODEL-PROJECT-V2-RECHECK-20261014/verify.test.mjs"
+          ]
+        }
+      ],
+      "docsImpact": [
+        ".ai-harness/work-items/MODEL-PROJECT-V2-RECHECK-20261014/summary.md"
+      ],
+      "reviewBatch": "R1",
+      "risk": "medium",
+      "owner": "primary-ai",
+      "verificationStatus": "pass",
+      "reviewStatus": "pass",
+      "evidence": [
+        "2edf55b8-9a96-443f-8d36-bc50b37dba2b",
+        "4c389b39-8c23-4ec8-8638-29991ee3260e"
+      ],
+      "deferralApproval": null,
+      "verificationSource": {
+        "digest": "b7bcb820cf7a84c0a914c48304629b610b3d3059d5dfebba48c2dd0da5e07719",
+        "document": ".ai-harness/work-items/MODEL-PROJECT-V2-RECHECK-20261014/snapshots/b7bcb820cf7a84c0a914c48304629b610b3d3059d5dfebba48c2dd0da5e07719.json"
+      },
+      "reviewSource": {
+        "digest": "b7bcb820cf7a84c0a914c48304629b610b3d3059d5dfebba48c2dd0da5e07719",
+        "document": ".ai-harness/work-items/MODEL-PROJECT-V2-RECHECK-20261014/snapshots/b7bcb820cf7a84c0a914c48304629b610b3d3059d5dfebba48c2dd0da5e07719.json"
+      }
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "阶段证据引导修复后project-v2六会话真实复测",
+      "risk": "medium",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": false
+    }
+  ],
+  "createdAt": "2026-10-14T06:27:28.829Z",
+  "updatedAt": "2026-10-14T07:02:20.822Z"
+}

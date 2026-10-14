@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "files": {
+    "src/pagination.mjs": {
+      "status": "present",
+      "content": "import { selectVisible } from \"./repository.mjs\";\nimport { MAX_PAGE_SIZE } from \"./limits.mjs\";\nexport function listPage(records, {after=null,limit=2}={}) {\n  if (!Number.isInteger(limit) || limit < 1 || limit > MAX_PAGE_SIZE) {\n    throw new RangeError(\"limit must be an integer between 1 and MAX_PAGE_SIZE\");\n  }\n  const visible = selectVisible(records);\n  let start = 0;\n  if (after !== null) {\n    if (typeof after !== \"string\") throw new RangeError(\"after must identify a visible record\");\n    const index = visible.findIndex(row => row.id === after);\n    if (index === -1) throw new RangeError(\"after must identify a visible record\");\n    start = index + 1;\n  }\n  const items = visible.slice(start, start + limit);\n  return {items,nextCursor:start + items.length < visible.length ? items.at(-1).id : null};\n}\r\n",
+      "sha256": "f4b8459b741c88034bf049ca3c4a0ce20538a0ef8e731158b41a768106cd1cae"
+    },
+    "src/repository.mjs": {
+      "status": "present",
+      "content": "export function selectVisible(records) {\n  return records.filter(row => !row.archived).sort((a,b) => a.updatedAt - b.updatedAt || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));\n}\r\n",
+      "sha256": "a4ee96224cf616fdf0a62ee22bed6213ddb7f610fa4a54271089c58bf8e77d9f"
+    }
+  }
+}

@@ -1,0 +1,199 @@
+{
+  "schemaVersion": 2,
+  "trial": 1,
+  "mode": "real",
+  "client": "codex",
+  "taskId": "window-intervals",
+  "split": "holdout",
+  "group": "weak-baseline",
+  "model": "gpt-6-astra",
+  "taskDigest": "d64581fcc701e15e5cfa02ee3ba940d366131e1005e9d9208cdd3841b5913055",
+  "judgeDigest": "f373beb6ff4131998170b4c7f6d1ed760cd730a5f0f2b159fb424f46ad4298d7",
+  "candidateDigest": "e8e6347571c9e559942572325a89412f75035d473caaccfba762abd34acc4803",
+  "budget": {
+    "timeoutMs": 180000,
+    "maxToolCalls": 80,
+    "reasoning": "medium"
+  },
+  "run": {
+    "mode": "real",
+    "client": "codex",
+    "startedAt": "2026-10-14T06:44:40.399Z",
+    "durationMs": 161574,
+    "timing": {
+      "basis": "local-event-receive-time",
+      "lifecycle": {
+        "version": 1,
+        "firstProtocolEventMs": 1123,
+        "terminalEventMs": 161309,
+        "processExitMs": 161574,
+        "processCloseMs": 161574
+      },
+      "toolActiveMs": 1753,
+      "otherElapsedMs": 159821,
+      "spans": [
+        {
+          "id": "item_3",
+          "startMs": 20205,
+          "endMs": 20537,
+          "category": "unknown",
+          "complete": true
+        },
+        {
+          "id": "item_4",
+          "startMs": 33332,
+          "endMs": 33654,
+          "category": "unknown",
+          "complete": true
+        },
+        {
+          "id": "item_6",
+          "startMs": 84812,
+          "endMs": 85078,
+          "category": "unknown",
+          "complete": true
+        },
+        {
+          "id": "item_7",
+          "startMs": 109200,
+          "endMs": 109683,
+          "category": "unknown",
+          "complete": true
+        },
+        {
+          "id": "item_9",
+          "startMs": 136912,
+          "endMs": 137262,
+          "category": "unknown",
+          "complete": true
+        }
+      ],
+      "categories": {
+        "unknown": {
+          "calls": 5,
+          "activeMs": 1753
+        }
+      },
+      "unmatchedCompletions": [],
+      "limitation": "工具区间按接收事件估计并合并重叠；其余耗时包含模型、网络、客户端启动和收尾，不等于纯推理耗时。"
+    },
+    "exitCode": 0,
+    "timedOut": false,
+    "toolLimit": false,
+    "toolCalls": 5,
+    "turnCompleted": true,
+    "protocolSuccess": true,
+    "usage": {
+      "input_tokens": 125982,
+      "cached_input_tokens": 102912,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 2922,
+      "reasoning_output_tokens": 29
+    },
+    "errors": [],
+    "warnings": [],
+    "unparsedLines": 0,
+    "error": null,
+    "final": {
+      "completed": true,
+      "summary": "已按先阅读、实际复现、修复、回归的顺序完成 BUGFIX。根因是 mergeIntervals 原地排序且未归并，clipWindow 仅过滤而未裁剪。现已复制记录后按 start/end 排序并归并重叠或相接区间，窗口先取非空交集再归并，保持 getCoverage 的 {spans,covered} 契约。仅修改 src/intervals.mjs、src/window.mjs，新增 test/extra.test.mjs；新增测试注释保留实际/期望、失败证据、根因与回归结果。未修改规格、调用方或原测试，未安装依赖、访问网络或提交 Git。Git 状态检查出现全局 ignore 文件读取权限警告，未修改相关配置。",
+      "tests": [
+        "修复前运行 node --test test/public.test.mjs：1 通过、1 失败。窗口 [1,5) 的预期覆盖长度为 4，实际为 8，且区间未裁剪归并。",
+        "修复前运行 node --test test/extra.test.mjs：0 通过、7 失败，确认归并缺失、输入被修改、冻结输入排序报错及窗口越界计数等问题。",
+        "修复后运行 node --test test/public.test.mjs test/extra.test.mjs，并在换行清理后再次运行：两次均为 9 通过、0 失败、0 跳过。覆盖相接、重叠、包含、重复、输入不可变、输出对象独立、半开边界、空输入、坐标上界及 1000 组独立覆盖核对。",
+        "git diff --check：首次发现写入换行问题；清理后再次检查通过。",
+        "git status --short：确认变更仅限两个授权源码文件和新增测试文件。"
+      ]
+    },
+    "completed": true
+  },
+  "scope": {
+    "ok": true,
+    "changes": [
+      {
+        "path": "src/intervals.mjs",
+        "before": "e808fe88b74c7da97c6eba1eeec6cb8f7ae93d3be23979059cab6bd6fc7711f3",
+        "after": "b930130e963d32ddbef1a434b38b01eb14457c455d466ecfd9b8f886748b5eda"
+      },
+      {
+        "path": "src/window.mjs",
+        "before": "6f1c4b66fb0f3c5bd9c337506eaca494873738f122b50bb707e283453b928719",
+        "after": "e566e8f8d8a39afff6d32819bdcfcbf3bd11475daac6c57adba0c7323f1e3991"
+      },
+      {
+        "path": "test/extra.test.mjs",
+        "before": null,
+        "after": "68f3c61ddcba624533aa3824f43282b2e1ccc016eb7269d16612957d05e6a8e0"
+      }
+    ],
+    "violations": []
+  },
+  "workflow": null,
+  "grade": {
+    "complete": true,
+    "ok": true,
+    "cases": [
+      {
+        "id": "overlap",
+        "pass": true
+      },
+      {
+        "id": "adjacent",
+        "pass": true
+      },
+      {
+        "id": "disjoint",
+        "pass": true
+      },
+      {
+        "id": "unsorted",
+        "pass": true
+      },
+      {
+        "id": "duplicate",
+        "pass": true
+      },
+      {
+        "id": "clip-left",
+        "pass": true
+      },
+      {
+        "id": "clip-right",
+        "pass": true
+      },
+      {
+        "id": "outside-window",
+        "pass": true
+      },
+      {
+        "id": "clip-then-merge",
+        "pass": true
+      },
+      {
+        "id": "immutable-input",
+        "pass": true
+      },
+      {
+        "id": "merge-contract",
+        "pass": true
+      },
+      {
+        "id": "window-contract",
+        "pass": true
+      }
+    ],
+    "expectedCases": 12,
+    "exitCode": 0,
+    "timedOut": false,
+    "stderr": "",
+    "error": null
+  },
+  "success": true,
+  "falseCompletion": false,
+  "falseFunctionalCompletion": false,
+  "execution": {
+    "protocolSha256": "19d6ea6aac75fb3f78acef62a24997847d5045d05bfcb6307f5e92d0e43a4521",
+    "sourceBefore": "b7bcb820cf7a84c0a914c48304629b610b3d3059d5dfebba48c2dd0da5e07719",
+    "sourceAfter": "b7bcb820cf7a84c0a914c48304629b610b3d3059d5dfebba48c2dd0da5e07719"
+  }
+}

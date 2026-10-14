@@ -1,0 +1,245 @@
+{
+  "schemaVersion": 2,
+  "trial": 1,
+  "mode": "real",
+  "client": "codex",
+  "taskId": "window-intervals",
+  "split": "holdout",
+  "group": "weak-harness",
+  "model": "gpt-6-astra",
+  "taskDigest": "d64581fcc701e15e5cfa02ee3ba940d366131e1005e9d9208cdd3841b5913055",
+  "judgeDigest": "f373beb6ff4131998170b4c7f6d1ed760cd730a5f0f2b159fb424f46ad4298d7",
+  "candidateDigest": "e7d18830bb3aa392b536127cbd3f078ce7341e95d568938d363910d2e3fc04f0",
+  "budget": {
+    "timeoutMs": 180000,
+    "maxToolCalls": 80,
+    "reasoning": "medium"
+  },
+  "run": {
+    "mode": "real",
+    "client": "codex",
+    "startedAt": "2026-10-14T06:47:23.458Z",
+    "durationMs": 180357,
+    "timing": {
+      "basis": "local-event-receive-time",
+      "lifecycle": {
+        "version": 1,
+        "firstProtocolEventMs": 1096,
+        "terminalEventMs": null,
+        "processExitMs": 180347,
+        "processCloseMs": 180357
+      },
+      "toolActiveMs": 5127,
+      "otherElapsedMs": 175230,
+      "spans": [
+        {
+          "id": "item_2",
+          "startMs": 22178,
+          "endMs": 22431,
+          "category": "runtime-other",
+          "complete": true
+        },
+        {
+          "id": "item_4",
+          "startMs": 67957,
+          "endMs": 68174,
+          "category": "planning",
+          "complete": true
+        },
+        {
+          "id": "item_5",
+          "startMs": 91289,
+          "endMs": 91914,
+          "category": "planning",
+          "complete": true
+        },
+        {
+          "id": "item_6",
+          "startMs": 112194,
+          "endMs": 112865,
+          "category": "verification",
+          "complete": true
+        },
+        {
+          "id": "item_7",
+          "startMs": 130450,
+          "endMs": 131008,
+          "category": "guidance",
+          "complete": true
+        },
+        {
+          "id": "item_9",
+          "startMs": 174270,
+          "endMs": 177073,
+          "category": "verification",
+          "complete": true
+        }
+      ],
+      "categories": {
+        "runtime-other": {
+          "calls": 1,
+          "activeMs": 253
+        },
+        "planning": {
+          "calls": 2,
+          "activeMs": 842
+        },
+        "verification": {
+          "calls": 2,
+          "activeMs": 3474
+        },
+        "guidance": {
+          "calls": 1,
+          "activeMs": 558
+        }
+      },
+      "unmatchedCompletions": [],
+      "limitation": "工具区间按接收事件估计并合并重叠；其余耗时包含模型、网络、客户端启动和收尾，不等于纯推理耗时。"
+    },
+    "exitCode": 1,
+    "timedOut": true,
+    "toolLimit": false,
+    "toolCalls": 6,
+    "turnCompleted": false,
+    "protocolSuccess": false,
+    "usage": null,
+    "errors": [],
+    "warnings": [],
+    "unparsedLines": 0,
+    "error": null,
+    "final": null,
+    "completed": false
+  },
+  "scope": {
+    "ok": true,
+    "changes": [
+      {
+        "path": "src/intervals.mjs",
+        "before": "e808fe88b74c7da97c6eba1eeec6cb8f7ae93d3be23979059cab6bd6fc7711f3",
+        "after": "ba9f8b6c4168c1ac8183c340f659a0064fd5001ea988115bfbd31c4d1c9bd4b7"
+      },
+      {
+        "path": "src/window.mjs",
+        "before": "6f1c4b66fb0f3c5bd9c337506eaca494873738f122b50bb707e283453b928719",
+        "after": "2d287df5cc5c2cbf88e6f7a984aa73c76468305c1d6dc78df080e297f2fbde1f"
+      },
+      {
+        "path": ".ai-harness/work-items/window-fix/events.jsonl",
+        "before": null,
+        "after": "b16ee136c5666c1bb91df3b850e73f02c8e16af155967061eece6a8508c63899"
+      },
+      {
+        "path": ".ai-harness/work-items/window-fix/evidence.jsonl",
+        "before": null,
+        "after": "6cbe904550a74275a9bec68e19239f5e61eae4f8f9bd38c513ee4db00c963488"
+      },
+      {
+        "path": ".ai-harness/work-items/window-fix/plan.json",
+        "before": null,
+        "after": "f528a8d94128957559020bb13714e4d07bb64be87ec1cc08e5ce8967096f982a"
+      },
+      {
+        "path": ".ai-harness/work-items/window-fix/snapshots/6facc000ec7418760639f825902e964169ef8667199cf8900b64dd7e64396339.json",
+        "before": null,
+        "after": "6269460f5e8042b4b6f7c704cebd02a4011fbc13ef8e39bf76d66873bbe75fd9"
+      },
+      {
+        "path": ".ai-harness/work-items/window-fix/snapshots/e2b67ef7c028fa418429ad5ea7b2a2df2f5d240eeadddbdf421cb5337d19f73d.json",
+        "before": null,
+        "after": "aca44db5f53a01b22e14fae83998d2e41c44eb55d57e199c764998c64a059c5c"
+      },
+      {
+        "path": ".ai-harness/work-items/window-fix/solution.md",
+        "before": null,
+        "after": "1e7b9cdcd4a44876049cfdcbb652ce3962482f960d8fb7005705a9cebce1890c"
+      },
+      {
+        "path": ".ai-harness/work-items/window-fix/state.json",
+        "before": null,
+        "after": "4890e6047f006bbbfcde6baca8268c1ee853d3b08d4f3f08ad23e5eb9387c53d"
+      },
+      {
+        "path": "test/extra.test.mjs",
+        "before": null,
+        "after": "01b39ef15a3108ac72816cc7b3f452db460e19b4d70095aa1b35f249b0dcaf0a"
+      }
+    ],
+    "violations": []
+  },
+  "workflow": {
+    "ok": false,
+    "errors": [
+      "CI 不接受未完成工作项：window-fix:IMPLEMENTING"
+    ],
+    "workItems": [
+      "window-fix"
+    ]
+  },
+  "grade": {
+    "complete": true,
+    "ok": true,
+    "cases": [
+      {
+        "id": "overlap",
+        "pass": true
+      },
+      {
+        "id": "adjacent",
+        "pass": true
+      },
+      {
+        "id": "disjoint",
+        "pass": true
+      },
+      {
+        "id": "unsorted",
+        "pass": true
+      },
+      {
+        "id": "duplicate",
+        "pass": true
+      },
+      {
+        "id": "clip-left",
+        "pass": true
+      },
+      {
+        "id": "clip-right",
+        "pass": true
+      },
+      {
+        "id": "outside-window",
+        "pass": true
+      },
+      {
+        "id": "clip-then-merge",
+        "pass": true
+      },
+      {
+        "id": "immutable-input",
+        "pass": true
+      },
+      {
+        "id": "merge-contract",
+        "pass": true
+      },
+      {
+        "id": "window-contract",
+        "pass": true
+      }
+    ],
+    "expectedCases": 12,
+    "exitCode": 0,
+    "timedOut": false,
+    "stderr": "",
+    "error": null
+  },
+  "success": false,
+  "falseCompletion": false,
+  "falseFunctionalCompletion": false,
+  "execution": {
+    "protocolSha256": "19d6ea6aac75fb3f78acef62a24997847d5045d05bfcb6307f5e92d0e43a4521",
+    "sourceBefore": "b7bcb820cf7a84c0a914c48304629b610b3d3059d5dfebba48c2dd0da5e07719",
+    "sourceAfter": "b7bcb820cf7a84c0a914c48304629b610b3d3059d5dfebba48c2dd0da5e07719"
+  }
+}

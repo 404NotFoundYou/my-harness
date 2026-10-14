@@ -1,0 +1,32 @@
+{
+  "Executable": "D:\\Program Files\\nodejs\\node.exe",
+  "Arguments": [
+    "benchmarks/run.mjs",
+    "--cli",
+    "D:/Program Files/nodejs/node_global/node_modules/@openai/codex/bin/codex.js",
+    "--weak",
+    "gpt-6-astra",
+    "--client",
+    "codex",
+    "--suite",
+    "project-v2",
+    "--comparison",
+    "paired",
+    "--repetitions",
+    "1",
+    "--timeout-ms",
+    "180000",
+    "--max-tools",
+    "80",
+    "--out",
+    ".ai-harness/work-items/MODEL-PROJECT-V2-RECHECK-20261014/project-v2-comparison"
+  ],
+  "Authorization": "用户2026-10-14在明确六会话及其费用的建议后要求根据建议执行",
+  "CIPreflight": "2026-10-14T06:31:37.4475803Z",
+  "StartedAt": "2026-10-14T06:32:50.5342202Z",
+  "CompletedAt": "2026-10-14T06:50:24.8998414Z",
+  "ExitCode": 0,
+  "MaximumModelSessions": 6,
+  "FrameworkAutomaticRetries": 0,
+  "Entry": "host-direct-authorized-model-experiment"
+}

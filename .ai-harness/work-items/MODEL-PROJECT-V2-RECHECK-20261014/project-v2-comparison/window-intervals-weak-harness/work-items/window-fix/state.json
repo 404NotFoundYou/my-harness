@@ -1,0 +1,143 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 1,
+  "id": "window-fix",
+  "type": "BUGFIX",
+  "title": "半开区间归并与窗口裁剪修复",
+  "status": "IMPLEMENTING",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/bugfix.md",
+    ".ai-harness/policies/verification.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户授权TASK.md范围内必要可逆修复"
+  },
+  "input": {
+    "references": [
+      "TASK.md"
+    ],
+    "acceptance": [
+      "归并重叠与相接区间，裁剪窗口，输入不变，覆盖长度正确，公共及新增测试通过"
+    ],
+    "nonGoals": [],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": {
+    "actual": "只排序且修改输入；窗口仅过滤未裁剪，覆盖长度重复或越界",
+    "expected": "返回独立对象的半开区间并集与窗口交集，正确汇总覆盖长度",
+    "reproduction": "node --test test/public.test.mjs"
+  },
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "TASK.md"
+    ],
+    "completedAt": "2026-10-14T06:48:55.198Z",
+    "repository": {
+      "isGit": true,
+      "branch": "master",
+      "commit": "90d2728f57a211afa1bd7840e40578bf89854ce5",
+      "dirty": false,
+      "changedFiles": [],
+      "fingerprints": {},
+      "source": {
+        "digest": "e2b67ef7c028fa418429ad5ea7b2a2df2f5d240eeadddbdf421cb5337d19f73d",
+        "document": ".ai-harness/work-items/window-fix/snapshots/e2b67ef7c028fa418429ad5ea7b2a2df2f5d240eeadddbdf421cb5337d19f73d.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": ".ai-harness/work-items/window-fix/solution.md",
+    "evidence": [
+      "复制记录排序后归并；先计算非空窗口交集再复用归并；补充边界与不可变测试"
+    ],
+    "completedAt": "2026-10-14T06:48:55.307Z"
+  },
+  "database": {
+    "impact": "none",
+    "status": "not-applicable",
+    "document": null,
+    "evidence": [
+      "仅内存纯函数，无数据库影响"
+    ],
+    "completedAt": "2026-10-14T06:48:55.310Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/window-fix/plan.json",
+    "approved": true,
+    "approvalRef": "用户授权TASK.md范围内必要可逆修复"
+  },
+  "verification": {
+    "status": "pending",
+    "evidence": [],
+    "stages": []
+  },
+  "review": {
+    "status": "pending",
+    "evidence": [],
+    "independent": false
+  },
+  "acceptance": {
+    "status": "pending",
+    "evidence": []
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "pending",
+    "evidence": []
+  },
+  "blocked": null,
+  "delivery": null,
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-10-14T06:48:55.041Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-10-14T06:48:55.054Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-10-14T06:48:55.302Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-10-14T06:48:55.334Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-10-14T06:48:55.338Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-10-14T06:48:55.041Z",
+  "updatedAt": "2026-10-14T06:48:55.343Z"
+}

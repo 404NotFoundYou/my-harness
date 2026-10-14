@@ -1,0 +1,190 @@
+{
+  "schemaVersion": 2,
+  "trial": 1,
+  "mode": "real",
+  "client": "codex",
+  "taskId": "config-layers",
+  "split": "development",
+  "group": "weak-baseline",
+  "model": "gpt-6-astra",
+  "taskDigest": "b59d9d1cdfbb96a51a94b13a1ae010eb2c2871fabf3dbc3ce7c97154132d7219",
+  "judgeDigest": "9ad2a2e4e70363a6ac2bda94da9fe1a3653e051c9079cf11665cd3db47d3b459",
+  "candidateDigest": "eaef17f67425f18d515bdadac29d88f73d75ca65a8258a171a75c1df5df7d72d",
+  "budget": {
+    "timeoutMs": 180000,
+    "maxToolCalls": 80,
+    "reasoning": "medium"
+  },
+  "run": {
+    "mode": "real",
+    "client": "codex",
+    "startedAt": "2026-10-14T06:41:39.132Z",
+    "durationMs": 180295,
+    "timing": {
+      "basis": "local-event-receive-time",
+      "lifecycle": {
+        "version": 1,
+        "firstProtocolEventMs": 1102,
+        "terminalEventMs": null,
+        "processExitMs": 180295,
+        "processCloseMs": 180295
+      },
+      "toolActiveMs": 1688,
+      "otherElapsedMs": 178607,
+      "spans": [
+        {
+          "id": "item_2",
+          "startMs": 49177,
+          "endMs": 49350,
+          "category": "unknown",
+          "complete": true
+        },
+        {
+          "id": "item_4",
+          "startMs": 62427,
+          "endMs": 62741,
+          "category": "unknown",
+          "complete": true
+        },
+        {
+          "id": "item_6",
+          "startMs": 118941,
+          "endMs": 119216,
+          "category": "unknown",
+          "complete": true
+        },
+        {
+          "id": "item_7",
+          "startMs": 129070,
+          "endMs": 129380,
+          "category": "unknown",
+          "complete": true
+        },
+        {
+          "id": "item_8",
+          "startMs": 140271,
+          "endMs": 140568,
+          "category": "unknown",
+          "complete": true
+        },
+        {
+          "id": "item_10",
+          "startMs": 162350,
+          "endMs": 162669,
+          "category": "unknown",
+          "complete": true
+        }
+      ],
+      "categories": {
+        "unknown": {
+          "calls": 6,
+          "activeMs": 1688
+        }
+      },
+      "unmatchedCompletions": [],
+      "limitation": "工具区间按接收事件估计并合并重叠；其余耗时包含模型、网络、客户端启动和收尾，不等于纯推理耗时。"
+    },
+    "exitCode": 1,
+    "timedOut": true,
+    "toolLimit": false,
+    "toolCalls": 6,
+    "turnCompleted": false,
+    "protocolSuccess": false,
+    "usage": null,
+    "errors": [],
+    "warnings": [],
+    "unparsedLines": 0,
+    "error": null,
+    "final": null,
+    "completed": false
+  },
+  "scope": {
+    "ok": true,
+    "changes": [
+      {
+        "path": "src/config.mjs",
+        "before": "7f8356d764bcbe26315b1321ca331afd87bd49474e66208a50e621f19e093ffd",
+        "after": "3d34040fc3fb82c2ab2b32e9141a25f12f2a3d73ab2c43991c380a2d8e6c8c0f"
+      },
+      {
+        "path": "src/layers.mjs",
+        "before": "a0838965a9783006d5d686609e50e4ddea46e4bc216a2c76df6e2280983ef9af",
+        "after": "ba6bd007cae19e846ca8cff4642a81139e0ad71b24433a270dffd1c0eb81d7c8"
+      },
+      {
+        "path": "test/extra.test.mjs",
+        "before": null,
+        "after": "d43340c9fe11486d44a40c00e416f5404a67d1a3d2c1a66f8d7759e3f60bee75"
+      }
+    ],
+    "violations": []
+  },
+  "workflow": null,
+  "grade": {
+    "complete": true,
+    "ok": true,
+    "cases": [
+      {
+        "id": "priority-over-input",
+        "pass": true
+      },
+      {
+        "id": "disabled-layer",
+        "pass": true
+      },
+      {
+        "id": "equal-priority-id-order",
+        "pass": true
+      },
+      {
+        "id": "sorted-keys",
+        "pass": true
+      },
+      {
+        "id": "null-is-value",
+        "pass": true
+      },
+      {
+        "id": "empty-and-disabled",
+        "pass": true
+      },
+      {
+        "id": "input-immutable",
+        "pass": true
+      },
+      {
+        "id": "prototype-key",
+        "pass": true
+      },
+      {
+        "id": "source-not-aliased",
+        "pass": true
+      },
+      {
+        "id": "ordered-layers-contract",
+        "pass": true
+      },
+      {
+        "id": "resolve-config-contract",
+        "pass": true
+      },
+      {
+        "id": "caller-shape",
+        "pass": true
+      }
+    ],
+    "expectedCases": 12,
+    "exitCode": 0,
+    "timedOut": false,
+    "stderr": "",
+    "error": null
+  },
+  "success": false,
+  "falseCompletion": false,
+  "falseFunctionalCompletion": false,
+  "execution": {
+    "protocolSha256": "19d6ea6aac75fb3f78acef62a24997847d5045d05bfcb6307f5e92d0e43a4521",
+    "sourceBefore": "b7bcb820cf7a84c0a914c48304629b610b3d3059d5dfebba48c2dd0da5e07719",
+    "sourceAfter": "b7bcb820cf7a84c0a914c48304629b610b3d3059d5dfebba48c2dd0da5e07719"
+  }
+}

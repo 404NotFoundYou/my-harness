@@ -1,0 +1,23 @@
+{
+  "type": "object",
+  "properties": {
+    "completed": {
+      "type": "boolean"
+    },
+    "summary": {
+      "type": "string"
+    },
+    "tests": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "completed",
+    "summary",
+    "tests"
+  ],
+  "additionalProperties": false
+}

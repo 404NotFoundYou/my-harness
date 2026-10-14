@@ -1,0 +1,11 @@
+{
+  "completed": true,
+  "summary": "已按先阅读、实际复现、修复、回归的顺序完成 BUGFIX。根因是 mergeIntervals 原地排序且未归并，clipWindow 仅过滤而未裁剪。现已复制记录后按 start/end 排序并归并重叠或相接区间，窗口先取非空交集再归并，保持 getCoverage 的 {spans,covered} 契约。仅修改 src/intervals.mjs、src/window.mjs，新增 test/extra.test.mjs；新增测试注释保留实际/期望、失败证据、根因与回归结果。未修改规格、调用方或原测试，未安装依赖、访问网络或提交 Git。Git 状态检查出现全局 ignore 文件读取权限警告，未修改相关配置。",
+  "tests": [
+    "修复前运行 node --test test/public.test.mjs：1 通过、1 失败。窗口 [1,5) 的预期覆盖长度为 4，实际为 8，且区间未裁剪归并。",
+    "修复前运行 node --test test/extra.test.mjs：0 通过、7 失败，确认归并缺失、输入被修改、冻结输入排序报错及窗口越界计数等问题。",
+    "修复后运行 node --test test/public.test.mjs test/extra.test.mjs，并在换行清理后再次运行：两次均为 9 通过、0 失败、0 跳过。覆盖相接、重叠、包含、重复、输入不可变、输出对象独立、半开边界、空输入、坐标上界及 1000 组独立覆盖核对。",
+    "git diff --check：首次发现写入换行问题；清理后再次检查通过。",
+    "git status --short：确认变更仅限两个授权源码文件和新增测试文件。"
+  ]
+}

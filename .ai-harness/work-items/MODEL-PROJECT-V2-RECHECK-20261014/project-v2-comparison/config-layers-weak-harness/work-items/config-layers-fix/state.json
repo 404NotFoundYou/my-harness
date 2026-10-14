@@ -1,0 +1,143 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 1,
+  "id": "config-layers-fix",
+  "type": "BUGFIX",
+  "title": "修复配置层叠与安全键合并",
+  "status": "IMPLEMENTING",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/bugfix.md",
+    ".ai-harness/policies/verification.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户明确授权TASK.md BUGFIX"
+  },
+  "input": {
+    "references": [
+      "TASK.md"
+    ],
+    "acceptance": [
+      "公共及补充测试通过，排序过滤无副作用，特殊键保留且调用方契约不变"
+    ],
+    "nonGoals": [],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": {
+    "actual": "禁用层参与合并，输入顺序决定覆盖，sort原地修改数组",
+    "expected": "仅启用层按priority和id排序覆盖，不修改输入，安全保留所有字符串键",
+    "reproduction": "node --test test/public.test.mjs"
+  },
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "TASK.md"
+    ],
+    "completedAt": "2026-10-14T06:39:52.904Z",
+    "repository": {
+      "isGit": true,
+      "branch": "master",
+      "commit": "07b72b2d024e59d189d93e0be087b8827161c71d",
+      "dirty": false,
+      "changedFiles": [],
+      "fingerprints": {},
+      "source": {
+        "digest": "75c83ed039fb4b86624642eb40f9fbfcc92e92cb19c734a1d3e8438482b2a4ea",
+        "document": ".ai-harness/work-items/config-layers-fix/snapshots/75c83ed039fb4b86624642eb40f9fbfcc92e92cb19c734a1d3e8438482b2a4ea.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": ".ai-harness/work-items/config-layers-fix/solution.md",
+    "evidence": [
+      "过滤后复制排序，按顺序用自有数据属性合并，补充边界回归"
+    ],
+    "completedAt": "2026-10-14T06:39:53.015Z"
+  },
+  "database": {
+    "impact": "none",
+    "status": "not-applicable",
+    "document": null,
+    "evidence": [
+      "仅内存对象与数组处理，无数据库"
+    ],
+    "completedAt": "2026-10-14T06:39:53.020Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/config-layers-fix/plan.json",
+    "approved": true,
+    "approvalRef": "用户明确授权TASK.md BUGFIX"
+  },
+  "verification": {
+    "status": "pending",
+    "evidence": [],
+    "stages": []
+  },
+  "review": {
+    "status": "pending",
+    "evidence": [],
+    "independent": false
+  },
+  "acceptance": {
+    "status": "pending",
+    "evidence": []
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "pending",
+    "evidence": []
+  },
+  "blocked": null,
+  "delivery": null,
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-10-14T06:39:52.747Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-10-14T06:39:52.758Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-10-14T06:39:53.010Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-10-14T06:39:53.046Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-10-14T06:39:53.051Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-10-14T06:39:52.747Z",
+  "updatedAt": "2026-10-14T06:39:53.056Z"
+}

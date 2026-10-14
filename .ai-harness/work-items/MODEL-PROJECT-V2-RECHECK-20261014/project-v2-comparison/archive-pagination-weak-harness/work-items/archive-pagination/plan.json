@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "archive-pagination",
+  "mode": "single",
+  "rationale": "先过滤复制并全量排序，再验证排他游标并切页；增加边界测试",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "归档过滤与游标分页修复",
+      "module": "compact",
+      "status": "IN_PROGRESS",
+      "attempt": 1,
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        "src/pagination.mjs",
+        "src/repository.mjs",
+        "test/extra.test.mjs"
+      ],
+      "verification": [
+        "node --test test/public.test.mjs test/extra.test.mjs"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            "--test",
+            "test/public.test.mjs",
+            "test/extra.test.mjs"
+          ]
+        }
+      ],
+      "docsImpact": [
+        "N/A: 规格不变且禁止修改文档"
+      ],
+      "reviewBatch": "R1",
+      "risk": "low",
+      "owner": "primary-ai",
+      "verificationStatus": "pending",
+      "reviewStatus": "pending",
+      "evidence": [],
+      "deferralApproval": null
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "归档过滤与游标分页修复",
+      "risk": "low",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": false
+    }
+  ],
+  "createdAt": "2026-10-14T06:36:26.283Z",
+  "updatedAt": "2026-10-14T06:36:26.311Z"
+}

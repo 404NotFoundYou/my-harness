@@ -1,0 +1,10 @@
+{
+  "completed": true,
+  "summary": "已完成先复现、再修复与回归。仅修改 src/repository.mjs、src/pagination.mjs，并新增 test/extra.test.mjs。根因是原始集合先切页再排序、游标未排他推进、未过滤归档记录、无条件返回末项游标，以及仓储原地排序和缺少参数校验。现已实现完整可见集合的非原地排序（updatedAt 升序，同值按 JavaScript 字符串顺序比较 id）、排他分页、合法游标与页大小校验，以及正确的末页终止。保留现有导出及 caller 输出契约。新增测试文件保留了实际/期望、根因、失败证据和回归结果。未修改原测试、规格、调用方或固定依赖，未安装依赖、访问网络或提交 Git。",
+  "tests": [
+    "修复前：node --test test/public.test.mjs — 1 通过、1 失败，退出码 1；期望游标 a 后返回 b、next:null，实际返回 a、next:\"a\"。",
+    "修复前：node --test test/extra.test.mjs — 0 通过、7 失败，退出码 1；捕获过滤排序、输入不可变性、分页遍历、末页终止、参数校验及 caller 契约问题。",
+    "修复后：node --test test/public.test.mjs test/extra.test.mjs — 9 通过、0 失败、0 跳过，退出码 0。",
+    "最终回归：node --test — 9 通过、0 失败、0 跳过，退出码 0。"
+  ]
+}

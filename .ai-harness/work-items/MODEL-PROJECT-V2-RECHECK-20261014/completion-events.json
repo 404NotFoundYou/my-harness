@@ -1,0 +1,83 @@
+{
+  "source": "b7bcb820cf7a84c0a914c48304629b610b3d3059d5dfebba48c2dd0da5e07719",
+  "samples": 6,
+  "events": [
+    {
+      "taskId": "archive-pagination",
+      "group": "weak-baseline",
+      "guides": [],
+      "finishHelp": [],
+      "finishes": []
+    },
+    {
+      "taskId": "archive-pagination",
+      "group": "weak-harness",
+      "guides": [
+        {
+          "eventId": "item_10",
+          "exitCode": 0,
+          "recommendations": [
+            {
+              "id": "f145a480-66fa-4b51-9991-b3bbb86aada5",
+              "taskId": "T1",
+              "checks": [
+                {
+                  "taskId": "T1",
+                  "checkId": "V1"
+                }
+              ],
+              "executable": "node",
+              "args": [
+                "--test",
+                "test/public.test.mjs",
+                "test/extra.test.mjs"
+              ]
+            }
+          ]
+        }
+      ],
+      "finishHelp": [
+        "item_7"
+      ],
+      "finishes": []
+    },
+    {
+      "taskId": "config-layers",
+      "group": "weak-harness",
+      "guides": [],
+      "finishHelp": [
+        "item_6"
+      ],
+      "finishes": []
+    },
+    {
+      "taskId": "config-layers",
+      "group": "weak-baseline",
+      "guides": [],
+      "finishHelp": [],
+      "finishes": []
+    },
+    {
+      "taskId": "window-intervals",
+      "group": "weak-baseline",
+      "guides": [],
+      "finishHelp": [],
+      "finishes": []
+    },
+    {
+      "taskId": "window-intervals",
+      "group": "weak-harness",
+      "guides": [
+        {
+          "eventId": "item_7",
+          "exitCode": 0,
+          "recommendations": []
+        }
+      ],
+      "finishHelp": [
+        "item_6"
+      ],
+      "finishes": []
+    }
+  ]
+}
