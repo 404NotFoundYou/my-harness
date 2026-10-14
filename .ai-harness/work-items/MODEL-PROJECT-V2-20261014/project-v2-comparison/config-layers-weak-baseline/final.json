@@ -1,0 +1,10 @@
+{
+  "completed": true,
+  "summary": "已完成先读规格与调用方、实际复现、最小修复及回归。仅修改 src/layers.mjs、src/config.mjs，新增 test/extra.test.mjs。根因是合并函数直接按输入顺序合并全部层，排序函数原地修改数组且缺少 id 次序，同时 Object.assign 无法安全保留 __proto__ 数据键。现仅合并启用层，按 priority 升序、同优先级按 JavaScript 字符串 id 排序；不修改输入，安全保留所有自有字符串键及 undefined/null 值，维持调用方 {config,keys} 契约。实际/期望、失败证据、根因及修复后回归结果已保留在新增测试文件注释中。未修改原测试、规格、调用方或依赖，未安装依赖、访问网络或提交 Git。",
+  "tests": [
+    "修复前：node --test test/public.test.mjs；2 项中 1 通过、1 失败，退出码 1。config.x 实际为 1，期望为 2。",
+    "新增测试后、修复前：node --test test/public.test.mjs test/extra.test.mjs；9 项中 2 通过、7 失败，退出码 1，复现只读数组排序报错、禁用层参与合并、覆盖顺序错误及 __proto__ 改变结果原型等问题。",
+    "修复后：node --test test/public.test.mjs test/extra.test.mjs；9 项全部通过，0 失败、0 跳过，退出码 0。",
+    "最终完整回归：node --test；9 项全部通过，0 失败、0 跳过，退出码 0。"
+  ]
+}

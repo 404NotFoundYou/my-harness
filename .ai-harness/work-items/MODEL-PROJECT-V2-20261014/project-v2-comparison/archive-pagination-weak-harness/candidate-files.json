@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "files": {
+    "src/pagination.mjs": {
+      "status": "present",
+      "content": "import { selectVisible } from \"./repository.mjs\";\nimport { MAX_PAGE_SIZE } from \"./limits.mjs\";\nexport function listPage(records, {after=null,limit=2}={}) {\n  if (!Number.isInteger(limit) || limit < 1 || limit > MAX_PAGE_SIZE) throw new RangeError(\"Invalid limit\");\n  const visible=selectVisible(records);\n  let start=0;\n  if (after!==null) {\n    if (typeof after!==\"string\") throw new RangeError(\"Invalid cursor\");\n    const index=visible.findIndex(row=>row.id===after);\n    if (index===-1) throw new RangeError(\"Invalid cursor\");\n    start=index+1;\n  }\n  const items=visible.slice(start,start+limit);\n  return {items,nextCursor:start+items.length<visible.length?items.at(-1).id:null};\n}\n",
+      "sha256": "0deb4eaa3841504822643ff30337e1801887682bf377c994cf2bf3c24496d83a"
+    },
+    "src/repository.mjs": {
+      "status": "present",
+      "content": "export function selectVisible(records) { return records.filter(row=>!row.archived).sort((a,b) => a.updatedAt - b.updatedAt || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0)); }\n",
+      "sha256": "1391a6e4ba37a756529be183f6b1a22e4319b3396d64c634f0d52f229778fdcb"
+    }
+  }
+}

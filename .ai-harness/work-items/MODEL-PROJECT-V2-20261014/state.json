@@ -1,0 +1,196 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 1,
+  "id": "MODEL-PROJECT-V2-20261014",
+  "type": "ITERATION",
+  "title": "project-v2六会话多文件BUGFIX真实配对试验",
+  "status": "DONE",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/iteration.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户明确授权这次project-v2最多六个新增独立模型会话及其费用；不授权额外轮次、失败重试、模型/提供方/凭据变更或部署发布。"
+  },
+  "input": {
+    "references": [
+      "用户2026-10-14在明确project-v2三题、同模型两组、单轮最多六个新增会话及其费用、每会话180秒和80工具预算后回复授权。"
+    ],
+    "acceptance": [
+      "六个计划内真实会话记录齐全，失败、超时和流程未完成不遗漏或补跑；模型、CLI、源码、题目和预算冻结一致，审计valid、配对报告成功；功能、共同交付、完整交付、BUGFIX阶段及复现/回归命令证据分别报告；只写本工作项，产品和历史实验不变，不用holdout调参。"
+    ],
+    "nonGoals": [],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": null,
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "用户2026-10-14在明确project-v2三题、同模型两组、单轮最多六个新增会话及其费用、每会话180秒和80工具预算后回复授权。"
+    ],
+    "completedAt": "2026-10-14T02:55:59.371Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "55799b280fc5f7079e28a8af90e2101b80b8ba55",
+      "dirty": false,
+      "changedFiles": [],
+      "fingerprints": {},
+      "source": {
+        "digest": "9d93c4763757e8a01f18f33bb53bd8a67ead48406d1ff83af3a13f747ea3f053",
+        "document": ".ai-harness/work-items/MODEL-PROJECT-V2-20261014/snapshots/9d93c4763757e8a01f18f33bb53bd8a67ead48406d1ff83af3a13f747ea3f053.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": ".ai-harness/work-items/MODEL-PROJECT-V2-20261014/solution.md",
+    "evidence": [
+      "单AI协调一个纵向实验，复用现有runner/audit/report和隔离沙箱。project-v2三题、paired单轮、两组同用gpt-6-astra，180000ms/80工具/medium。先冻结dry-run与源码、CLI和历史哈希；宿主直接执行已明确授权的模型入口，不伪装测试绕过策略。验收脚本只读取实际产物，核对候选manifest、原始协议、BUGFIX归档状态/计划/阶段及命令证据；功能或流程失败仍为有效样本，不要求Harness胜出。"
+    ],
+    "completedAt": "2026-10-14T02:55:59.462Z"
+  },
+  "database": {
+    "impact": "none",
+    "status": "not-applicable",
+    "document": null,
+    "evidence": [
+      "仅合成工程BUG沙箱与实验产物，不涉及真实数据库、业务数据或产品接口变化。"
+    ],
+    "completedAt": "2026-10-14T02:55:59.467Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/MODEL-PROJECT-V2-20261014/plan.json",
+    "approved": true,
+    "approvalRef": "用户明确授权这次project-v2最多六个新增独立模型会话及其费用；不授权额外轮次、失败重试、模型/提供方/凭据变更或部署发布。"
+  },
+  "verification": {
+    "status": "pass",
+    "evidence": [
+      "058f7c4b-8dd4-4dd8-aac5-20bc408aa98e"
+    ],
+    "stages": [],
+    "source": {
+      "digest": "9d93c4763757e8a01f18f33bb53bd8a67ead48406d1ff83af3a13f747ea3f053",
+      "document": ".ai-harness/work-items/MODEL-PROJECT-V2-20261014/snapshots/9d93c4763757e8a01f18f33bb53bd8a67ead48406d1ff83af3a13f747ea3f053.json"
+    }
+  },
+  "review": {
+    "status": "pass",
+    "evidence": [
+      "c51ddb62-4b5d-422a-bc42-58c4ca0daf40"
+    ],
+    "independent": false,
+    "source": {
+      "digest": "9d93c4763757e8a01f18f33bb53bd8a67ead48406d1ff83af3a13f747ea3f053",
+      "document": ".ai-harness/work-items/MODEL-PROJECT-V2-20261014/snapshots/9d93c4763757e8a01f18f33bb53bd8a67ead48406d1ff83af3a13f747ea3f053.json"
+    }
+  },
+  "acceptance": {
+    "status": "pass",
+    "evidence": [
+      "af1383a5-15bc-4398-8413-1b59ba3d5756"
+    ],
+    "source": {
+      "digest": "9d93c4763757e8a01f18f33bb53bd8a67ead48406d1ff83af3a13f747ea3f053",
+      "document": ".ai-harness/work-items/MODEL-PROJECT-V2-20261014/snapshots/9d93c4763757e8a01f18f33bb53bd8a67ead48406d1ff83af3a13f747ea3f053.json"
+    }
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "pass",
+    "evidence": [
+      "e74ee44b-6a93-4c49-b0b3-9953d7ebade1"
+    ]
+  },
+  "blocked": null,
+  "delivery": {
+    "source": {
+      "digest": "9d93c4763757e8a01f18f33bb53bd8a67ead48406d1ff83af3a13f747ea3f053",
+      "document": ".ai-harness/work-items/MODEL-PROJECT-V2-20261014/snapshots/9d93c4763757e8a01f18f33bb53bd8a67ead48406d1ff83af3a13f747ea3f053.json"
+    },
+    "baseline": {
+      "digest": "9d93c4763757e8a01f18f33bb53bd8a67ead48406d1ff83af3a13f747ea3f053",
+      "document": ".ai-harness/work-items/MODEL-PROJECT-V2-20261014/snapshots/9d93c4763757e8a01f18f33bb53bd8a67ead48406d1ff83af3a13f747ea3f053.json"
+    },
+    "baselineAt": "2026-10-14T02:55:59.371Z",
+    "ownedChanges": [],
+    "planDigest": "5409af31c487e03164233c8bcb4c5f2ccec3424e21a5f80dadb678af5c7e6c1d",
+    "at": "2026-10-14T03:46:18.485Z",
+    "head": "55799b280fc5f7079e28a8af90e2101b80b8ba55"
+  },
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-10-14T02:55:59.256Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-10-14T02:55:59.267Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-10-14T02:55:59.455Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-10-14T02:55:59.494Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-10-14T02:55:59.498Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "VERIFYING",
+      "at": "2026-10-14T03:46:16.682Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "VERIFYING",
+      "to": "CODE_REVIEW",
+      "at": "2026-10-14T03:46:16.945Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "CODE_REVIEW",
+      "to": "READY_FOR_ACCEPTANCE",
+      "at": "2026-10-14T03:46:17.204Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "READY_FOR_ACCEPTANCE",
+      "to": "DONE",
+      "at": "2026-10-14T03:46:18.587Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-10-14T02:55:59.256Z",
+  "updatedAt": "2026-10-14T03:46:18.587Z"
+}

@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 4,
+  "suite": "project-v2",
+  "client": "codex",
+  "comparison": "paired",
+  "repetitions": 1,
+  "groups": [
+    {
+      "id": "weak-baseline",
+      "model": "gpt-6-astra",
+      "harness": false
+    },
+    {
+      "id": "weak-harness",
+      "model": "gpt-6-astra",
+      "harness": true
+    }
+  ],
+  "budget": {
+    "timeoutMs": 180000,
+    "maxToolCalls": 80,
+    "reasoning": "medium"
+  },
+  "schedule": [
+    {
+      "taskId": "archive-pagination",
+      "group": "weak-baseline",
+      "trial": 1,
+      "directory": "archive-pagination-weak-baseline"
+    },
+    {
+      "taskId": "archive-pagination",
+      "group": "weak-harness",
+      "trial": 1,
+      "directory": "archive-pagination-weak-harness"
+    },
+    {
+      "taskId": "config-layers",
+      "group": "weak-harness",
+      "trial": 1,
+      "directory": "config-layers-weak-harness"
+    },
+    {
+      "taskId": "config-layers",
+      "group": "weak-baseline",
+      "trial": 1,
+      "directory": "config-layers-weak-baseline"
+    },
+    {
+      "taskId": "window-intervals",
+      "group": "weak-baseline",
+      "trial": 1,
+      "directory": "window-intervals-weak-baseline"
+    },
+    {
+      "taskId": "window-intervals",
+      "group": "weak-harness",
+      "trial": 1,
+      "directory": "window-intervals-weak-harness"
+    }
+  ],
+  "modelCalls": 6,
+  "dryRun": true
+}

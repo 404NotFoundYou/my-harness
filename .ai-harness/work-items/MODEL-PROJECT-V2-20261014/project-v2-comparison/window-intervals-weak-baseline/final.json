@@ -1,0 +1,11 @@
+{
+  "completed": true,
+  "summary": "已完成复现、最小修复及回归，仅修改 src/intervals.mjs、src/window.mjs 并新增 test/extra.test.mjs。根因是归并函数原地排序且未归并，窗口函数只筛选相交区间而未裁剪。现已复制记录后按 start、end 排序，归并重叠或首尾相接区间，并先裁剪非空交集再归并，保持输入不变及调用方 {spans,covered} 契约。复现的实际/期望、根因和回归记录已保留在新增测试注释中。未修改规格、调用方或原测试，未安装依赖、访问网络或提交 Git。Git 检查曾提示无法读取用户级 ignore 文件，但工作区变更清单正常返回。",
+  "tests": [
+    "修复前：node --test test/public.test.mjs，1 项通过、1 项失败；实际 covered=8、spans=[{start:0,end:3},{start:2,end:7}]，期望 covered=4、spans=[{start:1,end:5}]。",
+    "修复前：node --test test/extra.test.mjs，6 项全部失败，捕获未归并、输入原地修改、结果引用复用和未裁剪问题。",
+    "修复后及统一 LF 后各运行一次：node --test test/public.test.mjs test/extra.test.mjs，均为 8 项通过、0 失败、0 跳过；涵盖嵌套、重复、相接、间隙、半开边界、空输入、冻结输入、对象独立性及 3,375 组独立覆盖模型核对。",
+    "git diff --check：首次发现末行 CRLF 空白问题，修正后再次运行通过。",
+    "git diff --name-only 与 git ls-files --others --exclude-standard：确认变更仅涉及三个授权文件。"
+  ]
+}

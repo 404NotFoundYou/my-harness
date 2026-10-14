@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "files": {
+    "src/intervals.mjs": {
+      "status": "present",
+      "content": "export function mergeIntervals(intervals) {\n  const sorted=intervals.map(row => ({start:row.start,end:row.end})).sort((a,b) => a.start-b.start || a.end-b.end);\n  const merged=[];\n  for (const row of sorted) {\n    const last=merged[merged.length-1];\n    if (last && row.start <= last.end) last.end=Math.max(last.end,row.end);\n    else merged.push(row);\n  }\n  return merged;\n}\n",
+      "sha256": "7419fc45bd198c51076fbacf9e2b09e4b7eba3e53b27817d9c33b7b68f75f654"
+    },
+    "src/window.mjs": {
+      "status": "present",
+      "content": "import { mergeIntervals } from \"./intervals.mjs\";\nexport function clipWindow(intervals, window) {\n  const clipped=intervals.map(row => ({start:Math.max(row.start,window.start),end:Math.min(row.end,window.end)}));\n  return mergeIntervals(clipped.filter(row => row.start < row.end));\n}\n",
+      "sha256": "69dfbd976487572f2b6fd5dbee814393c6c387f76365a95f529817ee704990a0"
+    }
+  }
+}

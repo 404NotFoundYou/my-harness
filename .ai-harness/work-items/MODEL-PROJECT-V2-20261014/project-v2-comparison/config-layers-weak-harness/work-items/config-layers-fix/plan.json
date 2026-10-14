@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "config-layers-fix",
+  "mode": "single",
+  "rationale": "过滤后排序，通过自有数据属性写入新普通对象，补充边界回归",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "修复配置层排序与安全合并",
+      "module": "compact",
+      "status": "IN_PROGRESS",
+      "attempt": 1,
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        "src/config.mjs",
+        "src/layers.mjs",
+        "test/extra.test.mjs"
+      ],
+      "verification": [
+        "node --test test/public.test.mjs test/extra.test.mjs"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            "--test",
+            "test/public.test.mjs",
+            "test/extra.test.mjs"
+          ]
+        }
+      ],
+      "docsImpact": [
+        "N/A: 修复既定规格，无文档变化且规格只读"
+      ],
+      "reviewBatch": "R1",
+      "risk": "low",
+      "owner": "primary-ai",
+      "verificationStatus": "pending",
+      "reviewStatus": "pending",
+      "evidence": [],
+      "deferralApproval": null
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "修复配置层排序与安全合并",
+      "risk": "low",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": false
+    }
+  ],
+  "createdAt": "2026-10-14T03:06:58.109Z",
+  "updatedAt": "2026-10-14T03:06:58.138Z"
+}

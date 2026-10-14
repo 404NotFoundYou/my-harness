@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "MODEL-PROJECT-V2-20261014",
+  "mode": "single",
+  "rationale": "单AI协调一个纵向实验，复用现有runner/audit/report和隔离沙箱。project-v2三题、paired单轮、两组同用gpt-6-astra，180000ms/80工具/medium。先冻结dry-run与源码、CLI和历史哈希；宿主直接执行已明确授权的模型入口，不伪装测试绕过策略。验收脚本只读取实际产物，核对候选manifest、原始协议、BUGFIX归档状态/计划/阶段及命令证据；功能或流程失败仍为有效样本，不要求Harness胜出。",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "project-v2六会话多文件BUGFIX真实配对试验",
+      "module": "compact",
+      "status": "COMPLETED",
+      "attempt": 1,
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        ".ai-harness/work-items/MODEL-PROJECT-V2-20261014/**"
+      ],
+      "verification": [
+        "node --test .ai-harness/work-items/MODEL-PROJECT-V2-20261014/verify.test.mjs",
+        "node --check .ai-harness/work-items/MODEL-PROJECT-V2-20261014/verify.test.mjs"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            "--test",
+            ".ai-harness/work-items/MODEL-PROJECT-V2-20261014/verify.test.mjs"
+          ]
+        },
+        {
+          "id": "V2",
+          "command": "node",
+          "args": [
+            "--check",
+            ".ai-harness/work-items/MODEL-PROJECT-V2-20261014/verify.test.mjs"
+          ]
+        }
+      ],
+      "docsImpact": [
+        ".ai-harness/work-items/MODEL-PROJECT-V2-20261014/summary.md"
+      ],
+      "reviewBatch": "R1",
+      "risk": "medium",
+      "owner": "primary-ai",
+      "verificationStatus": "pass",
+      "reviewStatus": "pass",
+      "evidence": [
+        "9397ee2e-156b-4104-ba91-5c18e5fddc1c",
+        "a6f436c6-6b4f-46bf-b95d-29ae589bbc0b"
+      ],
+      "deferralApproval": null,
+      "verificationSource": {
+        "digest": "9d93c4763757e8a01f18f33bb53bd8a67ead48406d1ff83af3a13f747ea3f053",
+        "document": ".ai-harness/work-items/MODEL-PROJECT-V2-20261014/snapshots/9d93c4763757e8a01f18f33bb53bd8a67ead48406d1ff83af3a13f747ea3f053.json"
+      },
+      "reviewSource": {
+        "digest": "9d93c4763757e8a01f18f33bb53bd8a67ead48406d1ff83af3a13f747ea3f053",
+        "document": ".ai-harness/work-items/MODEL-PROJECT-V2-20261014/snapshots/9d93c4763757e8a01f18f33bb53bd8a67ead48406d1ff83af3a13f747ea3f053.json"
+      }
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "project-v2六会话多文件BUGFIX真实配对试验",
+      "risk": "medium",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": false
+    }
+  ],
+  "createdAt": "2026-10-14T02:55:59.472Z",
+  "updatedAt": "2026-10-14T03:46:16.675Z"
+}

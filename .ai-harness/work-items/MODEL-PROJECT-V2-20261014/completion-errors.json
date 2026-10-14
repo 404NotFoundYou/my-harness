@@ -1,0 +1,540 @@
+[
+  {
+    "taskId": "archive-pagination",
+    "workItem": "pagination-fix",
+    "plannedChecks": [
+      {
+        "task": "T1",
+        "verification": [
+          "node --test test/public.test.mjs test/extra.test.mjs"
+        ]
+      }
+    ],
+    "finishes": [
+      {
+        "eventId": "item_12",
+        "exitCode": 1,
+        "span": {
+          "id": "item_12",
+          "startMs": 167434,
+          "endMs": 168374,
+          "category": "completion",
+          "complete": true
+        },
+        "code": "COMMAND_EVIDENCE_INVALID",
+        "commandReferences": [
+          {
+            "id": "03b31b0b-92e8-47c7-91e9-dd28bc987c7c",
+            "status": "pass",
+            "summary": "node --test test/public.test.mjs test/extra.test.mjs",
+            "checks": [
+              {
+                "taskId": "T1",
+                "checkId": "V1"
+              }
+            ],
+            "source": "410038abc84f9bf077d68a748bbfc4037a3cb95637458e218e45952aef5f548a",
+            "sourceAfter": "410038abc84f9bf077d68a748bbfc4037a3cb95637458e218e45952aef5f548a",
+            "exitCode": 0
+          }
+        ],
+        "stageReferences": [
+          {
+            "stage": "reproduction",
+            "id": "5b21b37e-3e9a-4e2c-a22b-2d4f2aa73367",
+            "status": "pass",
+            "exitCode": 0,
+            "plannedChecks": [],
+            "source": "410038abc84f9bf077d68a748bbfc4037a3cb95637458e218e45952aef5f548a"
+          },
+          {
+            "stage": "regression",
+            "id": "03b31b0b-92e8-47c7-91e9-dd28bc987c7c",
+            "status": "pass",
+            "exitCode": 0,
+            "plannedChecks": [
+              {
+                "taskId": "T1",
+                "checkId": "V1"
+              }
+            ],
+            "source": "410038abc84f9bf077d68a748bbfc4037a3cb95637458e218e45952aef5f548a"
+          }
+        ]
+      }
+    ],
+    "commands": [
+      {
+        "id": "43f123df-7a52-4d1b-95cd-945b05394962",
+        "status": "fail",
+        "summary": "node --test test/public.test.mjs",
+        "checks": [],
+        "source": "51b5109183e882397a921e7724853b5cf0f2799f00a306c71f4687a21e1a7be2",
+        "sourceAfter": "51b5109183e882397a921e7724853b5cf0f2799f00a306c71f4687a21e1a7be2",
+        "exitCode": 1
+      },
+      {
+        "id": "22bb3f0c-7dff-4278-b741-02e25397709a",
+        "status": "pass",
+        "summary": "node --check src/repository.mjs",
+        "checks": [],
+        "source": "feffe40d5665574942f0fb6b8f72acc90c09b3d9f5880eae94d6ed754deca59f",
+        "sourceAfter": "feffe40d5665574942f0fb6b8f72acc90c09b3d9f5880eae94d6ed754deca59f",
+        "exitCode": 0
+      },
+      {
+        "id": "1781fb4b-ca76-4062-b971-d1f239667270",
+        "status": "pass",
+        "summary": "node --check src/pagination.mjs",
+        "checks": [],
+        "source": "feffe40d5665574942f0fb6b8f72acc90c09b3d9f5880eae94d6ed754deca59f",
+        "sourceAfter": "feffe40d5665574942f0fb6b8f72acc90c09b3d9f5880eae94d6ed754deca59f",
+        "exitCode": 0
+      },
+      {
+        "id": "99ca0372-0d9a-42e2-9970-7b2bebd8ea72",
+        "status": "pass",
+        "summary": "node --test test/public.test.mjs",
+        "checks": [],
+        "source": "feffe40d5665574942f0fb6b8f72acc90c09b3d9f5880eae94d6ed754deca59f",
+        "sourceAfter": "feffe40d5665574942f0fb6b8f72acc90c09b3d9f5880eae94d6ed754deca59f",
+        "exitCode": 0
+      },
+      {
+        "id": "4dbc0397-cbf2-444c-8b24-859e1057f4d4",
+        "status": "pass",
+        "summary": "node --test test/public.test.mjs test/extra.test.mjs",
+        "checks": [
+          {
+            "taskId": "T1",
+            "checkId": "V1"
+          }
+        ],
+        "source": "feffe40d5665574942f0fb6b8f72acc90c09b3d9f5880eae94d6ed754deca59f",
+        "sourceAfter": "feffe40d5665574942f0fb6b8f72acc90c09b3d9f5880eae94d6ed754deca59f",
+        "exitCode": 0
+      },
+      {
+        "id": "425282ae-b15a-4e0f-b15b-4a08ba350043",
+        "status": "pass",
+        "summary": "node --check src/repository.mjs",
+        "checks": [],
+        "source": "410038abc84f9bf077d68a748bbfc4037a3cb95637458e218e45952aef5f548a",
+        "sourceAfter": "410038abc84f9bf077d68a748bbfc4037a3cb95637458e218e45952aef5f548a",
+        "exitCode": 0
+      },
+      {
+        "id": "e003a3cc-5b57-4da0-9f70-d27fd853f4b6",
+        "status": "pass",
+        "summary": "node --check src/pagination.mjs",
+        "checks": [],
+        "source": "410038abc84f9bf077d68a748bbfc4037a3cb95637458e218e45952aef5f548a",
+        "sourceAfter": "410038abc84f9bf077d68a748bbfc4037a3cb95637458e218e45952aef5f548a",
+        "exitCode": 0
+      },
+      {
+        "id": "5b21b37e-3e9a-4e2c-a22b-2d4f2aa73367",
+        "status": "pass",
+        "summary": "node --test test/public.test.mjs",
+        "checks": [],
+        "source": "410038abc84f9bf077d68a748bbfc4037a3cb95637458e218e45952aef5f548a",
+        "sourceAfter": "410038abc84f9bf077d68a748bbfc4037a3cb95637458e218e45952aef5f548a",
+        "exitCode": 0
+      },
+      {
+        "id": "03b31b0b-92e8-47c7-91e9-dd28bc987c7c",
+        "status": "pass",
+        "summary": "node --test test/public.test.mjs test/extra.test.mjs",
+        "checks": [
+          {
+            "taskId": "T1",
+            "checkId": "V1"
+          }
+        ],
+        "source": "410038abc84f9bf077d68a748bbfc4037a3cb95637458e218e45952aef5f548a",
+        "sourceAfter": "410038abc84f9bf077d68a748bbfc4037a3cb95637458e218e45952aef5f548a",
+        "exitCode": 0
+      }
+    ]
+  },
+  {
+    "taskId": "config-layers",
+    "workItem": "config-layers-fix",
+    "plannedChecks": [
+      {
+        "task": "T1",
+        "verification": [
+          "node --test test/public.test.mjs test/extra.test.mjs"
+        ]
+      }
+    ],
+    "finishes": [
+      {
+        "eventId": "item_14",
+        "exitCode": 1,
+        "span": {
+          "id": "item_14",
+          "startMs": 157297,
+          "endMs": 158325,
+          "category": "completion",
+          "complete": true
+        },
+        "code": "COMMAND_EVIDENCE_INVALID",
+        "commandReferences": [
+          {
+            "id": "67fa8901-bbe9-4ad7-9ba7-662b914277ef",
+            "status": "pass",
+            "summary": "node --test test/public.test.mjs test/extra.test.mjs",
+            "checks": [
+              {
+                "taskId": "T1",
+                "checkId": "V1"
+              }
+            ],
+            "source": "fb909592ed0a551b876dcb9a8d7e25c3d8957dcf4cacea8828f6064e8b3f4449",
+            "sourceAfter": "fb909592ed0a551b876dcb9a8d7e25c3d8957dcf4cacea8828f6064e8b3f4449",
+            "exitCode": 0
+          }
+        ],
+        "stageReferences": [
+          {
+            "stage": "reproduction",
+            "id": "0b12c224-ea31-476c-9139-24dd752ed682",
+            "status": "pass",
+            "exitCode": 0,
+            "plannedChecks": [],
+            "source": "fb909592ed0a551b876dcb9a8d7e25c3d8957dcf4cacea8828f6064e8b3f4449"
+          },
+          {
+            "stage": "regression",
+            "id": "67fa8901-bbe9-4ad7-9ba7-662b914277ef",
+            "status": "pass",
+            "exitCode": 0,
+            "plannedChecks": [
+              {
+                "taskId": "T1",
+                "checkId": "V1"
+              }
+            ],
+            "source": "fb909592ed0a551b876dcb9a8d7e25c3d8957dcf4cacea8828f6064e8b3f4449"
+          }
+        ]
+      }
+    ],
+    "commands": [
+      {
+        "id": "221cb8b6-568f-47dc-8852-000f42561be5",
+        "status": "fail",
+        "summary": "node --test test/public.test.mjs",
+        "checks": [],
+        "source": "6b391a3f9cfb575512ae415677245b4ccb1b36f5febfd20216cd2dcbab361782",
+        "sourceAfter": "6b391a3f9cfb575512ae415677245b4ccb1b36f5febfd20216cd2dcbab361782",
+        "exitCode": 1
+      },
+      {
+        "id": "64c19b76-0b7d-444a-91cc-8dca45c7162b",
+        "status": "fail",
+        "summary": "node --test test/public.test.mjs test/extra.test.mjs",
+        "checks": [
+          {
+            "taskId": "T1",
+            "checkId": "V1"
+          }
+        ],
+        "source": "b43f76c11af8ede7dcf2771f439e616f588a322fd3e212de34bf425072af4f44",
+        "sourceAfter": "b43f76c11af8ede7dcf2771f439e616f588a322fd3e212de34bf425072af4f44",
+        "exitCode": 1
+      },
+      {
+        "id": "a1fab0a7-f132-4cdb-93cd-1ebe5b87ce7b",
+        "status": "pass",
+        "summary": "node --check src/config.mjs",
+        "checks": [],
+        "source": "c6a5e5ae830130a50b000df2e4ee4c2b3fed0a5987dd49ca59a04916e725346f",
+        "sourceAfter": "c6a5e5ae830130a50b000df2e4ee4c2b3fed0a5987dd49ca59a04916e725346f",
+        "exitCode": 0
+      },
+      {
+        "id": "9e8250ce-a18a-440b-b4b6-6aa4f20945c0",
+        "status": "pass",
+        "summary": "node --check src/layers.mjs",
+        "checks": [],
+        "source": "c6a5e5ae830130a50b000df2e4ee4c2b3fed0a5987dd49ca59a04916e725346f",
+        "sourceAfter": "c6a5e5ae830130a50b000df2e4ee4c2b3fed0a5987dd49ca59a04916e725346f",
+        "exitCode": 0
+      },
+      {
+        "id": "2321bee0-204b-4fbe-aea3-1c2624ffb104",
+        "status": "pass",
+        "summary": "node --check test/extra.test.mjs",
+        "checks": [],
+        "source": "c6a5e5ae830130a50b000df2e4ee4c2b3fed0a5987dd49ca59a04916e725346f",
+        "sourceAfter": "c6a5e5ae830130a50b000df2e4ee4c2b3fed0a5987dd49ca59a04916e725346f",
+        "exitCode": 0
+      },
+      {
+        "id": "54082f6c-0371-47e6-bb04-8e2f89ba58ab",
+        "status": "pass",
+        "summary": "node --test test/public.test.mjs",
+        "checks": [],
+        "source": "c6a5e5ae830130a50b000df2e4ee4c2b3fed0a5987dd49ca59a04916e725346f",
+        "sourceAfter": "c6a5e5ae830130a50b000df2e4ee4c2b3fed0a5987dd49ca59a04916e725346f",
+        "exitCode": 0
+      },
+      {
+        "id": "a3094557-f207-48f8-b67f-e508136a1ebc",
+        "status": "pass",
+        "summary": "node --test test/public.test.mjs test/extra.test.mjs",
+        "checks": [
+          {
+            "taskId": "T1",
+            "checkId": "V1"
+          }
+        ],
+        "source": "c6a5e5ae830130a50b000df2e4ee4c2b3fed0a5987dd49ca59a04916e725346f",
+        "sourceAfter": "c6a5e5ae830130a50b000df2e4ee4c2b3fed0a5987dd49ca59a04916e725346f",
+        "exitCode": 0
+      },
+      {
+        "id": "3341e9c0-c8b9-4c48-bac0-7cf478187769",
+        "status": "pass",
+        "summary": "node --check src/config.mjs",
+        "checks": [],
+        "source": "fb909592ed0a551b876dcb9a8d7e25c3d8957dcf4cacea8828f6064e8b3f4449",
+        "sourceAfter": "fb909592ed0a551b876dcb9a8d7e25c3d8957dcf4cacea8828f6064e8b3f4449",
+        "exitCode": 0
+      },
+      {
+        "id": "12055570-00d6-4f61-982a-c7b242e242f9",
+        "status": "pass",
+        "summary": "node --check src/layers.mjs",
+        "checks": [],
+        "source": "fb909592ed0a551b876dcb9a8d7e25c3d8957dcf4cacea8828f6064e8b3f4449",
+        "sourceAfter": "fb909592ed0a551b876dcb9a8d7e25c3d8957dcf4cacea8828f6064e8b3f4449",
+        "exitCode": 0
+      },
+      {
+        "id": "a3198cb5-0fc0-48a3-8df1-aaa42079c0f1",
+        "status": "pass",
+        "summary": "node --check test/extra.test.mjs",
+        "checks": [],
+        "source": "fb909592ed0a551b876dcb9a8d7e25c3d8957dcf4cacea8828f6064e8b3f4449",
+        "sourceAfter": "fb909592ed0a551b876dcb9a8d7e25c3d8957dcf4cacea8828f6064e8b3f4449",
+        "exitCode": 0
+      },
+      {
+        "id": "0b12c224-ea31-476c-9139-24dd752ed682",
+        "status": "pass",
+        "summary": "node --test test/public.test.mjs",
+        "checks": [],
+        "source": "fb909592ed0a551b876dcb9a8d7e25c3d8957dcf4cacea8828f6064e8b3f4449",
+        "sourceAfter": "fb909592ed0a551b876dcb9a8d7e25c3d8957dcf4cacea8828f6064e8b3f4449",
+        "exitCode": 0
+      },
+      {
+        "id": "67fa8901-bbe9-4ad7-9ba7-662b914277ef",
+        "status": "pass",
+        "summary": "node --test test/public.test.mjs test/extra.test.mjs",
+        "checks": [
+          {
+            "taskId": "T1",
+            "checkId": "V1"
+          }
+        ],
+        "source": "fb909592ed0a551b876dcb9a8d7e25c3d8957dcf4cacea8828f6064e8b3f4449",
+        "sourceAfter": "fb909592ed0a551b876dcb9a8d7e25c3d8957dcf4cacea8828f6064e8b3f4449",
+        "exitCode": 0
+      }
+    ]
+  },
+  {
+    "taskId": "window-intervals",
+    "workItem": "interval-fix",
+    "plannedChecks": [
+      {
+        "task": "T1",
+        "verification": [
+          "node --test test/public.test.mjs test/extra.test.mjs"
+        ]
+      }
+    ],
+    "finishes": [
+      {
+        "eventId": "item_14",
+        "exitCode": 1,
+        "span": {
+          "id": "item_14",
+          "startMs": 162781,
+          "endMs": 164035,
+          "category": "completion",
+          "complete": true
+        },
+        "code": "COMMAND_EVIDENCE_INVALID",
+        "commandReferences": [
+          {
+            "id": "8902b082-d894-4abe-bfbf-c31c9e109163",
+            "status": "pass",
+            "summary": "node --test test/public.test.mjs test/extra.test.mjs",
+            "checks": [
+              {
+                "taskId": "T1",
+                "checkId": "V1"
+              }
+            ],
+            "source": "3a08f4bb4400c4a9f58dcd5904b6a2b46a1543b97eccb96636d963b62b51c369",
+            "sourceAfter": "3a08f4bb4400c4a9f58dcd5904b6a2b46a1543b97eccb96636d963b62b51c369",
+            "exitCode": 0
+          }
+        ],
+        "stageReferences": [
+          {
+            "stage": "reproduction",
+            "id": "24ad50fe-45ed-40b8-8533-69ccc7dfe6c9",
+            "status": "pass",
+            "exitCode": 0,
+            "plannedChecks": [],
+            "source": "3a08f4bb4400c4a9f58dcd5904b6a2b46a1543b97eccb96636d963b62b51c369"
+          },
+          {
+            "stage": "regression",
+            "id": "8902b082-d894-4abe-bfbf-c31c9e109163",
+            "status": "pass",
+            "exitCode": 0,
+            "plannedChecks": [
+              {
+                "taskId": "T1",
+                "checkId": "V1"
+              }
+            ],
+            "source": "3a08f4bb4400c4a9f58dcd5904b6a2b46a1543b97eccb96636d963b62b51c369"
+          }
+        ]
+      }
+    ],
+    "commands": [
+      {
+        "id": "577c275e-4398-4501-a190-097121421abd",
+        "status": "fail",
+        "summary": "node --test test/public.test.mjs",
+        "checks": [],
+        "source": "66878d6594da3658575f440971052899a16725ebb9654a7645c8de11847ba3cf",
+        "sourceAfter": "66878d6594da3658575f440971052899a16725ebb9654a7645c8de11847ba3cf",
+        "exitCode": 1
+      },
+      {
+        "id": "fbea001f-e1ef-463b-adf1-9d549b4f8b05",
+        "status": "fail",
+        "summary": "node --test test/public.test.mjs test/extra.test.mjs",
+        "checks": [
+          {
+            "taskId": "T1",
+            "checkId": "V1"
+          }
+        ],
+        "source": "80217b1e8cad2be0f2bf93568fe30048f46d64ae32def35b8d24a87cfb492c46",
+        "sourceAfter": "80217b1e8cad2be0f2bf93568fe30048f46d64ae32def35b8d24a87cfb492c46",
+        "exitCode": 1
+      },
+      {
+        "id": "b863cbf5-e43d-4b1b-8758-b8888d0bf2aa",
+        "status": "pass",
+        "summary": "node --check src/intervals.mjs",
+        "checks": [],
+        "source": "53c1412526d21621be8b2157596816b7b14f29ee584f5274f4a83fb6c7656da8",
+        "sourceAfter": "53c1412526d21621be8b2157596816b7b14f29ee584f5274f4a83fb6c7656da8",
+        "exitCode": 0
+      },
+      {
+        "id": "9c23b483-4f4f-461c-a995-b27395eafd73",
+        "status": "pass",
+        "summary": "node --check src/window.mjs",
+        "checks": [],
+        "source": "53c1412526d21621be8b2157596816b7b14f29ee584f5274f4a83fb6c7656da8",
+        "sourceAfter": "53c1412526d21621be8b2157596816b7b14f29ee584f5274f4a83fb6c7656da8",
+        "exitCode": 0
+      },
+      {
+        "id": "bcf95bec-2b57-4214-90d4-61c5df33e83f",
+        "status": "pass",
+        "summary": "node --check test/extra.test.mjs",
+        "checks": [],
+        "source": "53c1412526d21621be8b2157596816b7b14f29ee584f5274f4a83fb6c7656da8",
+        "sourceAfter": "53c1412526d21621be8b2157596816b7b14f29ee584f5274f4a83fb6c7656da8",
+        "exitCode": 0
+      },
+      {
+        "id": "923f9df4-176a-4dbc-802b-9c213f268f1c",
+        "status": "pass",
+        "summary": "node --test test/public.test.mjs",
+        "checks": [],
+        "source": "53c1412526d21621be8b2157596816b7b14f29ee584f5274f4a83fb6c7656da8",
+        "sourceAfter": "53c1412526d21621be8b2157596816b7b14f29ee584f5274f4a83fb6c7656da8",
+        "exitCode": 0
+      },
+      {
+        "id": "2758f2bf-99c2-40d0-b694-f396ec1f409b",
+        "status": "pass",
+        "summary": "node --test test/public.test.mjs test/extra.test.mjs",
+        "checks": [
+          {
+            "taskId": "T1",
+            "checkId": "V1"
+          }
+        ],
+        "source": "53c1412526d21621be8b2157596816b7b14f29ee584f5274f4a83fb6c7656da8",
+        "sourceAfter": "53c1412526d21621be8b2157596816b7b14f29ee584f5274f4a83fb6c7656da8",
+        "exitCode": 0
+      },
+      {
+        "id": "690065e1-617f-4c79-8082-29c524301164",
+        "status": "pass",
+        "summary": "node --check src/intervals.mjs",
+        "checks": [],
+        "source": "3a08f4bb4400c4a9f58dcd5904b6a2b46a1543b97eccb96636d963b62b51c369",
+        "sourceAfter": "3a08f4bb4400c4a9f58dcd5904b6a2b46a1543b97eccb96636d963b62b51c369",
+        "exitCode": 0
+      },
+      {
+        "id": "d598b268-cf1b-40a2-80f1-95a27ee0e937",
+        "status": "pass",
+        "summary": "node --check src/window.mjs",
+        "checks": [],
+        "source": "3a08f4bb4400c4a9f58dcd5904b6a2b46a1543b97eccb96636d963b62b51c369",
+        "sourceAfter": "3a08f4bb4400c4a9f58dcd5904b6a2b46a1543b97eccb96636d963b62b51c369",
+        "exitCode": 0
+      },
+      {
+        "id": "c3c27a23-21f0-4d45-94ef-fb2923a4eb43",
+        "status": "pass",
+        "summary": "node --check test/extra.test.mjs",
+        "checks": [],
+        "source": "3a08f4bb4400c4a9f58dcd5904b6a2b46a1543b97eccb96636d963b62b51c369",
+        "sourceAfter": "3a08f4bb4400c4a9f58dcd5904b6a2b46a1543b97eccb96636d963b62b51c369",
+        "exitCode": 0
+      },
+      {
+        "id": "24ad50fe-45ed-40b8-8533-69ccc7dfe6c9",
+        "status": "pass",
+        "summary": "node --test test/public.test.mjs",
+        "checks": [],
+        "source": "3a08f4bb4400c4a9f58dcd5904b6a2b46a1543b97eccb96636d963b62b51c369",
+        "sourceAfter": "3a08f4bb4400c4a9f58dcd5904b6a2b46a1543b97eccb96636d963b62b51c369",
+        "exitCode": 0
+      },
+      {
+        "id": "8902b082-d894-4abe-bfbf-c31c9e109163",
+        "status": "pass",
+        "summary": "node --test test/public.test.mjs test/extra.test.mjs",
+        "checks": [
+          {
+            "taskId": "T1",
+            "checkId": "V1"
+          }
+        ],
+        "source": "3a08f4bb4400c4a9f58dcd5904b6a2b46a1543b97eccb96636d963b62b51c369",
+        "sourceAfter": "3a08f4bb4400c4a9f58dcd5904b6a2b46a1543b97eccb96636d963b62b51c369",
+        "exitCode": 0
+      }
+    ]
+  }
+]

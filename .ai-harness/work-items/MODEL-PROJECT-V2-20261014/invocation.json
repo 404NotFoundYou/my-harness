@@ -1,0 +1,31 @@
+{
+  "Executable": "D:\\Program Files\\nodejs\\node.exe",
+  "Arguments": [
+    "benchmarks/run.mjs",
+    "--cli",
+    "D:/Program Files/nodejs/node_global/node_modules/@openai/codex/bin/codex.js",
+    "--weak",
+    "gpt-6-astra",
+    "--client",
+    "codex",
+    "--suite",
+    "project-v2",
+    "--comparison",
+    "paired",
+    "--repetitions",
+    "1",
+    "--timeout-ms",
+    "180000",
+    "--max-tools",
+    "80",
+    "--out",
+    ".ai-harness/work-items/MODEL-PROJECT-V2-20261014/project-v2-comparison"
+  ],
+  "Authorization": "用户2026-10-14明确授权project-v2六个新增会话及其费用",
+  "StartedAt": "2026-10-14T03:01:32.3248104Z",
+  "CompletedAt": "2026-10-14T03:16:10.4536616Z",
+  "ExitCode": 0,
+  "MaximumModelSessions": 6,
+  "AutomaticRetries": 0,
+  "Entry": "host-direct-authorized-model-experiment"
+}

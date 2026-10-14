@@ -1,0 +1,198 @@
+{
+  "schemaVersion": 2,
+  "trial": 1,
+  "mode": "real",
+  "client": "codex",
+  "taskId": "config-layers",
+  "split": "development",
+  "group": "weak-baseline",
+  "model": "gpt-6-astra",
+  "taskDigest": "b59d9d1cdfbb96a51a94b13a1ae010eb2c2871fabf3dbc3ce7c97154132d7219",
+  "judgeDigest": "9ad2a2e4e70363a6ac2bda94da9fe1a3653e051c9079cf11665cd3db47d3b459",
+  "candidateDigest": "67196d55d7ede3222d38310b801626aa9ed011be2815150d4e95bdba3d0e059a",
+  "budget": {
+    "timeoutMs": 180000,
+    "maxToolCalls": 80,
+    "reasoning": "medium"
+  },
+  "run": {
+    "mode": "real",
+    "client": "codex",
+    "startedAt": "2026-10-14T03:09:22.442Z",
+    "durationMs": 110866,
+    "timing": {
+      "basis": "local-event-receive-time",
+      "lifecycle": {
+        "version": 1,
+        "firstProtocolEventMs": 1223,
+        "terminalEventMs": 110127,
+        "processExitMs": 110866,
+        "processCloseMs": 110866
+      },
+      "toolActiveMs": 1296,
+      "otherElapsedMs": 109570,
+      "spans": [
+        {
+          "id": "item_3",
+          "startMs": 11100,
+          "endMs": 11303,
+          "category": "unknown",
+          "complete": true
+        },
+        {
+          "id": "item_4",
+          "startMs": 23848,
+          "endMs": 24174,
+          "category": "unknown",
+          "complete": true
+        },
+        {
+          "id": "item_6",
+          "startMs": 67040,
+          "endMs": 67322,
+          "category": "unknown",
+          "complete": true
+        },
+        {
+          "id": "item_7",
+          "startMs": 77193,
+          "endMs": 77418,
+          "category": "unknown",
+          "complete": true
+        },
+        {
+          "id": "item_9",
+          "startMs": 93556,
+          "endMs": 93816,
+          "category": "unknown",
+          "complete": true
+        }
+      ],
+      "categories": {
+        "unknown": {
+          "calls": 5,
+          "activeMs": 1296
+        }
+      },
+      "unmatchedCompletions": [],
+      "limitation": "工具区间按接收事件估计并合并重叠；其余耗时包含模型、网络、客户端启动和收尾，不等于纯推理耗时。"
+    },
+    "exitCode": 0,
+    "timedOut": false,
+    "toolLimit": false,
+    "toolCalls": 5,
+    "turnCompleted": true,
+    "protocolSuccess": true,
+    "usage": {
+      "input_tokens": 122901,
+      "cached_input_tokens": 112384,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 2798,
+      "reasoning_output_tokens": 59
+    },
+    "errors": [],
+    "warnings": [],
+    "unparsedLines": 0,
+    "error": null,
+    "final": {
+      "completed": true,
+      "summary": "已完成先读规格与调用方、实际复现、最小修复及回归。仅修改 src/layers.mjs、src/config.mjs，新增 test/extra.test.mjs。根因是合并函数直接按输入顺序合并全部层，排序函数原地修改数组且缺少 id 次序，同时 Object.assign 无法安全保留 __proto__ 数据键。现仅合并启用层，按 priority 升序、同优先级按 JavaScript 字符串 id 排序；不修改输入，安全保留所有自有字符串键及 undefined/null 值，维持调用方 {config,keys} 契约。实际/期望、失败证据、根因及修复后回归结果已保留在新增测试文件注释中。未修改原测试、规格、调用方或依赖，未安装依赖、访问网络或提交 Git。",
+      "tests": [
+        "修复前：node --test test/public.test.mjs；2 项中 1 通过、1 失败，退出码 1。config.x 实际为 1，期望为 2。",
+        "新增测试后、修复前：node --test test/public.test.mjs test/extra.test.mjs；9 项中 2 通过、7 失败，退出码 1，复现只读数组排序报错、禁用层参与合并、覆盖顺序错误及 __proto__ 改变结果原型等问题。",
+        "修复后：node --test test/public.test.mjs test/extra.test.mjs；9 项全部通过，0 失败、0 跳过，退出码 0。",
+        "最终完整回归：node --test；9 项全部通过，0 失败、0 跳过，退出码 0。"
+      ]
+    },
+    "completed": true
+  },
+  "scope": {
+    "ok": true,
+    "changes": [
+      {
+        "path": "src/config.mjs",
+        "before": "7f8356d764bcbe26315b1321ca331afd87bd49474e66208a50e621f19e093ffd",
+        "after": "a39c80f26ba1c6702b53e6f8120fdc47baf2f8bf9dbc8927a9c18169f0054fb5"
+      },
+      {
+        "path": "src/layers.mjs",
+        "before": "a0838965a9783006d5d686609e50e4ddea46e4bc216a2c76df6e2280983ef9af",
+        "after": "3cea66e894416091cb26e97358a2f36d44650c204df035cbe387a36207439eea"
+      },
+      {
+        "path": "test/extra.test.mjs",
+        "before": null,
+        "after": "cdc1873ebe0688c87a850f6873e81a9843970ede977cb11ca12955f55bfc04e9"
+      }
+    ],
+    "violations": []
+  },
+  "workflow": null,
+  "grade": {
+    "complete": true,
+    "ok": true,
+    "cases": [
+      {
+        "id": "priority-over-input",
+        "pass": true
+      },
+      {
+        "id": "disabled-layer",
+        "pass": true
+      },
+      {
+        "id": "equal-priority-id-order",
+        "pass": true
+      },
+      {
+        "id": "sorted-keys",
+        "pass": true
+      },
+      {
+        "id": "null-is-value",
+        "pass": true
+      },
+      {
+        "id": "empty-and-disabled",
+        "pass": true
+      },
+      {
+        "id": "input-immutable",
+        "pass": true
+      },
+      {
+        "id": "prototype-key",
+        "pass": true
+      },
+      {
+        "id": "source-not-aliased",
+        "pass": true
+      },
+      {
+        "id": "ordered-layers-contract",
+        "pass": true
+      },
+      {
+        "id": "resolve-config-contract",
+        "pass": true
+      },
+      {
+        "id": "caller-shape",
+        "pass": true
+      }
+    ],
+    "expectedCases": 12,
+    "exitCode": 0,
+    "timedOut": false,
+    "stderr": "",
+    "error": null
+  },
+  "success": true,
+  "falseCompletion": false,
+  "falseFunctionalCompletion": false,
+  "execution": {
+    "protocolSha256": "91c345e7bb6d786a4109294e01706d7f30601aebe66d3efa949c71275e6c88fe",
+    "sourceBefore": "9d93c4763757e8a01f18f33bb53bd8a67ead48406d1ff83af3a13f747ea3f053",
+    "sourceAfter": "9d93c4763757e8a01f18f33bb53bd8a67ead48406d1ff83af3a13f747ea3f053"
+  }
+}

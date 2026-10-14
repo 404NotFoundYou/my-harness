@@ -1,0 +1,206 @@
+{
+  "summaryVersion": 2,
+  "mode": "real",
+  "complete": true,
+  "sourceBefore": "9d93c4763757e8a01f18f33bb53bd8a67ead48406d1ff83af3a13f747ea3f053",
+  "sourceAfter": "9d93c4763757e8a01f18f33bb53bd8a67ead48406d1ff83af3a13f747ea3f053",
+  "error": null,
+  "results": [
+    {
+      "taskId": "archive-pagination",
+      "group": "weak-baseline",
+      "trial": 1,
+      "success": true,
+      "functionalPassed": true
+    },
+    {
+      "taskId": "archive-pagination",
+      "group": "weak-harness",
+      "trial": 1,
+      "success": false,
+      "functionalPassed": true
+    },
+    {
+      "taskId": "config-layers",
+      "group": "weak-harness",
+      "trial": 1,
+      "success": false,
+      "functionalPassed": true
+    },
+    {
+      "taskId": "config-layers",
+      "group": "weak-baseline",
+      "trial": 1,
+      "success": true,
+      "functionalPassed": true
+    },
+    {
+      "taskId": "window-intervals",
+      "group": "weak-baseline",
+      "trial": 1,
+      "success": true,
+      "functionalPassed": true
+    },
+    {
+      "taskId": "window-intervals",
+      "group": "weak-harness",
+      "trial": 1,
+      "success": false,
+      "functionalPassed": true
+    }
+  ],
+  "notRun": [],
+  "interrupted": [],
+  "progress": [
+    {
+      "group": "weak-baseline",
+      "scheduled": 3,
+      "completed": 3,
+      "interrupted": 0,
+      "pending": 0,
+      "usageUnknown": 0
+    },
+    {
+      "group": "weak-harness",
+      "scheduled": 3,
+      "completed": 3,
+      "interrupted": 0,
+      "pending": 0,
+      "usageUnknown": 3
+    }
+  ],
+  "groups": [
+    {
+      "group": "weak-baseline",
+      "samples": 3,
+      "functionalPassed": 3,
+      "completed": 3,
+      "falseCompletion": 0,
+      "timeouts": 0,
+      "durationMs": 327554,
+      "inputTokens": 370037,
+      "outputTokens": 8073,
+      "statistics": {
+        "functional": {
+          "passed": 3,
+          "samples": 3,
+          "rate": 1,
+          "interval95": [
+            0.4385029682449546,
+            1
+          ]
+        },
+        "sharedDelivery": {
+          "passed": 3,
+          "samples": 3,
+          "rate": 1,
+          "interval95": [
+            0.4385029682449546,
+            1
+          ]
+        },
+        "fullDelivery": {
+          "passed": 3,
+          "samples": 3,
+          "rate": 1,
+          "interval95": [
+            0.4385029682449546,
+            1
+          ]
+        },
+        "protocolFailures": 0,
+        "invalidFinals": 0,
+        "latency": {
+          "observed": 3,
+          "unknown": 0,
+          "medianMs": 110866,
+          "p95Ms": 113126.8
+        },
+        "usageSamples": 3,
+        "toolCategories": {
+          "unknown": {
+            "calls": 15,
+            "activeMs": 3976
+          }
+        },
+        "limitation": "Wilson 区间仅描述这些试次；同题重复并非独立任务。耗时包含被预算截断的样本，p95不是未截断完成时间；工具类别可重叠，缺失用量不计为零。"
+      }
+    },
+    {
+      "group": "weak-harness",
+      "samples": 3,
+      "functionalPassed": 3,
+      "completed": 0,
+      "falseCompletion": 0,
+      "timeouts": 3,
+      "durationMs": 541211,
+      "inputTokens": null,
+      "outputTokens": null,
+      "statistics": {
+        "functional": {
+          "passed": 3,
+          "samples": 3,
+          "rate": 1,
+          "interval95": [
+            0.4385029682449546,
+            1
+          ]
+        },
+        "sharedDelivery": {
+          "passed": 0,
+          "samples": 3,
+          "rate": 0,
+          "interval95": [
+            5.551115123125783e-17,
+            0.5614970317550454
+          ]
+        },
+        "fullDelivery": {
+          "passed": 0,
+          "samples": 3,
+          "rate": 0,
+          "interval95": [
+            5.551115123125783e-17,
+            0.5614970317550454
+          ]
+        },
+        "protocolFailures": 0,
+        "invalidFinals": 0,
+        "latency": {
+          "observed": 3,
+          "unknown": 0,
+          "medianMs": 180401,
+          "p95Ms": 180414.5
+        },
+        "usageSamples": 0,
+        "toolCategories": {
+          "runtime-other": {
+            "calls": 3,
+            "activeMs": 676
+          },
+          "planning": {
+            "calls": 5,
+            "activeMs": 1975
+          },
+          "verification": {
+            "calls": 11,
+            "activeMs": 17302
+          },
+          "unknown": {
+            "calls": 3,
+            "activeMs": 428
+          },
+          "guidance": {
+            "calls": 5,
+            "activeMs": 2826
+          },
+          "completion": {
+            "calls": 3,
+            "activeMs": 3222
+          }
+        },
+        "limitation": "Wilson 区间仅描述这些试次；同题重复并非独立任务。耗时包含被预算截断的样本，p95不是未截断完成时间；工具类别可重叠，缺失用量不计为零。"
+      }
+    }
+  ]
+}

@@ -1,0 +1,298 @@
+{
+  "schemaVersion": 2,
+  "trial": 1,
+  "mode": "real",
+  "client": "codex",
+  "taskId": "window-intervals",
+  "split": "holdout",
+  "group": "weak-harness",
+  "model": "gpt-6-astra",
+  "taskDigest": "d64581fcc701e15e5cfa02ee3ba940d366131e1005e9d9208cdd3841b5913055",
+  "judgeDigest": "f373beb6ff4131998170b4c7f6d1ed760cd730a5f0f2b159fb424f46ad4298d7",
+  "candidateDigest": "44a44f17b30ab37151dd182abf43d60d50133154dcb5bb89c68989789a48531c",
+  "budget": {
+    "timeoutMs": 180000,
+    "maxToolCalls": 80,
+    "reasoning": "medium"
+  },
+  "run": {
+    "mode": "real",
+    "client": "codex",
+    "startedAt": "2026-10-14T03:13:08.890Z",
+    "durationMs": 180416,
+    "timing": {
+      "basis": "local-event-receive-time",
+      "lifecycle": {
+        "version": 1,
+        "firstProtocolEventMs": 1082,
+        "terminalEventMs": null,
+        "processExitMs": 180416,
+        "processCloseMs": 180416
+      },
+      "toolActiveMs": 10385,
+      "otherElapsedMs": 170031,
+      "spans": [
+        {
+          "id": "item_3",
+          "startMs": 10000,
+          "endMs": 10223,
+          "category": "runtime-other",
+          "complete": true
+        },
+        {
+          "id": "item_4",
+          "startMs": 22638,
+          "endMs": 22839,
+          "category": "planning",
+          "complete": true
+        },
+        {
+          "id": "item_5",
+          "startMs": 34324,
+          "endMs": 34857,
+          "category": "planning",
+          "complete": true
+        },
+        {
+          "id": "item_6",
+          "startMs": 41533,
+          "endMs": 42020,
+          "category": "verification",
+          "complete": true
+        },
+        {
+          "id": "item_7",
+          "startMs": 51012,
+          "endMs": 51123,
+          "category": "unknown",
+          "complete": true
+        },
+        {
+          "id": "item_9",
+          "startMs": 84939,
+          "endMs": 85765,
+          "category": "verification",
+          "complete": true
+        },
+        {
+          "id": "item_10",
+          "startMs": 103380,
+          "endMs": 106225,
+          "category": "verification",
+          "complete": true
+        },
+        {
+          "id": "item_11",
+          "startMs": 115452,
+          "endMs": 116156,
+          "category": "guidance",
+          "complete": true
+        },
+        {
+          "id": "item_12",
+          "startMs": 130190,
+          "endMs": 132862,
+          "category": "verification",
+          "complete": true
+        },
+        {
+          "id": "item_14",
+          "startMs": 162781,
+          "endMs": 164035,
+          "category": "completion",
+          "complete": true
+        },
+        {
+          "id": "item_15",
+          "startMs": 173146,
+          "endMs": 173675,
+          "category": "guidance",
+          "complete": true
+        }
+      ],
+      "categories": {
+        "runtime-other": {
+          "calls": 1,
+          "activeMs": 223
+        },
+        "planning": {
+          "calls": 2,
+          "activeMs": 734
+        },
+        "verification": {
+          "calls": 4,
+          "activeMs": 6830
+        },
+        "unknown": {
+          "calls": 1,
+          "activeMs": 111
+        },
+        "guidance": {
+          "calls": 2,
+          "activeMs": 1233
+        },
+        "completion": {
+          "calls": 1,
+          "activeMs": 1254
+        }
+      },
+      "unmatchedCompletions": [],
+      "limitation": "工具区间按接收事件估计并合并重叠；其余耗时包含模型、网络、客户端启动和收尾，不等于纯推理耗时。"
+    },
+    "exitCode": 1,
+    "timedOut": true,
+    "toolLimit": false,
+    "toolCalls": 11,
+    "turnCompleted": false,
+    "protocolSuccess": false,
+    "usage": null,
+    "errors": [],
+    "warnings": [],
+    "unparsedLines": 0,
+    "error": null,
+    "final": null,
+    "completed": false
+  },
+  "scope": {
+    "ok": true,
+    "changes": [
+      {
+        "path": "src/intervals.mjs",
+        "before": "e808fe88b74c7da97c6eba1eeec6cb8f7ae93d3be23979059cab6bd6fc7711f3",
+        "after": "7419fc45bd198c51076fbacf9e2b09e4b7eba3e53b27817d9c33b7b68f75f654"
+      },
+      {
+        "path": "src/window.mjs",
+        "before": "6f1c4b66fb0f3c5bd9c337506eaca494873738f122b50bb707e283453b928719",
+        "after": "69dfbd976487572f2b6fd5dbee814393c6c387f76365a95f529817ee704990a0"
+      },
+      {
+        "path": ".ai-harness/work-items/interval-fix/events.jsonl",
+        "before": null,
+        "after": "8dc4d002fafae301f29de87609f111a71d10b45611cd14f0ffad59e542794a46"
+      },
+      {
+        "path": ".ai-harness/work-items/interval-fix/evidence.jsonl",
+        "before": null,
+        "after": "467bed8abc782f630b7379edea504673e859f4165dca17ca8114ce915aa65997"
+      },
+      {
+        "path": ".ai-harness/work-items/interval-fix/plan.json",
+        "before": null,
+        "after": "006b29d93882ba079d9c16768855aba6deaee07ef4b5fb9e5a08cf771872e762"
+      },
+      {
+        "path": ".ai-harness/work-items/interval-fix/snapshots/3a08f4bb4400c4a9f58dcd5904b6a2b46a1543b97eccb96636d963b62b51c369.json",
+        "before": null,
+        "after": "0ab9c3b98e79ed2a32a6b66a382da7e143e81fc986cb3a34a0f2f3d64ff89c8e"
+      },
+      {
+        "path": ".ai-harness/work-items/interval-fix/snapshots/53c1412526d21621be8b2157596816b7b14f29ee584f5274f4a83fb6c7656da8.json",
+        "before": null,
+        "after": "b551ad827df958f2569fb21785eca47bcab183ab744b7f2d009a545c06d06052"
+      },
+      {
+        "path": ".ai-harness/work-items/interval-fix/snapshots/66878d6594da3658575f440971052899a16725ebb9654a7645c8de11847ba3cf.json",
+        "before": null,
+        "after": "ebf8fb3fc19a78a6b2657f21a9deb333101a550cf0ba8361f90763ea12b6b6ff"
+      },
+      {
+        "path": ".ai-harness/work-items/interval-fix/snapshots/80217b1e8cad2be0f2bf93568fe30048f46d64ae32def35b8d24a87cfb492c46.json",
+        "before": null,
+        "after": "9cb8a5e7c0adccadf7fb82da62ef2275dcb0d44e2a941010633c30a4ca5e8f69"
+      },
+      {
+        "path": ".ai-harness/work-items/interval-fix/solution.md",
+        "before": null,
+        "after": "d057ed14c8d1d68f10b50db931a0f541da5f697ce3f8c4295069a7c487325839"
+      },
+      {
+        "path": ".ai-harness/work-items/interval-fix/state.json",
+        "before": null,
+        "after": "b3f1676adad7b16a233ae595e33c4d9e056618d5d37710cef0acee8f93c78a12"
+      },
+      {
+        "path": "test/extra.test.mjs",
+        "before": null,
+        "after": "7b1f920a2d4c6b5aa8928833b9ff4d197cf1de23d6cf6842d5d82fd31333cca1"
+      }
+    ],
+    "violations": []
+  },
+  "workflow": {
+    "ok": false,
+    "errors": [
+      "CI 不接受未完成工作项：interval-fix:IMPLEMENTING"
+    ],
+    "workItems": [
+      "interval-fix"
+    ]
+  },
+  "grade": {
+    "complete": true,
+    "ok": true,
+    "cases": [
+      {
+        "id": "overlap",
+        "pass": true
+      },
+      {
+        "id": "adjacent",
+        "pass": true
+      },
+      {
+        "id": "disjoint",
+        "pass": true
+      },
+      {
+        "id": "unsorted",
+        "pass": true
+      },
+      {
+        "id": "duplicate",
+        "pass": true
+      },
+      {
+        "id": "clip-left",
+        "pass": true
+      },
+      {
+        "id": "clip-right",
+        "pass": true
+      },
+      {
+        "id": "outside-window",
+        "pass": true
+      },
+      {
+        "id": "clip-then-merge",
+        "pass": true
+      },
+      {
+        "id": "immutable-input",
+        "pass": true
+      },
+      {
+        "id": "merge-contract",
+        "pass": true
+      },
+      {
+        "id": "window-contract",
+        "pass": true
+      }
+    ],
+    "expectedCases": 12,
+    "exitCode": 0,
+    "timedOut": false,
+    "stderr": "",
+    "error": null
+  },
+  "success": false,
+  "falseCompletion": false,
+  "falseFunctionalCompletion": false,
+  "execution": {
+    "protocolSha256": "91c345e7bb6d786a4109294e01706d7f30601aebe66d3efa949c71275e6c88fe",
+    "sourceBefore": "9d93c4763757e8a01f18f33bb53bd8a67ead48406d1ff83af3a13f747ea3f053",
+    "sourceAfter": "9d93c4763757e8a01f18f33bb53bd8a67ead48406d1ff83af3a13f747ea3f053"
+  }
+}

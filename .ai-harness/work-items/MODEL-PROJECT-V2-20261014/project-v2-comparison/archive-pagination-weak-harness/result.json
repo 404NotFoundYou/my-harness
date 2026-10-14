@@ -1,0 +1,272 @@
+{
+  "schemaVersion": 2,
+  "trial": 1,
+  "mode": "real",
+  "client": "codex",
+  "taskId": "archive-pagination",
+  "split": "development",
+  "group": "weak-harness",
+  "model": "gpt-6-astra",
+  "taskDigest": "059ffcabf937f0473fb2b6883d08bfec54228c02ac5f6544eae40f6a67c27164",
+  "judgeDigest": "82589b486bef0d3d11688722d23508e9bf542408319a1b9036aba1f0984554c5",
+  "candidateDigest": "d70594e81d58ac6bc86bf7daf3406d73a9a2ad246eaef03e3a397ab05acb932c",
+  "budget": {
+    "timeoutMs": 180000,
+    "maxToolCalls": 80,
+    "reasoning": "medium"
+  },
+  "run": {
+    "mode": "real",
+    "client": "codex",
+    "startedAt": "2026-10-14T03:03:18.127Z",
+    "durationMs": 180394,
+    "timing": {
+      "basis": "local-event-receive-time",
+      "lifecycle": {
+        "version": 1,
+        "firstProtocolEventMs": 1095,
+        "terminalEventMs": null,
+        "processExitMs": 180377,
+        "processCloseMs": 180394
+      },
+      "toolActiveMs": 6666,
+      "otherElapsedMs": 173728,
+      "spans": [
+        {
+          "id": "item_2",
+          "startMs": 10672,
+          "endMs": 10884,
+          "category": "runtime-other",
+          "complete": true
+        },
+        {
+          "id": "item_4",
+          "startMs": 29805,
+          "endMs": 30327,
+          "category": "planning",
+          "complete": true
+        },
+        {
+          "id": "item_5",
+          "startMs": 42632,
+          "endMs": 43203,
+          "category": "verification",
+          "complete": true
+        },
+        {
+          "id": "item_6",
+          "startMs": 54687,
+          "endMs": 54824,
+          "category": "unknown",
+          "complete": true
+        },
+        {
+          "id": "item_8",
+          "startMs": 100044,
+          "endMs": 101861,
+          "category": "verification",
+          "complete": true
+        },
+        {
+          "id": "item_9",
+          "startMs": 114804,
+          "endMs": 115265,
+          "category": "guidance",
+          "complete": true
+        },
+        {
+          "id": "item_10",
+          "startMs": 132246,
+          "endMs": 134252,
+          "category": "verification",
+          "complete": true
+        },
+        {
+          "id": "item_12",
+          "startMs": 167434,
+          "endMs": 168374,
+          "category": "completion",
+          "complete": true
+        }
+      ],
+      "categories": {
+        "runtime-other": {
+          "calls": 1,
+          "activeMs": 212
+        },
+        "planning": {
+          "calls": 1,
+          "activeMs": 522
+        },
+        "verification": {
+          "calls": 3,
+          "activeMs": 4394
+        },
+        "unknown": {
+          "calls": 1,
+          "activeMs": 137
+        },
+        "guidance": {
+          "calls": 1,
+          "activeMs": 461
+        },
+        "completion": {
+          "calls": 1,
+          "activeMs": 940
+        }
+      },
+      "unmatchedCompletions": [],
+      "limitation": "工具区间按接收事件估计并合并重叠；其余耗时包含模型、网络、客户端启动和收尾，不等于纯推理耗时。"
+    },
+    "exitCode": 1,
+    "timedOut": true,
+    "toolLimit": false,
+    "toolCalls": 8,
+    "turnCompleted": false,
+    "protocolSuccess": false,
+    "usage": null,
+    "errors": [],
+    "warnings": [],
+    "unparsedLines": 0,
+    "error": null,
+    "final": null,
+    "completed": false
+  },
+  "scope": {
+    "ok": true,
+    "changes": [
+      {
+        "path": "src/pagination.mjs",
+        "before": "436796ed97d3ceb440c5568f53f7c895cd1f542b84ef40d52fc3840a1cdafeb6",
+        "after": "0deb4eaa3841504822643ff30337e1801887682bf377c994cf2bf3c24496d83a"
+      },
+      {
+        "path": "src/repository.mjs",
+        "before": "8bf57cfe69007b2b51d8b38946e6648bafacc7f5da4aab76bc6548dff325aa28",
+        "after": "1391a6e4ba37a756529be183f6b1a22e4319b3396d64c634f0d52f229778fdcb"
+      },
+      {
+        "path": ".ai-harness/work-items/pagination-fix/events.jsonl",
+        "before": null,
+        "after": "519c5854710827556f37ad6fa26d3b56ba59943a894bf739a44e54ae52723c4c"
+      },
+      {
+        "path": ".ai-harness/work-items/pagination-fix/evidence.jsonl",
+        "before": null,
+        "after": "4d12eff15ed4cd201010e603fdbf4a9d6f1ace155e3ba852cdf4f2f7291cb410"
+      },
+      {
+        "path": ".ai-harness/work-items/pagination-fix/plan.json",
+        "before": null,
+        "after": "d766792473590b294b7fb7cfd7dd49ae8791155e128cbeb4e29fd7d334ae65e9"
+      },
+      {
+        "path": ".ai-harness/work-items/pagination-fix/snapshots/410038abc84f9bf077d68a748bbfc4037a3cb95637458e218e45952aef5f548a.json",
+        "before": null,
+        "after": "e899d61017cc374791a0e9a315e84f441508ef71be497e79aafec4e54cecfe95"
+      },
+      {
+        "path": ".ai-harness/work-items/pagination-fix/snapshots/51b5109183e882397a921e7724853b5cf0f2799f00a306c71f4687a21e1a7be2.json",
+        "before": null,
+        "after": "a2314358aa79a46152fa161f5785e93ba2f6b6a21e1256892016ba05db1b06ac"
+      },
+      {
+        "path": ".ai-harness/work-items/pagination-fix/snapshots/feffe40d5665574942f0fb6b8f72acc90c09b3d9f5880eae94d6ed754deca59f.json",
+        "before": null,
+        "after": "a9ec222f357e38bfd270657fb246613ea70592007be8d8ff3eaef822f1aebd9e"
+      },
+      {
+        "path": ".ai-harness/work-items/pagination-fix/solution.md",
+        "before": null,
+        "after": "0388ec58929de112a254ee16d0919e7584be7775da3f763ab92d61b90d6d8930"
+      },
+      {
+        "path": ".ai-harness/work-items/pagination-fix/state.json",
+        "before": null,
+        "after": "52f649e7180f3109cc4d71fedce0307e0e64ca52c1c3383814a690c946889164"
+      },
+      {
+        "path": "test/extra.test.mjs",
+        "before": null,
+        "after": "376cda72d46737ad7720b9fec4f1cc9b46301a64402b2329b1a2a250d1378c8b"
+      }
+    ],
+    "violations": []
+  },
+  "workflow": {
+    "ok": false,
+    "errors": [
+      "CI 不接受未完成工作项：pagination-fix:IMPLEMENTING"
+    ],
+    "workItems": [
+      "pagination-fix"
+    ]
+  },
+  "grade": {
+    "complete": true,
+    "ok": true,
+    "cases": [
+      {
+        "id": "visible-before-pagination",
+        "pass": true
+      },
+      {
+        "id": "exclusive-cursor",
+        "pass": true
+      },
+      {
+        "id": "stable-tie",
+        "pass": true
+      },
+      {
+        "id": "empty-and-archived",
+        "pass": true
+      },
+      {
+        "id": "last-page",
+        "pass": true
+      },
+      {
+        "id": "unknown-cursor",
+        "pass": true
+      },
+      {
+        "id": "invalid-page-size",
+        "pass": true
+      },
+      {
+        "id": "page-size-boundary",
+        "pass": true
+      },
+      {
+        "id": "immutable-input",
+        "pass": true
+      },
+      {
+        "id": "repository-contract",
+        "pass": true
+      },
+      {
+        "id": "pagination-contract",
+        "pass": true
+      },
+      {
+        "id": "walk-without-duplicates",
+        "pass": true
+      }
+    ],
+    "expectedCases": 12,
+    "exitCode": 0,
+    "timedOut": false,
+    "stderr": "",
+    "error": null
+  },
+  "success": false,
+  "falseCompletion": false,
+  "falseFunctionalCompletion": false,
+  "execution": {
+    "protocolSha256": "91c345e7bb6d786a4109294e01706d7f30601aebe66d3efa949c71275e6c88fe",
+    "sourceBefore": "9d93c4763757e8a01f18f33bb53bd8a67ead48406d1ff83af3a13f747ea3f053",
+    "sourceAfter": "9d93c4763757e8a01f18f33bb53bd8a67ead48406d1ff83af3a13f747ea3f053"
+  }
+}

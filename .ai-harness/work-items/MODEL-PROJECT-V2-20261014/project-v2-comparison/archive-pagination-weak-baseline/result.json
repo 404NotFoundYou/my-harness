@@ -1,0 +1,198 @@
+{
+  "schemaVersion": 2,
+  "trial": 1,
+  "mode": "real",
+  "client": "codex",
+  "taskId": "archive-pagination",
+  "split": "development",
+  "group": "weak-baseline",
+  "model": "gpt-6-astra",
+  "taskDigest": "059ffcabf937f0473fb2b6883d08bfec54228c02ac5f6544eae40f6a67c27164",
+  "judgeDigest": "82589b486bef0d3d11688722d23508e9bf542408319a1b9036aba1f0984554c5",
+  "candidateDigest": "9c35e0bebd0be4a65c4997424748d36f4124ddc7f139fc4289ce3fc1207e7e39",
+  "budget": {
+    "timeoutMs": 180000,
+    "maxToolCalls": 80,
+    "reasoning": "medium"
+  },
+  "run": {
+    "mode": "real",
+    "client": "codex",
+    "startedAt": "2026-10-14T03:01:33.040Z",
+    "durationMs": 103310,
+    "timing": {
+      "basis": "local-event-receive-time",
+      "lifecycle": {
+        "version": 1,
+        "firstProtocolEventMs": 1173,
+        "terminalEventMs": 103050,
+        "processExitMs": 103310,
+        "processCloseMs": 103310
+      },
+      "toolActiveMs": 1111,
+      "otherElapsedMs": 102199,
+      "spans": [
+        {
+          "id": "item_3",
+          "startMs": 10187,
+          "endMs": 10343,
+          "category": "unknown",
+          "complete": true
+        },
+        {
+          "id": "item_4",
+          "startMs": 17365,
+          "endMs": 17659,
+          "category": "unknown",
+          "complete": true
+        },
+        {
+          "id": "item_6",
+          "startMs": 58134,
+          "endMs": 58352,
+          "category": "unknown",
+          "complete": true
+        },
+        {
+          "id": "item_7",
+          "startMs": 72774,
+          "endMs": 72994,
+          "category": "unknown",
+          "complete": true
+        },
+        {
+          "id": "item_9",
+          "startMs": 86203,
+          "endMs": 86426,
+          "category": "unknown",
+          "complete": true
+        }
+      ],
+      "categories": {
+        "unknown": {
+          "calls": 5,
+          "activeMs": 1111
+        }
+      },
+      "unmatchedCompletions": [],
+      "limitation": "工具区间按接收事件估计并合并重叠；其余耗时包含模型、网络、客户端启动和收尾，不等于纯推理耗时。"
+    },
+    "exitCode": 0,
+    "timedOut": false,
+    "toolLimit": false,
+    "toolCalls": 5,
+    "turnCompleted": true,
+    "protocolSuccess": true,
+    "usage": {
+      "input_tokens": 123553,
+      "cached_input_tokens": 102016,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 2484,
+      "reasoning_output_tokens": 26
+    },
+    "errors": [],
+    "warnings": [],
+    "unparsedLines": 0,
+    "error": null,
+    "final": {
+      "completed": true,
+      "summary": "已按先读规格与源码、实际复现、最小修复、回归的顺序完成。仅修改 src/repository.mjs、src/pagination.mjs，新增 test/extra.test.mjs。复现中 after:\"a\", limit:1 期望返回 b 且 next:null，实际重复返回 a 且 next:\"a\"。根因是先对原始数组切片、游标未排他、未过滤归档、原地排序且缺少 id 次序，以及末页无条件返回游标。修复后先过滤并按 updatedAt/id 非原地排序，再校验参数和排他分页，仅存在后续可见记录时返回游标。新增测试保留了实际/期望、根因及修复前后运行证据，覆盖输入不变性、字符串排序、连续翻页、空页与末页、非法参数及调用方输出契约。最终全部 8 项测试通过，无跳过。未修改原测试、规格、调用方或固定依赖，未安装依赖、访问网络或提交 Git。",
+      "tests": [
+        "修复前：node --test test/public.test.mjs；退出码 1，1 通过、1 失败，成功复现。",
+        "新增测试后、修复前：node --test test/public.test.mjs test/extra.test.mjs；退出码 1，1 通过、7 失败。",
+        "修复后：node --test test/public.test.mjs test/extra.test.mjs；退出码 0，8 通过、0 失败、0 跳过。",
+        "最终全量回归：node --test；退出码 0，8 通过、0 失败、0 跳过。"
+      ]
+    },
+    "completed": true
+  },
+  "scope": {
+    "ok": true,
+    "changes": [
+      {
+        "path": "src/pagination.mjs",
+        "before": "436796ed97d3ceb440c5568f53f7c895cd1f542b84ef40d52fc3840a1cdafeb6",
+        "after": "c4f1e4d4bfc2e8a4de6ac0180c8151530fc67018e10b209a25f4d4a9a649e010"
+      },
+      {
+        "path": "src/repository.mjs",
+        "before": "8bf57cfe69007b2b51d8b38946e6648bafacc7f5da4aab76bc6548dff325aa28",
+        "after": "4ce757352bf8831ce74c3bd5daaef9348d4184fcfbad502c5070328b021e6cae"
+      },
+      {
+        "path": "test/extra.test.mjs",
+        "before": null,
+        "after": "fb6f1a5cd36ae29b2ee5f91f7bbf96fc1c7b12c31de5fca39bc5a8a696601ee5"
+      }
+    ],
+    "violations": []
+  },
+  "workflow": null,
+  "grade": {
+    "complete": true,
+    "ok": true,
+    "cases": [
+      {
+        "id": "visible-before-pagination",
+        "pass": true
+      },
+      {
+        "id": "exclusive-cursor",
+        "pass": true
+      },
+      {
+        "id": "stable-tie",
+        "pass": true
+      },
+      {
+        "id": "empty-and-archived",
+        "pass": true
+      },
+      {
+        "id": "last-page",
+        "pass": true
+      },
+      {
+        "id": "unknown-cursor",
+        "pass": true
+      },
+      {
+        "id": "invalid-page-size",
+        "pass": true
+      },
+      {
+        "id": "page-size-boundary",
+        "pass": true
+      },
+      {
+        "id": "immutable-input",
+        "pass": true
+      },
+      {
+        "id": "repository-contract",
+        "pass": true
+      },
+      {
+        "id": "pagination-contract",
+        "pass": true
+      },
+      {
+        "id": "walk-without-duplicates",
+        "pass": true
+      }
+    ],
+    "expectedCases": 12,
+    "exitCode": 0,
+    "timedOut": false,
+    "stderr": "",
+    "error": null
+  },
+  "success": true,
+  "falseCompletion": false,
+  "falseFunctionalCompletion": false,
+  "execution": {
+    "protocolSha256": "91c345e7bb6d786a4109294e01706d7f30601aebe66d3efa949c71275e6c88fe",
+    "sourceBefore": "9d93c4763757e8a01f18f33bb53bd8a67ead48406d1ff83af3a13f747ea3f053",
+    "sourceAfter": "9d93c4763757e8a01f18f33bb53bd8a67ead48406d1ff83af3a13f747ea3f053"
+  }
+}

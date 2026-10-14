@@ -1,0 +1,143 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 1,
+  "id": "pagination-fix",
+  "type": "BUGFIX",
+  "title": "修复归档过滤与游标分页",
+  "status": "IMPLEMENTING",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/bugfix.md",
+    ".ai-harness/policies/verification.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户授权TASK.md范围内必要可逆BUGFIX"
+  },
+  "input": {
+    "references": [
+      "TASK.md"
+    ],
+    "acceptance": [
+      "公共与新增测试通过；过滤排序不变更输入，排他游标与限制验证符合规格，调用方输出不变"
+    ],
+    "nonGoals": [],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": {
+    "actual": "归档记录占页、游标重复、末页有游标，仓储排序修改输入",
+    "expected": "仅可见记录稳定排序，排他游标，末页游标为空，输入不变",
+    "reproduction": "node --test test/public.test.mjs"
+  },
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "TASK.md"
+    ],
+    "completedAt": "2026-10-14T03:03:48.311Z",
+    "repository": {
+      "isGit": true,
+      "branch": "master",
+      "commit": "e3512b5d64df6e9e229c37d225c34f15ef1b27d6",
+      "dirty": false,
+      "changedFiles": [],
+      "fingerprints": {},
+      "source": {
+        "digest": "51b5109183e882397a921e7724853b5cf0f2799f00a306c71f4687a21e1a7be2",
+        "document": ".ai-harness/work-items/pagination-fix/snapshots/51b5109183e882397a921e7724853b5cf0f2799f00a306c71f4687a21e1a7be2.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": ".ai-harness/work-items/pagination-fix/solution.md",
+    "evidence": [
+      "先复现，完整集合过滤并排序，再校验游标并排他切页，以剩余记录判断下一游标"
+    ],
+    "completedAt": "2026-10-14T03:03:48.393Z"
+  },
+  "database": {
+    "impact": "none",
+    "status": "not-applicable",
+    "document": null,
+    "evidence": [
+      "仅内存数组操作，无数据库访问"
+    ],
+    "completedAt": "2026-10-14T03:03:48.397Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/pagination-fix/plan.json",
+    "approved": true,
+    "approvalRef": "用户授权TASK.md范围内必要可逆BUGFIX"
+  },
+  "verification": {
+    "status": "pending",
+    "evidence": [],
+    "stages": []
+  },
+  "review": {
+    "status": "pending",
+    "evidence": [],
+    "independent": false
+  },
+  "acceptance": {
+    "status": "pending",
+    "evidence": []
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "pending",
+    "evidence": []
+  },
+  "blocked": null,
+  "delivery": null,
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-10-14T03:03:48.192Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-10-14T03:03:48.202Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-10-14T03:03:48.389Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-10-14T03:03:48.420Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-10-14T03:03:48.423Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-10-14T03:03:48.192Z",
+  "updatedAt": "2026-10-14T03:03:48.427Z"
+}

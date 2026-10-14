@@ -1,0 +1,437 @@
+{
+  "source": "9d93c4763757e8a01f18f33bb53bd8a67ead48406d1ff83af3a13f747ea3f053",
+  "suite": "project-v2",
+  "samples": 6,
+  "historicalFilesUnchanged": 161,
+  "diagnostics": [
+    {
+      "taskId": "archive-pagination",
+      "split": "development",
+      "group": "weak-baseline",
+      "trial": 1,
+      "resultFile": "archive-pagination-weak-baseline/result.json",
+      "functional": true,
+      "hiddenCases": {
+        "expected": 12,
+        "observed": 12,
+        "passed": 12,
+        "complete": true
+      },
+      "scope": true,
+      "scopeViolations": [],
+      "sharedDelivery": true,
+      "fullDelivery": true,
+      "workflow": null,
+      "workflowErrors": [],
+      "contract": null,
+      "workItems": [],
+      "completed": true,
+      "timedOut": false,
+      "toolLimit": false,
+      "terminalObserved": true,
+      "durationMs": 103310,
+      "toolCalls": 5,
+      "failures": [],
+      "lifecycle": {
+        "version": 1,
+        "firstProtocolEventMs": 1173,
+        "terminalEventMs": 103050,
+        "processExitMs": 103310,
+        "processCloseMs": 103310
+      },
+      "completion": {
+        "firstProtocolEventMs": 1173,
+        "terminalEventMs": 103050,
+        "processExitMs": 103310,
+        "processCloseMs": 103310,
+        "lastToolEndMs": 86426,
+        "afterLastToolMs": 16884,
+        "terminalAfterLastToolMs": 16624,
+        "exitAfterTerminalMs": 260,
+        "closeAfterExitMs": 0
+      }
+    },
+    {
+      "taskId": "archive-pagination",
+      "split": "development",
+      "group": "weak-harness",
+      "trial": 1,
+      "resultFile": "archive-pagination-weak-harness/result.json",
+      "functional": true,
+      "hiddenCases": {
+        "expected": 12,
+        "observed": 12,
+        "passed": 12,
+        "complete": true
+      },
+      "scope": true,
+      "scopeViolations": [],
+      "sharedDelivery": false,
+      "fullDelivery": false,
+      "workflow": false,
+      "workflowErrors": [
+        "CI 不接受未完成工作项：pagination-fix:IMPLEMENTING"
+      ],
+      "contract": null,
+      "workItems": [
+        {
+          "id": "pagination-fix",
+          "archiveReadable": true,
+          "type": "BUGFIX",
+          "status": "IMPLEMENTING",
+          "stages": [
+            {
+              "name": "static",
+              "status": null,
+              "commandId": null,
+              "commandStatus": null,
+              "exitCode": null,
+              "timedOut": null
+            },
+            {
+              "name": "sandbox",
+              "status": null,
+              "commandId": null,
+              "commandStatus": null,
+              "exitCode": null,
+              "timedOut": null
+            },
+            {
+              "name": "reproduction",
+              "status": null,
+              "commandId": null,
+              "commandStatus": null,
+              "exitCode": null,
+              "timedOut": null
+            },
+            {
+              "name": "regression",
+              "status": null,
+              "commandId": null,
+              "commandStatus": null,
+              "exitCode": null,
+              "timedOut": null
+            }
+          ],
+          "archiveError": null
+        }
+      ],
+      "completed": false,
+      "timedOut": true,
+      "toolLimit": false,
+      "terminalObserved": false,
+      "durationMs": 180394,
+      "toolCalls": 8,
+      "failures": [
+        "timeout",
+        "execution-failed",
+        "run-incomplete",
+        "workflow-incomplete"
+      ],
+      "lifecycle": {
+        "version": 1,
+        "firstProtocolEventMs": 1095,
+        "terminalEventMs": null,
+        "processExitMs": 180377,
+        "processCloseMs": 180394
+      },
+      "completion": {
+        "firstProtocolEventMs": 1095,
+        "terminalEventMs": null,
+        "processExitMs": 180377,
+        "processCloseMs": 180394,
+        "lastToolEndMs": 168374,
+        "afterLastToolMs": 12020,
+        "terminalAfterLastToolMs": null,
+        "exitAfterTerminalMs": null,
+        "closeAfterExitMs": 17
+      }
+    },
+    {
+      "taskId": "config-layers",
+      "split": "development",
+      "group": "weak-harness",
+      "trial": 1,
+      "resultFile": "config-layers-weak-harness/result.json",
+      "functional": true,
+      "hiddenCases": {
+        "expected": 12,
+        "observed": 12,
+        "passed": 12,
+        "complete": true
+      },
+      "scope": true,
+      "scopeViolations": [],
+      "sharedDelivery": false,
+      "fullDelivery": false,
+      "workflow": false,
+      "workflowErrors": [
+        "CI 不接受未完成工作项：config-layers-fix:IMPLEMENTING"
+      ],
+      "contract": null,
+      "workItems": [
+        {
+          "id": "config-layers-fix",
+          "archiveReadable": true,
+          "type": "BUGFIX",
+          "status": "IMPLEMENTING",
+          "stages": [
+            {
+              "name": "static",
+              "status": null,
+              "commandId": null,
+              "commandStatus": null,
+              "exitCode": null,
+              "timedOut": null
+            },
+            {
+              "name": "sandbox",
+              "status": null,
+              "commandId": null,
+              "commandStatus": null,
+              "exitCode": null,
+              "timedOut": null
+            },
+            {
+              "name": "reproduction",
+              "status": null,
+              "commandId": null,
+              "commandStatus": null,
+              "exitCode": null,
+              "timedOut": null
+            },
+            {
+              "name": "regression",
+              "status": null,
+              "commandId": null,
+              "commandStatus": null,
+              "exitCode": null,
+              "timedOut": null
+            }
+          ],
+          "archiveError": null
+        }
+      ],
+      "completed": false,
+      "timedOut": true,
+      "toolLimit": false,
+      "terminalObserved": false,
+      "durationMs": 180401,
+      "toolCalls": 11,
+      "failures": [
+        "timeout",
+        "execution-failed",
+        "run-incomplete",
+        "workflow-incomplete"
+      ],
+      "lifecycle": {
+        "version": 1,
+        "firstProtocolEventMs": 1103,
+        "terminalEventMs": null,
+        "processExitMs": 180401,
+        "processCloseMs": 180401
+      },
+      "completion": {
+        "firstProtocolEventMs": 1103,
+        "terminalEventMs": null,
+        "processExitMs": 180401,
+        "processCloseMs": 180401,
+        "lastToolEndMs": 166961,
+        "afterLastToolMs": 13440,
+        "terminalAfterLastToolMs": null,
+        "exitAfterTerminalMs": null,
+        "closeAfterExitMs": 0
+      }
+    },
+    {
+      "taskId": "config-layers",
+      "split": "development",
+      "group": "weak-baseline",
+      "trial": 1,
+      "resultFile": "config-layers-weak-baseline/result.json",
+      "functional": true,
+      "hiddenCases": {
+        "expected": 12,
+        "observed": 12,
+        "passed": 12,
+        "complete": true
+      },
+      "scope": true,
+      "scopeViolations": [],
+      "sharedDelivery": true,
+      "fullDelivery": true,
+      "workflow": null,
+      "workflowErrors": [],
+      "contract": null,
+      "workItems": [],
+      "completed": true,
+      "timedOut": false,
+      "toolLimit": false,
+      "terminalObserved": true,
+      "durationMs": 110866,
+      "toolCalls": 5,
+      "failures": [],
+      "lifecycle": {
+        "version": 1,
+        "firstProtocolEventMs": 1223,
+        "terminalEventMs": 110127,
+        "processExitMs": 110866,
+        "processCloseMs": 110866
+      },
+      "completion": {
+        "firstProtocolEventMs": 1223,
+        "terminalEventMs": 110127,
+        "processExitMs": 110866,
+        "processCloseMs": 110866,
+        "lastToolEndMs": 93816,
+        "afterLastToolMs": 17050,
+        "terminalAfterLastToolMs": 16311,
+        "exitAfterTerminalMs": 739,
+        "closeAfterExitMs": 0
+      }
+    },
+    {
+      "taskId": "window-intervals",
+      "split": "holdout",
+      "group": "weak-baseline",
+      "trial": 1,
+      "resultFile": "window-intervals-weak-baseline/result.json",
+      "functional": true,
+      "hiddenCases": {
+        "expected": 12,
+        "observed": 12,
+        "passed": 12,
+        "complete": true
+      },
+      "scope": true,
+      "scopeViolations": [],
+      "sharedDelivery": true,
+      "fullDelivery": true,
+      "workflow": null,
+      "workflowErrors": [],
+      "contract": null,
+      "workItems": [],
+      "completed": true,
+      "timedOut": false,
+      "toolLimit": false,
+      "terminalObserved": true,
+      "durationMs": 113378,
+      "toolCalls": 5,
+      "failures": [],
+      "lifecycle": {
+        "version": 1,
+        "firstProtocolEventMs": 1149,
+        "terminalEventMs": 113122,
+        "processExitMs": 113377,
+        "processCloseMs": 113378
+      },
+      "completion": {
+        "firstProtocolEventMs": 1149,
+        "terminalEventMs": 113122,
+        "processExitMs": 113377,
+        "processCloseMs": 113378,
+        "lastToolEndMs": 93764,
+        "afterLastToolMs": 19614,
+        "terminalAfterLastToolMs": 19358,
+        "exitAfterTerminalMs": 255,
+        "closeAfterExitMs": 1
+      }
+    },
+    {
+      "taskId": "window-intervals",
+      "split": "holdout",
+      "group": "weak-harness",
+      "trial": 1,
+      "resultFile": "window-intervals-weak-harness/result.json",
+      "functional": true,
+      "hiddenCases": {
+        "expected": 12,
+        "observed": 12,
+        "passed": 12,
+        "complete": true
+      },
+      "scope": true,
+      "scopeViolations": [],
+      "sharedDelivery": false,
+      "fullDelivery": false,
+      "workflow": false,
+      "workflowErrors": [
+        "CI 不接受未完成工作项：interval-fix:IMPLEMENTING"
+      ],
+      "contract": null,
+      "workItems": [
+        {
+          "id": "interval-fix",
+          "archiveReadable": true,
+          "type": "BUGFIX",
+          "status": "IMPLEMENTING",
+          "stages": [
+            {
+              "name": "static",
+              "status": null,
+              "commandId": null,
+              "commandStatus": null,
+              "exitCode": null,
+              "timedOut": null
+            },
+            {
+              "name": "sandbox",
+              "status": null,
+              "commandId": null,
+              "commandStatus": null,
+              "exitCode": null,
+              "timedOut": null
+            },
+            {
+              "name": "reproduction",
+              "status": null,
+              "commandId": null,
+              "commandStatus": null,
+              "exitCode": null,
+              "timedOut": null
+            },
+            {
+              "name": "regression",
+              "status": null,
+              "commandId": null,
+              "commandStatus": null,
+              "exitCode": null,
+              "timedOut": null
+            }
+          ],
+          "archiveError": null
+        }
+      ],
+      "completed": false,
+      "timedOut": true,
+      "toolLimit": false,
+      "terminalObserved": false,
+      "durationMs": 180416,
+      "toolCalls": 11,
+      "failures": [
+        "timeout",
+        "execution-failed",
+        "run-incomplete",
+        "workflow-incomplete"
+      ],
+      "lifecycle": {
+        "version": 1,
+        "firstProtocolEventMs": 1082,
+        "terminalEventMs": null,
+        "processExitMs": 180416,
+        "processCloseMs": 180416
+      },
+      "completion": {
+        "firstProtocolEventMs": 1082,
+        "terminalEventMs": null,
+        "processExitMs": 180416,
+        "processCloseMs": 180416,
+        "lastToolEndMs": 173675,
+        "afterLastToolMs": 6741,
+        "terminalAfterLastToolMs": null,
+        "exitAfterTerminalMs": null,
+        "closeAfterExitMs": 0
+      }
+    }
+  ]
+}

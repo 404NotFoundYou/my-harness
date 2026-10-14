@@ -1,0 +1,298 @@
+{
+  "schemaVersion": 2,
+  "trial": 1,
+  "mode": "real",
+  "client": "codex",
+  "taskId": "config-layers",
+  "split": "development",
+  "group": "weak-harness",
+  "model": "gpt-6-astra",
+  "taskDigest": "b59d9d1cdfbb96a51a94b13a1ae010eb2c2871fabf3dbc3ce7c97154132d7219",
+  "judgeDigest": "9ad2a2e4e70363a6ac2bda94da9fe1a3653e051c9079cf11665cd3db47d3b459",
+  "candidateDigest": "ccef10d49ab802b0ec2b9f629f85e91bad04986cf8b959f99260fad82b0a8b43",
+  "budget": {
+    "timeoutMs": 180000,
+    "maxToolCalls": 80,
+    "reasoning": "medium"
+  },
+  "run": {
+    "mode": "real",
+    "client": "codex",
+    "startedAt": "2026-10-14T03:06:20.606Z",
+    "durationMs": 180401,
+    "timing": {
+      "basis": "local-event-receive-time",
+      "lifecycle": {
+        "version": 1,
+        "firstProtocolEventMs": 1103,
+        "terminalEventMs": null,
+        "processExitMs": 180401,
+        "processCloseMs": 180401
+      },
+      "toolActiveMs": 9378,
+      "otherElapsedMs": 171023,
+      "spans": [
+        {
+          "id": "item_3",
+          "startMs": 12342,
+          "endMs": 12583,
+          "category": "runtime-other",
+          "complete": true
+        },
+        {
+          "id": "item_4",
+          "startMs": 24518,
+          "endMs": 24702,
+          "category": "planning",
+          "complete": true
+        },
+        {
+          "id": "item_5",
+          "startMs": 37028,
+          "endMs": 37563,
+          "category": "planning",
+          "complete": true
+        },
+        {
+          "id": "item_6",
+          "startMs": 45251,
+          "endMs": 45732,
+          "category": "verification",
+          "complete": true
+        },
+        {
+          "id": "item_7",
+          "startMs": 54080,
+          "endMs": 54260,
+          "category": "unknown",
+          "complete": true
+        },
+        {
+          "id": "item_9",
+          "startMs": 85012,
+          "endMs": 85611,
+          "category": "verification",
+          "complete": true
+        },
+        {
+          "id": "item_10",
+          "startMs": 100377,
+          "endMs": 102805,
+          "category": "verification",
+          "complete": true
+        },
+        {
+          "id": "item_11",
+          "startMs": 109611,
+          "endMs": 110168,
+          "category": "guidance",
+          "complete": true
+        },
+        {
+          "id": "item_12",
+          "startMs": 127502,
+          "endMs": 130072,
+          "category": "verification",
+          "complete": true
+        },
+        {
+          "id": "item_14",
+          "startMs": 157297,
+          "endMs": 158325,
+          "category": "completion",
+          "complete": true
+        },
+        {
+          "id": "item_15",
+          "startMs": 166386,
+          "endMs": 166961,
+          "category": "guidance",
+          "complete": true
+        }
+      ],
+      "categories": {
+        "runtime-other": {
+          "calls": 1,
+          "activeMs": 241
+        },
+        "planning": {
+          "calls": 2,
+          "activeMs": 719
+        },
+        "verification": {
+          "calls": 4,
+          "activeMs": 6078
+        },
+        "unknown": {
+          "calls": 1,
+          "activeMs": 180
+        },
+        "guidance": {
+          "calls": 2,
+          "activeMs": 1132
+        },
+        "completion": {
+          "calls": 1,
+          "activeMs": 1028
+        }
+      },
+      "unmatchedCompletions": [],
+      "limitation": "工具区间按接收事件估计并合并重叠；其余耗时包含模型、网络、客户端启动和收尾，不等于纯推理耗时。"
+    },
+    "exitCode": 1,
+    "timedOut": true,
+    "toolLimit": false,
+    "toolCalls": 11,
+    "turnCompleted": false,
+    "protocolSuccess": false,
+    "usage": null,
+    "errors": [],
+    "warnings": [],
+    "unparsedLines": 0,
+    "error": null,
+    "final": null,
+    "completed": false
+  },
+  "scope": {
+    "ok": true,
+    "changes": [
+      {
+        "path": "src/config.mjs",
+        "before": "7f8356d764bcbe26315b1321ca331afd87bd49474e66208a50e621f19e093ffd",
+        "after": "fc31bc2c74809b6304b26130d9b25aae83f5aa59e7fb75e7247a6a8046108f3f"
+      },
+      {
+        "path": "src/layers.mjs",
+        "before": "a0838965a9783006d5d686609e50e4ddea46e4bc216a2c76df6e2280983ef9af",
+        "after": "5d8e7140a9a8290d6b893bbcd2633c8239fd1152f08fd3bb79fb49669b3bc9b5"
+      },
+      {
+        "path": ".ai-harness/work-items/config-layers-fix/events.jsonl",
+        "before": null,
+        "after": "e28c220cb4878d2a9eb8400ebb07e22dce5fb334ccf1f5264c752732d7600f71"
+      },
+      {
+        "path": ".ai-harness/work-items/config-layers-fix/evidence.jsonl",
+        "before": null,
+        "after": "1ca512eeb693ebb2414ea705ac7a65a07efdb42ff03182fb3db98ac881ee66bd"
+      },
+      {
+        "path": ".ai-harness/work-items/config-layers-fix/plan.json",
+        "before": null,
+        "after": "a3ee668e8943e419bb37acd342ab80426789338fae728f4b3ddeabbcd4286845"
+      },
+      {
+        "path": ".ai-harness/work-items/config-layers-fix/snapshots/6b391a3f9cfb575512ae415677245b4ccb1b36f5febfd20216cd2dcbab361782.json",
+        "before": null,
+        "after": "ad36ca91f5b5306d2eeec4d229c591eac67b4c7928b5ace34bac8037234291e4"
+      },
+      {
+        "path": ".ai-harness/work-items/config-layers-fix/snapshots/b43f76c11af8ede7dcf2771f439e616f588a322fd3e212de34bf425072af4f44.json",
+        "before": null,
+        "after": "689d47ae57bbe64ca67b83db89d69e8b6fcbb1b3c681d95b243120bed41a1b32"
+      },
+      {
+        "path": ".ai-harness/work-items/config-layers-fix/snapshots/c6a5e5ae830130a50b000df2e4ee4c2b3fed0a5987dd49ca59a04916e725346f.json",
+        "before": null,
+        "after": "b88943e2a88cfb2f10316753db62c6c545c2f5f9a4361d59e6a92d645e0e6f27"
+      },
+      {
+        "path": ".ai-harness/work-items/config-layers-fix/snapshots/fb909592ed0a551b876dcb9a8d7e25c3d8957dcf4cacea8828f6064e8b3f4449.json",
+        "before": null,
+        "after": "93a1c08bba41faa328c4ad6c38fc978e16356e7261111b288650bd8c7eb4184a"
+      },
+      {
+        "path": ".ai-harness/work-items/config-layers-fix/solution.md",
+        "before": null,
+        "after": "b900bdf96890803712d671d3497161752c6b79a0abd445d29832485022b604ae"
+      },
+      {
+        "path": ".ai-harness/work-items/config-layers-fix/state.json",
+        "before": null,
+        "after": "e58484534bb876f04fe5a087d9d4517cf650c510dfadcddec8406db7f89e7906"
+      },
+      {
+        "path": "test/extra.test.mjs",
+        "before": null,
+        "after": "7408085db51ea5dd24466b651efe51a2432c9c6b1c248dd825cbc60c786ee959"
+      }
+    ],
+    "violations": []
+  },
+  "workflow": {
+    "ok": false,
+    "errors": [
+      "CI 不接受未完成工作项：config-layers-fix:IMPLEMENTING"
+    ],
+    "workItems": [
+      "config-layers-fix"
+    ]
+  },
+  "grade": {
+    "complete": true,
+    "ok": true,
+    "cases": [
+      {
+        "id": "priority-over-input",
+        "pass": true
+      },
+      {
+        "id": "disabled-layer",
+        "pass": true
+      },
+      {
+        "id": "equal-priority-id-order",
+        "pass": true
+      },
+      {
+        "id": "sorted-keys",
+        "pass": true
+      },
+      {
+        "id": "null-is-value",
+        "pass": true
+      },
+      {
+        "id": "empty-and-disabled",
+        "pass": true
+      },
+      {
+        "id": "input-immutable",
+        "pass": true
+      },
+      {
+        "id": "prototype-key",
+        "pass": true
+      },
+      {
+        "id": "source-not-aliased",
+        "pass": true
+      },
+      {
+        "id": "ordered-layers-contract",
+        "pass": true
+      },
+      {
+        "id": "resolve-config-contract",
+        "pass": true
+      },
+      {
+        "id": "caller-shape",
+        "pass": true
+      }
+    ],
+    "expectedCases": 12,
+    "exitCode": 0,
+    "timedOut": false,
+    "stderr": "",
+    "error": null
+  },
+  "success": false,
+  "falseCompletion": false,
+  "falseFunctionalCompletion": false,
+  "execution": {
+    "protocolSha256": "91c345e7bb6d786a4109294e01706d7f30601aebe66d3efa949c71275e6c88fe",
+    "sourceBefore": "9d93c4763757e8a01f18f33bb53bd8a67ead48406d1ff83af3a13f747ea3f053",
+    "sourceAfter": "9d93c4763757e8a01f18f33bb53bd8a67ead48406d1ff83af3a13f747ea3f053"
+  }
+}

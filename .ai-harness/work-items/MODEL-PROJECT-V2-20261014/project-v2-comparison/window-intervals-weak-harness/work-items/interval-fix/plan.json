@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "interval-fix",
+  "mode": "single",
+  "rationale": "复制排序后线性归并；先构造非空窗口交集再复用归并；补充不变性与边界回归",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "半开区间归并与窗口裁剪修复",
+      "module": "compact",
+      "status": "IN_PROGRESS",
+      "attempt": 1,
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        "src/intervals.mjs",
+        "src/window.mjs",
+        "test/extra.test.mjs"
+      ],
+      "verification": [
+        "node --test test/public.test.mjs test/extra.test.mjs"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            "--test",
+            "test/public.test.mjs",
+            "test/extra.test.mjs"
+          ]
+        }
+      ],
+      "docsImpact": [
+        "N/A: 规格不变且用户禁止修改文档"
+      ],
+      "reviewBatch": "R1",
+      "risk": "low",
+      "owner": "primary-ai",
+      "verificationStatus": "pending",
+      "reviewStatus": "pending",
+      "evidence": [],
+      "deferralApproval": null
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "半开区间归并与窗口裁剪修复",
+      "risk": "low",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": false
+    }
+  ],
+  "createdAt": "2026-10-14T03:13:43.690Z",
+  "updatedAt": "2026-10-14T03:13:43.721Z"
+}

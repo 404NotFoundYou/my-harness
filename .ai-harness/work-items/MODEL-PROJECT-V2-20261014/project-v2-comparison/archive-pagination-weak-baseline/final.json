@@ -1,0 +1,10 @@
+{
+  "completed": true,
+  "summary": "已按先读规格与源码、实际复现、最小修复、回归的顺序完成。仅修改 src/repository.mjs、src/pagination.mjs，新增 test/extra.test.mjs。复现中 after:\"a\", limit:1 期望返回 b 且 next:null，实际重复返回 a 且 next:\"a\"。根因是先对原始数组切片、游标未排他、未过滤归档、原地排序且缺少 id 次序，以及末页无条件返回游标。修复后先过滤并按 updatedAt/id 非原地排序，再校验参数和排他分页，仅存在后续可见记录时返回游标。新增测试保留了实际/期望、根因及修复前后运行证据，覆盖输入不变性、字符串排序、连续翻页、空页与末页、非法参数及调用方输出契约。最终全部 8 项测试通过，无跳过。未修改原测试、规格、调用方或固定依赖，未安装依赖、访问网络或提交 Git。",
+  "tests": [
+    "修复前：node --test test/public.test.mjs；退出码 1，1 通过、1 失败，成功复现。",
+    "新增测试后、修复前：node --test test/public.test.mjs test/extra.test.mjs；退出码 1，1 通过、7 失败。",
+    "修复后：node --test test/public.test.mjs test/extra.test.mjs；退出码 0，8 通过、0 失败、0 跳过。",
+    "最终全量回归：node --test；退出码 0，8 通过、0 失败、0 跳过。"
+  ]
+}
