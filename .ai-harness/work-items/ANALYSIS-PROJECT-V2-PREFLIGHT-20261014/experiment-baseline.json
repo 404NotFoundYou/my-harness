@@ -1,0 +1,161 @@
+{
+  "recordedAt": "2026-10-14T08:48:15.529Z",
+  "phase": "preparation-only",
+  "head": "b269e61738f1af34bae7e81923c91f9e37774b38",
+  "source": "502e2cb4a9ca4c60189ee01d52c78f5979cdbdf57dd651ecc71e97778fd1dccc",
+  "cliVersion": "0.156.0",
+  "driverIdentity": {
+    "kind": "cli",
+    "entry": "D:\\Program Files\\Nvm\\v22.20.0\\node_global\\node_modules\\@openai\\codex\\bin\\codex.js",
+    "sha256": "61b0194f3bb6534439c8d26a3ed57d0805f84b884588b761795323eeb92fcf70",
+    "nodeVersion": "v22.20.0"
+  },
+  "plan": {
+    "schemaVersion": 4,
+    "suite": "project-v2",
+    "client": "codex",
+    "comparison": "paired",
+    "repetitions": 1,
+    "groups": [
+      {
+        "id": "weak-baseline",
+        "model": "gpt-6-astra",
+        "harness": false
+      },
+      {
+        "id": "weak-harness",
+        "model": "gpt-6-astra",
+        "harness": true
+      }
+    ],
+    "budget": {
+      "timeoutMs": 180000,
+      "maxToolCalls": 80,
+      "reasoning": "medium"
+    },
+    "schedule": [
+      {
+        "taskId": "archive-pagination",
+        "group": "weak-baseline",
+        "trial": 1,
+        "directory": "archive-pagination-weak-baseline"
+      },
+      {
+        "taskId": "archive-pagination",
+        "group": "weak-harness",
+        "trial": 1,
+        "directory": "archive-pagination-weak-harness"
+      },
+      {
+        "taskId": "config-layers",
+        "group": "weak-harness",
+        "trial": 1,
+        "directory": "config-layers-weak-harness"
+      },
+      {
+        "taskId": "config-layers",
+        "group": "weak-baseline",
+        "trial": 1,
+        "directory": "config-layers-weak-baseline"
+      },
+      {
+        "taskId": "window-intervals",
+        "group": "weak-baseline",
+        "trial": 1,
+        "directory": "window-intervals-weak-baseline"
+      },
+      {
+        "taskId": "window-intervals",
+        "group": "weak-harness",
+        "trial": 1,
+        "directory": "window-intervals-weak-harness"
+      }
+    ]
+  },
+  "tasks": [
+    {
+      "id": "archive-pagination",
+      "split": "development",
+      "taskDigest": "059ffcabf937f0473fb2b6883d08bfec54228c02ac5f6544eae40f6a67c27164",
+      "judgeDigest": "82589b486bef0d3d11688722d23508e9bf542408319a1b9036aba1f0984554c5",
+      "entry": "src/caller.mjs",
+      "name": "fetchPage",
+      "type": "BUGFIX",
+      "writableFiles": [
+        "src/pagination.mjs",
+        "src/repository.mjs"
+      ]
+    },
+    {
+      "id": "config-layers",
+      "split": "development",
+      "taskDigest": "b59d9d1cdfbb96a51a94b13a1ae010eb2c2871fabf3dbc3ce7c97154132d7219",
+      "judgeDigest": "9ad2a2e4e70363a6ac2bda94da9fe1a3653e051c9079cf11665cd3db47d3b459",
+      "entry": "src/caller.mjs",
+      "name": "readConfig",
+      "type": "BUGFIX",
+      "writableFiles": [
+        "src/config.mjs",
+        "src/layers.mjs"
+      ]
+    },
+    {
+      "id": "window-intervals",
+      "split": "holdout",
+      "taskDigest": "d64581fcc701e15e5cfa02ee3ba940d366131e1005e9d9208cdd3841b5913055",
+      "judgeDigest": "f373beb6ff4131998170b4c7f6d1ed760cd730a5f0f2b159fb424f46ad4298d7",
+      "entry": "src/caller.mjs",
+      "name": "getCoverage",
+      "type": "BUGFIX",
+      "writableFiles": [
+        "src/intervals.mjs",
+        "src/window.mjs"
+      ]
+    }
+  ],
+  "caseCounts": {
+    "archive-pagination": 12,
+    "config-layers": 12,
+    "window-intervals": 12
+  },
+  "previousExperiment": ".ai-harness/work-items/MODEL-PROJECT-V2-RECHECK-20261014/project-v2-comparison",
+  "history": {
+    "manifest": ".ai-harness/work-items/ANALYSIS-PROJECT-V2-PREFLIGHT-20261014/historical-hashes.json",
+    "files": 369
+  },
+  "authorization": {
+    "preparationAuthorized": true,
+    "realModelSessionsAuthorized": false,
+    "actualModelSessions": 0,
+    "plannedModelSessions": 6
+  },
+  "limits": {
+    "perSessionTimeoutMs": 180000,
+    "perSessionMaxToolCalls": 80,
+    "maximumScheduledSessionBudgetMs": 1080000,
+    "maximumScheduledToolCalls": 480,
+    "reasoning": "medium",
+    "frameworkAutomaticRetries": 0,
+    "holdoutTuning": false
+  },
+  "preflight": {
+    "providerConnectivity": "not-checked",
+    "modelAvailability": "not-checked",
+    "credentialChanges": 0,
+    "actualModelSessions": 0
+  },
+  "ciRequired": {
+    "head": "b269e61738f1af34bae7e81923c91f9e37774b38",
+    "workflowNames": [
+      "AI Harness",
+      "Harness source tests"
+    ],
+    "sourceMatrixJobs": 6,
+    "condition": "all completed/success before real model sessions; recheck if source or commit changes"
+  },
+  "limitations": [
+    "CLI entry fingerprint does not freeze every dependency, provider configuration or remote model implementation",
+    "modelCalls in dry-run is the proposed CLI session count, not executed HTTP requests",
+    "single paired round cannot establish a general or causal benefit"
+  ]
+}

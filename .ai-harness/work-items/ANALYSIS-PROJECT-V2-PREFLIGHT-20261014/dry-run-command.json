@@ -1,0 +1,27 @@
+{
+  "command": "node",
+  "args": [
+    "benchmarks/run.mjs",
+    "--cli",
+    "D:\\Program Files\\Nvm\\v22.20.0\\node_global\\node_modules\\@openai\\codex\\bin\\codex.js",
+    "--weak",
+    "gpt-6-astra",
+    "--suite",
+    "project-v2",
+    "--comparison",
+    "paired",
+    "--repetitions",
+    "1",
+    "--timeout-ms",
+    "180000",
+    "--max-tools",
+    "80",
+    "--out",
+    ".ai-harness/work-items/ANALYSIS-PROJECT-V2-PREFLIGHT-20261014/project-v2-comparison",
+    "--dry-run"
+  ],
+  "exitCode": 0,
+  "actualModelSessions": 0,
+  "plannedModelSessions": 6,
+  "executedFrom": "authorized host tool; harness run did not execute ask decision"
+}

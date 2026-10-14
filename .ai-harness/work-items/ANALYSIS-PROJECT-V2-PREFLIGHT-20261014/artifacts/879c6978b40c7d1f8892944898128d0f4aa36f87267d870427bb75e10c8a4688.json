@@ -1,0 +1,13 @@
+{
+  "ok": true,
+  "sourceDigest": "502e2cb4a9ca4c60189ee01d52c78f5979cdbdf57dd651ecc71e97778fd1dccc",
+  "head": "b269e61738f1af34bae7e81923c91f9e37774b38",
+  "plannedModelSessions": 6,
+  "actualModelSessions": 0,
+  "protectedHistoricalFiles": 369,
+  "sourceMatchesCommittedTree": true,
+  "taskAndJudgeManifestsMatchPrevious": true,
+  "planAndBudgetsMatchPrevious": true,
+  "cliEntryAndNodeMatchPrevious": true,
+  "offlineCliVersion": "0.156.0"
+}
