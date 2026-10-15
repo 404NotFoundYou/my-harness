@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "files": {
+    "src/config.mjs": {
+      "status": "present",
+      "content": "import { orderedLayers } from \"./layers.mjs\";\nexport function resolveConfig(layers) {\n  const config = {};\n  for (const layer of orderedLayers(layers)) {\n    for (const key of Object.getOwnPropertyNames(layer.values)) {\n      Object.defineProperty(config, key, {value: layer.values[key], writable: true, enumerable: true, configurable: true});\n    }\n  }\n  return config;\n}\n",
+      "sha256": "54f99a9965f11eebc6da9676a3d48e883ef51952a990f75ea37d5d958bb345d3"
+    },
+    "src/layers.mjs": {
+      "status": "present",
+      "content": "export function orderedLayers(layers) {\n  return layers.filter(layer => layer.enabled).sort((a,b) => a.priority-b.priority || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));\n}\n",
+      "sha256": "b0e7902a88cd17702931ccf28fe177d71a9c06510729230d1d8360af4471b9ae"
+    }
+  }
+}

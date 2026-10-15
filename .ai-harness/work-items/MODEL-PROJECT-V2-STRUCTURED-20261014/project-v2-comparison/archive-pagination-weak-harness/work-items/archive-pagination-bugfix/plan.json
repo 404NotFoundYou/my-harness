@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "archive-pagination-bugfix",
+  "mode": "single",
+  "rationale": "先在仓储过滤归档并非原地按时间及字符串id排序，再在完整可见集合校验游标和页大小，排他切页并仅在有剩余时返回游标；补充边界回归",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "修复archive-pagination固定BUG",
+      "module": "compact",
+      "status": "IN_PROGRESS",
+      "attempt": 1,
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        "src/pagination.mjs",
+        "src/repository.mjs",
+        "test/extra.test.mjs"
+      ],
+      "verification": [
+        "{\"command\":\"node\",\"args\":[\"--test\",\"test/public.test.mjs\"]}"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            "--test",
+            "test/public.test.mjs"
+          ]
+        }
+      ],
+      "docsImpact": [
+        "N/A: 固定公开规格与文档不变"
+      ],
+      "reviewBatch": "R1",
+      "risk": "low",
+      "owner": "primary-ai",
+      "verificationStatus": "pending",
+      "reviewStatus": "pending",
+      "evidence": [],
+      "deferralApproval": null
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "修复archive-pagination固定BUG",
+      "risk": "low",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": false
+    }
+  ],
+  "createdAt": "2026-10-14T09:20:34.152Z",
+  "updatedAt": "2026-10-14T09:20:34.181Z"
+}

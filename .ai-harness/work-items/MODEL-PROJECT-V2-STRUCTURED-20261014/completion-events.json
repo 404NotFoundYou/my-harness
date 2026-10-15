@@ -1,0 +1,198 @@
+{
+  "source": "502e2cb4a9ca4c60189ee01d52c78f5979cdbdf57dd651ecc71e97778fd1dccc",
+  "samples": 6,
+  "events": [
+    {
+      "taskId": "archive-pagination",
+      "group": "weak-baseline",
+      "specGuidanceProvided": false,
+      "beginSpecCalls": [],
+      "sharedMemoryReadEvents": [],
+      "unclosedCommandEvents": [],
+      "finishStartedEvents": [],
+      "guides": [],
+      "finishHelp": [],
+      "finishes": []
+    },
+    {
+      "taskId": "archive-pagination",
+      "group": "weak-harness",
+      "specGuidanceProvided": true,
+      "beginSpecCalls": [
+        {
+          "eventId": "item_5",
+          "shellExitCode": 1,
+          "errorCodes": []
+        }
+      ],
+      "sharedMemoryReadEvents": [
+        "item_4"
+      ],
+      "unclosedCommandEvents": [],
+      "finishStartedEvents": [],
+      "guides": [
+        {
+          "eventId": "item_9",
+          "exitCode": 0,
+          "recommendations": [
+            {
+              "id": "51211f80-fb38-45d5-b81b-c00441613b6e",
+              "taskId": "T1",
+              "checks": [
+                {
+                  "taskId": "T1",
+                  "checkId": "V1"
+                }
+              ],
+              "executable": "node",
+              "args": [
+                "--test",
+                "test/public.test.mjs"
+              ]
+            }
+          ]
+        }
+      ],
+      "finishHelp": [],
+      "finishes": []
+    },
+    {
+      "taskId": "config-layers",
+      "group": "weak-harness",
+      "specGuidanceProvided": true,
+      "beginSpecCalls": [
+        {
+          "eventId": "item_5",
+          "shellExitCode": 0,
+          "errorCodes": []
+        }
+      ],
+      "sharedMemoryReadEvents": [
+        "item_4"
+      ],
+      "unclosedCommandEvents": [],
+      "finishStartedEvents": [
+        "item_11"
+      ],
+      "guides": [
+        {
+          "eventId": "item_9",
+          "exitCode": 0,
+          "recommendations": [
+            {
+              "id": "b8ee86ca-9003-4400-b0ff-49fcd5f80ea6",
+              "taskId": "T1",
+              "checks": [
+                {
+                  "taskId": "T1",
+                  "checkId": "V1"
+                }
+              ],
+              "executable": "node",
+              "args": [
+                "--test",
+                "test/public.test.mjs"
+              ]
+            }
+          ]
+        }
+      ],
+      "finishHelp": [],
+      "finishes": [
+        {
+          "eventId": "item_11",
+          "exitCode": 0,
+          "span": {
+            "id": "item_11",
+            "startMs": 148011,
+            "endMs": 153997,
+            "category": "completion",
+            "complete": true
+          },
+          "errorCodes": []
+        }
+      ]
+    },
+    {
+      "taskId": "config-layers",
+      "group": "weak-baseline",
+      "specGuidanceProvided": false,
+      "beginSpecCalls": [],
+      "sharedMemoryReadEvents": [],
+      "unclosedCommandEvents": [],
+      "finishStartedEvents": [],
+      "guides": [],
+      "finishHelp": [],
+      "finishes": []
+    },
+    {
+      "taskId": "window-intervals",
+      "group": "weak-baseline",
+      "specGuidanceProvided": false,
+      "beginSpecCalls": [],
+      "sharedMemoryReadEvents": [],
+      "unclosedCommandEvents": [],
+      "finishStartedEvents": [],
+      "guides": [],
+      "finishHelp": [],
+      "finishes": []
+    },
+    {
+      "taskId": "window-intervals",
+      "group": "weak-harness",
+      "specGuidanceProvided": true,
+      "beginSpecCalls": [
+        {
+          "eventId": "item_5",
+          "shellExitCode": 0,
+          "errorCodes": []
+        }
+      ],
+      "sharedMemoryReadEvents": [
+        "item_4"
+      ],
+      "unclosedCommandEvents": [],
+      "finishStartedEvents": [
+        "item_12"
+      ],
+      "guides": [
+        {
+          "eventId": "item_10",
+          "exitCode": 0,
+          "recommendations": [
+            {
+              "id": "0af69010-6e85-4355-982c-860ca56e6e07",
+              "taskId": "T1",
+              "checks": [
+                {
+                  "taskId": "T1",
+                  "checkId": "V1"
+                }
+              ],
+              "executable": "node",
+              "args": [
+                "--test",
+                "test/public.test.mjs"
+              ]
+            }
+          ]
+        }
+      ],
+      "finishHelp": [],
+      "finishes": [
+        {
+          "eventId": "item_12",
+          "exitCode": 0,
+          "span": {
+            "id": "item_12",
+            "startMs": 153521,
+            "endMs": 159782,
+            "category": "completion",
+            "complete": true
+          },
+          "errorCodes": []
+        }
+      ]
+    }
+  ]
+}

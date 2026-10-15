@@ -1,0 +1,459 @@
+{
+  "ok": true,
+  "readOnly": true,
+  "schemaVersion": 1,
+  "mode": "real",
+  "source": "502e2cb4a9ca4c60189ee01d52c78f5979cdbdf57dd651ecc71e97778fd1dccc",
+  "protocolSha256": "b57854638cd1ac9420a2a84b56333b3277577eac87aa2a6d2e8610d9bd62c83b",
+  "experiment": {
+    "suite": "project-v2",
+    "client": "codex",
+    "comparison": "paired",
+    "repetitions": 1,
+    "groups": [
+      {
+        "id": "weak-baseline",
+        "model": "gpt-6-astra",
+        "harness": false
+      },
+      {
+        "id": "weak-harness",
+        "model": "gpt-6-astra",
+        "harness": true
+      }
+    ],
+    "budget": {
+      "timeoutMs": 180000,
+      "maxToolCalls": 80,
+      "reasoning": "medium"
+    },
+    "createdAt": "2026-10-14T09:16:59.492Z",
+    "samples": 6
+  },
+  "direction": "weak-harness minus weak-baseline",
+  "pairs": [
+    {
+      "taskId": "archive-pagination",
+      "trial": 1,
+      "split": "development",
+      "baseline": {
+        "resultFile": "archive-pagination-weak-baseline/result.json",
+        "functional": true,
+        "sharedDelivery": true,
+        "fullDelivery": true,
+        "failures": [],
+        "censored": false,
+        "censorUnknown": false,
+        "measurements": {
+          "durationMs": 149938,
+          "toolCalls": 5,
+          "inputTokens": 122032,
+          "outputTokens": 2701
+        },
+        "timing": {
+          "basis": "local-event-receive-time",
+          "toolActiveMs": 1699,
+          "otherElapsedMs": 148239,
+          "categories": [
+            {
+              "category": "unknown",
+              "calls": 5,
+              "activeMs": 1699
+            }
+          ],
+          "completion": {
+            "firstProtocolEventMs": 1427,
+            "terminalEventMs": 149644,
+            "processExitMs": 149938,
+            "processCloseMs": 149938,
+            "lastToolEndMs": 129232,
+            "afterLastToolMs": 20706,
+            "terminalAfterLastToolMs": 20412,
+            "exitAfterTerminalMs": 294,
+            "closeAfterExitMs": 0
+          }
+        },
+        "terminalObserved": true
+      },
+      "harness": {
+        "resultFile": "archive-pagination-weak-harness/result.json",
+        "functional": true,
+        "sharedDelivery": false,
+        "fullDelivery": false,
+        "failures": [
+          "timeout",
+          "execution-failed",
+          "run-incomplete",
+          "workflow-incomplete"
+        ],
+        "censored": true,
+        "censorUnknown": false,
+        "measurements": {
+          "durationMs": 180441,
+          "toolCalls": 6,
+          "inputTokens": null,
+          "outputTokens": null
+        },
+        "timing": {
+          "basis": "local-event-receive-time",
+          "toolActiveMs": 4110,
+          "otherElapsedMs": 176331,
+          "categories": [
+            {
+              "category": "unknown",
+              "calls": 3,
+              "activeMs": 746
+            },
+            {
+              "category": "planning",
+              "calls": 1,
+              "activeMs": 1087
+            },
+            {
+              "category": "verification",
+              "calls": 2,
+              "activeMs": 2277
+            }
+          ],
+          "completion": {
+            "firstProtocolEventMs": 1170,
+            "terminalEventMs": null,
+            "processExitMs": 180441,
+            "processCloseMs": 180441,
+            "lastToolEndMs": 165151,
+            "afterLastToolMs": 15290,
+            "terminalAfterLastToolMs": null,
+            "exitAfterTerminalMs": null,
+            "closeAfterExitMs": 0
+          }
+        },
+        "terminalObserved": false
+      },
+      "delta": {
+        "durationMs": 30503,
+        "toolCalls": 1,
+        "inputTokens": null,
+        "outputTokens": null
+      }
+    },
+    {
+      "taskId": "config-layers",
+      "trial": 1,
+      "split": "development",
+      "baseline": {
+        "resultFile": "config-layers-weak-baseline/result.json",
+        "functional": true,
+        "sharedDelivery": true,
+        "fullDelivery": true,
+        "failures": [],
+        "censored": false,
+        "censorUnknown": false,
+        "measurements": {
+          "durationMs": 153169,
+          "toolCalls": 5,
+          "inputTokens": 124513,
+          "outputTokens": 2881
+        },
+        "timing": {
+          "basis": "local-event-receive-time",
+          "toolActiveMs": 1712,
+          "otherElapsedMs": 151457,
+          "categories": [
+            {
+              "category": "unknown",
+              "calls": 5,
+              "activeMs": 1712
+            }
+          ],
+          "completion": {
+            "firstProtocolEventMs": 1213,
+            "terminalEventMs": 152883,
+            "processExitMs": 153169,
+            "processCloseMs": 153169,
+            "lastToolEndMs": 132135,
+            "afterLastToolMs": 21034,
+            "terminalAfterLastToolMs": 20748,
+            "exitAfterTerminalMs": 286,
+            "closeAfterExitMs": 0
+          }
+        },
+        "terminalObserved": true
+      },
+      "harness": {
+        "resultFile": "config-layers-weak-harness/result.json",
+        "functional": true,
+        "sharedDelivery": false,
+        "fullDelivery": false,
+        "failures": [
+          "timeout",
+          "execution-failed",
+          "run-incomplete"
+        ],
+        "censored": true,
+        "censorUnknown": false,
+        "measurements": {
+          "durationMs": 180414,
+          "toolCalls": 7,
+          "inputTokens": null,
+          "outputTokens": null
+        },
+        "timing": {
+          "basis": "local-event-receive-time",
+          "toolActiveMs": 10230,
+          "otherElapsedMs": 170184,
+          "categories": [
+            {
+              "category": "unknown",
+              "calls": 2,
+              "activeMs": 611
+            },
+            {
+              "category": "planning",
+              "calls": 1,
+              "activeMs": 675
+            },
+            {
+              "category": "verification",
+              "calls": 3,
+              "activeMs": 2958
+            },
+            {
+              "category": "completion",
+              "calls": 1,
+              "activeMs": 5986
+            }
+          ],
+          "completion": {
+            "firstProtocolEventMs": 1164,
+            "terminalEventMs": null,
+            "processExitMs": 180414,
+            "processCloseMs": 180414,
+            "lastToolEndMs": 153997,
+            "afterLastToolMs": 26417,
+            "terminalAfterLastToolMs": null,
+            "exitAfterTerminalMs": null,
+            "closeAfterExitMs": 0
+          }
+        },
+        "terminalObserved": false
+      },
+      "delta": {
+        "durationMs": 27245,
+        "toolCalls": 2,
+        "inputTokens": null,
+        "outputTokens": null
+      }
+    },
+    {
+      "taskId": "window-intervals",
+      "trial": 1,
+      "split": "holdout",
+      "baseline": {
+        "resultFile": "window-intervals-weak-baseline/result.json",
+        "functional": true,
+        "sharedDelivery": true,
+        "fullDelivery": true,
+        "failures": [],
+        "censored": false,
+        "censorUnknown": false,
+        "measurements": {
+          "durationMs": 174716,
+          "toolCalls": 5,
+          "inputTokens": 124190,
+          "outputTokens": 2893
+        },
+        "timing": {
+          "basis": "local-event-receive-time",
+          "toolActiveMs": 1928,
+          "otherElapsedMs": 172788,
+          "categories": [
+            {
+              "category": "unknown",
+              "calls": 5,
+              "activeMs": 1928
+            }
+          ],
+          "completion": {
+            "firstProtocolEventMs": 1092,
+            "terminalEventMs": 174459,
+            "processExitMs": 174716,
+            "processCloseMs": 174716,
+            "lastToolEndMs": 151676,
+            "afterLastToolMs": 23040,
+            "terminalAfterLastToolMs": 22783,
+            "exitAfterTerminalMs": 257,
+            "closeAfterExitMs": 0
+          }
+        },
+        "terminalObserved": true
+      },
+      "harness": {
+        "resultFile": "window-intervals-weak-harness/result.json",
+        "functional": true,
+        "sharedDelivery": false,
+        "fullDelivery": false,
+        "failures": [
+          "timeout",
+          "execution-failed",
+          "run-incomplete"
+        ],
+        "censored": true,
+        "censorUnknown": false,
+        "measurements": {
+          "durationMs": 180416,
+          "toolCalls": 8,
+          "inputTokens": null,
+          "outputTokens": null
+        },
+        "timing": {
+          "basis": "local-event-receive-time",
+          "toolActiveMs": 11401,
+          "otherElapsedMs": 169015,
+          "categories": [
+            {
+              "category": "unknown",
+              "calls": 3,
+              "activeMs": 788
+            },
+            {
+              "category": "planning",
+              "calls": 1,
+              "activeMs": 665
+            },
+            {
+              "category": "verification",
+              "calls": 3,
+              "activeMs": 3687
+            },
+            {
+              "category": "completion",
+              "calls": 1,
+              "activeMs": 6261
+            }
+          ],
+          "completion": {
+            "firstProtocolEventMs": 1111,
+            "terminalEventMs": null,
+            "processExitMs": 180416,
+            "processCloseMs": 180416,
+            "lastToolEndMs": 159782,
+            "afterLastToolMs": 20634,
+            "terminalAfterLastToolMs": null,
+            "exitAfterTerminalMs": null,
+            "closeAfterExitMs": 0
+          }
+        },
+        "terminalObserved": false
+      },
+      "delta": {
+        "durationMs": 5700,
+        "toolCalls": 3,
+        "inputTokens": null,
+        "outputTokens": null
+      }
+    }
+  ],
+  "summary": {
+    "pairs": 3,
+    "censoredPairs": 3,
+    "unknownTruncationPairs": 0,
+    "outcomes": {
+      "functional": {
+        "baselineOnly": 0,
+        "harnessOnly": 0,
+        "bothPass": 3,
+        "bothFail": 0
+      },
+      "sharedDelivery": {
+        "baselineOnly": 3,
+        "harnessOnly": 0,
+        "bothPass": 0,
+        "bothFail": 0
+      },
+      "fullDelivery": {
+        "baselineOnly": 3,
+        "harnessOnly": 0,
+        "bothPass": 0,
+        "bothFail": 0
+      }
+    },
+    "measurements": {
+      "durationMs": {
+        "pairedSamples": 3,
+        "unknownPairs": 0,
+        "medianDelta": 27245
+      },
+      "toolCalls": {
+        "pairedSamples": 3,
+        "unknownPairs": 0,
+        "medianDelta": 2
+      },
+      "inputTokens": {
+        "pairedSamples": 0,
+        "unknownPairs": 3,
+        "medianDelta": null
+      },
+      "outputTokens": {
+        "pairedSamples": 0,
+        "unknownPairs": 3,
+        "medianDelta": null
+      }
+    },
+    "failures": {
+      "baseline": {},
+      "harness": {
+        "timeout": 3,
+        "execution-failed": 3,
+        "run-incomplete": 3,
+        "workflow-incomplete": 1
+      }
+    },
+    "timings": {
+      "baseline": {
+        "observedSamples": 3,
+        "unknownSamples": 0,
+        "categories": [
+          {
+            "category": "unknown",
+            "calls": 15,
+            "activeMs": 5339
+          }
+        ]
+      },
+      "harness": {
+        "observedSamples": 3,
+        "unknownSamples": 0,
+        "categories": [
+          {
+            "category": "unknown",
+            "calls": 8,
+            "activeMs": 2145
+          },
+          {
+            "category": "planning",
+            "calls": 3,
+            "activeMs": 2427
+          },
+          {
+            "category": "verification",
+            "calls": 8,
+            "activeMs": 8922
+          },
+          {
+            "category": "completion",
+            "calls": 2,
+            "activeMs": 12247
+          }
+        ]
+      }
+    }
+  },
+  "limitations": [
+    "仅描述本次冻结实验；同题重复不是独立任务，不能据此证明通用能力或因果收益。",
+    "共同交付条件对两组相同；完整交付另含Harness流程门禁。strong-reference不计入配对分母。",
+    "耗时是观测区间；超时/工具预算截断不表示更快完成。缺失度量为未知，Token不换算货币费用。",
+    "失败类型可重叠，仅反映记录中的条件，不等于模型或网络根因。",
+    "工具类别区间可重叠，不相加为总耗时；其余耗时包含网络、启动和收尾，不等于纯推理耗时。",
+    "审计核验记录内部一致性；本报告不启动模型、不验证当前客户端或返回后的文件状态。"
+  ]
+}

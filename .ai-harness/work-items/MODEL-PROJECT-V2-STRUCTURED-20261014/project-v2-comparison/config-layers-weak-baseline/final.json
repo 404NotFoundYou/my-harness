@@ -1,0 +1,10 @@
+{
+  "completed": true,
+  "summary": "已按要求先阅读规格、实现、调用方和公共测试，实际复现后完成最小修复。orderedLayers 现在仅返回启用层，按 priority 升序及 id 的 JavaScript 字符串顺序排序，不修改输入；resolveConfig 使用该顺序合并，以自有数据属性安全保留所有字符串键（含 __proto__）、null 和 undefined，保持只读调用方的 {config,keys} 契约。仅修改 src/layers.mjs、src/config.mjs，新增 test/extra.test.mjs；测试文件保留实际/期望、根因及修复前后验证记录。未修改原测试、规格或调用方，未安装依赖、访问网络或提交 Git。",
+  "tests": [
+    "修复前：node --test test/public.test.mjs —— 1 通过、1 失败；实际 x:1，期望 x:2。",
+    "修复前：node --test test/public.test.mjs test/extra.test.mjs —— 1 通过、7 失败，复现禁用层泄漏、排序修改输入、覆盖顺序错误和 __proto__ 改变结果原型。",
+    "修复后及行尾清理后分别运行：node --test test/public.test.mjs test/extra.test.mjs —— 均为 8 通过、0 失败、0 跳过；覆盖冻结输入、同优先级 Unicode id 顺序、null/undefined 覆盖、特殊键、空输入及结果独立性。",
+    "最终 git diff --check —— 通过。变更范围核对仅包含三个授权文件；Git 提示用户级 ignore 文件读取权限不足，但变更枚举成功。"
+  ]
+}

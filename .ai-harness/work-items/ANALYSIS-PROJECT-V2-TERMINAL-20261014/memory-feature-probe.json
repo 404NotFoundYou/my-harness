@@ -1,0 +1,39 @@
+{
+  "recordedAt": "2026-10-14T09:51:11.549Z",
+  "cliVersion": "0.156.0",
+  "driverIdentity": {
+    "kind": "cli",
+    "entry": "D:\\Program Files\\Nvm\\v22.20.0\\node_global\\node_modules\\@openai\\codex\\bin\\codex.js",
+    "sha256": "61b0194f3bb6534439c8d26a3ed57d0805f84b884588b761795323eeb92fcf70",
+    "nodeVersion": "v22.20.0"
+  },
+  "actualModelSessions": 0,
+  "rows": [
+    {
+      "args": [
+        "features",
+        "list"
+      ],
+      "exitCode": 0,
+      "memoriesFeature": {
+        "stage": "stable",
+        "enabled": true
+      }
+    },
+    {
+      "args": [
+        "--disable",
+        "memories",
+        "features",
+        "list"
+      ],
+      "exitCode": 0,
+      "memoriesFeature": {
+        "stage": "stable",
+        "enabled": false
+      }
+    }
+  ],
+  "filesystemDenyTest": "not performed",
+  "boundary": "feature query establishes switch acceptance; it does not establish no automatic injection in real exec or deny explicit host-file reads"
+}

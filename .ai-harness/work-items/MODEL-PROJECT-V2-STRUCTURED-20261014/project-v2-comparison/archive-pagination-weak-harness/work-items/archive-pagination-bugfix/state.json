@@ -1,0 +1,143 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 1,
+  "id": "archive-pagination-bugfix",
+  "type": "BUGFIX",
+  "title": "修复archive-pagination固定BUG",
+  "status": "IMPLEMENTING",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/bugfix.md",
+    ".ai-harness/policies/verification.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "TASK.md中的已授权固定任务"
+  },
+  "input": {
+    "references": [
+      "TASK.md"
+    ],
+    "acceptance": [
+      "保持TASK.md的公开契约并通过test/public.test.mjs"
+    ],
+    "nonGoals": [],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": {
+    "actual": "公共测试第二项失败：after a返回a且next为a，期望b且next为null",
+    "expected": "先过滤稳定排序再排他分页，不修改输入，非法参数抛RangeError，末页游标为null",
+    "reproduction": "node --test test/public.test.mjs：2项中1项失败，归档及游标用例返回重复a"
+  },
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "TASK.md"
+    ],
+    "completedAt": "2026-10-14T09:20:34.037Z",
+    "repository": {
+      "isGit": true,
+      "branch": "master",
+      "commit": "a37356110793f57d653dba9314bcd818bc2fc241",
+      "dirty": false,
+      "changedFiles": [],
+      "fingerprints": {},
+      "source": {
+        "digest": "af0249a1bbc2b4a50fcdea78ae1dfcc9d7f778e1da33adf21177fe6b8a05e869",
+        "document": ".ai-harness/work-items/archive-pagination-bugfix/snapshots/af0249a1bbc2b4a50fcdea78ae1dfcc9d7f778e1da33adf21177fe6b8a05e869.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": ".ai-harness/work-items/archive-pagination-bugfix/solution.md",
+    "evidence": [
+      "先在仓储过滤归档并非原地按时间及字符串id排序，再在完整可见集合校验游标和页大小，排他切页并仅在有剩余时返回游标；补充边界回归"
+    ],
+    "completedAt": "2026-10-14T09:20:34.143Z"
+  },
+  "database": {
+    "impact": "none",
+    "status": "not-applicable",
+    "document": null,
+    "evidence": [
+      "TASK.md明确无数据库影响"
+    ],
+    "completedAt": "2026-10-14T09:20:34.147Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/archive-pagination-bugfix/plan.json",
+    "approved": true,
+    "approvalRef": "TASK.md中的已授权固定任务"
+  },
+  "verification": {
+    "status": "pending",
+    "evidence": [],
+    "stages": []
+  },
+  "review": {
+    "status": "pending",
+    "evidence": [],
+    "independent": false
+  },
+  "acceptance": {
+    "status": "pending",
+    "evidence": []
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "pending",
+    "evidence": []
+  },
+  "blocked": null,
+  "delivery": null,
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-10-14T09:20:33.879Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-10-14T09:20:33.891Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-10-14T09:20:34.138Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-10-14T09:20:34.173Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-10-14T09:20:34.176Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-10-14T09:20:33.879Z",
+  "updatedAt": "2026-10-14T09:20:34.182Z"
+}

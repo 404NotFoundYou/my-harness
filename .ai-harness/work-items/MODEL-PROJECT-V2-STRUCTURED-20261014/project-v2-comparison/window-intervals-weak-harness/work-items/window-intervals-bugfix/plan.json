@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "window-intervals-bugfix",
+  "mode": "single",
+  "rationale": "在副本上按start和end排序并线性合并重叠及相接区间；窗口先生成非空交集再归并；新增纯函数与边界回归测试",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "修复window-intervals固定BUG",
+      "module": "compact",
+      "status": "COMPLETED",
+      "attempt": 1,
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        "src/intervals.mjs",
+        "src/window.mjs",
+        "test/extra.test.mjs"
+      ],
+      "verification": [
+        "{\"command\":\"node\",\"args\":[\"--test\",\"test/public.test.mjs\"]}"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            "--test",
+            "test/public.test.mjs"
+          ]
+        }
+      ],
+      "docsImpact": [
+        "N/A: 固定公开规格与文档不变"
+      ],
+      "reviewBatch": "R1",
+      "risk": "low",
+      "owner": "primary-ai",
+      "verificationStatus": "pass",
+      "reviewStatus": "pass",
+      "evidence": [
+        "a08d6cc3-eaf2-450b-9af4-62ad461fe6f5",
+        "a1df7224-43f3-4714-bdac-5c00c0fb65b3"
+      ],
+      "deferralApproval": null,
+      "verificationSource": {
+        "digest": "d720850d247214ca7d0d2df4ee8890987936af4f23a497c190c67cee575c17c7",
+        "document": ".ai-harness/work-items/window-intervals-bugfix/snapshots/d720850d247214ca7d0d2df4ee8890987936af4f23a497c190c67cee575c17c7.json"
+      },
+      "reviewSource": {
+        "digest": "d720850d247214ca7d0d2df4ee8890987936af4f23a497c190c67cee575c17c7",
+        "document": ".ai-harness/work-items/window-intervals-bugfix/snapshots/d720850d247214ca7d0d2df4ee8890987936af4f23a497c190c67cee575c17c7.json"
+      }
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "修复window-intervals固定BUG",
+      "risk": "low",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": false
+    }
+  ],
+  "createdAt": "2026-10-14T09:31:42.725Z",
+  "updatedAt": "2026-10-14T09:33:44.012Z"
+}

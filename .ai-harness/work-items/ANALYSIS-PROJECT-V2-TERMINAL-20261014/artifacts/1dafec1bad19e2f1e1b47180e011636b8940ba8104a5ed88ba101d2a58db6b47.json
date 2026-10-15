@@ -1,0 +1,32 @@
+{
+  "observations": [
+    {
+      "name": "official-config-reference",
+      "url": "https://developers.openai.com/codex/config-reference",
+      "accessedAt": "2026-10-14T09:51:13.187Z",
+      "httpStatus": 200,
+      "termsPresent": {
+        "memories.use_memories": true,
+        "memories.generate_memories": true,
+        "model_catalog_json": true
+      }
+    },
+    {
+      "name": "official-noninteractive",
+      "url": "https://developers.openai.com/codex/noninteractive",
+      "accessedAt": "2026-10-14T09:51:13.599Z",
+      "httpStatus": 200,
+      "termsPresent": {
+        "turn.completed": true,
+        "ephemeral": true,
+        "output-schema": true
+      }
+    }
+  ],
+  "interpretation": {
+    "memorySettings": "The official reference documents separate memory generation/use controls. These settings do not establish filesystem isolation.",
+    "ephemeral": "Noninteractive ephemeral execution concerns session persistence; it is not proof of disabled host memory or config discovery.",
+    "noninteractive": "JSON execution reports tool/agent items and a separate turn completion event."
+  },
+  "localVersionBoundary": "Use local 0.156.0 help/feature probes as the implementation evidence; current web docs cannot prove the historical runtime context."
+}

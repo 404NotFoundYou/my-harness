@@ -1,0 +1,246 @@
+{
+  "schemaVersion": 2,
+  "trial": 1,
+  "mode": "real",
+  "client": "codex",
+  "taskId": "archive-pagination",
+  "split": "development",
+  "group": "weak-harness",
+  "model": "gpt-6-astra",
+  "taskDigest": "059ffcabf937f0473fb2b6883d08bfec54228c02ac5f6544eae40f6a67c27164",
+  "judgeDigest": "82589b486bef0d3d11688722d23508e9bf542408319a1b9036aba1f0984554c5",
+  "candidateDigest": "0c0edeae3039683cb682336f4fa1e2e014c62c96314f6dc6eba4c562151999a2",
+  "budget": {
+    "timeoutMs": 180000,
+    "maxToolCalls": 80,
+    "reasoning": "medium"
+  },
+  "run": {
+    "mode": "real",
+    "client": "codex",
+    "startedAt": "2026-10-14T09:19:32.292Z",
+    "durationMs": 180441,
+    "timing": {
+      "basis": "local-event-receive-time",
+      "lifecycle": {
+        "version": 1,
+        "firstProtocolEventMs": 1170,
+        "terminalEventMs": null,
+        "processExitMs": 180441,
+        "processCloseMs": 180441
+      },
+      "toolActiveMs": 4110,
+      "otherElapsedMs": 176331,
+      "spans": [
+        {
+          "id": "item_3",
+          "startMs": 14848,
+          "endMs": 15056,
+          "category": "unknown",
+          "complete": true
+        },
+        {
+          "id": "item_4",
+          "startMs": 32786,
+          "endMs": 33103,
+          "category": "unknown",
+          "complete": true
+        },
+        {
+          "id": "item_5",
+          "startMs": 61274,
+          "endMs": 62361,
+          "category": "planning",
+          "complete": true
+        },
+        {
+          "id": "item_6",
+          "startMs": 81830,
+          "endMs": 82051,
+          "category": "unknown",
+          "complete": true
+        },
+        {
+          "id": "item_8",
+          "startMs": 150206,
+          "endMs": 151210,
+          "category": "verification",
+          "complete": true
+        },
+        {
+          "id": "item_9",
+          "startMs": 163878,
+          "endMs": 165151,
+          "category": "verification",
+          "complete": true
+        }
+      ],
+      "categories": {
+        "unknown": {
+          "calls": 3,
+          "activeMs": 746
+        },
+        "planning": {
+          "calls": 1,
+          "activeMs": 1087
+        },
+        "verification": {
+          "calls": 2,
+          "activeMs": 2277
+        }
+      },
+      "unmatchedCompletions": [],
+      "limitation": "工具区间按接收事件估计并合并重叠；其余耗时包含模型、网络、客户端启动和收尾，不等于纯推理耗时。"
+    },
+    "exitCode": 1,
+    "timedOut": true,
+    "toolLimit": false,
+    "toolCalls": 6,
+    "turnCompleted": false,
+    "protocolSuccess": false,
+    "usage": null,
+    "errors": [],
+    "warnings": [],
+    "unparsedLines": 0,
+    "error": null,
+    "final": null,
+    "completed": false
+  },
+  "scope": {
+    "ok": true,
+    "changes": [
+      {
+        "path": "src/pagination.mjs",
+        "before": "436796ed97d3ceb440c5568f53f7c895cd1f542b84ef40d52fc3840a1cdafeb6",
+        "after": "6684ae359bdb7c832f2b2e0168ab6ee6bdd8d2ce9b7f197faf085081cf04d08c"
+      },
+      {
+        "path": "src/repository.mjs",
+        "before": "8bf57cfe69007b2b51d8b38946e6648bafacc7f5da4aab76bc6548dff325aa28",
+        "after": "2bde81df04a505cd30e10eeb029af021169029056b6077615217d435bff6eb2a"
+      },
+      {
+        "path": ".ai-harness/work-items/archive-pagination-bugfix/events.jsonl",
+        "before": null,
+        "after": "d1b5bbf03dbeea5cd60850759e20d51129cfb0f05ace4d7c0ebfd79e73ed2482"
+      },
+      {
+        "path": ".ai-harness/work-items/archive-pagination-bugfix/evidence.jsonl",
+        "before": null,
+        "after": "0ab06dd622d32fed500a5eeeb008f50ab1070d279c4fce60a1b85e79b65b8a71"
+      },
+      {
+        "path": ".ai-harness/work-items/archive-pagination-bugfix/plan.json",
+        "before": null,
+        "after": "7629bccf8a0725c4b75b42646fd6b9c9764775ee837f130c6bbaa6241c567c31"
+      },
+      {
+        "path": ".ai-harness/work-items/archive-pagination-bugfix/snapshots/887d96c2740b84ca7d1c0acb29fc0f784a4a0b37ca84ca5f5ab7c72954ab743a.json",
+        "before": null,
+        "after": "2c4694f92b42ecb28013d102c0493c9d8fde00af6ab3f5ca738d7f01fb89a0c2"
+      },
+      {
+        "path": ".ai-harness/work-items/archive-pagination-bugfix/snapshots/af0249a1bbc2b4a50fcdea78ae1dfcc9d7f778e1da33adf21177fe6b8a05e869.json",
+        "before": null,
+        "after": "eeca0b8dc952f16c2ad06259ddc1e39dabafc0f5bf540ed8251ccd061094a84c"
+      },
+      {
+        "path": ".ai-harness/work-items/archive-pagination-bugfix/solution.md",
+        "before": null,
+        "after": "e65cde095bec9775130a17f2be6314a47eb1e85f9cff2b5354baed00cf30657d"
+      },
+      {
+        "path": ".ai-harness/work-items/archive-pagination-bugfix/state.json",
+        "before": null,
+        "after": "524cc9efe6b2f599fb55511c63290b3dc29142105a4574cca52ee7e55b29697a"
+      },
+      {
+        "path": ".ai-harness/work-items/benchmark-begin-spec.json",
+        "before": null,
+        "after": "a685eb3ca0b4e02d5e66c0627a7ee3a9af29a63d7389407c05b48d6bce36cf3a"
+      },
+      {
+        "path": "test/extra.test.mjs",
+        "before": null,
+        "after": "adfea2ac2636476df032353f2935e54bf0b47723715637549248705928d69daf"
+      }
+    ],
+    "violations": []
+  },
+  "workflow": {
+    "ok": false,
+    "errors": [
+      "CI 不接受未完成工作项：archive-pagination-bugfix:IMPLEMENTING"
+    ],
+    "workItems": [
+      "archive-pagination-bugfix"
+    ]
+  },
+  "grade": {
+    "complete": true,
+    "ok": true,
+    "cases": [
+      {
+        "id": "visible-before-pagination",
+        "pass": true
+      },
+      {
+        "id": "exclusive-cursor",
+        "pass": true
+      },
+      {
+        "id": "stable-tie",
+        "pass": true
+      },
+      {
+        "id": "empty-and-archived",
+        "pass": true
+      },
+      {
+        "id": "last-page",
+        "pass": true
+      },
+      {
+        "id": "unknown-cursor",
+        "pass": true
+      },
+      {
+        "id": "invalid-page-size",
+        "pass": true
+      },
+      {
+        "id": "page-size-boundary",
+        "pass": true
+      },
+      {
+        "id": "immutable-input",
+        "pass": true
+      },
+      {
+        "id": "repository-contract",
+        "pass": true
+      },
+      {
+        "id": "pagination-contract",
+        "pass": true
+      },
+      {
+        "id": "walk-without-duplicates",
+        "pass": true
+      }
+    ],
+    "expectedCases": 12,
+    "exitCode": 0,
+    "timedOut": false,
+    "stderr": "",
+    "error": null
+  },
+  "success": false,
+  "falseCompletion": false,
+  "falseFunctionalCompletion": false,
+  "execution": {
+    "protocolSha256": "b57854638cd1ac9420a2a84b56333b3277577eac87aa2a6d2e8610d9bd62c83b",
+    "sourceBefore": "502e2cb4a9ca4c60189ee01d52c78f5979cdbdf57dd651ecc71e97778fd1dccc",
+    "sourceAfter": "502e2cb4a9ca4c60189ee01d52c78f5979cdbdf57dd651ecc71e97778fd1dccc"
+  }
+}

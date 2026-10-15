@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "config-layers-bugfix",
+  "mode": "single",
+  "rationale": "过滤启用层后在新数组上按priority及字符串id排序；按自有字符串键定义结果数据属性以安全覆盖，新增边界回归",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "修复config-layers固定BUG",
+      "module": "compact",
+      "status": "COMPLETED",
+      "attempt": 1,
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        "src/config.mjs",
+        "src/layers.mjs",
+        "test/extra.test.mjs"
+      ],
+      "verification": [
+        "{\"command\":\"node\",\"args\":[\"--test\",\"test/public.test.mjs\"]}"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            "--test",
+            "test/public.test.mjs"
+          ]
+        }
+      ],
+      "docsImpact": [
+        "N/A: 固定公开规格与文档不变"
+      ],
+      "reviewBatch": "R1",
+      "risk": "low",
+      "owner": "primary-ai",
+      "verificationStatus": "pass",
+      "reviewStatus": "pass",
+      "evidence": [
+        "2a1bfedb-0d38-4208-98c4-c343940ffda0",
+        "3ac9cd4a-128f-40cf-b8b8-7491d6cb9d7a"
+      ],
+      "deferralApproval": null,
+      "verificationSource": {
+        "digest": "411e7a8d55c24d69cf94bc7cc9930a277e2c87869052fe833883a6d9c800a2e4",
+        "document": ".ai-harness/work-items/config-layers-bugfix/snapshots/411e7a8d55c24d69cf94bc7cc9930a277e2c87869052fe833883a6d9c800a2e4.json"
+      },
+      "reviewSource": {
+        "digest": "411e7a8d55c24d69cf94bc7cc9930a277e2c87869052fe833883a6d9c800a2e4",
+        "document": ".ai-harness/work-items/config-layers-bugfix/snapshots/411e7a8d55c24d69cf94bc7cc9930a277e2c87869052fe833883a6d9c800a2e4.json"
+      }
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "修复config-layers固定BUG",
+      "risk": "low",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": false
+    }
+  ],
+  "createdAt": "2026-10-14T09:23:13.369Z",
+  "updatedAt": "2026-10-14T09:25:05.178Z"
+}

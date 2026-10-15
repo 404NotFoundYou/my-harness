@@ -1,0 +1,198 @@
+{
+  "schemaVersion": 2,
+  "trial": 1,
+  "mode": "real",
+  "client": "codex",
+  "taskId": "window-intervals",
+  "split": "holdout",
+  "group": "weak-baseline",
+  "model": "gpt-6-astra",
+  "taskDigest": "d64581fcc701e15e5cfa02ee3ba940d366131e1005e9d9208cdd3841b5913055",
+  "judgeDigest": "f373beb6ff4131998170b4c7f6d1ed760cd730a5f0f2b159fb424f46ad4298d7",
+  "candidateDigest": "78f7c2fc50027d48fdd0921a04a651f675914ea0def17342fafd4d7e898353b4",
+  "budget": {
+    "timeoutMs": 180000,
+    "maxToolCalls": 80,
+    "reasoning": "medium"
+  },
+  "run": {
+    "mode": "real",
+    "client": "codex",
+    "startedAt": "2026-10-14T09:28:12.350Z",
+    "durationMs": 174716,
+    "timing": {
+      "basis": "local-event-receive-time",
+      "lifecycle": {
+        "version": 1,
+        "firstProtocolEventMs": 1092,
+        "terminalEventMs": 174459,
+        "processExitMs": 174716,
+        "processCloseMs": 174716
+      },
+      "toolActiveMs": 1928,
+      "otherElapsedMs": 172788,
+      "spans": [
+        {
+          "id": "item_3",
+          "startMs": 18610,
+          "endMs": 18898,
+          "category": "unknown",
+          "complete": true
+        },
+        {
+          "id": "item_4",
+          "startMs": 31517,
+          "endMs": 31859,
+          "category": "unknown",
+          "complete": true
+        },
+        {
+          "id": "item_6",
+          "startMs": 100042,
+          "endMs": 100390,
+          "category": "unknown",
+          "complete": true
+        },
+        {
+          "id": "item_7",
+          "startMs": 123817,
+          "endMs": 124311,
+          "category": "unknown",
+          "complete": true
+        },
+        {
+          "id": "item_9",
+          "startMs": 151220,
+          "endMs": 151676,
+          "category": "unknown",
+          "complete": true
+        }
+      ],
+      "categories": {
+        "unknown": {
+          "calls": 5,
+          "activeMs": 1928
+        }
+      },
+      "unmatchedCompletions": [],
+      "limitation": "工具区间按接收事件估计并合并重叠；其余耗时包含模型、网络、客户端启动和收尾，不等于纯推理耗时。"
+    },
+    "exitCode": 0,
+    "timedOut": false,
+    "toolLimit": false,
+    "toolCalls": 5,
+    "turnCompleted": true,
+    "protocolSuccess": true,
+    "usage": {
+      "input_tokens": 124190,
+      "cached_input_tokens": 83200,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 2893,
+      "reasoning_output_tokens": 36
+    },
+    "errors": [],
+    "warnings": [],
+    "unparsedLines": 0,
+    "error": null,
+    "final": {
+      "completed": true,
+      "summary": "已先复现再修复并完成回归，仅修改 src/intervals.mjs、src/window.mjs，新增 test/extra.test.mjs。根因是归并函数原地排序且未归并，窗口函数只筛选而未裁剪；复现中实际覆盖长度为 8，期望为 4。现已实现复制记录后按 start、end 排序，归并重叠及相接区间，并先裁剪非空交集再归并，保持输入不变及调用方契约。失败实际/期望、根因和回归证据已保留在新增测试注释中。未修改规格、原测试或调用方，未安装依赖、访问网络或提交 Git。",
+      "tests": [
+        "修复前：node --test test/public.test.mjs，1 项通过、1 项失败，确认覆盖重复计数及窗口外长度计入。",
+        "修复前：node --test test/extra.test.mjs，6 项全部失败，确认输入修改、引用复用、未归并及未裁剪问题。",
+        "修复后及最终复验：node --test test/public.test.mjs test/extra.test.mjs，均为 8 项通过、0 失败、0 跳过；包含冻结输入、独立对象、嵌套/重复/相接区间、窗口边界、空输入、最大端点及 3,375 组独立单位集合核验。",
+        "最终 git diff --check 通过；修改范围检查确认只有三个授权文件发生变化。Git 提示无法读取用户级 ignore 文件，但检查命令正常完成。"
+      ]
+    },
+    "completed": true
+  },
+  "scope": {
+    "ok": true,
+    "changes": [
+      {
+        "path": "src/intervals.mjs",
+        "before": "e808fe88b74c7da97c6eba1eeec6cb8f7ae93d3be23979059cab6bd6fc7711f3",
+        "after": "d25cf1721b8c4e6fa56d03787845b91fdb830ac12a73c5c0310b9a057ed7efbf"
+      },
+      {
+        "path": "src/window.mjs",
+        "before": "6f1c4b66fb0f3c5bd9c337506eaca494873738f122b50bb707e283453b928719",
+        "after": "89290434a2dfc07c2f52ffb4ff67eb4d15768dd447e9cc76a4642a239af5ec24"
+      },
+      {
+        "path": "test/extra.test.mjs",
+        "before": null,
+        "after": "805a796ecbb9bc998ebb76fe9e8139484d6b2362cafe5154ffd96cf7794c2a4e"
+      }
+    ],
+    "violations": []
+  },
+  "workflow": null,
+  "grade": {
+    "complete": true,
+    "ok": true,
+    "cases": [
+      {
+        "id": "overlap",
+        "pass": true
+      },
+      {
+        "id": "adjacent",
+        "pass": true
+      },
+      {
+        "id": "disjoint",
+        "pass": true
+      },
+      {
+        "id": "unsorted",
+        "pass": true
+      },
+      {
+        "id": "duplicate",
+        "pass": true
+      },
+      {
+        "id": "clip-left",
+        "pass": true
+      },
+      {
+        "id": "clip-right",
+        "pass": true
+      },
+      {
+        "id": "outside-window",
+        "pass": true
+      },
+      {
+        "id": "clip-then-merge",
+        "pass": true
+      },
+      {
+        "id": "immutable-input",
+        "pass": true
+      },
+      {
+        "id": "merge-contract",
+        "pass": true
+      },
+      {
+        "id": "window-contract",
+        "pass": true
+      }
+    ],
+    "expectedCases": 12,
+    "exitCode": 0,
+    "timedOut": false,
+    "stderr": "",
+    "error": null
+  },
+  "success": true,
+  "falseCompletion": false,
+  "falseFunctionalCompletion": false,
+  "execution": {
+    "protocolSha256": "b57854638cd1ac9420a2a84b56333b3277577eac87aa2a6d2e8610d9bd62c83b",
+    "sourceBefore": "502e2cb4a9ca4c60189ee01d52c78f5979cdbdf57dd651ecc71e97778fd1dccc",
+    "sourceAfter": "502e2cb4a9ca4c60189ee01d52c78f5979cdbdf57dd651ecc71e97778fd1dccc"
+  }
+}

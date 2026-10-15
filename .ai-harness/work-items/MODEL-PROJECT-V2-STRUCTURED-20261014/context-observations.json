@@ -1,0 +1,73 @@
+{
+  "source": "502e2cb4a9ca4c60189ee01d52c78f5979cdbdf57dd651ecc71e97778fd1dccc",
+  "completedSamples": 6,
+  "plannedSamples": 6,
+  "observations": [
+    {
+      "taskId": "archive-pagination",
+      "group": "weak-baseline",
+      "sharedMemoryReadEvents": [],
+      "finishStartedEvents": [],
+      "finishCompletedEvents": [],
+      "unclosedCommandEvents": []
+    },
+    {
+      "taskId": "archive-pagination",
+      "group": "weak-harness",
+      "sharedMemoryReadEvents": [
+        "item_4"
+      ],
+      "finishStartedEvents": [],
+      "finishCompletedEvents": [],
+      "unclosedCommandEvents": []
+    },
+    {
+      "taskId": "config-layers",
+      "group": "weak-harness",
+      "sharedMemoryReadEvents": [
+        "item_4"
+      ],
+      "finishStartedEvents": [
+        "item_11"
+      ],
+      "finishCompletedEvents": [
+        "item_11"
+      ],
+      "unclosedCommandEvents": []
+    },
+    {
+      "taskId": "config-layers",
+      "group": "weak-baseline",
+      "sharedMemoryReadEvents": [],
+      "finishStartedEvents": [],
+      "finishCompletedEvents": [],
+      "unclosedCommandEvents": []
+    },
+    {
+      "taskId": "window-intervals",
+      "group": "weak-baseline",
+      "sharedMemoryReadEvents": [],
+      "finishStartedEvents": [],
+      "finishCompletedEvents": [],
+      "unclosedCommandEvents": []
+    },
+    {
+      "taskId": "window-intervals",
+      "group": "weak-harness",
+      "sharedMemoryReadEvents": [
+        "item_4"
+      ],
+      "finishStartedEvents": [
+        "item_12"
+      ],
+      "finishCompletedEvents": [
+        "item_12"
+      ],
+      "unclosedCommandEvents": []
+    }
+  ],
+  "limitations": [
+    "CLI entry identity does not freeze shared host memory or every client dependency",
+    "No terminal event before timeout does not identify model, network or client delay"
+  ]
+}

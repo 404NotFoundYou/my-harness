@@ -1,0 +1,10 @@
+{
+  "recordedAt": "2026-10-14T09:46:12.051Z",
+  "head": "f8bedb576e2a684964ddf87fb73254779337cc2e",
+  "source": "502e2cb4a9ca4c60189ee01d52c78f5979cdbdf57dd651ecc71e97778fd1dccc",
+  "experiment": ".ai-harness/work-items/MODEL-PROJECT-V2-STRUCTURED-20261014/project-v2-comparison",
+  "protectedFiles": 474,
+  "actualNewModelSessions": 0,
+  "writeScope": ".ai-harness/work-items/ANALYSIS-PROJECT-V2-TERMINAL-20261014/**",
+  "boundary": "existing records and offline CLI help/config probes only; product and previous records are read-only"
+}

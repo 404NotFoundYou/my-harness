@@ -1,0 +1,10 @@
+{
+  "completed": true,
+  "summary": "已先复现再修复并完成回归，仅修改 src/intervals.mjs、src/window.mjs，新增 test/extra.test.mjs。根因是归并函数原地排序且未归并，窗口函数只筛选而未裁剪；复现中实际覆盖长度为 8，期望为 4。现已实现复制记录后按 start、end 排序，归并重叠及相接区间，并先裁剪非空交集再归并，保持输入不变及调用方契约。失败实际/期望、根因和回归证据已保留在新增测试注释中。未修改规格、原测试或调用方，未安装依赖、访问网络或提交 Git。",
+  "tests": [
+    "修复前：node --test test/public.test.mjs，1 项通过、1 项失败，确认覆盖重复计数及窗口外长度计入。",
+    "修复前：node --test test/extra.test.mjs，6 项全部失败，确认输入修改、引用复用、未归并及未裁剪问题。",
+    "修复后及最终复验：node --test test/public.test.mjs test/extra.test.mjs，均为 8 项通过、0 失败、0 跳过；包含冻结输入、独立对象、嵌套/重复/相接区间、窗口边界、空输入、最大端点及 3,375 组独立单位集合核验。",
+    "最终 git diff --check 通过；修改范围检查确认只有三个授权文件发生变化。Git 提示无法读取用户级 ignore 文件，但检查命令正常完成。"
+  ]
+}

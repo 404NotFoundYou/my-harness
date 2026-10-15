@@ -1,0 +1,11 @@
+{
+  "completed": true,
+  "summary": "已先复现再修复并完成回归。根因是原始数组先分页、游标包含自身，仓储未过滤归档且原地排序、缺少同时间 id 排序，以及末页无剩余记录判断。现已改为完整可见集合排序后排他分页，校验 limit 和游标并抛出 RangeError，仅有后续记录时返回 nextCursor，不修改输入数据，保留调用方输出契约。仅修改 src/repository.mjs、src/pagination.mjs，新增 test/extra.test.mjs；新增测试注释保留实际/期望、根因及红→绿验证记录。未安装依赖、访问网络或提交 Git。",
+  "tests": [
+    "修复前 node --test test/public.test.mjs：1 通过、1 失败；after:\"a\",limit:1 期望返回 b、next:null，实际返回 a、next:\"a\"。",
+    "修复前 node --test test/extra.test.mjs：0 通过、5 失败，复现过滤排序、遍历、默认分页及参数校验缺陷。",
+    "修复后 node --test test/public.test.mjs test/extra.test.mjs：7 通过、0 失败、0 跳过。",
+    "最终 node --test：7 通过、0 失败、0 跳过；覆盖输入不可变性、字符串排序、完整翻页、末页及空结果、参数边界和调用方契约。",
+    "最终 git diff --check：通过；此前发现的末行换行格式告警已修正。"
+  ]
+}

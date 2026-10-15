@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "MODEL-PROJECT-V2-STRUCTURED-20261014",
+  "mode": "single",
+  "rationale": "单AI协调一个有界实验，复用现有runner/audit/report；先验证当前提交全部CI、源码、客户端及提供方只读模型列表，再实际dry-run冻结6会话预算，宿主直接执行已授权模型入口；验证脚本仅读取结果、原始日志与工作项，区分真实finish和help，核对readonly spec及阶段，保留旧失败并与上一轮三对结果对照。",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "结构化工程BUG入口后project-v2六会话真实复测",
+      "module": "compact",
+      "status": "COMPLETED",
+      "attempt": 1,
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        ".ai-harness/work-items/MODEL-PROJECT-V2-STRUCTURED-20261014/**"
+      ],
+      "verification": [
+        "node --test .ai-harness/work-items/MODEL-PROJECT-V2-STRUCTURED-20261014/verify.test.mjs",
+        "node --check .ai-harness/work-items/MODEL-PROJECT-V2-STRUCTURED-20261014/verify.test.mjs"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            "--test",
+            ".ai-harness/work-items/MODEL-PROJECT-V2-STRUCTURED-20261014/verify.test.mjs"
+          ]
+        },
+        {
+          "id": "V2",
+          "command": "node",
+          "args": [
+            "--check",
+            ".ai-harness/work-items/MODEL-PROJECT-V2-STRUCTURED-20261014/verify.test.mjs"
+          ]
+        }
+      ],
+      "docsImpact": [
+        ".ai-harness/work-items/MODEL-PROJECT-V2-STRUCTURED-20261014/summary.md"
+      ],
+      "reviewBatch": "R1",
+      "risk": "medium",
+      "owner": "primary-ai",
+      "verificationStatus": "pass",
+      "reviewStatus": "pass",
+      "evidence": [
+        "75b01ea1-950d-4de5-9bae-8c9cca5856c8",
+        "0f8449d8-1f1c-40b8-9a05-a1cdc08cdf29"
+      ],
+      "deferralApproval": null,
+      "verificationSource": {
+        "digest": "502e2cb4a9ca4c60189ee01d52c78f5979cdbdf57dd651ecc71e97778fd1dccc",
+        "document": ".ai-harness/work-items/MODEL-PROJECT-V2-STRUCTURED-20261014/snapshots/502e2cb4a9ca4c60189ee01d52c78f5979cdbdf57dd651ecc71e97778fd1dccc.json"
+      },
+      "reviewSource": {
+        "digest": "502e2cb4a9ca4c60189ee01d52c78f5979cdbdf57dd651ecc71e97778fd1dccc",
+        "document": ".ai-harness/work-items/MODEL-PROJECT-V2-STRUCTURED-20261014/snapshots/502e2cb4a9ca4c60189ee01d52c78f5979cdbdf57dd651ecc71e97778fd1dccc.json"
+      }
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "结构化工程BUG入口后project-v2六会话真实复测",
+      "risk": "medium",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": false
+    }
+  ],
+  "createdAt": "2026-10-14T09:13:11.458Z",
+  "updatedAt": "2026-10-14T09:38:21.713Z"
+}

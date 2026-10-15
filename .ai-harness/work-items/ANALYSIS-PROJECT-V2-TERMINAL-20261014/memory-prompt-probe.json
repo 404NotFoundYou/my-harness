@@ -1,0 +1,71 @@
+{
+  "recordedAt": "2026-10-14T09:47:45.231Z",
+  "cliVersion": "0.156.0",
+  "driverIdentity": {
+    "kind": "cli",
+    "entry": "D:\\Program Files\\Nvm\\v22.20.0\\node_global\\node_modules\\@openai\\codex\\bin\\codex.js",
+    "sha256": "61b0194f3bb6534439c8d26a3ed57d0805f84b884588b761795323eeb92fcf70",
+    "nodeVersion": "v22.20.0"
+  },
+  "mode": "offline-debug-prompt-input",
+  "actualModelSessions": 0,
+  "bundledCatalogSha256": "bd008f7a088c5b20e823072b29a788f5b66d72a2e489508facd78859087c2feb",
+  "rows": [
+    {
+      "mode": "current-default",
+      "args": [
+        "-C",
+        "D:\\Projects\\my-harness",
+        "-m",
+        "gpt-6-astra",
+        "-c",
+        "model_catalog_json=\"D:\\\\Projects\\\\my-harness\\\\.ai-harness\\\\work-items\\\\ANALYSIS-PROJECT-V2-TERMINAL-20261014\\\\offline-model-catalog.json\"",
+        "debug",
+        "prompt-input",
+        "OFFLINE_MEMORY_CONTROL_PROBE"
+      ],
+      "exitCode": 0,
+      "promptSha256": "fb689d7f5ad4e4343b8a87e04b54ebd3d7900c3aa1b8d00f3982f903d441b759",
+      "promptBytes": 41108,
+      "promptMarkers": {
+        "memory_instruction_block": false,
+        "memory_summary": false,
+        "memory_registry": false,
+        "memory_citation": false
+      },
+      "unrecognizedCatalogKey": false,
+      "stderrBytes": 0
+    },
+    {
+      "mode": "memory-feature-disabled",
+      "args": [
+        "-C",
+        "D:\\Projects\\my-harness",
+        "-m",
+        "gpt-6-astra",
+        "-c",
+        "model_catalog_json=\"D:\\\\Projects\\\\my-harness\\\\.ai-harness\\\\work-items\\\\ANALYSIS-PROJECT-V2-TERMINAL-20261014\\\\offline-model-catalog.json\"",
+        "--disable",
+        "memories",
+        "debug",
+        "prompt-input",
+        "OFFLINE_MEMORY_CONTROL_PROBE"
+      ],
+      "exitCode": 0,
+      "promptSha256": "6b37cc4c10690d26541131a11c95f23d957362db88a6a9e212245ea40c9efc0c",
+      "promptBytes": 41108,
+      "promptMarkers": {
+        "memory_instruction_block": false,
+        "memory_summary": false,
+        "memory_registry": false,
+        "memory_citation": false
+      },
+      "unrecognizedCatalogKey": false,
+      "stderrBytes": 0
+    }
+  ],
+  "limitations": [
+    "prompt inspection is not a model effectiveness or sandbox deny test",
+    "memory injection control does not prevent an explicit shell read of a known host file"
+  ]
+}

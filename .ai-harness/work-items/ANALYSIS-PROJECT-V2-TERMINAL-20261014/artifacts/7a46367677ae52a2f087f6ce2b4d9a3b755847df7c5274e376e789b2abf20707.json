@@ -1,0 +1,404 @@
+{
+  "recordedAt": "2026-10-14T09:52:52.114Z",
+  "source": "502e2cb4a9ca4c60189ee01d52c78f5979cdbdf57dd651ecc71e97778fd1dccc",
+  "experiment": ".ai-harness/work-items/MODEL-PROJECT-V2-STRUCTURED-20261014/project-v2-comparison",
+  "inspectedSamples": 6,
+  "protectedHistoricalFiles": 474,
+  "actualNewModelSessions": 0,
+  "rows": [
+    {
+      "taskId": "archive-pagination",
+      "group": "weak-baseline",
+      "fullDelivery": true,
+      "workflow": null,
+      "timedOut": false,
+      "toolLimit": false,
+      "toolCalls": 5,
+      "lastCommandId": "item_9",
+      "lastCommandExitCode": 0,
+      "lastToolEndMs": 129232,
+      "afterLastToolMs": 20706,
+      "observedExitCloseGapMs": 0,
+      "finalFileIsNull": false,
+      "validFinalMessages": 1,
+      "afterLastCommand": [
+        {
+          "type": "item.completed",
+          "itemType": "agent_message",
+          "itemId": "item_10",
+          "textBytes": 1276,
+          "validStructuredFinal": true
+        },
+        {
+          "type": "turn.completed",
+          "itemType": null,
+          "itemId": null,
+          "textBytes": 0,
+          "validStructuredFinal": false
+        }
+      ],
+      "unclosedCommandIds": [],
+      "lifecycle": {
+        "version": 1,
+        "firstProtocolEventMs": 1427,
+        "terminalEventMs": 149644,
+        "processExitMs": 149938,
+        "processCloseMs": 149938
+      },
+      "topLevelProtocolErrors": 0,
+      "jsonUnparsedLines": 0,
+      "itemWarningCount": 2,
+      "ignoredConfigWarningCount": 2,
+      "sharedMemoryReads": [],
+      "workItems": [],
+      "stderr": {
+        "lines": 27,
+        "lastTimestampOffsetMs": 149655,
+        "timestampedLinesAfterLastTool": 4,
+        "mcpStartupTimeoutLines": 2,
+        "mcpShutdownWarnings": 4,
+        "modelTransportRetryClues": 0
+      }
+    },
+    {
+      "taskId": "archive-pagination",
+      "group": "weak-harness",
+      "fullDelivery": false,
+      "workflow": false,
+      "timedOut": true,
+      "toolLimit": false,
+      "toolCalls": 6,
+      "lastCommandId": "item_9",
+      "lastCommandExitCode": 0,
+      "lastToolEndMs": 165151,
+      "afterLastToolMs": 15290,
+      "observedExitCloseGapMs": 0,
+      "finalFileIsNull": true,
+      "validFinalMessages": 0,
+      "afterLastCommand": [
+        {
+          "type": "item.completed",
+          "itemType": "agent_message",
+          "itemId": "item_10",
+          "textBytes": 352,
+          "validStructuredFinal": false
+        }
+      ],
+      "unclosedCommandIds": [],
+      "lifecycle": {
+        "version": 1,
+        "firstProtocolEventMs": 1170,
+        "terminalEventMs": null,
+        "processExitMs": 180441,
+        "processCloseMs": 180441
+      },
+      "topLevelProtocolErrors": 0,
+      "jsonUnparsedLines": 0,
+      "itemWarningCount": 2,
+      "ignoredConfigWarningCount": 2,
+      "sharedMemoryReads": [
+        {
+          "eventId": "item_4",
+          "outputBytes": 2853,
+          "combinedWithPublicTest": true
+        }
+      ],
+      "workItems": [
+        {
+          "id": "archive-pagination-bugfix",
+          "type": "BUGFIX",
+          "status": "IMPLEMENTING",
+          "stages": []
+        }
+      ],
+      "stderr": {
+        "lines": 22,
+        "lastTimestampOffsetMs": 31188,
+        "timestampedLinesAfterLastTool": 0,
+        "mcpStartupTimeoutLines": 2,
+        "mcpShutdownWarnings": 0,
+        "modelTransportRetryClues": 0
+      }
+    },
+    {
+      "taskId": "config-layers",
+      "group": "weak-harness",
+      "fullDelivery": false,
+      "workflow": true,
+      "timedOut": true,
+      "toolLimit": false,
+      "toolCalls": 7,
+      "lastCommandId": "item_11",
+      "lastCommandExitCode": 0,
+      "lastToolEndMs": 153997,
+      "afterLastToolMs": 26417,
+      "observedExitCloseGapMs": 0,
+      "finalFileIsNull": true,
+      "validFinalMessages": 0,
+      "afterLastCommand": [],
+      "unclosedCommandIds": [],
+      "lifecycle": {
+        "version": 1,
+        "firstProtocolEventMs": 1164,
+        "terminalEventMs": null,
+        "processExitMs": 180414,
+        "processCloseMs": 180414
+      },
+      "topLevelProtocolErrors": 0,
+      "jsonUnparsedLines": 0,
+      "itemWarningCount": 2,
+      "ignoredConfigWarningCount": 2,
+      "sharedMemoryReads": [
+        {
+          "eventId": "item_4",
+          "outputBytes": 3684,
+          "combinedWithPublicTest": true
+        }
+      ],
+      "workItems": [
+        {
+          "id": "config-layers-bugfix",
+          "type": "BUGFIX",
+          "status": "DONE",
+          "stages": [
+            {
+              "stage": "static",
+              "status": "pass",
+              "commandId": null
+            },
+            {
+              "stage": "sandbox",
+              "status": "pass",
+              "commandId": null
+            },
+            {
+              "stage": "reproduction",
+              "status": "pass",
+              "commandId": "b8ee86ca-9003-4400-b0ff-49fcd5f80ea6"
+            },
+            {
+              "stage": "regression",
+              "status": "pass",
+              "commandId": "b8ee86ca-9003-4400-b0ff-49fcd5f80ea6"
+            }
+          ]
+        }
+      ],
+      "stderr": {
+        "lines": 22,
+        "lastTimestampOffsetMs": 31179,
+        "timestampedLinesAfterLastTool": 0,
+        "mcpStartupTimeoutLines": 2,
+        "mcpShutdownWarnings": 0,
+        "modelTransportRetryClues": 0
+      }
+    },
+    {
+      "taskId": "config-layers",
+      "group": "weak-baseline",
+      "fullDelivery": true,
+      "workflow": null,
+      "timedOut": false,
+      "toolLimit": false,
+      "toolCalls": 5,
+      "lastCommandId": "item_9",
+      "lastCommandExitCode": 0,
+      "lastToolEndMs": 132135,
+      "afterLastToolMs": 21034,
+      "observedExitCloseGapMs": 0,
+      "finalFileIsNull": false,
+      "validFinalMessages": 1,
+      "afterLastCommand": [
+        {
+          "type": "item.completed",
+          "itemType": "agent_message",
+          "itemId": "item_10",
+          "textBytes": 1410,
+          "validStructuredFinal": true
+        },
+        {
+          "type": "turn.completed",
+          "itemType": null,
+          "itemId": null,
+          "textBytes": 0,
+          "validStructuredFinal": false
+        }
+      ],
+      "unclosedCommandIds": [],
+      "lifecycle": {
+        "version": 1,
+        "firstProtocolEventMs": 1213,
+        "terminalEventMs": 152883,
+        "processExitMs": 153169,
+        "processCloseMs": 153169
+      },
+      "topLevelProtocolErrors": 0,
+      "jsonUnparsedLines": 0,
+      "itemWarningCount": 2,
+      "ignoredConfigWarningCount": 2,
+      "sharedMemoryReads": [],
+      "workItems": [],
+      "stderr": {
+        "lines": 27,
+        "lastTimestampOffsetMs": 152885,
+        "timestampedLinesAfterLastTool": 4,
+        "mcpStartupTimeoutLines": 2,
+        "mcpShutdownWarnings": 4,
+        "modelTransportRetryClues": 0
+      }
+    },
+    {
+      "taskId": "window-intervals",
+      "group": "weak-baseline",
+      "fullDelivery": true,
+      "workflow": null,
+      "timedOut": false,
+      "toolLimit": false,
+      "toolCalls": 5,
+      "lastCommandId": "item_9",
+      "lastCommandExitCode": 0,
+      "lastToolEndMs": 151676,
+      "afterLastToolMs": 23040,
+      "observedExitCloseGapMs": 0,
+      "finalFileIsNull": false,
+      "validFinalMessages": 1,
+      "afterLastCommand": [
+        {
+          "type": "item.completed",
+          "itemType": "agent_message",
+          "itemId": "item_10",
+          "textBytes": 1326,
+          "validStructuredFinal": true
+        },
+        {
+          "type": "turn.completed",
+          "itemType": null,
+          "itemId": null,
+          "textBytes": 0,
+          "validStructuredFinal": false
+        }
+      ],
+      "unclosedCommandIds": [],
+      "lifecycle": {
+        "version": 1,
+        "firstProtocolEventMs": 1092,
+        "terminalEventMs": 174459,
+        "processExitMs": 174716,
+        "processCloseMs": 174716
+      },
+      "topLevelProtocolErrors": 0,
+      "jsonUnparsedLines": 0,
+      "itemWarningCount": 2,
+      "ignoredConfigWarningCount": 2,
+      "sharedMemoryReads": [],
+      "workItems": [],
+      "stderr": {
+        "lines": 27,
+        "lastTimestampOffsetMs": 174460,
+        "timestampedLinesAfterLastTool": 4,
+        "mcpStartupTimeoutLines": 2,
+        "mcpShutdownWarnings": 4,
+        "modelTransportRetryClues": 0
+      }
+    },
+    {
+      "taskId": "window-intervals",
+      "group": "weak-harness",
+      "fullDelivery": false,
+      "workflow": true,
+      "timedOut": true,
+      "toolLimit": false,
+      "toolCalls": 8,
+      "lastCommandId": "item_12",
+      "lastCommandExitCode": 0,
+      "lastToolEndMs": 159782,
+      "afterLastToolMs": 20634,
+      "observedExitCloseGapMs": 0,
+      "finalFileIsNull": true,
+      "validFinalMessages": 0,
+      "afterLastCommand": [],
+      "unclosedCommandIds": [],
+      "lifecycle": {
+        "version": 1,
+        "firstProtocolEventMs": 1111,
+        "terminalEventMs": null,
+        "processExitMs": 180416,
+        "processCloseMs": 180416
+      },
+      "topLevelProtocolErrors": 0,
+      "jsonUnparsedLines": 0,
+      "itemWarningCount": 2,
+      "ignoredConfigWarningCount": 2,
+      "sharedMemoryReads": [
+        {
+          "eventId": "item_4",
+          "outputBytes": 2912,
+          "combinedWithPublicTest": true
+        }
+      ],
+      "workItems": [
+        {
+          "id": "window-intervals-bugfix",
+          "type": "BUGFIX",
+          "status": "DONE",
+          "stages": [
+            {
+              "stage": "static",
+              "status": "pass",
+              "commandId": null
+            },
+            {
+              "stage": "sandbox",
+              "status": "pass",
+              "commandId": null
+            },
+            {
+              "stage": "reproduction",
+              "status": "pass",
+              "commandId": "0af69010-6e85-4355-982c-860ca56e6e07"
+            },
+            {
+              "stage": "regression",
+              "status": "pass",
+              "commandId": "0af69010-6e85-4355-982c-860ca56e6e07"
+            }
+          ]
+        }
+      ],
+      "stderr": {
+        "lines": 22,
+        "lastTimestampOffsetMs": 31135,
+        "timestampedLinesAfterLastTool": 0,
+        "mcpStartupTimeoutLines": 2,
+        "mcpShutdownWarnings": 0,
+        "modelTransportRetryClues": 0
+      }
+    }
+  ],
+  "observations": {
+    "harnessWithoutTerminalEvents": 3,
+    "completedBugfixItemsBeforeTimeout": 2,
+    "sharedMemoryReadSessions": [
+      {
+        "taskId": "archive-pagination",
+        "group": "weak-harness"
+      },
+      {
+        "taskId": "config-layers",
+        "group": "weak-harness"
+      },
+      {
+        "taskId": "window-intervals",
+        "group": "weak-harness"
+      }
+    ],
+    "noOpenCommandSessions": 6
+  },
+  "boundaries": [
+    "event stream records order, not timestamps for every assistant message",
+    "archived final null is canonicalized by the driver; missing and invalid original final output are not distinguished",
+    "last tool to timeout is an observed censored interval and cannot identify model, network, schema handling or client delay",
+    "shared memory shell reads do not prove how memory instructions entered the original prompt",
+    "common configuration and MCP warnings cannot alone explain the between-group delivery difference"
+  ]
+}

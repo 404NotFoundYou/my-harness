@@ -1,0 +1,272 @@
+{
+  "schemaVersion": 2,
+  "trial": 1,
+  "mode": "real",
+  "client": "codex",
+  "taskId": "config-layers",
+  "split": "development",
+  "group": "weak-harness",
+  "model": "gpt-6-astra",
+  "taskDigest": "b59d9d1cdfbb96a51a94b13a1ae010eb2c2871fabf3dbc3ce7c97154132d7219",
+  "judgeDigest": "9ad2a2e4e70363a6ac2bda94da9fe1a3653e051c9079cf11665cd3db47d3b459",
+  "candidateDigest": "f1c8d2e02f517645049b8a9ce18aa98b39d142e520691c3b29ceba7f6c00485a",
+  "budget": {
+    "timeoutMs": 180000,
+    "maxToolCalls": 80,
+    "reasoning": "medium"
+  },
+  "run": {
+    "mode": "real",
+    "client": "codex",
+    "startedAt": "2026-10-14T09:22:35.468Z",
+    "durationMs": 180414,
+    "timing": {
+      "basis": "local-event-receive-time",
+      "lifecycle": {
+        "version": 1,
+        "firstProtocolEventMs": 1164,
+        "terminalEventMs": null,
+        "processExitMs": 180414,
+        "processCloseMs": 180414
+      },
+      "toolActiveMs": 10230,
+      "otherElapsedMs": 170184,
+      "spans": [
+        {
+          "id": "item_3",
+          "startMs": 14470,
+          "endMs": 14673,
+          "category": "unknown",
+          "complete": true
+        },
+        {
+          "id": "item_4",
+          "startMs": 22420,
+          "endMs": 22828,
+          "category": "unknown",
+          "complete": true
+        },
+        {
+          "id": "item_5",
+          "startMs": 37289,
+          "endMs": 37964,
+          "category": "planning",
+          "complete": true
+        },
+        {
+          "id": "item_6",
+          "startMs": 50742,
+          "endMs": 51438,
+          "category": "verification",
+          "complete": true
+        },
+        {
+          "id": "item_8",
+          "startMs": 102807,
+          "endMs": 103769,
+          "category": "verification",
+          "complete": true
+        },
+        {
+          "id": "item_9",
+          "startMs": 113580,
+          "endMs": 114880,
+          "category": "verification",
+          "complete": true
+        },
+        {
+          "id": "item_11",
+          "startMs": 148011,
+          "endMs": 153997,
+          "category": "completion",
+          "complete": true
+        }
+      ],
+      "categories": {
+        "unknown": {
+          "calls": 2,
+          "activeMs": 611
+        },
+        "planning": {
+          "calls": 1,
+          "activeMs": 675
+        },
+        "verification": {
+          "calls": 3,
+          "activeMs": 2958
+        },
+        "completion": {
+          "calls": 1,
+          "activeMs": 5986
+        }
+      },
+      "unmatchedCompletions": [],
+      "limitation": "工具区间按接收事件估计并合并重叠；其余耗时包含模型、网络、客户端启动和收尾，不等于纯推理耗时。"
+    },
+    "exitCode": 1,
+    "timedOut": true,
+    "toolLimit": false,
+    "toolCalls": 7,
+    "turnCompleted": false,
+    "protocolSuccess": false,
+    "usage": null,
+    "errors": [],
+    "warnings": [],
+    "unparsedLines": 0,
+    "error": null,
+    "final": null,
+    "completed": false
+  },
+  "scope": {
+    "ok": true,
+    "changes": [
+      {
+        "path": "src/config.mjs",
+        "before": "7f8356d764bcbe26315b1321ca331afd87bd49474e66208a50e621f19e093ffd",
+        "after": "524fee2181188b6e3799f6ef4508e4e384707ee2a665963c0cf38581ee9dd27a"
+      },
+      {
+        "path": "src/layers.mjs",
+        "before": "a0838965a9783006d5d686609e50e4ddea46e4bc216a2c76df6e2280983ef9af",
+        "after": "552a4b343d50b52a802d20e223b89dc6108acf8b5b65e86e2d0ca18e06b967df"
+      },
+      {
+        "path": ".ai-harness/work-items/benchmark-begin-spec.json",
+        "before": null,
+        "after": "fff642afbc927a039eac3c30692d05c9492fbe86cda558b10fff0239808201aa"
+      },
+      {
+        "path": ".ai-harness/work-items/config-layers-bugfix/events.jsonl",
+        "before": null,
+        "after": "e3d3bdea5f3c20d7448ef87a62af14d6ba3a384f78efb5bfa7baf1fd0174d2b3"
+      },
+      {
+        "path": ".ai-harness/work-items/config-layers-bugfix/evidence.jsonl",
+        "before": null,
+        "after": "9e4e6918750b85c75c9a0f7cb0418542d8ad58c1736991b909cbb21c3fefb3da"
+      },
+      {
+        "path": ".ai-harness/work-items/config-layers-bugfix/plan.json",
+        "before": null,
+        "after": "950d27ff868a83bb542b9b502e3ed85d54567630421f7b489dc29ee2b23bb02c"
+      },
+      {
+        "path": ".ai-harness/work-items/config-layers-bugfix/snapshots/411e7a8d55c24d69cf94bc7cc9930a277e2c87869052fe833883a6d9c800a2e4.json",
+        "before": null,
+        "after": "3d0438e30fc434ee6b7a63a921d9efe6ecc243825eff8efdf3eb996057c3d6c5"
+      },
+      {
+        "path": ".ai-harness/work-items/config-layers-bugfix/snapshots/f141b27d2eee4711aeeb5ee3f83a1866fdb748a8bd0088dcbd81179f7e95596a.json",
+        "before": null,
+        "after": "6479d16523ffb40d7e6c17d5698f6739f2232d978db2e2ad4ffd74dc97ae0ab6"
+      },
+      {
+        "path": ".ai-harness/work-items/config-layers-bugfix/solution.md",
+        "before": null,
+        "after": "1713055b1b2e6b17f8388c8ab4894f08d6a668be74725019a10075a6016d90a9"
+      },
+      {
+        "path": ".ai-harness/work-items/config-layers-bugfix/state.json",
+        "before": null,
+        "after": "eaf13d896a5bae83de9bda53fbcc6f7e85ee10f1387f4db115d6f033c60203d6"
+      },
+      {
+        "path": "test/extra.test.mjs",
+        "before": null,
+        "after": "9bf2f44b80b479735d908540e637423d6c9d27a1d4227675df8c755b419cba6d"
+      }
+    ],
+    "violations": []
+  },
+  "workflow": {
+    "ok": true,
+    "errors": [],
+    "workItems": [
+      "config-layers-bugfix"
+    ],
+    "contract": {
+      "requiredType": "BUGFIX",
+      "items": [
+        {
+          "id": "config-layers-bugfix",
+          "type": "BUGFIX",
+          "status": "DONE",
+          "writeScopes": [
+            "src/config.mjs",
+            "src/layers.mjs",
+            "test/extra.test.mjs"
+          ]
+        }
+      ],
+      "uncoveredFiles": [],
+      "ok": true
+    }
+  },
+  "grade": {
+    "complete": true,
+    "ok": true,
+    "cases": [
+      {
+        "id": "priority-over-input",
+        "pass": true
+      },
+      {
+        "id": "disabled-layer",
+        "pass": true
+      },
+      {
+        "id": "equal-priority-id-order",
+        "pass": true
+      },
+      {
+        "id": "sorted-keys",
+        "pass": true
+      },
+      {
+        "id": "null-is-value",
+        "pass": true
+      },
+      {
+        "id": "empty-and-disabled",
+        "pass": true
+      },
+      {
+        "id": "input-immutable",
+        "pass": true
+      },
+      {
+        "id": "prototype-key",
+        "pass": true
+      },
+      {
+        "id": "source-not-aliased",
+        "pass": true
+      },
+      {
+        "id": "ordered-layers-contract",
+        "pass": true
+      },
+      {
+        "id": "resolve-config-contract",
+        "pass": true
+      },
+      {
+        "id": "caller-shape",
+        "pass": true
+      }
+    ],
+    "expectedCases": 12,
+    "exitCode": 0,
+    "timedOut": false,
+    "stderr": "",
+    "error": null
+  },
+  "success": false,
+  "falseCompletion": false,
+  "falseFunctionalCompletion": false,
+  "execution": {
+    "protocolSha256": "b57854638cd1ac9420a2a84b56333b3277577eac87aa2a6d2e8610d9bd62c83b",
+    "sourceBefore": "502e2cb4a9ca4c60189ee01d52c78f5979cdbdf57dd651ecc71e97778fd1dccc",
+    "sourceAfter": "502e2cb4a9ca4c60189ee01d52c78f5979cdbdf57dd651ecc71e97778fd1dccc"
+  }
+}

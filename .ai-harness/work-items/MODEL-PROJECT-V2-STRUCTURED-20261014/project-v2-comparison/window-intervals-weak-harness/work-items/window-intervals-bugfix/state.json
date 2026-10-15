@@ -1,0 +1,277 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 1,
+  "id": "window-intervals-bugfix",
+  "type": "BUGFIX",
+  "title": "修复window-intervals固定BUG",
+  "status": "DONE",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/bugfix.md",
+    ".ai-harness/policies/verification.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "TASK.md中的已授权固定任务"
+  },
+  "input": {
+    "references": [
+      "TASK.md"
+    ],
+    "acceptance": [
+      "保持TASK.md的公开契约并通过test/public.test.mjs"
+    ],
+    "nonGoals": [],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": {
+    "actual": "公共测试第二例返回两个未裁剪区间且covered为8而非4；归并实现还会原地排序输入",
+    "expected": "返回新对象且不修改输入；重叠和相接半开区间归并，窗口裁剪后spans为[1,5)，covered为4",
+    "reproduction": "node --test test/public.test.mjs：第二例失败，第一例通过"
+  },
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "TASK.md"
+    ],
+    "completedAt": "2026-10-14T09:31:42.601Z",
+    "repository": {
+      "isGit": true,
+      "branch": "master",
+      "commit": "f2262b0a33aa339337c2ef6f41692a4de79102f7",
+      "dirty": false,
+      "changedFiles": [],
+      "fingerprints": {},
+      "source": {
+        "digest": "e3650caa9ae20d8d44be73964bf0cf839afbde82cf1928d55b51f017b0dce20c",
+        "document": ".ai-harness/work-items/window-intervals-bugfix/snapshots/e3650caa9ae20d8d44be73964bf0cf839afbde82cf1928d55b51f017b0dce20c.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": ".ai-harness/work-items/window-intervals-bugfix/solution.md",
+    "evidence": [
+      "在副本上按start和end排序并线性合并重叠及相接区间；窗口先生成非空交集再归并；新增纯函数与边界回归测试"
+    ],
+    "completedAt": "2026-10-14T09:31:42.717Z"
+  },
+  "database": {
+    "impact": "none",
+    "status": "not-applicable",
+    "document": null,
+    "evidence": [
+      "TASK.md明确无数据库影响"
+    ],
+    "completedAt": "2026-10-14T09:31:42.721Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/window-intervals-bugfix/plan.json",
+    "approved": true,
+    "approvalRef": "TASK.md中的已授权固定任务"
+  },
+  "verification": {
+    "status": "pass",
+    "evidence": [
+      "89428287-9bd4-49e9-9d3f-e60cf6666c8b",
+      "b5584476-41eb-45c4-9d7d-62fdf2b71c36",
+      "cc644e1c-6fe9-4a11-b53a-b82bbdc8322a",
+      "53893a68-5b2c-40db-90aa-42b42ffda12f"
+    ],
+    "stages": [
+      {
+        "stage": "static",
+        "status": "pass",
+        "evidence": [
+          "89428287-9bd4-49e9-9d3f-e60cf6666c8b"
+        ],
+        "command": null,
+        "revision": 1,
+        "source": {
+          "digest": "d720850d247214ca7d0d2df4ee8890987936af4f23a497c190c67cee575c17c7",
+          "document": ".ai-harness/work-items/window-intervals-bugfix/snapshots/d720850d247214ca7d0d2df4ee8890987936af4f23a497c190c67cee575c17c7.json"
+        },
+        "planDigest": "1ad234aada614e13aa77fa2f8c4854624bd079d065093dbc795e253497c8385a"
+      },
+      {
+        "stage": "sandbox",
+        "status": "pass",
+        "evidence": [
+          "b5584476-41eb-45c4-9d7d-62fdf2b71c36"
+        ],
+        "command": null,
+        "revision": 1,
+        "source": {
+          "digest": "d720850d247214ca7d0d2df4ee8890987936af4f23a497c190c67cee575c17c7",
+          "document": ".ai-harness/work-items/window-intervals-bugfix/snapshots/d720850d247214ca7d0d2df4ee8890987936af4f23a497c190c67cee575c17c7.json"
+        },
+        "planDigest": "1ad234aada614e13aa77fa2f8c4854624bd079d065093dbc795e253497c8385a"
+      },
+      {
+        "stage": "reproduction",
+        "status": "pass",
+        "evidence": [
+          "cc644e1c-6fe9-4a11-b53a-b82bbdc8322a"
+        ],
+        "command": "0af69010-6e85-4355-982c-860ca56e6e07",
+        "revision": 1,
+        "source": {
+          "digest": "d720850d247214ca7d0d2df4ee8890987936af4f23a497c190c67cee575c17c7",
+          "document": ".ai-harness/work-items/window-intervals-bugfix/snapshots/d720850d247214ca7d0d2df4ee8890987936af4f23a497c190c67cee575c17c7.json"
+        },
+        "planDigest": "1ad234aada614e13aa77fa2f8c4854624bd079d065093dbc795e253497c8385a"
+      },
+      {
+        "stage": "regression",
+        "status": "pass",
+        "evidence": [
+          "53893a68-5b2c-40db-90aa-42b42ffda12f"
+        ],
+        "command": "0af69010-6e85-4355-982c-860ca56e6e07",
+        "revision": 1,
+        "source": {
+          "digest": "d720850d247214ca7d0d2df4ee8890987936af4f23a497c190c67cee575c17c7",
+          "document": ".ai-harness/work-items/window-intervals-bugfix/snapshots/d720850d247214ca7d0d2df4ee8890987936af4f23a497c190c67cee575c17c7.json"
+        },
+        "planDigest": "1ad234aada614e13aa77fa2f8c4854624bd079d065093dbc795e253497c8385a"
+      }
+    ],
+    "source": {
+      "digest": "d720850d247214ca7d0d2df4ee8890987936af4f23a497c190c67cee575c17c7",
+      "document": ".ai-harness/work-items/window-intervals-bugfix/snapshots/d720850d247214ca7d0d2df4ee8890987936af4f23a497c190c67cee575c17c7.json"
+    }
+  },
+  "review": {
+    "status": "pass",
+    "evidence": [
+      "19dc5996-7eb1-4c83-99ab-2d045ca55110"
+    ],
+    "independent": false,
+    "source": {
+      "digest": "d720850d247214ca7d0d2df4ee8890987936af4f23a497c190c67cee575c17c7",
+      "document": ".ai-harness/work-items/window-intervals-bugfix/snapshots/d720850d247214ca7d0d2df4ee8890987936af4f23a497c190c67cee575c17c7.json"
+    }
+  },
+  "acceptance": {
+    "status": "pass",
+    "evidence": [
+      "1c3f7504-c6a2-4267-b404-ecee002c595e"
+    ],
+    "source": {
+      "digest": "d720850d247214ca7d0d2df4ee8890987936af4f23a497c190c67cee575c17c7",
+      "document": ".ai-harness/work-items/window-intervals-bugfix/snapshots/d720850d247214ca7d0d2df4ee8890987936af4f23a497c190c67cee575c17c7.json"
+    }
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "not-applicable",
+    "evidence": [
+      "3d97b7a8-8b23-44e0-b4be-cb0608afd9d4"
+    ]
+  },
+  "blocked": null,
+  "delivery": {
+    "source": {
+      "digest": "d720850d247214ca7d0d2df4ee8890987936af4f23a497c190c67cee575c17c7",
+      "document": ".ai-harness/work-items/window-intervals-bugfix/snapshots/d720850d247214ca7d0d2df4ee8890987936af4f23a497c190c67cee575c17c7.json"
+    },
+    "baseline": {
+      "digest": "e3650caa9ae20d8d44be73964bf0cf839afbde82cf1928d55b51f017b0dce20c",
+      "document": ".ai-harness/work-items/window-intervals-bugfix/snapshots/e3650caa9ae20d8d44be73964bf0cf839afbde82cf1928d55b51f017b0dce20c.json"
+    },
+    "baselineAt": "2026-10-14T09:31:42.601Z",
+    "ownedChanges": [
+      {
+        "path": "src/intervals.mjs",
+        "before": "100644:5878846f825752aa3a4590e4c1d2209d967c7046",
+        "after": "100644:6a62411963db2f056fdfdfc58ed739dff7fdfe41"
+      },
+      {
+        "path": "src/window.mjs",
+        "before": "100644:fca0a8820ed7cc29f716023b77aedab22a38dfd9",
+        "after": "100644:49f109f18a6f251f80cab47daca4ab8676e9fb48"
+      },
+      {
+        "path": "test/extra.test.mjs",
+        "before": null,
+        "after": "100644:8e65aa8f57bff6e7b394ab7baa5653a852271964"
+      }
+    ],
+    "planDigest": "1ad234aada614e13aa77fa2f8c4854624bd079d065093dbc795e253497c8385a",
+    "at": "2026-10-14T09:33:47.744Z",
+    "head": "f2262b0a33aa339337c2ef6f41692a4de79102f7"
+  },
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-10-14T09:31:42.435Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-10-14T09:31:42.445Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-10-14T09:31:42.712Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-10-14T09:31:42.746Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-10-14T09:31:42.750Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "VERIFYING",
+      "at": "2026-10-14T09:33:44.020Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "VERIFYING",
+      "to": "CODE_REVIEW",
+      "at": "2026-10-14T09:33:45.595Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "CODE_REVIEW",
+      "to": "READY_FOR_ACCEPTANCE",
+      "at": "2026-10-14T09:33:46.382Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "READY_FOR_ACCEPTANCE",
+      "to": "DONE",
+      "at": "2026-10-14T09:33:47.916Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-10-14T09:31:42.435Z",
+  "updatedAt": "2026-10-14T09:33:47.916Z"
+}

@@ -1,0 +1,11 @@
+{
+  "recordedAt": "2026-10-14T09:15:57.383Z",
+  "modelsHttpStatus": 200,
+  "modelPresent": true,
+  "model": "gpt-6-astra",
+  "wireApi": "responses",
+  "modelCalls": 0,
+  "actualModelSessions": 0,
+  "authenticationModified": false,
+  "source": "actual read-only configured-provider /models probe before this baseline"
+}

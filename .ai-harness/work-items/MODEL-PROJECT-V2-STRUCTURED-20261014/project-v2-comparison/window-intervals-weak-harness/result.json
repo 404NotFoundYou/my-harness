@@ -1,0 +1,284 @@
+{
+  "schemaVersion": 2,
+  "trial": 1,
+  "mode": "real",
+  "client": "codex",
+  "taskId": "window-intervals",
+  "split": "holdout",
+  "group": "weak-harness",
+  "model": "gpt-6-astra",
+  "taskDigest": "d64581fcc701e15e5cfa02ee3ba940d366131e1005e9d9208cdd3841b5913055",
+  "judgeDigest": "f373beb6ff4131998170b4c7f6d1ed760cd730a5f0f2b159fb424f46ad4298d7",
+  "candidateDigest": "f90bf85a461d7df5180afbf9e8cb68c667620c4af1218431b0d9722a148e94d4",
+  "budget": {
+    "timeoutMs": 180000,
+    "maxToolCalls": 80,
+    "reasoning": "medium"
+  },
+  "run": {
+    "mode": "real",
+    "client": "codex",
+    "startedAt": "2026-10-14T09:31:08.680Z",
+    "durationMs": 180416,
+    "timing": {
+      "basis": "local-event-receive-time",
+      "lifecycle": {
+        "version": 1,
+        "firstProtocolEventMs": 1111,
+        "terminalEventMs": null,
+        "processExitMs": 180416,
+        "processCloseMs": 180416
+      },
+      "toolActiveMs": 11401,
+      "otherElapsedMs": 169015,
+      "spans": [
+        {
+          "id": "item_3",
+          "startMs": 13180,
+          "endMs": 13410,
+          "category": "unknown",
+          "complete": true
+        },
+        {
+          "id": "item_4",
+          "startMs": 20537,
+          "endMs": 20856,
+          "category": "unknown",
+          "complete": true
+        },
+        {
+          "id": "item_5",
+          "startMs": 33444,
+          "endMs": 34109,
+          "category": "planning",
+          "complete": true
+        },
+        {
+          "id": "item_6",
+          "startMs": 46098,
+          "endMs": 46709,
+          "category": "verification",
+          "complete": true
+        },
+        {
+          "id": "item_8",
+          "startMs": 59929,
+          "endMs": 60168,
+          "category": "unknown",
+          "complete": true
+        },
+        {
+          "id": "item_9",
+          "startMs": 104682,
+          "endMs": 105704,
+          "category": "verification",
+          "complete": true
+        },
+        {
+          "id": "item_10",
+          "startMs": 120309,
+          "endMs": 122363,
+          "category": "verification",
+          "complete": true
+        },
+        {
+          "id": "item_12",
+          "startMs": 153521,
+          "endMs": 159782,
+          "category": "completion",
+          "complete": true
+        }
+      ],
+      "categories": {
+        "unknown": {
+          "calls": 3,
+          "activeMs": 788
+        },
+        "planning": {
+          "calls": 1,
+          "activeMs": 665
+        },
+        "verification": {
+          "calls": 3,
+          "activeMs": 3687
+        },
+        "completion": {
+          "calls": 1,
+          "activeMs": 6261
+        }
+      },
+      "unmatchedCompletions": [],
+      "limitation": "工具区间按接收事件估计并合并重叠；其余耗时包含模型、网络、客户端启动和收尾，不等于纯推理耗时。"
+    },
+    "exitCode": 1,
+    "timedOut": true,
+    "toolLimit": false,
+    "toolCalls": 8,
+    "turnCompleted": false,
+    "protocolSuccess": false,
+    "usage": null,
+    "errors": [],
+    "warnings": [],
+    "unparsedLines": 0,
+    "error": null,
+    "final": null,
+    "completed": false
+  },
+  "scope": {
+    "ok": true,
+    "changes": [
+      {
+        "path": "src/intervals.mjs",
+        "before": "e808fe88b74c7da97c6eba1eeec6cb8f7ae93d3be23979059cab6bd6fc7711f3",
+        "after": "0eaf291906dfd4a530521def61df4ae9e265162f1d84028a6541dedaa8eb62fe"
+      },
+      {
+        "path": "src/window.mjs",
+        "before": "6f1c4b66fb0f3c5bd9c337506eaca494873738f122b50bb707e283453b928719",
+        "after": "3f26f8b241edef51b720e60c52bc4e3e7c994371a05d06efe53dcbab524089bf"
+      },
+      {
+        "path": ".ai-harness/work-items/benchmark-begin-spec.json",
+        "before": null,
+        "after": "bbf64cae60e12d40cfd27254da75edf17bc7535f5239e6b204fd15d0149c63e6"
+      },
+      {
+        "path": ".ai-harness/work-items/window-intervals-bugfix/events.jsonl",
+        "before": null,
+        "after": "5d2f256cb81c28f475fba70a06605ebd19ae9baf7a6bc5be274f264f09ce89c6"
+      },
+      {
+        "path": ".ai-harness/work-items/window-intervals-bugfix/evidence.jsonl",
+        "before": null,
+        "after": "4909513b6a7db32edbdaf7d69333c8e94f9d85dc0870af2b2c03fcca2352daa2"
+      },
+      {
+        "path": ".ai-harness/work-items/window-intervals-bugfix/plan.json",
+        "before": null,
+        "after": "69cef45d67793b7883065cf8aeee08b1e7d6a35d7f8b8cb86b634d38f3c33727"
+      },
+      {
+        "path": ".ai-harness/work-items/window-intervals-bugfix/snapshots/7f778a38cea121c9f6bb7194ab374bc33c48f5aa7310ad789636dbc3902e736c.json",
+        "before": null,
+        "after": "5b4edaff29f6cda6ae41a7021e4387d81f4e105b8cc547656206e6da2332f195"
+      },
+      {
+        "path": ".ai-harness/work-items/window-intervals-bugfix/snapshots/d720850d247214ca7d0d2df4ee8890987936af4f23a497c190c67cee575c17c7.json",
+        "before": null,
+        "after": "9449e3434e604e8c846e86c4f06da282053ecf931e2368d0e7a1e8fb2cf894df"
+      },
+      {
+        "path": ".ai-harness/work-items/window-intervals-bugfix/snapshots/e3650caa9ae20d8d44be73964bf0cf839afbde82cf1928d55b51f017b0dce20c.json",
+        "before": null,
+        "after": "c7a061f75e34da429b451f78a9c8817ad6ce2fc311bce31cfa91857b17fd5030"
+      },
+      {
+        "path": ".ai-harness/work-items/window-intervals-bugfix/solution.md",
+        "before": null,
+        "after": "650f439719c372b665af2fe7365e11d0f040659d58827d3b9e11c97a4329f09e"
+      },
+      {
+        "path": ".ai-harness/work-items/window-intervals-bugfix/state.json",
+        "before": null,
+        "after": "3044c945e351bbfbe516a32ae985efb4ce51f05533c4339b573c61c0eac7c302"
+      },
+      {
+        "path": "test/extra.test.mjs",
+        "before": null,
+        "after": "96e56a16554f9e79e523006cbc984280cf8ae308698b6cc2da71df4cb6ec72b1"
+      }
+    ],
+    "violations": []
+  },
+  "workflow": {
+    "ok": true,
+    "errors": [],
+    "workItems": [
+      "window-intervals-bugfix"
+    ],
+    "contract": {
+      "requiredType": "BUGFIX",
+      "items": [
+        {
+          "id": "window-intervals-bugfix",
+          "type": "BUGFIX",
+          "status": "DONE",
+          "writeScopes": [
+            "src/intervals.mjs",
+            "src/window.mjs",
+            "test/extra.test.mjs"
+          ]
+        }
+      ],
+      "uncoveredFiles": [],
+      "ok": true
+    }
+  },
+  "grade": {
+    "complete": true,
+    "ok": true,
+    "cases": [
+      {
+        "id": "overlap",
+        "pass": true
+      },
+      {
+        "id": "adjacent",
+        "pass": true
+      },
+      {
+        "id": "disjoint",
+        "pass": true
+      },
+      {
+        "id": "unsorted",
+        "pass": true
+      },
+      {
+        "id": "duplicate",
+        "pass": true
+      },
+      {
+        "id": "clip-left",
+        "pass": true
+      },
+      {
+        "id": "clip-right",
+        "pass": true
+      },
+      {
+        "id": "outside-window",
+        "pass": true
+      },
+      {
+        "id": "clip-then-merge",
+        "pass": true
+      },
+      {
+        "id": "immutable-input",
+        "pass": true
+      },
+      {
+        "id": "merge-contract",
+        "pass": true
+      },
+      {
+        "id": "window-contract",
+        "pass": true
+      }
+    ],
+    "expectedCases": 12,
+    "exitCode": 0,
+    "timedOut": false,
+    "stderr": "",
+    "error": null
+  },
+  "success": false,
+  "falseCompletion": false,
+  "falseFunctionalCompletion": false,
+  "execution": {
+    "protocolSha256": "b57854638cd1ac9420a2a84b56333b3277577eac87aa2a6d2e8610d9bd62c83b",
+    "sourceBefore": "502e2cb4a9ca4c60189ee01d52c78f5979cdbdf57dd651ecc71e97778fd1dccc",
+    "sourceAfter": "502e2cb4a9ca4c60189ee01d52c78f5979cdbdf57dd651ecc71e97778fd1dccc"
+  }
+}

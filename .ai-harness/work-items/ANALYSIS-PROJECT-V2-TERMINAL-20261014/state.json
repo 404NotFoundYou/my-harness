@@ -1,0 +1,212 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 1,
+  "id": "ANALYSIS-PROJECT-V2-TERMINAL-20261014",
+  "type": "ANALYSIS",
+  "title": "成功收尾后终态事件缺失与共享记忆边界调查",
+  "status": "ANSWERED",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/analysis.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户根据上一轮建议要求执行：仅使用已有六会话记录调查成功finish/check后终态事件缺失并设计共享记忆控制方案；无新增真实模型调用、费用、预算放宽或权限/凭据变更。"
+  },
+  "input": {
+    "references": [
+      "MODEL-PROJECT-V2-STRUCTURED-20261014六会话：两组功能3/3，Harness完整0/3，配置和区间两项DONE但无turn.completed，Harness三次均读取宿主共享记忆。"
+    ],
+    "acceptance": [
+      "逐会话核对原始日志、命令及阶段、final.json、生命周期和驱动实现，区分已证实/推断/未知；给出可核验的共享记忆控制方案及版本边界；保护既有474文件及产品源码，新增真实模型调用0，工作项ANSWERED且check --ci成功。"
+    ],
+    "nonGoals": [
+      "不追加真实会话、不改变评分或180秒/80工具预算、不修改产品源码和旧实验、不修改宿主记忆/配置/权限/凭据，不根据holdout结果调参。"
+    ],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": null,
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "main@f8bedb576e2a684964ddf87fb73254779337cc2e，产品源码无修改；既有86文件真实复测工作项未提交且为DONE。已读codex驱动/timing/protocol导出接口与直接调用方、本轮原始/诊断记录和分析策略。只写新分析控制面。"
+    ],
+    "completedAt": "2026-10-14T09:44:38.062Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "f8bedb576e2a684964ddf87fb73254779337cc2e",
+      "dirty": false,
+      "changedFiles": [],
+      "fingerprints": {},
+      "source": {
+        "digest": "502e2cb4a9ca4c60189ee01d52c78f5979cdbdf57dd651ecc71e97778fd1dccc",
+        "document": ".ai-harness/work-items/ANALYSIS-PROJECT-V2-TERMINAL-20261014/snapshots/502e2cb4a9ca4c60189ee01d52c78f5979cdbdf57dd651ecc71e97778fd1dccc.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "pending",
+    "document": null,
+    "evidence": [],
+    "completedAt": null
+  },
+  "database": {
+    "status": "pending",
+    "document": null,
+    "evidence": [],
+    "completedAt": null,
+    "impact": "unknown"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/ANALYSIS-PROJECT-V2-TERMINAL-20261014/plan.json",
+    "approved": false,
+    "approvalRef": null
+  },
+  "verification": {
+    "status": "pending",
+    "evidence": [],
+    "stages": []
+  },
+  "review": {
+    "status": "pending",
+    "evidence": [],
+    "independent": false
+  },
+  "acceptance": {
+    "status": "pending",
+    "evidence": []
+  },
+  "analysis": {
+    "status": "pass",
+    "evidence": [
+      "80f6c9c5-51a6-4b31-bb5e-a8250ac47088"
+    ],
+    "conclusions": [
+      {
+        "id": "05bd0c0a-2575-4066-8683-4113669a1869",
+        "status": "PROVEN",
+        "text": "六会话原始记录重新核对：Harness三次缺turn.completed，两个BUGFIX虽DONE但未完整交付；所有命令已结束，exit/close差0，没有终态事件到达之后长时间退出的记录。",
+        "evidence": [
+          ".ai-harness/work-items/ANALYSIS-PROJECT-V2-TERMINAL-20261014/terminal-analysis.json rows及observations；受保护原始events/result/工作项与codex-driver:16/48/68-75、protocol:27完成谓词。"
+        ]
+      },
+      {
+        "id": "8e672735-9f88-47ce-aa80-ac192842cbf8",
+        "status": "PROVEN",
+        "text": "驱动把最终文件缺失/读取或解析失败统一规范化成null，旧final.json不能恢复原始失败类别；两组均有旧配置和MCP告警，不支持单独将Harness超时归因于这些告警。",
+        "evidence": [
+          "benchmarks/codex-driver.mjs:82-83；terminal-analysis.json：三次Harness最后stderr约31秒，成功组三次最后工具到终态约20至23秒。日志无模型请求完整边界。"
+        ]
+      },
+      {
+        "id": "3b0768c9-4d61-462e-8bef-84dfb4409d67",
+        "status": "PROVEN",
+        "text": "三次Harness实际读取宿主共享记忆；本机CLI0.156.0接受--disable memories并显示开关false，但离线提示预览默认与关闭两侧都无记忆标记，不构成真实exec隔离证明。",
+        "evidence": [
+          ".ai-harness/work-items/ANALYSIS-PROJECT-V2-TERMINAL-20261014/terminal-analysis.json、memory-feature-probe.json、memory-prompt-probe.json；读取和注入来源/文件拒绝能力分开解释。"
+        ]
+      },
+      {
+        "id": "c2c83250-bfcb-4457-82cb-8e59c17ccbde",
+        "status": "PROVEN",
+        "text": "既有474文件SHA不变，源码保持502e2cb4a9ca4c60189ee01d52c78f5979cdbdf57dd651ecc71e97778fd1dccc；仅零模型既有记录聚合及离线配置探测，新增真实会话0。",
+        "evidence": [
+          ".ai-harness/work-items/ANALYSIS-PROJECT-V2-TERMINAL-20261014/historical-hashes.json、investigation-baseline.json、terminal-analysis.json及inspect-records.mjs的已执行断言；无产品修改或费用调用。"
+        ]
+      },
+      {
+        "id": "c14bc89e-ec6d-4fd0-aa9a-87f8546a4147",
+        "status": "PROVEN",
+        "text": "当前Node为22.20.0，已有记录聚合脚本语法有效；这两条只读命令不证明超时根因或环境隔离。",
+        "evidence": [
+          ".ai-harness/work-items/ANALYSIS-PROJECT-V2-TERMINAL-20261014/summary.md：命令事实和宿主实际聚合/探测的文本证据明确区分。"
+        ],
+        "commands": [
+          "f5e9a6d5-9a4b-493d-8012-acd848217bd9",
+          "fdab7b57-1cb7-4da8-a211-0ad8c64efd3f"
+        ]
+      },
+      {
+        "id": "4570a672-b76f-43b1-8457-d7ce8749300b",
+        "status": "INFERRED",
+        "text": "成功工具后仍需最终输出，最后收尾较晚及有限预算余量可能导致终态缺失；当前仅是候选解释，不证明模型或网络延迟。",
+        "evidence": [
+          "直接实现三次最后工具到终态20.412/20.748/22.783秒，Harness截断观测15.290/26.417/20.634秒，终点不同且样本仅三对。"
+        ]
+      },
+      {
+        "id": "0af7107c-542f-407f-8fb8-a4b2f1ad81e2",
+        "status": "UNKNOWN",
+        "text": "当前超时的具体模型/网络/客户端schema/Runtime根因仍不能确认。",
+        "evidence": []
+      },
+      {
+        "id": "8b63960a-0c75-46b8-a18d-346bae2a7330",
+        "status": "UNKNOWN",
+        "text": "记忆指令在历史真实会话中的注入来源、关闭记忆后真实exec的提示和宿主文件读取拒绝尚未验证。",
+        "evidence": []
+      },
+      {
+        "id": "af80cf6d-4c7c-4b0d-8bc9-74e7b9523ab5",
+        "status": "PROPOSAL",
+        "text": "下一步以新开发型工作项补充原始final解析分类和assistant/终态接收点；两组统一关闭记忆并用无模型合成文件验证执行环境拒绝宿主读取，冻结环境后再讨论付费试验。",
+        "evidence": [
+          ".ai-harness/work-items/ANALYSIS-PROJECT-V2-TERMINAL-20261014/memory-control-plan.md：具体候选代码位置、版本兼容边界、六项无模型验收及尚未实施状态，不修改评分或预算。"
+        ]
+      }
+    ],
+    "unknowns": [
+      "缺模型请求边界和原始最终文件解析分类，逐条assistant事件没有时间戳；没有在本轮追加真实模型会话以试探归因。",
+      "现有shell读取只能证明访问发生；debug预览两侧均无标记，未执行OS/沙箱拒绝读取测试，也未修改宿主权限/账号/凭据。"
+    ],
+    "source": {
+      "digest": "502e2cb4a9ca4c60189ee01d52c78f5979cdbdf57dd651ecc71e97778fd1dccc",
+      "document": ".ai-harness/work-items/ANALYSIS-PROJECT-V2-TERMINAL-20261014/snapshots/502e2cb4a9ca4c60189ee01d52c78f5979cdbdf57dd651ecc71e97778fd1dccc.json"
+    }
+  },
+  "documentation": {
+    "status": "pending",
+    "evidence": []
+  },
+  "blocked": null,
+  "delivery": null,
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-10-14T09:44:37.732Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-10-14T09:44:37.825Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "ANALYZING",
+      "at": "2026-10-14T09:44:38.268Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "ANALYZING",
+      "to": "ANSWERED",
+      "at": "2026-10-14T09:58:26.443Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-10-14T09:44:37.732Z",
+  "updatedAt": "2026-10-14T09:58:26.443Z"
+}
