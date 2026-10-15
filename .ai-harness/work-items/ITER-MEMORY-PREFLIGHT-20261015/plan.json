@@ -1,0 +1,108 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "ITER-MEMORY-PREFLIGHT-20261015",
+  "mode": "single",
+  "rationale": "单AI单纵向普通迭代，仅增加客户端上下文关闭、环境观测和预检，不实施新的OS权限边界。公共记忆参数供驱动/预检复用；环境摘要仅保存选定配置和manifest哈希，身份可选扩展以保留旧v4及状态/报告只读。独立预检入口使用离线CLI特性/提示查询，正反对照与文件访问分别判定；仅复用已初始化沙箱且拒绝使用活动deny-read配置，未证明同一实际exec工具链时保留限制。失败或未知结果可完成预检交付，但不能声称隔离成功。",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "共享记忆关闭与零模型隔离预检",
+      "module": "compact",
+      "status": "COMPLETED",
+      "attempt": 1,
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        "benchmarks/codex-environment.mjs",
+        "benchmarks/preflight.mjs",
+        "benchmarks/codex-driver.mjs",
+        "benchmarks/experiment.mjs",
+        "benchmarks/run.mjs",
+        "benchmarks/tests/memory-control.test.mjs",
+        "benchmarks/tests/preflight.test.mjs",
+        "benchmarks/tests/driver-diagnostics.test.mjs",
+        "benchmarks/README.md",
+        ".ai-harness/work-items/ITER-MEMORY-PREFLIGHT-20261015/**"
+      ],
+      "verification": [
+        "node --test benchmarks/tests/memory-control.test.mjs benchmarks/tests/preflight.test.mjs benchmarks/tests/driver-diagnostics.test.mjs",
+        "node --test benchmarks/tests/driver-diagnostics.test.mjs benchmarks/tests/driver-process.test.mjs benchmarks/tests/driver-timing.test.mjs benchmarks/tests/memory-control.test.mjs benchmarks/tests/multifile.test.mjs benchmarks/tests/preflight.test.mjs benchmarks/tests/project-v2.test.mjs benchmarks/tests/report.test.mjs benchmarks/tests/resume.test.mjs benchmarks/tests/runner.test.mjs benchmarks/tests/spec-guidance.test.mjs benchmarks/tests/status.test.mjs",
+        "node --test .ai-harness/work-items/ITER-MEMORY-PREFLIGHT-20261015/verify-history.test.mjs"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            "--test",
+            "benchmarks/tests/memory-control.test.mjs",
+            "benchmarks/tests/preflight.test.mjs",
+            "benchmarks/tests/driver-diagnostics.test.mjs"
+          ]
+        },
+        {
+          "id": "V2",
+          "command": "node",
+          "args": [
+            "--test",
+            "benchmarks/tests/driver-diagnostics.test.mjs",
+            "benchmarks/tests/driver-process.test.mjs",
+            "benchmarks/tests/driver-timing.test.mjs",
+            "benchmarks/tests/memory-control.test.mjs",
+            "benchmarks/tests/multifile.test.mjs",
+            "benchmarks/tests/preflight.test.mjs",
+            "benchmarks/tests/project-v2.test.mjs",
+            "benchmarks/tests/report.test.mjs",
+            "benchmarks/tests/resume.test.mjs",
+            "benchmarks/tests/runner.test.mjs",
+            "benchmarks/tests/spec-guidance.test.mjs",
+            "benchmarks/tests/status.test.mjs"
+          ]
+        },
+        {
+          "id": "V3",
+          "command": "node",
+          "args": [
+            "--test",
+            ".ai-harness/work-items/ITER-MEMORY-PREFLIGHT-20261015/verify-history.test.mjs"
+          ]
+        }
+      ],
+      "docsImpact": [
+        "benchmarks/README.md",
+        ".ai-harness/work-items/ITER-MEMORY-PREFLIGHT-20261015/summary.md"
+      ],
+      "reviewBatch": "R1",
+      "risk": "medium",
+      "owner": "primary-ai",
+      "verificationStatus": "pass",
+      "reviewStatus": "pass",
+      "evidence": [
+        "a389d384-df0e-4652-815a-6b7b18a116f9",
+        "f443e8a5-38b2-4883-8f4a-987474222404"
+      ],
+      "deferralApproval": null,
+      "verificationSource": {
+        "digest": "055ee9536da48c48a0ce1f5d54c1a4186577639f2ad7d70f9f20db669a85b1fb",
+        "document": ".ai-harness/work-items/ITER-MEMORY-PREFLIGHT-20261015/snapshots/055ee9536da48c48a0ce1f5d54c1a4186577639f2ad7d70f9f20db669a85b1fb.json"
+      },
+      "reviewSource": {
+        "digest": "055ee9536da48c48a0ce1f5d54c1a4186577639f2ad7d70f9f20db669a85b1fb",
+        "document": ".ai-harness/work-items/ITER-MEMORY-PREFLIGHT-20261015/snapshots/055ee9536da48c48a0ce1f5d54c1a4186577639f2ad7d70f9f20db669a85b1fb.json"
+      }
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "共享记忆关闭与零模型隔离预检",
+      "risk": "medium",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": false
+    }
+  ],
+  "createdAt": "2026-10-15T01:37:24.023Z",
+  "updatedAt": "2026-10-15T02:03:28.407Z"
+}

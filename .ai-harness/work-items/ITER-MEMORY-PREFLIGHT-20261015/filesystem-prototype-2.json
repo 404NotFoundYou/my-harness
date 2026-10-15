@@ -1,0 +1,26 @@
+{
+  "recordedAt": "2026-10-15T01:39:01.586Z",
+  "args": [
+    "sandbox",
+    "--disable",
+    "memories",
+    "-c",
+    "sandbox_mode=\"workspace-write\"",
+    "-C",
+    "C:\\Users\\jhon\\AppData\\Local\\Temp\\ai-harness-memory-access-qpzGGI\\workspace",
+    "--",
+    "D:\\Program Files\\nodejs\\node.exe",
+    "C:\\Users\\jhon\\AppData\\Local\\Temp\\ai-harness-memory-access-qpzGGI\\workspace\\probe.mjs",
+    "C:\\Users\\jhon\\AppData\\Local\\Temp\\ai-harness-memory-access-qpzGGI\\workspace\\inside.txt",
+    "C:\\Users\\jhon\\AppData\\Local\\Temp\\ai-harness-memory-access-qpzGGI\\external\\outside.txt",
+    "C:\\Users\\jhon\\.codex\\memories\\MEMORY.md"
+  ],
+  "actualModelSessions": 0,
+  "status": 2,
+  "errorCode": null,
+  "checks": null,
+  "stderr": "error: the following required arguments were not provided:\n  --permission-profile <NAME>\n\nUsage: codex sandbox --permission-profile <NAME> --disable <FEATURE> --config <key=value> --cd <DIR> <COMMAND>...\n\nFor more information, try '--help'.\n",
+  "setupMarkerUnchanged": true,
+  "denyReadStateUnchanged": true,
+  "memoryContentsRead": false
+}

@@ -9,6 +9,7 @@ import { resolveProjectPath } from "../.ai-harness/src/filesystem.mjs";
 import { inspectLock, recoverLock, withFileLock } from "../.ai-harness/src/locking.mjs";
 import { readExperimentFile } from "./audit-trial.mjs";
 import { executionSummary, initialExecution, readExecution } from "./execution.mjs";
+import { captureCodexEnvironment, validateCodexEnvironment } from "./codex-environment.mjs";
 
 export function experimentPlan({ weak, strong, client = "codex", comparison = "reference", repetitions = 1, timeoutMs = budget.timeoutMs, maxToolCalls = budget.maxToolCalls, suite = "core" }) {
   const tasks=tasksForSuite(suite);
@@ -25,9 +26,9 @@ export function experimentPlan({ weak, strong, client = "codex", comparison = "r
   return { schemaVersion: 4, suite, client, comparison, repetitions, groups: matrix, budget: { timeoutMs, maxToolCalls, reasoning: client === "gemini" ? null : budget.reasoning }, schedule };
 }
 
-export async function cliIdentity(cli) {
+export async function cliIdentity(cli, { codexEnvironment = false } = {}) {
   const entry=await realpath(cli);
-  return {kind:"cli",entry,sha256:hash(await readFile(entry)),nodeVersion:process.version};
+  return {kind:"cli",entry,sha256:hash(await readFile(entry)),nodeVersion:process.version,...(codexEnvironment ? {environment:await captureCodexEnvironment({cli:entry})} : {})};
 }
 
 function checkedIdentity(mode, driver, identity) {
@@ -38,7 +39,8 @@ function checkedIdentity(mode, driver, identity) {
     assert.equal(value.kind,"simulated");
     assert.match(value.fingerprint,/^[a-f0-9]{64}$/);
   }else{
-    assert.deepEqual(Object.keys(value).sort(),["entry","kind","nodeVersion","sha256"],"Invalid CLI identity");
+    assert.deepEqual(Object.keys(value).sort(),["entry","kind","nodeVersion","sha256",...(value.environment === undefined ? [] : ["environment"])].sort(),"Invalid CLI identity");
+    if (value.environment !== undefined) validateCodexEnvironment(value.environment);
     assert.equal(value.kind,"cli");
     assert.ok(typeof value.entry === "string"&&path.isAbsolute(value.entry));
     assert.match(value.sha256,/^[a-f0-9]{64}$/);
@@ -74,7 +76,7 @@ export async function runExperiment({ plan, sourceRoot, outputDirectory, driver,
   const save=async(file,value)=>saveJson(await resolveProjectPath(outputDirectory,file,{forWrite:true}),value);
   const assertSource=async()=>{
     assert.equal((await sourceSnapshot(sourceRoot)).digest,source,"Harness source changed during the experiment");
-    if(mode === "real")assert.deepEqual(await cliIdentity(identity.entry),identity,"CLI identity changed during the experiment");
+    if(mode === "real")assert.deepEqual(await cliIdentity(identity.entry,{codexEnvironment:identity.environment !== undefined}),identity,identity.environment === undefined ? "CLI identity changed during the experiment" : "CLI identity changed or Codex environment changed during the experiment");
   };
   async function load(){
     await assertSource();

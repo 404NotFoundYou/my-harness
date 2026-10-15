@@ -1,0 +1,242 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 1,
+  "id": "ITER-MEMORY-PREFLIGHT-20261015",
+  "type": "ITERATION",
+  "title": "共享记忆关闭与零模型隔离预检",
+  "status": "DONE",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/iteration.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户要求按前述零模型预检建议执行，授权必要可逆代码/测试/文档及合成文件只读访问验证；不授权新模型会话、真实目录ACL/账号/凭据或默认配置修改。隔离无法证明时报告未完成，不为预检结果创建新权限。"
+  },
+  "input": {
+    "references": [
+      "用户根据已说明建议要求执行：两组记忆参数统一、无模型提示正反对照和合成文件访问预检，冻结必要配置/插件/技能摘要及验证历史兼容。"
+    ],
+    "acceptance": [
+      "Codex公共驱动统一关闭memories；新Codex CLI实验记录有版本的配置/指令/技能/插件清单摘要并在试次边界重验，旧身份及协议保持兼容。预检不调用exec/真实模型，分别记录功能开关、提示记忆正反对照、相同配置sandbox合成内外文件访问；任何未验证/失败不得得到ready=true。保留全部真实负结果及514历史文件SHA，定向与全套无模型测试通过，工作项DONE且check --ci成功。"
+    ],
+    "nonGoals": [],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": null,
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "用户根据已说明建议要求执行：两组记忆参数统一、无模型提示正反对照和合成文件访问预检，冻结必要配置/插件/技能摘要及验证历史兼容。"
+    ],
+    "completedAt": "2026-10-15T01:37:23.928Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "7386fdbb53770df5c4755a8ed3d580004d843936",
+      "dirty": false,
+      "changedFiles": [],
+      "fingerprints": {},
+      "source": {
+        "digest": "28fbcea0f84c8e2ece82e9ebfc23c5a41201bdd8ce53cc3af5f8f5898a49471a",
+        "document": ".ai-harness/work-items/ITER-MEMORY-PREFLIGHT-20261015/snapshots/28fbcea0f84c8e2ece82e9ebfc23c5a41201bdd8ce53cc3af5f8f5898a49471a.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": ".ai-harness/work-items/ITER-MEMORY-PREFLIGHT-20261015/solution.md",
+    "evidence": [
+      "单AI单纵向普通迭代，仅增加客户端上下文关闭、环境观测和预检，不实施新的OS权限边界。公共记忆参数供驱动/预检复用；环境摘要仅保存选定配置和manifest哈希，身份可选扩展以保留旧v4及状态/报告只读。独立预检入口使用离线CLI特性/提示查询，正反对照与文件访问分别判定；仅复用已初始化沙箱且拒绝使用活动deny-read配置，未证明同一实际exec工具链时保留限制。失败或未知结果可完成预检交付，但不能声称隔离成功。"
+    ],
+    "completedAt": "2026-10-15T01:37:24.015Z"
+  },
+  "database": {
+    "impact": "none",
+    "status": "not-applicable",
+    "document": null,
+    "evidence": [
+      "本地CLI启动参数、只读配置摘要与自有合成沙箱，无数据库/业务数据，也不改变模型评分或预算。"
+    ],
+    "completedAt": "2026-10-15T01:37:24.019Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/ITER-MEMORY-PREFLIGHT-20261015/plan.json",
+    "approved": true,
+    "approvalRef": "用户要求按前述零模型预检建议执行，授权必要可逆代码/测试/文档及合成文件只读访问验证；不授权新模型会话、真实目录ACL/账号/凭据或默认配置修改。隔离无法证明时报告未完成，不为预检结果创建新权限。"
+  },
+  "verification": {
+    "status": "pass",
+    "evidence": [
+      "9e9c8c43-85e8-42dd-aef9-299718de200f"
+    ],
+    "stages": [],
+    "source": {
+      "digest": "055ee9536da48c48a0ce1f5d54c1a4186577639f2ad7d70f9f20db669a85b1fb",
+      "document": ".ai-harness/work-items/ITER-MEMORY-PREFLIGHT-20261015/snapshots/055ee9536da48c48a0ce1f5d54c1a4186577639f2ad7d70f9f20db669a85b1fb.json"
+    }
+  },
+  "review": {
+    "status": "pass",
+    "evidence": [
+      "cf29fa64-2f45-4420-9388-b3bde318b10a"
+    ],
+    "independent": false,
+    "source": {
+      "digest": "055ee9536da48c48a0ce1f5d54c1a4186577639f2ad7d70f9f20db669a85b1fb",
+      "document": ".ai-harness/work-items/ITER-MEMORY-PREFLIGHT-20261015/snapshots/055ee9536da48c48a0ce1f5d54c1a4186577639f2ad7d70f9f20db669a85b1fb.json"
+    }
+  },
+  "acceptance": {
+    "status": "pass",
+    "evidence": [
+      "5aa243e0-12b8-4c7d-a918-e79b99d55d9f"
+    ],
+    "source": {
+      "digest": "055ee9536da48c48a0ce1f5d54c1a4186577639f2ad7d70f9f20db669a85b1fb",
+      "document": ".ai-harness/work-items/ITER-MEMORY-PREFLIGHT-20261015/snapshots/055ee9536da48c48a0ce1f5d54c1a4186577639f2ad7d70f9f20db669a85b1fb.json"
+    }
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "pass",
+    "evidence": [
+      "8f70c65f-0274-4c18-965e-b1d573bc4497"
+    ]
+  },
+  "blocked": null,
+  "delivery": {
+    "source": {
+      "digest": "055ee9536da48c48a0ce1f5d54c1a4186577639f2ad7d70f9f20db669a85b1fb",
+      "document": ".ai-harness/work-items/ITER-MEMORY-PREFLIGHT-20261015/snapshots/055ee9536da48c48a0ce1f5d54c1a4186577639f2ad7d70f9f20db669a85b1fb.json"
+    },
+    "baseline": {
+      "digest": "28fbcea0f84c8e2ece82e9ebfc23c5a41201bdd8ce53cc3af5f8f5898a49471a",
+      "document": ".ai-harness/work-items/ITER-MEMORY-PREFLIGHT-20261015/snapshots/28fbcea0f84c8e2ece82e9ebfc23c5a41201bdd8ce53cc3af5f8f5898a49471a.json"
+    },
+    "baselineAt": "2026-10-15T01:37:23.928Z",
+    "ownedChanges": [
+      {
+        "path": "benchmarks/README.md",
+        "before": "100644:95553afa6f8f98940d8d0ead492e3e50b7edd308",
+        "after": "100644:80e8e7f1d35873422fe432d40da52c38c1640c75"
+      },
+      {
+        "path": "benchmarks/codex-driver.mjs",
+        "before": "100644:24022134ba19bde9b4a47f9b2374063779bb5cc7",
+        "after": "100644:5997460468a4dd1918944a93ec5ac841d7c5986e"
+      },
+      {
+        "path": "benchmarks/codex-environment.mjs",
+        "before": null,
+        "after": "100644:ebbdced94a16768b785641a7f566cb0d5db67849"
+      },
+      {
+        "path": "benchmarks/experiment.mjs",
+        "before": "100644:dbe72e8eb294b6050628463375947993f1b08a57",
+        "after": "100644:cdf22416fffb0a1435b7df0bc9c826fd2044bf90"
+      },
+      {
+        "path": "benchmarks/preflight.mjs",
+        "before": null,
+        "after": "100644:6a937bc82314787f8244013093e87c3d48a8606d"
+      },
+      {
+        "path": "benchmarks/run.mjs",
+        "before": "100644:36c87d4fb2db4f794662574bb0c663d201d6d3c5",
+        "after": "100644:5ed0f4a354adf03a0738b495deb1ac5608a4537d"
+      },
+      {
+        "path": "benchmarks/tests/driver-diagnostics.test.mjs",
+        "before": "100644:c783c466caff6595bb6f7072e979cc18b5355ba8",
+        "after": "100644:573a368ae29e9106077c03d32d4fa8669c8a32c3"
+      },
+      {
+        "path": "benchmarks/tests/memory-control.test.mjs",
+        "before": null,
+        "after": "100644:7b32fbbd888996515ab60de8e0e0908f9f6c6a08"
+      },
+      {
+        "path": "benchmarks/tests/preflight.test.mjs",
+        "before": null,
+        "after": "100644:4e1e8b1f8d1d9e19478aa35eb3c22886f15f2730"
+      }
+    ],
+    "planDigest": "f1a7301b913f62f6bcba45e991e413cf32960545c717b5141148803a04fdb3fb",
+    "at": "2026-10-15T02:03:31.980Z",
+    "head": "7386fdbb53770df5c4755a8ed3d580004d843936"
+  },
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-10-15T01:37:23.813Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-10-15T01:37:23.823Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-10-15T01:37:24.010Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-10-15T01:37:24.044Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-10-15T01:37:24.047Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "VERIFYING",
+      "at": "2026-10-15T02:03:28.423Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "VERIFYING",
+      "to": "CODE_REVIEW",
+      "at": "2026-10-15T02:03:29.067Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "CODE_REVIEW",
+      "to": "READY_FOR_ACCEPTANCE",
+      "at": "2026-10-15T02:03:29.746Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "READY_FOR_ACCEPTANCE",
+      "to": "DONE",
+      "at": "2026-10-15T02:03:32.086Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-10-15T01:37:23.813Z",
+  "updatedAt": "2026-10-15T02:03:32.086Z"
+}

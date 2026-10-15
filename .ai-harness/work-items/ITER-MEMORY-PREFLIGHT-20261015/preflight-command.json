@@ -1,0 +1,19 @@
+{
+  "startedAt": "2026-10-15T01:49:21.2883073+00:00",
+  "finishedAt": "2026-10-15T01:49:22.7125686+00:00",
+  "command": "node",
+  "args": [
+    "benchmarks/preflight.mjs",
+    "--cli",
+    "D:\\Program Files\\Nvm\\v22.20.0\\node_global\\node_modules\\@openai\\codex\\bin\\codex.js",
+    "--model",
+    "gpt-6-astra",
+    "--out",
+    ".ai-harness/work-items/ITER-MEMORY-PREFLIGHT-20261015/live-preflight-final"
+  ],
+  "exitCode": 2,
+  "ready": false,
+  "actualModelSessions": 0,
+  "cliVersion": "0.156.0",
+  "head": "7386fdbb53770df5c4755a8ed3d580004d843936"
+}

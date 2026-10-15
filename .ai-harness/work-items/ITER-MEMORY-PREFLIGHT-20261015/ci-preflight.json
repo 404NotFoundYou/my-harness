@@ -1,0 +1,62 @@
+{
+  "head": "7386fdbb53770df5c4755a8ed3d580004d843936",
+  "observedAt": "2026-10-15T01:49:23.7774642+00:00",
+  "iterationCreatedAt": "2026-10-15T01:37:23.813Z",
+  "baselineCiCompletedBeforeIteration": true,
+  "runs": [
+    {
+      "id": 38665384851,
+      "name": "AI Harness",
+      "head_sha": "7386fdbb53770df5c4755a8ed3d580004d843936",
+      "status": "completed",
+      "conclusion": "success",
+      "run_attempt": 1
+    },
+    {
+      "id": 38665384755,
+      "name": "Harness source tests",
+      "head_sha": "7386fdbb53770df5c4755a8ed3d580004d843936",
+      "status": "completed",
+      "conclusion": "success",
+      "run_attempt": 1
+    }
+  ],
+  "jobs": [
+    {
+      "name": "source-tests (windows-latest, 24)",
+      "status": "completed",
+      "conclusion": "success",
+      "completed_at": "2026-10-15T01:31:28Z"
+    },
+    {
+      "name": "source-tests (ubuntu-latest, 22)",
+      "status": "completed",
+      "conclusion": "success",
+      "completed_at": "2026-10-15T01:24:27Z"
+    },
+    {
+      "name": "source-tests (windows-latest, 22)",
+      "status": "completed",
+      "conclusion": "success",
+      "completed_at": "2026-10-15T01:28:56Z"
+    },
+    {
+      "name": "source-tests (ubuntu-latest, 20)",
+      "status": "completed",
+      "conclusion": "success",
+      "completed_at": "2026-10-15T01:24:34Z"
+    },
+    {
+      "name": "source-tests (ubuntu-latest, 24)",
+      "status": "completed",
+      "conclusion": "success",
+      "completed_at": "2026-10-15T01:24:20Z"
+    },
+    {
+      "name": "source-tests (windows-latest, 20)",
+      "status": "completed",
+      "conclusion": "success",
+      "completed_at": "2026-10-15T01:33:26Z"
+    }
+  ]
+}

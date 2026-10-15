@@ -29,7 +29,7 @@ for (const scenario of cases) test("original final " + scenario.name + " remains
   const directory = await realpath(await mkdtemp(path.join(tmpdir(), "ai-harness-final-diagnostics-")));
   const child = new EventEmitter(); child.pid = 123456; child.exitCode = null;
   child.stdin = new PassThrough(); child.stdout = new PassThrough(); child.stderr = new PassThrough();
-  let now = 1000, timer, stops = 0;
+  let now = 1000, timer, stops = 0, launchArguments;
   const at = value => { now = 1000 + value; };
   const emit = (event, value) => { at(value); child.stdout.write(JSON.stringify(event) + "\n"); };
   const exit = value => { at(value); child.exitCode = scenario.name === "timeout-after-tool" ? 1 : 0; child.emit("exit", child.exitCode); };
@@ -49,7 +49,8 @@ for (const scenario of cases) test("original final " + scenario.name + " remains
     context.mock.method(globalThis, "clearTimeout", () => {});
     context.mock.method(childProcess, "spawnSync", () => { stop(); return { status: 0 }; });
     context.mock.method(process, "kill", () => stop());
-    context.mock.method(childProcess, "spawn", () => {
+    context.mock.method(childProcess, "spawn", (_command, args) => {
+      launchArguments = args;
       queueMicrotask(() => {
         emit({ type: "system" }, 2);
         emit({ type: "item.started", item: { id: "tool", type: "command_execution", command: "node --test", status: "in_progress" } }, 5);
@@ -64,6 +65,7 @@ for (const scenario of cases) test("original final " + scenario.name + " remains
     syncBuiltinESMExports();
     const result = await clientDriver("codex", "synthetic.mjs")({ root: directory, model: "synthetic", prompt: "Simulated process; no model or network calls",
       budget: { timeoutMs: 1000, maxToolCalls: 80, reasoning: "medium" }, outputDirectory: directory });
+    assert.deepEqual(launchArguments.slice(launchArguments.indexOf("exec") + 1, launchArguments.indexOf("exec") + 3), ["--disable", "memories"], "all Codex groups must use the same explicit memory policy");
     assert.deepEqual(result.finalOutput, { version: 1, status: scenario.status, exists: scenario.name === "missing" ? false : scenario.name === "unreadable" ? null : true,
       bytes: ["missing", "unreadable"].includes(scenario.name) ? null : Buffer.byteLength(scenario.text), errorCode: scenario.name === "missing" ? "ENOENT" : scenario.name === "unreadable" ? "EACCES" : null },
     "canonical null must not erase the reason that the original CLI final could not be used");

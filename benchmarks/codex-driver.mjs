@@ -3,6 +3,7 @@ import { spawn, spawnSync } from "node:child_process";
 import { readFile, writeFile } from "node:fs/promises";
 import { redact } from "../.ai-harness/src/evidence.mjs";
 import { saveJson } from "./runner.mjs";
+import { codexMemoryArguments } from "./codex-environment.mjs";
 import { createToolTiming, toolCategory } from "./timing.mjs";
 import { completedRun, inspectFinal, parseFinal, redactProtocolValue, responseSchema } from "./protocol.mjs";
 
@@ -22,7 +23,7 @@ export function codexDriver(cli) {
     const finalFile = path.join(outputDirectory, "final.json");
     const schema = path.join(outputDirectory, "response.schema.json");
     await saveJson(schema, responseSchema);
-    const args = ["exec", "--ephemeral", "--json", "--color", "never", "--sandbox", "workspace-write", "-C", root, "-m", model,
+    const args = ["exec", ...codexMemoryArguments, "--ephemeral", "--json", "--color", "never", "--sandbox", "workspace-write", "-C", root, "-m", model,
       "-c", `model_reasoning_effort="${budget.reasoning}"`, "--output-schema", schema, "-o", finalFile, "-"];
     const command = /\.(m?js)$/i.test(cli) ? process.execPath : cli;
     const launchArgs = command === process.execPath ? [cli, ...args] : args;

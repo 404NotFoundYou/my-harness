@@ -1,0 +1,32 @@
+{
+  "recordedAt": "2026-10-15T01:38:15.181Z",
+  "mode": "existing configured Windows sandbox; no model execution",
+  "actualModelSessions": 0,
+  "host": {
+    "status": 0,
+    "checks": [
+      {
+        "readable": true,
+        "matches": true
+      },
+      {
+        "readable": true,
+        "matches": true
+      },
+      {
+        "readable": true,
+        "contentsRead": false
+      }
+    ]
+  },
+  "sandbox": {
+    "status": 2,
+    "errorCode": null,
+    "checks": null,
+    "stdoutBytes": 0,
+    "stderrBytes": 200
+  },
+  "setupMarkerUnchanged": true,
+  "denyReadStateUnchanged": true,
+  "memoryContentsRead": false
+}

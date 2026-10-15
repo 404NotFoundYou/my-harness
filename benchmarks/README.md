@@ -24,6 +24,24 @@ node benchmarks/run.mjs --cli '<CLI路径>' --weak '<模型标识>' --comparison
 
 正式执行前确认费用授权，再使用同一参数去掉 `--dry-run`。`paired` 为两组，`reference` 为原三组且要求 `--strong`；默认重复1次，可设1–100次。三个固定题、两组、重复5次共30个独立会话。每个试次使用新临时仓库，目录包含 trial 编号，顺序按题目与轮次轮换；预算在运行前冻结。重复试次不是失败后的自动重试，不遗漏失败样本。真实仓库任务仍需后续独立题集，原三题的适用范围没有扩大。
 
+## 共享记忆控制与零模型预检
+
+新Codex驱动对所有组统一增加`--disable memories`，不改用户默认配置；`--ephemeral`继续用于会话存储，两者都不能代替文件访问隔离。其他客户端的启动参数不变。
+
+`benchmarks/run.mjs`的新Codex真实运行在`driverIdentity.environment`保存版本1上下文快照：平台/架构、记忆参数、用户配置、全局指令、记忆文件及选定skill/plugin manifest和目录/链接身份的SHA摘要；Node CLI包清单也计入。内容原文、auth、一般环境变量、插件资产和远程MCP数据不保存。每个试次边界重新采样并比对，变化时在继续调用前拒绝；这不是运行期间的文件锁或完整环境证明。旧身份没有environment时仍按原契约核验，不补造历史数据，审计/报告不读取协议自报的宿主路径。
+
+使用当前固定CLI做独立预检，不调用模型exec：
+
+```powershell
+node benchmarks/preflight.mjs --cli '<实际CLI路径>' --model '<同一模型标识>' --out .ai-harness/work-items/<工作项>/memory-preflight
+```
+
+输出目录须不存在，避免覆盖旧证据。入口运行features查询、本机bundled目录和debug提示预览；合成CODEX_HOME中放置普通上下文标记及记忆标记，分别检查开启/关闭记忆时的正反结果。两侧都没有记忆标记表示正对照不成立，不能称为记忆隔离成功；原始提示正文不落盘。
+
+Windows文件探测仅复用已初始化的CLI sandbox；已有deny-read状态非空或缺初始化时拒绝探测，不创建账户或修改真实记忆ACL。临时命名profile仅继承已有`:workspace`策略。先验证宿主能读合成内外文件，再检查沙箱内工作区可读、外部文件拒读；对宿主MEMORY.md仅执行open/close访问检查，不读取正文。初始化及拒读状态文件必须保持相同。该helper不是对所有外部MCP工具的实际exec链路证明；其他平台当前明确标为不可用。
+
+返回0仅表示本预检所列检查全部通过；任何失败、缺失或未知返回2并保存`preflight.json`及`ready:false`，执行错误返回1。关闭功能、提示正反对照、文件读取拒绝及环境稳定是分别必需的证据；模拟单测通过不等于本机隔离通过。普通真实运行的环境摘要不自动授予“隔离已验证”结论，未通过实际控制前不安排新增付费复测。题目、评分、180秒/80工具和历史产物保持原样。
+
 ## Core Harness任务入口
 
 1.9.0仅对core题的Harness组，在参与者的固定Git基线建立后，生成`.ai-harness/work-items/benchmark-begin-spec.json`供`begin --spec`读取。它只从公开任务文件预填任务ID、授权来源、允许修改的入口与可选自测文件、公共测试命令和无数据库依据；`risk`与`approach`为空，参试模型须按实际任务填写，未填写时Runtime拒绝创建工作项。创建后仍用原`guide`、`run --all`与`finish`登记真实验证和收尾；不会自动将功能通过视作工作项完成。

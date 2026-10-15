@@ -23,7 +23,7 @@ const plan = experimentPlan({ weak: options["--weak"], strong: options["--strong
   maxToolCalls: options["--max-tools"] === undefined ? undefined : Number(options["--max-tools"]) });
 if (options["--dry-run"]) console.log(JSON.stringify({ ...plan, modelCalls: plan.schedule.length, dryRun: true }, null, 2));
 else {
-  const identity=await cliIdentity(options["--cli"]);
+  const identity=await cliIdentity(options["--cli"],{codexEnvironment:plan.client === "codex"});
   const result = await runExperiment({ plan, sourceRoot: path.resolve(path.dirname(fileURLToPath(import.meta.url)), ".."), outputDirectory: path.resolve(options["--out"]),
     driver: clientDriver(plan.client, identity.entry), driverIdentity:identity, resume:Boolean(options["--resume"]), onProgress: event => console.log(JSON.stringify(event)) });
   console.log(JSON.stringify({ event: result.complete?"complete":"incomplete", groups: result.groups, progress:result.progress,interrupted:result.interrupted,notRun:result.notRun }));

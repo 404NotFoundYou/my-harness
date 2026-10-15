@@ -1,0 +1,15 @@
+{
+  "implementation": "verified",
+  "actualModelSessions": 0,
+  "actualPreflightExitCode": 2,
+  "ready": false,
+  "memoryFeatureDisabled": true,
+  "ordinaryContextControl": "observed",
+  "memoryPromptProof": "inconclusive",
+  "hostReadIsolation": "failed",
+  "selectedEnvironmentInputs": 433,
+  "environmentSamplingStable": true,
+  "protectedHistoricalFiles": 514,
+  "fullExecToolchainIsolation": "unverified",
+  "source": "055ee9536da48c48a0ce1f5d54c1a4186577639f2ad7d70f9f20db669a85b1fb"
+}
