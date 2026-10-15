@@ -1,0 +1,3039 @@
+{
+  "tag": "rust-v0.156.0",
+  "sources": [
+    {
+      "file": "codex-rs/ext/memories/src/extension.rs",
+      "url": "https://raw.githubusercontent.com/openai/codex/rust-v0.156.0/codex-rs/ext/memories/src/extension.rs",
+      "accessedAt": "2026-10-15T02:18:20.569Z",
+      "sha256": "d5f4e55a138a4479e9b6286bd08954a7438d2bfb516c5c8717626a2b38736873",
+      "lineCount": 173,
+      "excerpts": [
+        {
+          "line": 3,
+          "text": "use codex_core::config::Config;"
+        },
+        {
+          "line": 4,
+          "text": "use codex_core::context::ContextualUserFragment;"
+        },
+        {
+          "line": 5,
+          "text": "use codex_core::context::MemoryContextFragment;"
+        },
+        {
+          "line": 6,
+          "text": "use codex_extension_api::ConfigContributor;"
+        },
+        {
+          "line": 7,
+          "text": "use codex_extension_api::ContentItemKind;"
+        },
+        {
+          "line": 8,
+          "text": "use codex_extension_api::ContextContributor;"
+        },
+        {
+          "line": 9,
+          "text": "use codex_extension_api::ExtensionData;"
+        },
+        {
+          "line": 10,
+          "text": "use codex_extension_api::ExtensionFuture;"
+        },
+        {
+          "line": 11,
+          "text": "use codex_extension_api::ExtensionRegistryBuilder;"
+        },
+        {
+          "line": 12,
+          "text": "use codex_extension_api::PromptFragment;"
+        },
+        {
+          "line": 13,
+          "text": "use codex_extension_api::ThreadLifecycleContributor;"
+        },
+        {
+          "line": 14,
+          "text": "use codex_extension_api::ThreadStartInput;"
+        },
+        {
+          "line": 15,
+          "text": "use codex_extension_api::ToolContributor;"
+        },
+        {
+          "line": 16,
+          "text": "use codex_features::Feature;"
+        },
+        {
+          "line": 17,
+          "text": "use codex_otel::MetricsClient;"
+        },
+        {
+          "line": 18,
+          "text": "use codex_protocol::MemoryVersion;"
+        },
+        {
+          "line": 19,
+          "text": "use codex_utils_absolute_path::AbsolutePathBuf;"
+        },
+        {
+          "line": 20,
+          "text": ""
+        },
+        {
+          "line": 21,
+          "text": "use crate::local::LocalMemoriesBackend;"
+        },
+        {
+          "line": 22,
+          "text": "use crate::prompts::build_memory_tool_developer_instructions;"
+        },
+        {
+          "line": 23,
+          "text": "use crate::tools;"
+        },
+        {
+          "line": 24,
+          "text": ""
+        },
+        {
+          "line": 25,
+          "text": "/// Contributes Codex memory read-path prompt context and memory read tools."
+        },
+        {
+          "line": 26,
+          "text": "#[derive(Clone, Default)]"
+        },
+        {
+          "line": 27,
+          "text": "pub(crate) struct MemoriesExtension {"
+        },
+        {
+          "line": 28,
+          "text": "    metrics_client: Option<MetricsClient>,"
+        },
+        {
+          "line": 29,
+          "text": "}"
+        },
+        {
+          "line": 30,
+          "text": ""
+        },
+        {
+          "line": 31,
+          "text": "impl MemoriesExtension {"
+        },
+        {
+          "line": 32,
+          "text": "    fn new(metrics_client: Option<MetricsClient>) -> Self {"
+        },
+        {
+          "line": 33,
+          "text": "        Self { metrics_client }"
+        },
+        {
+          "line": 34,
+          "text": "    }"
+        },
+        {
+          "line": 35,
+          "text": "}"
+        },
+        {
+          "line": 36,
+          "text": ""
+        },
+        {
+          "line": 37,
+          "text": "#[derive(Clone, Debug)]"
+        },
+        {
+          "line": 38,
+          "text": "pub(crate) struct MemoriesExtensionConfig {"
+        },
+        {
+          "line": 39,
+          "text": "    pub(crate) enabled: bool,"
+        },
+        {
+          "line": 40,
+          "text": "    pub(crate) dedicated_tools: bool,"
+        },
+        {
+          "line": 41,
+          "text": "    pub(crate) codex_home: AbsolutePathBuf,"
+        },
+        {
+          "line": 42,
+          "text": "    pub(crate) version: MemoryVersion,"
+        },
+        {
+          "line": 43,
+          "text": "}"
+        },
+        {
+          "line": 44,
+          "text": ""
+        },
+        {
+          "line": 45,
+          "text": "impl MemoriesExtensionConfig {"
+        },
+        {
+          "line": 46,
+          "text": "    fn from_config(config: &Config) -> Self {"
+        },
+        {
+          "line": 47,
+          "text": "        Self {"
+        },
+        {
+          "line": 48,
+          "text": "            enabled: config.features.enabled(Feature::MemoryTool) && config.memories.use_memories,"
+        },
+        {
+          "line": 49,
+          "text": "            dedicated_tools: config.memories.dedicated_tools,"
+        },
+        {
+          "line": 50,
+          "text": "            codex_home: config.codex_home.clone(),"
+        },
+        {
+          "line": 51,
+          "text": "            version: config.memories.version,"
+        },
+        {
+          "line": 52,
+          "text": "        }"
+        },
+        {
+          "line": 53,
+          "text": "    }"
+        },
+        {
+          "line": 54,
+          "text": "}"
+        },
+        {
+          "line": 55,
+          "text": ""
+        },
+        {
+          "line": 56,
+          "text": "impl ContextContributor for MemoriesExtension {"
+        },
+        {
+          "line": 57,
+          "text": "    fn contribute_thread_context<'a>("
+        },
+        {
+          "line": 58,
+          "text": "        &'a self,"
+        },
+        {
+          "line": 59,
+          "text": "        _session_store: &'a ExtensionData,"
+        },
+        {
+          "line": 60,
+          "text": "        thread_store: &'a ExtensionData,"
+        },
+        {
+          "line": 61,
+          "text": "    ) -> std::pin::Pin<Box<dyn std::future::Future<Output = Vec<PromptFragment>> + Send + 'a>> {"
+        },
+        {
+          "line": 62,
+          "text": "        Box::pin(async move {"
+        },
+        {
+          "line": 63,
+          "text": "            let Some(config) = thread_store.get::<MemoriesExtensionConfig>() else {"
+        },
+        {
+          "line": 64,
+          "text": "                return Vec::new();"
+        },
+        {
+          "line": 65,
+          "text": "            };"
+        },
+        {
+          "line": 66,
+          "text": "            if !config.enabled {"
+        },
+        {
+          "line": 67,
+          "text": "                return Vec::new();"
+        },
+        {
+          "line": 68,
+          "text": "            }"
+        },
+        {
+          "line": 69,
+          "text": ""
+        },
+        {
+          "line": 70,
+          "text": "            let Some(instructions) ="
+        },
+        {
+          "line": 71,
+          "text": "                build_memory_tool_developer_instructions(&config.codex_home, config.version).await"
+        },
+        {
+          "line": 72,
+          "text": "            else {"
+        },
+        {
+          "line": 73,
+          "text": "                return Vec::new();"
+        },
+        {
+          "line": 74,
+          "text": "            };"
+        },
+        {
+          "line": 75,
+          "text": "            let instructions = match config.version {"
+        },
+        {
+          "line": 76,
+          "text": "                MemoryVersion::V1 => vec![instructions],"
+        },
+        {
+          "line": 81,
+          "text": "                    while !remaining.is_empty() {"
+        },
+        {
+          "line": 82,
+          "text": "                        let end = remaining.floor_char_boundary(remaining.len().min(8_900));"
+        },
+        {
+          "line": 83,
+          "text": "                        fragments.push("
+        },
+        {
+          "line": 84,
+          "text": "                            MemoryContextFragment::ReadInstructions(remaining[..end].to_string())"
+        },
+        {
+          "line": 85,
+          "text": "                                .render(),"
+        },
+        {
+          "line": 86,
+          "text": "                        );"
+        },
+        {
+          "line": 87,
+          "text": "                        remaining = &remaining[end..];"
+        },
+        {
+          "line": 88,
+          "text": "                    }"
+        },
+        {
+          "line": 89,
+          "text": "                    fragments"
+        },
+        {
+          "line": 102,
+          "text": "    }"
+        },
+        {
+          "line": 103,
+          "text": "}"
+        },
+        {
+          "line": 104,
+          "text": ""
+        },
+        {
+          "line": 105,
+          "text": "impl ThreadLifecycleContributor<Config> for MemoriesExtension {"
+        },
+        {
+          "line": 106,
+          "text": "    fn on_thread_start<'a>("
+        },
+        {
+          "line": 107,
+          "text": "        &'a self,"
+        },
+        {
+          "line": 108,
+          "text": "        input: ThreadStartInput<'a, Config>,"
+        },
+        {
+          "line": 109,
+          "text": "    ) -> ExtensionFuture<'a, ()> {"
+        },
+        {
+          "line": 110,
+          "text": "        Box::pin(async move {"
+        },
+        {
+          "line": 111,
+          "text": "            input"
+        },
+        {
+          "line": 112,
+          "text": "                .thread_store"
+        },
+        {
+          "line": 113,
+          "text": "                .insert(MemoriesExtensionConfig::from_config(input.config));"
+        },
+        {
+          "line": 114,
+          "text": "        })"
+        },
+        {
+          "line": 115,
+          "text": "    }"
+        },
+        {
+          "line": 116,
+          "text": "}"
+        },
+        {
+          "line": 117,
+          "text": ""
+        },
+        {
+          "line": 118,
+          "text": "impl ConfigContributor<Config> for MemoriesExtension {"
+        },
+        {
+          "line": 119,
+          "text": "    fn on_config_changed("
+        },
+        {
+          "line": 120,
+          "text": "        &self,"
+        },
+        {
+          "line": 121,
+          "text": "        _session_store: &ExtensionData,"
+        },
+        {
+          "line": 122,
+          "text": "        thread_store: &ExtensionData,"
+        },
+        {
+          "line": 123,
+          "text": "        _previous_config: &Config,"
+        },
+        {
+          "line": 124,
+          "text": "        new_config: &Config,"
+        },
+        {
+          "line": 125,
+          "text": "    ) {"
+        },
+        {
+          "line": 126,
+          "text": "        let mut config = MemoriesExtensionConfig::from_config(new_config);"
+        },
+        {
+          "line": 127,
+          "text": "        if let Some(previous) = thread_store.get::<MemoriesExtensionConfig>() {"
+        },
+        {
+          "line": 128,
+          "text": "            // The initial summary and retrieval tools must use the same namespace."
+        },
+        {
+          "line": 129,
+          "text": "            config.version = previous.version;"
+        },
+        {
+          "line": 130,
+          "text": "        }"
+        },
+        {
+          "line": 131,
+          "text": "        thread_store.insert(config);"
+        },
+        {
+          "line": 132,
+          "text": "    }"
+        },
+        {
+          "line": 133,
+          "text": "}"
+        },
+        {
+          "line": 134,
+          "text": ""
+        },
+        {
+          "line": 135,
+          "text": "impl ToolContributor for MemoriesExtension {"
+        },
+        {
+          "line": 136,
+          "text": "    fn tools("
+        },
+        {
+          "line": 137,
+          "text": "        &self,"
+        },
+        {
+          "line": 138,
+          "text": "        _session_store: &ExtensionData,"
+        },
+        {
+          "line": 139,
+          "text": "        thread_store: &ExtensionData,"
+        },
+        {
+          "line": 140,
+          "text": "    ) -> Vec<"
+        }
+      ]
+    },
+    {
+      "file": "codex-rs/cli/src/main.rs",
+      "url": "https://raw.githubusercontent.com/openai/codex/rust-v0.156.0/codex-rs/cli/src/main.rs",
+      "accessedAt": "2026-10-15T02:18:20.709Z",
+      "sha256": "b4307eff0383a45263a9c328fcf6c13f73c4cd659368043ce71bdef1424f5532",
+      "lineCount": 5346,
+      "excerpts": [
+        {
+          "line": 107,
+          "text": "use codex_login::CodexAuth;"
+        },
+        {
+          "line": 108,
+          "text": "use codex_login::is_workload_identity_selected;"
+        },
+        {
+          "line": 109,
+          "text": "use codex_login::read_codex_access_token_from_env;"
+        },
+        {
+          "line": 110,
+          "text": "use codex_memories_write::clear_memory_roots_contents;"
+        },
+        {
+          "line": 111,
+          "text": "use codex_models_manager::bundled_models_response;"
+        },
+        {
+          "line": 112,
+          "text": "use codex_models_manager::manager::RefreshStrategy;"
+        },
+        {
+          "line": 113,
+          "text": "use codex_protocol::protocol::AskForApproval;"
+        },
+        {
+          "line": 114,
+          "text": "use codex_protocol::user_input::UserInput;"
+        },
+        {
+          "line": 115,
+          "text": "use codex_terminal_detection::TerminalName;"
+        },
+        {
+          "line": 268,
+          "text": "    AppServer(DebugAppServerCommand),"
+        },
+        {
+          "line": 269,
+          "text": ""
+        },
+        {
+          "line": 270,
+          "text": "    /// Render the model-visible prompt input list as JSON."
+        },
+        {
+          "line": 271,
+          "text": "    PromptInput(DebugPromptInputCommand),"
+        },
+        {
+          "line": 272,
+          "text": ""
+        },
+        {
+          "line": 273,
+          "text": "    /// Replay a rollout trace bundle and write reduced state JSON."
+        },
+        {
+          "line": 274,
+          "text": "    #[clap(hide = true)]"
+        },
+        {
+          "line": 275,
+          "text": "    TraceReduce(DebugTraceReduceCommand),"
+        },
+        {
+          "line": 276,
+          "text": ""
+        },
+        {
+          "line": 277,
+          "text": "    /// Internal: reset local memory state for a fresh start."
+        },
+        {
+          "line": 278,
+          "text": "    #[clap(hide = true)]"
+        },
+        {
+          "line": 279,
+          "text": "    ClearMemories,"
+        },
+        {
+          "line": 280,
+          "text": "}"
+        },
+        {
+          "line": 281,
+          "text": ""
+        },
+        {
+          "line": 282,
+          "text": "#[derive(Debug, Parser)]"
+        },
+        {
+          "line": 298,
+          "text": "}"
+        },
+        {
+          "line": 299,
+          "text": ""
+        },
+        {
+          "line": 300,
+          "text": "#[derive(Debug, Parser)]"
+        },
+        {
+          "line": 301,
+          "text": "struct DebugPromptInputCommand {"
+        },
+        {
+          "line": 302,
+          "text": "    /// Optional user prompt to append after session context."
+        },
+        {
+          "line": 303,
+          "text": "    #[arg(value_name = \"PROMPT\")]"
+        },
+        {
+          "line": 304,
+          "text": "    prompt: Option<String>,"
+        },
+        {
+          "line": 305,
+          "text": ""
+        },
+        {
+          "line": 306,
+          "text": "    /// Optional image(s) to attach to the user prompt."
+        },
+        {
+          "line": 595,
+          "text": "    /// Analytics are disabled by default for app-server. Users have to explicitly opt in"
+        },
+        {
+          "line": 596,
+          "text": "    /// via the `analytics` section in the config.toml file."
+        },
+        {
+          "line": 597,
+          "text": "    ///"
+        },
+        {
+          "line": 598,
+          "text": "    /// However, for first-party use cases like the VSCode IDE extension, we default analytics"
+        },
+        {
+          "line": 599,
+          "text": "    /// to be enabled by default by setting this flag. Users can still opt out by setting this"
+        },
+        {
+          "line": 600,
+          "text": "    /// in their config.toml:"
+        },
+        {
+          "line": 601,
+          "text": "    ///"
+        },
+        {
+          "line": 602,
+          "text": "    /// ```toml"
+        },
+        {
+          "line": 603,
+          "text": "    /// [analytics]"
+        },
+        {
+          "line": 1880,
+          "text": "                )?;"
+        },
+        {
+          "line": 1881,
+          "text": "                run_debug_app_server_command(cmd).await?;"
+        },
+        {
+          "line": 1882,
+          "text": "            }"
+        },
+        {
+          "line": 1883,
+          "text": "            DebugSubcommand::PromptInput(cmd) => {"
+        },
+        {
+          "line": 1884,
+          "text": "                reject_remote_mode_for_subcommand("
+        },
+        {
+          "line": 1885,
+          "text": "                    root_remote.as_deref(),"
+        },
+        {
+          "line": 1886,
+          "text": "                    root_remote_auth_token_env.as_deref(),"
+        },
+        {
+          "line": 1887,
+          "text": "                    \"debug prompt-input\","
+        },
+        {
+          "line": 1888,
+          "text": "                )?;"
+        },
+        {
+          "line": 1889,
+          "text": "                run_debug_prompt_input_command("
+        },
+        {
+          "line": 1890,
+          "text": "                    cmd,"
+        },
+        {
+          "line": 1891,
+          "text": "                    root_config_overrides,"
+        },
+        {
+          "line": 1892,
+          "text": "                    interactive,"
+        },
+        {
+          "line": 1893,
+          "text": "                    arg0_paths.clone(),"
+        },
+        {
+          "line": 1894,
+          "text": "                )"
+        },
+        {
+          "line": 2038,
+          "text": "        | Subcommand::Mcp(_)"
+        },
+        {
+          "line": 2039,
+          "text": "        | Subcommand::Sandbox(_)"
+        },
+        {
+          "line": 2040,
+          "text": "        | Subcommand::Debug(DebugCommand {"
+        },
+        {
+          "line": 2041,
+          "text": "            subcommand: DebugSubcommand::PromptInput(_),"
+        },
+        {
+          "line": 2042,
+          "text": "        }) => Ok(Some(profile_v2)),"
+        },
+        {
+          "line": 2043,
+          "text": "        _ => anyhow::bail!("
+        },
+        {
+          "line": 2044,
+          "text": "            \"--profile only applies to runtime commands and `codex mcp`: `codex`, `codex exec`, `codex review`, `codex resume`, `codex queue`, `codex archive`, `codex delete`, `codex unarchive`, `codex fork`, `codex mcp`, `codex sandbox`, and `codex debug prompt-input`.\""
+        },
+        {
+          "line": 2045,
+          "text": "        ),"
+        },
+        {
+          "line": 2046,
+          "text": "    }"
+        },
+        {
+          "line": 2408,
+          "text": "    Ok(())"
+        },
+        {
+          "line": 2409,
+          "text": "}"
+        },
+        {
+          "line": 2410,
+          "text": ""
+        },
+        {
+          "line": 2411,
+          "text": "async fn run_debug_prompt_input_command("
+        },
+        {
+          "line": 2412,
+          "text": "    cmd: DebugPromptInputCommand,"
+        },
+        {
+          "line": 2413,
+          "text": "    root_config_overrides: CliConfigOverrides,"
+        },
+        {
+          "line": 2414,
+          "text": "    interactive: TuiCli,"
+        },
+        {
+          "line": 2415,
+          "text": "    arg0_paths: Arg0DispatchPaths,"
+        },
+        {
+          "line": 2416,
+          "text": ") -> anyhow::Result<()> {"
+        },
+        {
+          "line": 2417,
+          "text": "    let loader_overrides = loader_overrides_for_profile(interactive.config_profile_v2.as_ref())?;"
+        },
+        {
+          "line": 2475,
+          "text": "    ));"
+        },
+        {
+          "line": 2476,
+          "text": "    let auth_manager ="
+        },
+        {
+          "line": 2477,
+          "text": "        AuthManager::shared_from_config(&config, /*enable_codex_api_key_env*/ false).await?;"
+        },
+        {
+          "line": 2478,
+          "text": "    let mut extensions = codex_extension_api::ExtensionRegistryBuilder::new();"
+        },
+        {
+          "line": 2479,
+          "text": "    codex_git_attribution::install("
+        },
+        {
+          "line": 2480,
+          "text": "        &mut extensions,"
+        },
+        {
+          "line": 2481,
+          "text": "        auth_manager,"
+        },
+        {
+          "line": 2482,
+          "text": "        config.chatgpt_base_url.clone(),"
+        },
+        {
+          "line": 2483,
+          "text": "        config.http_client_factory(),"
+        },
+        {
+          "line": 2484,
+          "text": "    );"
+        },
+        {
+          "line": 2485,
+          "text": "    codex_skills_extension::install(&mut extensions, |config: &Config| {"
+        },
+        {
+          "line": 2486,
+          "text": "        codex_skills_extension::SkillsExtensionConfig {"
+        },
+        {
+          "line": 2487,
+          "text": "            include_instructions: config.include_skill_instructions,"
+        },
+        {
+          "line": 2488,
+          "text": "            max_context_tokens: config.skill_max_context_tokens,"
+        },
+        {
+          "line": 2489,
+          "text": "            bundled_skills_enabled: config.bundled_skills_enabled(),"
+        },
+        {
+          "line": 2490,
+          "text": "            orchestrator_skills_enabled: config.orchestrator_skills_enabled,"
+        },
+        {
+          "line": 2491,
+          "text": "            shadow_selection_enabled: config"
+        },
+        {
+          "line": 2493,
+          "text": "                .enabled(codex_features::Feature::SkillSearch),"
+        },
+        {
+          "line": 2494,
+          "text": "        }"
+        },
+        {
+          "line": 2495,
+          "text": "    });"
+        },
+        {
+          "line": 2496,
+          "text": "    let prompt_input = codex_core::build_prompt_input("
+        },
+        {
+          "line": 2497,
+          "text": "        config,"
+        },
+        {
+          "line": 2498,
+          "text": "        input,"
+        },
+        {
+          "line": 2499,
+          "text": "        /*state_db*/ None,"
+        },
+        {
+          "line": 2500,
+          "text": "        Arc::new(extensions.build()),"
+        },
+        {
+          "line": 2501,
+          "text": "        user_instructions_provider,"
+        },
+        {
+          "line": 2502,
+          "text": "    )"
+        },
+        {
+          "line": 2503,
+          "text": "    .await?;"
+        },
+        {
+          "line": 2504,
+          "text": "    println!(\"{}\", serde_json::to_string_pretty(&prompt_input)?);"
+        },
+        {
+          "line": 2505,
+          "text": ""
+        },
+        {
+          "line": 2506,
+          "text": "    Ok(())"
+        },
+        {
+          "line": 2507,
+          "text": "}"
+        },
+        {
+          "line": 2508,
+          "text": ""
+        },
+        {
+          "line": 2509,
+          "text": "async fn run_debug_models_command("
+        },
+        {
+          "line": 2549,
+          "text": ""
+        },
+        {
+          "line": 2550,
+          "text": "    let memories_path = config.sqlite_config().memories_db_path();"
+        },
+        {
+          "line": 2551,
+          "text": "    let cleared_memories_db ="
+        },
+        {
+          "line": 2552,
+          "text": "        StateRuntime::clear_memory_data_in_sqlite_home(config.sqlite_config()).await?;"
+        },
+        {
+          "line": 2553,
+          "text": ""
+        },
+        {
+          "line": 2554,
+          "text": "    clear_memory_roots_contents(&config.codex_home).await?;"
+        },
+        {
+          "line": 2555,
+          "text": ""
+        },
+        {
+          "line": 2556,
+          "text": "    let mut message = if cleared_memories_db {"
+        },
+        {
+          "line": 2557,
+          "text": "        format!(\"Cleared memory state from {}.\", memories_path.display())"
+        },
+        {
+          "line": 2558,
+          "text": "    } else {"
+        },
+        {
+          "line": 2559,
+          "text": "        format!(\"No memories db found at {}.\", memories_path.display())"
+        },
+        {
+          "line": 2560,
+          "text": "    };"
+        },
+        {
+          "line": 2561,
+          "text": "    message.push_str(&format!("
+        },
+        {
+          "line": 2562,
+          "text": "        \" Cleared memory directories under {}.\","
+        },
+        {
+          "line": 2563,
+          "text": "        config.codex_home.display()"
+        },
+        {
+          "line": 2564,
+          "text": "    ));"
+        },
+        {
+          "line": 2565,
+          "text": ""
+        },
+        {
+          "line": 2566,
+          "text": "    println!(\"{message}\");"
+        },
+        {
+          "line": 2567,
+          "text": ""
+        },
+        {
+          "line": 3771,
+          "text": "    }"
+        },
+        {
+          "line": 3772,
+          "text": ""
+        },
+        {
+          "line": 3773,
+          "text": "    #[test]"
+        },
+        {
+          "line": 3774,
+          "text": "    fn debug_prompt_input_parses_prompt_and_images() {"
+        },
+        {
+          "line": 3775,
+          "text": "        let cli = MultitoolCli::try_parse_from(["
+        },
+        {
+          "line": 3776,
+          "text": "            \"codex\","
+        },
+        {
+          "line": 3777,
+          "text": "            \"debug\","
+        },
+        {
+          "line": 3778,
+          "text": "            \"prompt-input\","
+        },
+        {
+          "line": 3779,
+          "text": "            \"hello\","
+        },
+        {
+          "line": 3783,
+          "text": "        .expect(\"parse\");"
+        },
+        {
+          "line": 3784,
+          "text": ""
+        },
+        {
+          "line": 3785,
+          "text": "        let Some(Subcommand::Debug(DebugCommand {"
+        },
+        {
+          "line": 3786,
+          "text": "            subcommand: DebugSubcommand::PromptInput(cmd),"
+        },
+        {
+          "line": 3787,
+          "text": "        })) = cli.subcommand"
+        },
+        {
+          "line": 3788,
+          "text": "        else {"
+        },
+        {
+          "line": 3789,
+          "text": "            panic!(\"expected debug prompt-input subcommand\");"
+        },
+        {
+          "line": 3790,
+          "text": "        };"
+        },
+        {
+          "line": 3791,
+          "text": ""
+        }
+      ]
+    },
+    {
+      "file": "codex-rs/protocol/src/permissions.rs",
+      "url": "https://raw.githubusercontent.com/openai/codex/rust-v0.156.0/codex-rs/protocol/src/permissions.rs",
+      "accessedAt": "2026-10-15T02:18:20.496Z",
+      "sha256": "0654f2ff45ecb6b0afedfa1ab2e71e22ed0feae0346d2fd460b5b82443930b0a",
+      "lineCount": 4489,
+      "excerpts": [
+        {
+          "line": 10,
+          "text": "use codex_utils_path_uri::LegacyAppPathString;"
+        },
+        {
+          "line": 11,
+          "text": "use codex_utils_path_uri::PathConvention;"
+        },
+        {
+          "line": 12,
+          "text": "use codex_utils_path_uri::PathUri;"
+        },
+        {
+          "line": 13,
+          "text": "use globset::Candidate;"
+        },
+        {
+          "line": 14,
+          "text": "use globset::GlobBuilder;"
+        },
+        {
+          "line": 15,
+          "text": "use globset::GlobMatcher;"
+        },
+        {
+          "line": 16,
+          "text": "use schemars::JsonSchema;"
+        },
+        {
+          "line": 17,
+          "text": "use serde::Deserialize;"
+        },
+        {
+          "line": 18,
+          "text": "use serde::Serialize;"
+        },
+        {
+          "line": 19,
+          "text": "use strum_macros::Display;"
+        },
+        {
+          "line": 20,
+          "text": "use tracing::error;"
+        },
+        {
+          "line": 26,
+          "text": ""
+        },
+        {
+          "line": 27,
+          "text": "mod deny_read_validator;"
+        },
+        {
+          "line": 28,
+          "text": "mod target;"
+        },
+        {
+          "line": 29,
+          "text": "mod windows_glob;"
+        },
+        {
+          "line": 30,
+          "text": ""
+        },
+        {
+          "line": 31,
+          "text": "pub use deny_read_validator::DenyReadValidator;"
+        },
+        {
+          "line": 32,
+          "text": "pub use deny_read_validator::DenyReadViolation;"
+        },
+        {
+          "line": 33,
+          "text": "pub use windows_glob::WindowsDenyReadGlobScan;"
+        },
+        {
+          "line": 34,
+          "text": "pub use windows_glob::windows_deny_read_glob_scan;"
+        },
+        {
+          "line": 35,
+          "text": ""
+        },
+        {
+          "line": 36,
+          "text": "const PROTECTED_METADATA_GIT_PATH_NAME: &str = \".git\";"
+        },
+        {
+          "line": 37,
+          "text": "const PROTECTED_METADATA_AGENTS_PATH_NAME: &str = \".agents\";"
+        },
+        {
+          "line": 38,
+          "text": "const PROTECTED_METADATA_CODEX_PATH_NAME: &str = \".codex\";"
+        },
+        {
+          "line": 39,
+          "text": ""
+        },
+        {
+          "line": 234,
+          "text": "#[derive(Debug, Clone, PartialEq, Eq)]"
+        },
+        {
+          "line": 235,
+          "text": "pub struct FileSystemSandboxPolicy {"
+        },
+        {
+          "line": 236,
+          "text": "    pub kind: FileSystemSandboxKind,"
+        },
+        {
+          "line": 237,
+          "text": "    pub glob_scan_max_depth: Option<usize>,"
+        },
+        {
+          "line": 238,
+          "text": "    pub entries: Vec<FileSystemSandboxEntry>,"
+        },
+        {
+          "line": 239,
+          "text": "}"
+        },
+        {
+          "line": 240,
+          "text": ""
+        },
+        {
+          "line": 241,
+          "text": "#[derive(Clone, Copy)]"
+        },
+        {
+          "line": 242,
+          "text": "enum WritableRootPathResolution {"
+        },
+        {
+          "line": 261,
+          "text": "    pub kind: FileSystemSandboxKind,"
+        },
+        {
+          "line": 262,
+          "text": "    #[serde(default, skip_serializing_if = \"Option::is_none\")]"
+        },
+        {
+          "line": 263,
+          "text": "    #[ts(optional)]"
+        },
+        {
+          "line": 264,
+          "text": "    pub glob_scan_max_depth: Option<usize>,"
+        },
+        {
+          "line": 265,
+          "text": "    #[serde(default, skip_serializing_if = \"Vec::is_empty\")]"
+        },
+        {
+          "line": 266,
+          "text": "    pub entries: Vec<RawFileSystemSandboxEntry>,"
+        },
+        {
+          "line": 267,
+          "text": "}"
+        },
+        {
+          "line": 268,
+          "text": ""
+        },
+        {
+          "line": 269,
+          "text": "/// Executor-owned paths needed to interpret filesystem sandbox policy entries."
+        },
+        {
+          "line": 291,
+          "text": ""
+        },
+        {
+          "line": 292,
+          "text": "#[derive(Debug, Clone, PartialEq, Eq)]"
+        },
+        {
+          "line": 293,
+          "text": "struct FileSystemSemanticSignature {"
+        },
+        {
+          "line": 294,
+          "text": "    has_full_disk_read_access: bool,"
+        },
+        {
+          "line": 295,
+          "text": "    has_full_disk_write_access: bool,"
+        },
+        {
+          "line": 296,
+          "text": "    include_platform_defaults: bool,"
+        },
+        {
+          "line": 297,
+          "text": "    readable_roots: Vec<AbsolutePathBuf>,"
+        },
+        {
+          "line": 298,
+          "text": "    writable_roots: Vec<WritableRoot>,"
+        },
+        {
+          "line": 299,
+          "text": "    unreadable_roots: Vec<AbsolutePathBuf>,"
+        },
+        {
+          "line": 300,
+          "text": "    unreadable_globs: Vec<String>,"
+        },
+        {
+          "line": 301,
+          "text": "}"
+        },
+        {
+          "line": 302,
+          "text": ""
+        },
+        {
+          "line": 303,
+          "text": "/// Runtime matcher for read-deny entries in a filesystem sandbox policy."
+        },
+        {
+          "line": 304,
+          "text": "pub struct ReadDenyMatcher {"
+        },
+        {
+          "line": 305,
+          "text": "    native_cwd: Option<AbsolutePathBuf>,"
+        },
+        {
+          "line": 308,
+          "text": "    prepared: PreparedReadDenyMatcher,"
+        },
+        {
+          "line": 309,
+          "text": "}"
+        },
+        {
+          "line": 310,
+          "text": ""
+        },
+        {
+          "line": 311,
+          "text": "/// Prepared PathUri deny roots and globs for repeated executor-owned read checks."
+        },
+        {
+          "line": 312,
+          "text": "struct PreparedReadDenyMatcher {"
+        },
+        {
+          "line": 313,
+          "text": "    denied_roots: Vec<PathUri>,"
+        },
+        {
+          "line": 314,
+          "text": "    deny_read_matchers: Vec<GlobMatcher>,"
+        },
+        {
+          "line": 315,
+          "text": "    invalid_pattern: bool,"
+        },
+        {
+          "line": 316,
+          "text": "}"
+        },
+        {
+          "line": 339,
+          "text": "            .flatten()"
+        },
+        {
+          "line": 340,
+          "text": "    }"
+        },
+        {
+          "line": 341,
+          "text": ""
+        },
+        {
+          "line": 342,
+          "text": "    /// Builds a local-path matcher for callers that must reject malformed glob patterns."
+        },
+        {
+          "line": 343,
+          "text": "    ///"
+        },
+        {
+          "line": 344,
+          "text": "    /// Runtime read checks intentionally fail closed on malformed deny patterns."
+        },
+        {
+          "line": 345,
+          "text": "    /// Host-side expansion work should use this constructor instead so a typo"
+        },
+        {
+          "line": 346,
+          "text": "    /// cannot broaden the set of paths it mutates before execution starts."
+        },
+        {
+          "line": 347,
+          "text": "    pub fn try_new_for_local_paths("
+        },
+        {
+          "line": 358,
+          "text": "    fn build("
+        },
+        {
+          "line": 359,
+          "text": "        file_system_sandbox_policy: &FileSystemSandboxPolicy,"
+        },
+        {
+          "line": 360,
+          "text": "        cwd: &Path,"
+        },
+        {
+          "line": 361,
+          "text": "        invalid_glob_behavior: InvalidDenyReadGlobBehavior,"
+        },
+        {
+          "line": 362,
+          "text": "    ) -> Result<Option<Self>, String> {"
+        },
+        {
+          "line": 363,
+          "text": "        if !file_system_sandbox_policy.has_denied_read_restrictions() {"
+        },
+        {
+          "line": 364,
+          "text": "            return Ok(None);"
+        },
+        {
+          "line": 365,
+          "text": "        }"
+        },
+        {
+          "line": 366,
+          "text": "        let cwd = AbsolutePathBuf::from_absolute_path(cwd)"
+        },
+        {
+          "line": 375,
+          "text": "            temporary_directories: Some(&temporary_directories),"
+        },
+        {
+          "line": 376,
+          "text": "        };"
+        },
+        {
+          "line": 377,
+          "text": "        let prepared = file_system_sandbox_policy"
+        },
+        {
+          "line": 378,
+          "text": "            .prepare_deny_read_matcher(&context, invalid_glob_behavior)?;"
+        },
+        {
+          "line": 379,
+          "text": "        Ok(Some(Self {"
+        },
+        {
+          "line": 380,
+          "text": "            native_cwd: Some(cwd),"
+        },
+        {
+          "line": 381,
+          "text": "            user_home_dir,"
+        },
+        {
+          "line": 382,
+          "text": "            temporary_directories,"
+        },
+        {
+          "line": 383,
+          "text": "            prepared,"
+        },
+        {
+          "line": 439,
+          "text": "    Path {"
+        },
+        {
+          "line": 440,
+          "text": "        path: PathUri,"
+        },
+        {
+          "line": 441,
+          "text": "    },"
+        },
+        {
+          "line": 442,
+          "text": "    /// A git-style glob pattern. Pattern entries currently support"
+        },
+        {
+          "line": 443,
+          "text": "    /// FileSystemAccessMode::Deny only."
+        },
+        {
+          "line": 444,
+          "text": "    GlobPattern {"
+        },
+        {
+          "line": 445,
+          "text": "        pattern: String,"
+        },
+        {
+          "line": 446,
+          "text": "    },"
+        },
+        {
+          "line": 447,
+          "text": "    Special {"
+        },
+        {
+          "line": 559,
+          "text": "    fn try_from(policy: RawFileSystemSandboxPolicy) -> Result<Self, Self::Error> {"
+        },
+        {
+          "line": 560,
+          "text": "        Ok(Self {"
+        },
+        {
+          "line": 561,
+          "text": "            kind: policy.kind,"
+        },
+        {
+          "line": 562,
+          "text": "            glob_scan_max_depth: policy.glob_scan_max_depth,"
+        },
+        {
+          "line": 563,
+          "text": "            entries: policy"
+        },
+        {
+          "line": 564,
+          "text": "                .entries"
+        },
+        {
+          "line": 565,
+          "text": "                .into_iter()"
+        },
+        {
+          "line": 566,
+          "text": "                .map(TryInto::try_into)"
+        },
+        {
+          "line": 567,
+          "text": "                .collect::<Result<_, _>>()?,"
+        },
+        {
+          "line": 575,
+          "text": "    fn try_from(policy: FileSystemSandboxPolicy) -> Result<Self, Self::Error> {"
+        },
+        {
+          "line": 576,
+          "text": "        Ok(Self {"
+        },
+        {
+          "line": 577,
+          "text": "            kind: policy.kind,"
+        },
+        {
+          "line": 578,
+          "text": "            glob_scan_max_depth: policy.glob_scan_max_depth,"
+        },
+        {
+          "line": 579,
+          "text": "            entries: policy"
+        },
+        {
+          "line": 580,
+          "text": "                .entries"
+        },
+        {
+          "line": 581,
+          "text": "                .into_iter()"
+        },
+        {
+          "line": 582,
+          "text": "                .map(TryInto::try_into)"
+        },
+        {
+          "line": 583,
+          "text": "                .collect::<Result<_, _>>()?,"
+        },
+        {
+          "line": 587,
+          "text": ""
+        },
+        {
+          "line": 588,
+          "text": "const PROJECT_ROOTS_GLOB_PATTERN_PREFIX: &str = \"codex-project-roots://\";"
+        },
+        {
+          "line": 589,
+          "text": ""
+        },
+        {
+          "line": 590,
+          "text": "pub fn project_roots_glob_pattern(subpath: &Path) -> String {"
+        },
+        {
+          "line": 591,
+          "text": "    format!(\"{PROJECT_ROOTS_GLOB_PATTERN_PREFIX}{}\", subpath.display())"
+        },
+        {
+          "line": 592,
+          "text": "}"
+        },
+        {
+          "line": 593,
+          "text": ""
+        },
+        {
+          "line": 594,
+          "text": "fn read_only_file_system_entries() -> Vec<FileSystemSandboxEntry> {"
+        },
+        {
+          "line": 595,
+          "text": "    vec![FileSystemSandboxEntry::new("
+        },
+        {
+          "line": 602,
+          "text": ""
+        },
+        {
+          "line": 603,
+          "text": "impl Default for FileSystemSandboxPolicy {"
+        },
+        {
+          "line": 604,
+          "text": "    fn default() -> Self {"
+        },
+        {
+          "line": 605,
+          "text": "        Self::read_only()"
+        },
+        {
+          "line": 606,
+          "text": "    }"
+        },
+        {
+          "line": 607,
+          "text": "}"
+        },
+        {
+          "line": 608,
+          "text": ""
+        },
+        {
+          "line": 609,
+          "text": "impl FileSystemSandboxPolicy {"
+        },
+        {
+          "line": 610,
+          "text": "    pub fn read_only() -> Self {"
+        },
+        {
+          "line": 611,
+          "text": "        Self::restricted(read_only_file_system_entries())"
+        },
+        {
+          "line": 612,
+          "text": "    }"
+        },
+        {
+          "line": 613,
+          "text": ""
+        },
+        {
+          "line": 614,
+          "text": "    pub fn unrestricted() -> Self {"
+        },
+        {
+          "line": 615,
+          "text": "        Self {"
+        },
+        {
+          "line": 616,
+          "text": "            kind: FileSystemSandboxKind::Unrestricted,"
+        },
+        {
+          "line": 617,
+          "text": "            glob_scan_max_depth: None,"
+        },
+        {
+          "line": 618,
+          "text": "            entries: Vec::new(),"
+        },
+        {
+          "line": 619,
+          "text": "        }"
+        },
+        {
+          "line": 620,
+          "text": "    }"
+        },
+        {
+          "line": 621,
+          "text": ""
+        },
+        {
+          "line": 622,
+          "text": "    pub fn external_sandbox() -> Self {"
+        },
+        {
+          "line": 623,
+          "text": "        Self {"
+        },
+        {
+          "line": 624,
+          "text": "            kind: FileSystemSandboxKind::ExternalSandbox,"
+        },
+        {
+          "line": 625,
+          "text": "            glob_scan_max_depth: None,"
+        },
+        {
+          "line": 626,
+          "text": "            entries: Vec::new(),"
+        },
+        {
+          "line": 627,
+          "text": "        }"
+        },
+        {
+          "line": 628,
+          "text": "    }"
+        },
+        {
+          "line": 629,
+          "text": ""
+        },
+        {
+          "line": 630,
+          "text": "    pub fn restricted(entries: Vec<FileSystemSandboxEntry>) -> Self {"
+        },
+        {
+          "line": 631,
+          "text": "        Self {"
+        },
+        {
+          "line": 632,
+          "text": "            kind: FileSystemSandboxKind::Restricted,"
+        },
+        {
+          "line": 633,
+          "text": "            glob_scan_max_depth: None,"
+        },
+        {
+          "line": 634,
+          "text": "            entries,"
+        },
+        {
+          "line": 635,
+          "text": "        }"
+        },
+        {
+          "line": 636,
+          "text": "    }"
+        },
+        {
+          "line": 637,
+          "text": ""
+        },
+        {
+          "line": 638,
+          "text": "    /// Removes entries that should be skipped when their paths are missing."
+        },
+        {
+          "line": 703,
+          "text": "        if !matches!(rebuilt.kind, FileSystemSandboxKind::Restricted) {"
+        },
+        {
+          "line": 704,
+          "text": "            return rebuilt;"
+        },
+        {
+          "line": 705,
+          "text": "        }"
+        },
+        {
+          "line": 706,
+          "text": "        rebuilt.glob_scan_max_depth = existing.glob_scan_max_depth;"
+        },
+        {
+          "line": 707,
+          "text": ""
+        },
+        {
+          "line": 708,
+          "text": "        for deny_entry in existing"
+        },
+        {
+          "line": 709,
+          "text": "            .entries"
+        },
+        {
+          "line": 710,
+          "text": "            .iter()"
+        },
+        {
+          "line": 711,
+          "text": "            .filter(|entry| entry.access == FileSystemAccessMode::Deny)"
+        },
+        {
+          "line": 738,
+          "text": "            return;"
+        },
+        {
+          "line": 739,
+          "text": "        }"
+        },
+        {
+          "line": 740,
+          "text": ""
+        },
+        {
+          "line": 741,
+          "text": "        if self.glob_scan_max_depth.is_none() {"
+        },
+        {
+          "line": 742,
+          "text": "            self.glob_scan_max_depth = existing.glob_scan_max_depth;"
+        },
+        {
+          "line": 743,
+          "text": "        }"
+        },
+        {
+          "line": 744,
+          "text": ""
+        },
+        {
+          "line": 745,
+          "text": "        for deny_entry in existing"
+        },
+        {
+          "line": 746,
+          "text": "            .entries"
+        },
+        {
+          "line": 747,
+          "text": "            .iter()"
+        },
+        {
+          "line": 804,
+          "text": ""
+        },
+        {
+          "line": 805,
+          "text": "    /// Filesystem policy matching `WorkspaceWrite` semantics without requiring"
+        },
+        {
+          "line": 806,
+          "text": "    /// callers to construct a legacy [`SandboxPolicy`] first."
+        },
+        {
+          "line": 807,
+          "text": "    pub fn workspace_write("
+        },
+        {
+          "line": 808,
+          "text": "        writable_roots: &[AbsolutePathBuf],"
+        },
+        {
+          "line": 809,
+          "text": "        exclude_tmpdir_env_var: bool,"
+        },
+        {
+          "line": 810,
+          "text": "        exclude_slash_tmp: bool,"
+        },
+        {
+          "line": 811,
+          "text": "    ) -> Self {"
+        },
+        {
+          "line": 812,
+          "text": "        let mut entries = vec![FileSystemSandboxEntry::new("
+        },
+        {
+          "line": 845,
+          "text": "                .map(|path| FileSystemSandboxEntry::new(path.into(), FileSystemAccessMode::Write)),"
+        },
+        {
+          "line": 846,
+          "text": "        );"
+        },
+        {
+          "line": 847,
+          "text": ""
+        },
+        {
+          "line": 848,
+          "text": "        append_default_read_only_project_root_subpath_if_no_explicit_rule(&mut entries, \".git\");"
+        },
+        {
+          "line": 849,
+          "text": "        append_default_read_only_project_root_subpath_if_no_explicit_rule(&mut entries, \".agents\");"
+        },
+        {
+          "line": 850,
+          "text": "        append_default_read_only_project_root_subpath_if_no_explicit_rule(&mut entries, \".codex\");"
+        },
+        {
+          "line": 851,
+          "text": "        for writable_root in writable_roots {"
+        },
+        {
+          "line": 852,
+          "text": "            for protected_path in default_read_only_subpaths_for_writable_root("
+        },
+        {
+          "line": 853,
+          "text": "                writable_root,"
+        },
+        {
+          "line": 854,
+          "text": "                /*protect_missing_dot_codex*/ false,"
+        }
+      ]
+    },
+    {
+      "file": "codex-rs/config/src/permissions_toml.rs",
+      "url": "https://raw.githubusercontent.com/openai/codex/rust-v0.156.0/codex-rs/config/src/permissions_toml.rs",
+      "accessedAt": "2026-10-15T02:18:20.361Z",
+      "sha256": "f410e2da8b23102c3236ea47d37637666b2e07ea37d4dbb8be5ad0566b632810",
+      "lineCount": 603,
+      "excerpts": [
+        {
+          "line": 109,
+          "text": "}"
+        },
+        {
+          "line": 110,
+          "text": ""
+        },
+        {
+          "line": 111,
+          "text": "#[derive(Serialize, Deserialize, Debug, Clone, Default, PartialEq, Eq, JsonSchema)]"
+        },
+        {
+          "line": 112,
+          "text": "#[schemars(deny_unknown_fields)]"
+        },
+        {
+          "line": 113,
+          "text": "pub struct PermissionProfileToml {"
+        },
+        {
+          "line": 114,
+          "text": "    pub description: Option<String>,"
+        },
+        {
+          "line": 115,
+          "text": "    pub extends: Option<String>,"
+        },
+        {
+          "line": 116,
+          "text": "    pub workspace_roots: Option<WorkspaceRootsToml>,"
+        },
+        {
+          "line": 117,
+          "text": "    pub filesystem: Option<FilesystemPermissionsToml>,"
+        },
+        {
+          "line": 118,
+          "text": "    pub network: Option<NetworkToml>,"
+        },
+        {
+          "line": 119,
+          "text": "}"
+        },
+        {
+          "line": 120,
+          "text": ""
+        },
+        {
+          "line": 121,
+          "text": "#[derive(Debug, Clone, PartialEq, Eq, Error)]"
+        },
+        {
+          "line": 122,
+          "text": "pub enum PermissionProfileResolutionError {"
+        },
+        {
+          "line": 284,
+          "text": "    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {"
+        },
+        {
+          "line": 285,
+          "text": "        let permission = match self {"
+        },
+        {
+          "line": 286,
+          "text": "            Self::Allow => \"allow\","
+        },
+        {
+          "line": 287,
+          "text": "            Self::Deny => \"deny\","
+        },
+        {
+          "line": 288,
+          "text": "        };"
+        },
+        {
+          "line": 289,
+          "text": "        f.write_str(permission)"
+        },
+        {
+          "line": 290,
+          "text": "    }"
+        },
+        {
+          "line": 291,
+          "text": "}"
+        },
+        {
+          "line": 292,
+          "text": ""
+        },
+        {
+          "line": 319,
+          "text": "    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {"
+        },
+        {
+          "line": 320,
+          "text": "        let permission = match self {"
+        },
+        {
+          "line": 321,
+          "text": "            Self::Allow => \"allow\","
+        },
+        {
+          "line": 322,
+          "text": "            Self::Deny => \"deny\","
+        },
+        {
+          "line": 323,
+          "text": "        };"
+        },
+        {
+          "line": 324,
+          "text": "        f.write_str(permission)"
+        },
+        {
+          "line": 325,
+          "text": "    }"
+        },
+        {
+          "line": 326,
+          "text": "}"
+        },
+        {
+          "line": 327,
+          "text": ""
+        },
+        {
+          "line": 328,
+          "text": "#[derive(Serialize, Deserialize, Debug, Clone, Default, PartialEq, Eq, JsonSchema)]"
+        },
+        {
+          "line": 329,
+          "text": "#[schemars(deny_unknown_fields)]"
+        },
+        {
+          "line": 330,
+          "text": "pub struct NetworkToml {"
+        },
+        {
+          "line": 331,
+          "text": "    pub enabled: Option<bool>,"
+        },
+        {
+          "line": 332,
+          "text": "    pub proxy_url: Option<String>,"
+        },
+        {
+          "line": 333,
+          "text": "    pub enable_socks5: Option<bool>,"
+        },
+        {
+          "line": 334,
+          "text": "    pub socks_url: Option<String>,"
+        },
+        {
+          "line": 348,
+          "text": "}"
+        },
+        {
+          "line": 349,
+          "text": ""
+        },
+        {
+          "line": 350,
+          "text": "#[derive(Serialize, Debug, Clone, Default, PartialEq, Eq, JsonSchema)]"
+        },
+        {
+          "line": 351,
+          "text": "#[schemars(deny_unknown_fields)]"
+        },
+        {
+          "line": 352,
+          "text": "pub struct NetworkMitmToml {"
+        },
+        {
+          "line": 353,
+          "text": "    #[schemars(with = \"Option<BTreeMap<String, NetworkMitmHookToml>>\")]"
+        },
+        {
+          "line": 354,
+          "text": "    pub hooks: Option<IndexMap<String, NetworkMitmHookToml>>,"
+        },
+        {
+          "line": 355,
+          "text": "    #[schemars(with = \"Option<BTreeMap<String, NetworkMitmActionToml>>\")]"
+        },
+        {
+          "line": 356,
+          "text": "    pub actions: Option<IndexMap<String, NetworkMitmActionToml>>,"
+        },
+        {
+          "line": 357,
+          "text": "}"
+        },
+        {
+          "line": 358,
+          "text": ""
+        },
+        {
+          "line": 359,
+          "text": "#[derive(Deserialize)]"
+        },
+        {
+          "line": 360,
+          "text": "#[serde(deny_unknown_fields)]"
+        },
+        {
+          "line": 361,
+          "text": "struct NetworkMitmTomlUnchecked {"
+        },
+        {
+          "line": 362,
+          "text": "    pub hooks: Option<IndexMap<String, NetworkMitmHookToml>>,"
+        },
+        {
+          "line": 363,
+          "text": "    pub actions: Option<IndexMap<String, NetworkMitmActionToml>>,"
+        },
+        {
+          "line": 364,
+          "text": "}"
+        },
+        {
+          "line": 365,
+          "text": ""
+        },
+        {
+          "line": 366,
+          "text": "#[derive(Serialize, Deserialize, Debug, Clone, Default, PartialEq, Eq, JsonSchema)]"
+        },
+        {
+          "line": 367,
+          "text": "#[schemars(deny_unknown_fields)]"
+        },
+        {
+          "line": 368,
+          "text": "pub struct NetworkMitmHookToml {"
+        },
+        {
+          "line": 369,
+          "text": "    pub host: String,"
+        },
+        {
+          "line": 370,
+          "text": "    pub methods: Vec<String>,"
+        },
+        {
+          "line": 371,
+          "text": "    pub path_prefixes: Vec<String>,"
+        },
+        {
+          "line": 372,
+          "text": "    #[serde(default)]"
+        }
+      ]
+    },
+    {
+      "file": "codex-rs/windows-sandbox-rs/src/resolved_permissions.rs",
+      "url": "https://raw.githubusercontent.com/openai/codex/rust-v0.156.0/codex-rs/windows-sandbox-rs/src/resolved_permissions.rs",
+      "accessedAt": "2026-10-15T02:18:20.546Z",
+      "sha256": "5a1ebbe414eab5b32950cfd7300e799d1af4cf77157bece1f29d9219844c6b55",
+      "lineCount": 614,
+      "excerpts": [
+        {
+          "line": 26,
+          "text": "#[derive(Debug, Clone, PartialEq, Eq)]"
+        },
+        {
+          "line": 27,
+          "text": "pub(crate) struct WindowsWritableRoot {"
+        },
+        {
+          "line": 28,
+          "text": "    pub(crate) root: PathBuf,"
+        },
+        {
+          "line": 29,
+          "text": "    pub(crate) read_only_subpaths: Vec<PathBuf>,"
+        },
+        {
+          "line": 30,
+          "text": "}"
+        },
+        {
+          "line": 31,
+          "text": ""
+        },
+        {
+          "line": 32,
+          "text": "/// Restricted-token family needed to enforce a Windows permission profile."
+        },
+        {
+          "line": 33,
+          "text": "#[derive(Debug, Clone, Copy, PartialEq, Eq)]"
+        },
+        {
+          "line": 34,
+          "text": "pub enum WindowsSandboxTokenMode {"
+        },
+        {
+          "line": 35,
+          "text": "    ReadOnlyCapability,"
+        },
+        {
+          "line": 36,
+          "text": "    WritableRootsCapability,"
+        },
+        {
+          "line": 37,
+          "text": "}"
+        },
+        {
+          "line": 48,
+          "text": "            permission_profile,"
+        },
+        {
+          "line": 49,
+          "text": "            workspace_roots,"
+        },
+        {
+          "line": 50,
+          "text": "        )?;"
+        },
+        {
+          "line": 51,
+          "text": "    if permissions.file_system.has_full_disk_write_access() {"
+        },
+        {
+          "line": 52,
+          "text": "        anyhow::bail!("
+        },
+        {
+          "line": 53,
+          "text": "            \"permission profile requests full-disk filesystem writes, which cannot be enforced by the Windows sandbox\""
+        },
+        {
+          "line": 54,
+          "text": "        );"
+        },
+        {
+          "line": 55,
+          "text": "    }"
+        },
+        {
+          "line": 56,
+          "text": "    if permissions.writable_roots_for_cwd(cwd, env_map).is_empty() {"
+        },
+        {
+          "line": 68,
+          "text": "            );"
+        },
+        {
+          "line": 69,
+          "text": "        }"
+        },
+        {
+          "line": 70,
+          "text": "        let (file_system, network) = permission_profile.to_runtime_permissions();"
+        },
+        {
+          "line": 71,
+          "text": "        if !matches!(file_system.kind, FileSystemSandboxKind::Restricted) {"
+        },
+        {
+          "line": 72,
+          "text": "            anyhow::bail!("
+        },
+        {
+          "line": 73,
+          "text": "                \"only restricted managed filesystem permissions can be enforced by the Windows sandbox\""
+        },
+        {
+          "line": 74,
+          "text": "            );"
+        },
+        {
+          "line": 75,
+          "text": "        }"
+        },
+        {
+          "line": 76,
+          "text": "        Ok(Self {"
+        },
+        {
+          "line": 109,
+          "text": "            .ok_or_else(|| anyhow::anyhow!(\"command cwd has no filesystem root\"))?;"
+        },
+        {
+          "line": 110,
+          "text": "        let root_is_denied = ReadDenyMatcher::try_new_for_local_paths(&self.file_system, cwd)"
+        },
+        {
+          "line": 111,
+          "text": "            .map_err(anyhow::Error::msg)?"
+        },
+        {
+          "line": 112,
+          "text": "            .is_some_and(|matcher| matcher.is_local_path_read_denied(root));"
+        },
+        {
+          "line": 113,
+          "text": "        if !self.file_system.can_read_local_path_with_cwd(root, cwd) || root_is_denied {"
+        },
+        {
+          "line": 114,
+          "text": "            anyhow::bail!(\"elevated Windows sandbox requires effective `:root` read access\");"
+        },
+        {
+          "line": 115,
+          "text": "        }"
+        },
+        {
+          "line": 116,
+          "text": "        Ok(())"
+        },
+        {
+          "line": 117,
+          "text": "    }"
+        },
+        {
+          "line": 118,
+          "text": ""
+        },
+        {
+          "line": 119,
+          "text": "    pub(crate) fn has_full_disk_read_access(&self) -> bool {"
+        },
+        {
+          "line": 120,
+          "text": "        self.file_system.has_full_disk_read_access()"
+        },
+        {
+          "line": 121,
+          "text": "    }"
+        },
+        {
+          "line": 122,
+          "text": ""
+        },
+        {
+          "line": 123,
+          "text": "    pub(crate) fn has_symbolic_root_read_access(&self, cwd: &Path) -> bool {"
+        },
+        {
+          "line": 124,
+          "text": "        self.file_system.entries.iter().any(|entry| {"
+        },
+        {
+          "line": 125,
+          "text": "            matches!(&entry.path, FileSystemPath::Special { value: Root })"
+        },
+        {
+          "line": 126,
+          "text": "                && entry.access.can_read()"
+        },
+        {
+          "line": 127,
+          "text": "        }) && cwd"
+        },
+        {
+          "line": 128,
+          "text": "            .ancestors()"
+        },
+        {
+          "line": 129,
+          "text": "            .last()"
+        },
+        {
+          "line": 130,
+          "text": "            .is_some_and(|root| self.file_system.can_read_local_path_with_cwd(root, cwd))"
+        },
+        {
+          "line": 131,
+          "text": "    }"
+        },
+        {
+          "line": 132,
+          "text": ""
+        },
+        {
+          "line": 133,
+          "text": "    pub(crate) fn include_platform_defaults(&self) -> bool {"
+        },
+        {
+          "line": 134,
+          "text": "        self.file_system.include_platform_defaults()"
+        },
+        {
+          "line": 135,
+          "text": "    }"
+        },
+        {
+          "line": 136,
+          "text": ""
+        },
+        {
+          "line": 137,
+          "text": "    pub(crate) fn readable_roots_for_cwd(&self, cwd: &Path) -> Vec<PathBuf> {"
+        },
+        {
+          "line": 138,
+          "text": "        self.file_system"
+        },
+        {
+          "line": 139,
+          "text": "            .get_readable_roots_with_cwd(cwd)"
+        },
+        {
+          "line": 140,
+          "text": "            .into_iter()"
+        },
+        {
+          "line": 141,
+          "text": "            .map(AbsolutePathBuf::into_path_buf)"
+        },
+        {
+          "line": 142,
+          "text": "            .collect()"
+        },
+        {
+          "line": 143,
+          "text": "    }"
+        },
+        {
+          "line": 144,
+          "text": ""
+        },
+        {
+          "line": 173,
+          "text": "            .into_iter()"
+        },
+        {
+          "line": 174,
+          "text": "            .map(|root| WindowsWritableRoot {"
+        },
+        {
+          "line": 175,
+          "text": "                root: root.root.into_path_buf(),"
+        },
+        {
+          "line": 176,
+          "text": "                read_only_subpaths: root"
+        },
+        {
+          "line": 177,
+          "text": "                    .read_only_subpaths"
+        },
+        {
+          "line": 178,
+          "text": "                    .into_iter()"
+        },
+        {
+          "line": 179,
+          "text": "                    .map(AbsolutePathBuf::into_path_buf)"
+        },
+        {
+          "line": 180,
+          "text": "                    .collect(),"
+        },
+        {
+          "line": 181,
+          "text": "            })"
+        },
+        {
+          "line": 182,
+          "text": "            .collect::<Vec<_>>();"
+        },
+        {
+          "line": 185,
+          "text": "            roots.extend(windows_temp_env_roots(env_map).into_iter().map(|root| {"
+        },
+        {
+          "line": 186,
+          "text": "                WindowsWritableRoot {"
+        },
+        {
+          "line": 187,
+          "text": "                    root,"
+        },
+        {
+          "line": 188,
+          "text": "                    read_only_subpaths: Vec::new(),"
+        },
+        {
+          "line": 189,
+          "text": "                }"
+        },
+        {
+          "line": 190,
+          "text": "            }));"
+        },
+        {
+          "line": 191,
+          "text": "        }"
+        },
+        {
+          "line": 192,
+          "text": ""
+        },
+        {
+          "line": 193,
+          "text": "        roots"
+        },
+        {
+          "line": 238,
+          "text": ""
+        },
+        {
+          "line": 239,
+          "text": "    fn permission_profile_with_entries(entries: Vec<FileSystemSandboxEntry>) -> PermissionProfile {"
+        },
+        {
+          "line": 240,
+          "text": "        PermissionProfile::Managed {"
+        },
+        {
+          "line": 241,
+          "text": "            file_system: ManagedFileSystemPermissions::Restricted {"
+        },
+        {
+          "line": 242,
+          "text": "                entries,"
+        },
+        {
+          "line": 243,
+          "text": "                glob_scan_max_depth: None,"
+        },
+        {
+          "line": 244,
+          "text": "            },"
+        },
+        {
+          "line": 245,
+          "text": "            network: NetworkSandboxPolicy::Restricted,"
+        },
+        {
+          "line": 246,
+          "text": "        }"
+        },
+        {
+          "line": 247,
+          "text": "    }"
+        },
+        {
+          "line": 248,
+          "text": ""
+        },
+        {
+          "line": 249,
+          "text": "    #[test]"
+        },
+        {
+          "line": 250,
+          "text": "    fn permission_profile_workspace_write_uses_windows_temp_env_vars() {"
+        },
+        {
+          "line": 286,
+          "text": "        std::fs::create_dir_all(&command_cwd).expect(\"create command cwd\");"
+        },
+        {
+          "line": 287,
+          "text": ""
+        },
+        {
+          "line": 288,
+          "text": "        let permission_profile = PermissionProfile::Managed {"
+        },
+        {
+          "line": 289,
+          "text": "            file_system: ManagedFileSystemPermissions::Restricted {"
+        },
+        {
+          "line": 290,
+          "text": "                entries: vec![FileSystemSandboxEntry {"
+        },
+        {
+          "line": 291,
+          "text": "                    path: FileSystemPath::Special {"
+        },
+        {
+          "line": 292,
+          "text": "                        value: FileSystemSpecialPath::project_roots(/*subpath*/ None),"
+        },
+        {
+          "line": 293,
+          "text": "                    },"
+        },
+        {
+          "line": 294,
+          "text": "                    access: FileSystemAccessMode::Write,"
+        },
+        {
+          "line": 296,
+          "text": "                }],"
+        },
+        {
+          "line": 297,
+          "text": "                glob_scan_max_depth: None,"
+        },
+        {
+          "line": 298,
+          "text": "            },"
+        },
+        {
+          "line": 299,
+          "text": "            network: NetworkSandboxPolicy::Restricted,"
+        },
+        {
+          "line": 300,
+          "text": "        };"
+        },
+        {
+          "line": 301,
+          "text": "        let workspace_roots = workspace_roots_for(workspace_root.as_path());"
+        },
+        {
+          "line": 302,
+          "text": "        let permissions ="
+        },
+        {
+          "line": 303,
+          "text": "            ResolvedWindowsSandboxPermissions::try_from_permission_profile_for_workspace_roots("
+        },
+        {
+          "line": 304,
+          "text": "                &permission_profile,"
+        },
+        {
+          "line": 326,
+          "text": "        let second = AbsolutePathBuf::from_absolute_path(tmp.path().join(\"second\"))"
+        },
+        {
+          "line": 327,
+          "text": "            .expect(\"absolute second root\");"
+        },
+        {
+          "line": 328,
+          "text": "        let permission_profile = PermissionProfile::Managed {"
+        },
+        {
+          "line": 329,
+          "text": "            file_system: ManagedFileSystemPermissions::Restricted {"
+        },
+        {
+          "line": 330,
+          "text": "                entries: vec!["
+        },
+        {
+          "line": 331,
+          "text": "                    FileSystemSandboxEntry {"
+        },
+        {
+          "line": 332,
+          "text": "                        path: FileSystemPath::Special {"
+        },
+        {
+          "line": 333,
+          "text": "                            value: FileSystemSpecialPath::project_roots(/*subpath*/ None),"
+        },
+        {
+          "line": 334,
+          "text": "                        },"
+        },
+        {
+          "line": 352,
+          "text": "                ],"
+        },
+        {
+          "line": 353,
+          "text": "                glob_scan_max_depth: None,"
+        },
+        {
+          "line": 354,
+          "text": "            },"
+        },
+        {
+          "line": 355,
+          "text": "            network: NetworkSandboxPolicy::Restricted,"
+        },
+        {
+          "line": 356,
+          "text": "        };"
+        },
+        {
+          "line": 357,
+          "text": ""
+        },
+        {
+          "line": 358,
+          "text": "        let permissions ="
+        },
+        {
+          "line": 359,
+          "text": "            ResolvedWindowsSandboxPermissions::try_from_permission_profile_for_workspace_roots("
+        },
+        {
+          "line": 360,
+          "text": "                &permission_profile,"
+        },
+        {
+          "line": 422,
+          "text": "    }"
+        },
+        {
+          "line": 423,
+          "text": ""
+        },
+        {
+          "line": 424,
+          "text": "    #[test]"
+        },
+        {
+          "line": 425,
+          "text": "    fn token_mode_for_profile_without_writable_roots_uses_readonly_capability() {"
+        },
+        {
+          "line": 426,
+          "text": "        let tmp = TempDir::new().expect(\"tempdir\");"
+        },
+        {
+          "line": 427,
+          "text": "        let cwd = tmp.path().join(\"workspace\");"
+        },
+        {
+          "line": 428,
+          "text": "        std::fs::create_dir_all(&cwd).expect(\"create cwd\");"
+        },
+        {
+          "line": 429,
+          "text": "        let workspace_roots = workspace_roots_for(cwd.as_path());"
+        },
+        {
+          "line": 430,
+          "text": ""
+        },
+        {
+          "line": 431,
+          "text": "        let token_mode = token_mode_for_permission_profile("
+        },
+        {
+          "line": 432,
+          "text": "            &PermissionProfile::read_only(),"
+        },
+        {
+          "line": 433,
+          "text": "            workspace_roots.as_slice(),"
+        },
+        {
+          "line": 434,
+          "text": "            &cwd,"
+        },
+        {
+          "line": 435,
+          "text": "            &HashMap::new(),"
+        },
+        {
+          "line": 436,
+          "text": "        )"
+        },
+        {
+          "line": 437,
+          "text": "        .expect(\"token mode\");"
+        },
+        {
+          "line": 474,
+          "text": "    fn permission_profile_rejects_unrestricted_managed_filesystem() {"
+        },
+        {
+          "line": 475,
+          "text": "        let permission_profile = PermissionProfile::Managed {"
+        },
+        {
+          "line": 476,
+          "text": "            file_system: ManagedFileSystemPermissions::Unrestricted,"
+        },
+        {
+          "line": 477,
+          "text": "            network: NetworkSandboxPolicy::Restricted,"
+        },
+        {
+          "line": 478,
+          "text": "        };"
+        },
+        {
+          "line": 479,
+          "text": ""
+        },
+        {
+          "line": 480,
+          "text": "        let err ="
+        },
+        {
+          "line": 481,
+          "text": "            ResolvedWindowsSandboxPermissions::try_from_permission_profile(&permission_profile)"
+        },
+        {
+          "line": 482,
+          "text": "                .expect_err(\"unrestricted profile should not resolve for sandbox enforcement\");"
+        },
+        {
+          "line": 488,
+          "text": "    }"
+        },
+        {
+          "line": 489,
+          "text": ""
+        },
+        {
+          "line": 490,
+          "text": "    #[test]"
+        },
+        {
+          "line": 491,
+          "text": "    fn elevated_filesystem_policy_requires_effective_root_read_access() {"
+        },
+        {
+          "line": 492,
+          "text": "        let tmp = TempDir::new().expect(\"tempdir\");"
+        },
+        {
+          "line": 493,
+          "text": "        let cwd = tmp.path().join(\"workspace\");"
+        },
+        {
+          "line": 494,
+          "text": "        let denied_path = tmp.path().join(\"private\");"
+        },
+        {
+          "line": 495,
+          "text": "        std::fs::create_dir_all(&cwd).expect(\"create cwd\");"
+        },
+        {
+          "line": 496,
+          "text": ""
+        },
+        {
+          "line": 503,
+          "text": "            )]),"
+        },
+        {
+          "line": 504,
+          "text": "        )"
+        },
+        {
+          "line": 505,
+          "text": "        .expect(\"managed permission profile\");"
+        },
+        {
+          "line": 506,
+          "text": "        let root_read_with_carveout ="
+        },
+        {
+          "line": 507,
+          "text": "            ResolvedWindowsSandboxPermissions::try_from_permission_profile("
+        },
+        {
+          "line": 508,
+          "text": "                &permission_profile_with_entries(vec!["
+        },
+        {
+          "line": 509,
+          "text": "                    FileSystemSandboxEntry::new("
+        },
+        {
+          "line": 510,
+          "text": "                        FileSystemPath::Special {"
+        },
+        {
+          "line": 511,
+          "text": "                            value: FileSystemSpecialPath::Root,"
+        },
+        {
+          "line": 524,
+          "text": "            )"
+        },
+        {
+          "line": 525,
+          "text": "            .expect(\"managed permission profile\");"
+        },
+        {
+          "line": 526,
+          "text": "        let root = cwd.ancestors().last().expect(\"filesystem root\");"
+        },
+        {
+          "line": 527,
+          "text": "        let root_read_with_explicit_path ="
+        },
+        {
+          "line": 528,
+          "text": "            ResolvedWindowsSandboxPermissions::try_from_permission_profile("
+        },
+        {
+          "line": 529,
+          "text": "                &permission_profile_with_entries(vec![FileSystemSandboxEntry::new("
+        },
+        {
+          "line": 530,
+          "text": "                    FileSystemPath::Path {"
+        },
+        {
+          "line": 531,
+          "text": "                        path: AbsolutePathBuf::from_absolute_path(root)"
+        },
+        {
+          "line": 532,
+          "text": "                            .expect(\"absolute root\")"
+        },
+        {
+          "line": 536,
+          "text": "                )]),"
+        },
+        {
+          "line": 537,
+          "text": "            )"
+        },
+        {
+          "line": 538,
+          "text": "            .expect(\"managed permission profile\");"
+        },
+        {
+          "line": 539,
+          "text": "        let root_read_with_root_deny_glob ="
+        },
+        {
+          "line": 540,
+          "text": "            ResolvedWindowsSandboxPermissions::try_from_permission_profile("
+        },
+        {
+          "line": 541,
+          "text": "                &permission_profile_with_entries(vec!["
+        },
+        {
+          "line": 542,
+          "text": "                    FileSystemSandboxEntry::new("
+        },
+        {
+          "line": 543,
+          "text": "                        FileSystemPath::Special {"
+        },
+        {
+          "line": 544,
+          "text": "                            value: FileSystemSpecialPath::Root,"
+        },
+        {
+          "line": 561,
+          "text": "                .is_err()"
+        },
+        {
+          "line": 562,
+          "text": "        );"
+        },
+        {
+          "line": 563,
+          "text": "        assert!("
+        },
+        {
+          "line": 564,
+          "text": "            root_read_with_carveout"
+        },
+        {
+          "line": 565,
+          "text": "                .validate_elevated_filesystem_policy(&cwd)"
+        },
+        {
+          "line": 566,
+          "text": "                .is_ok()"
+        },
+        {
+          "line": 567,
+          "text": "        );"
+        },
+        {
+          "line": 568,
+          "text": "        assert!("
+        },
+        {
+          "line": 569,
+          "text": "            root_read_with_explicit_path"
+        },
+        {
+          "line": 570,
+          "text": "                .validate_elevated_filesystem_policy(&cwd)"
+        },
+        {
+          "line": 571,
+          "text": "                .is_ok()"
+        },
+        {
+          "line": 572,
+          "text": "        );"
+        },
+        {
+          "line": 573,
+          "text": "        assert!("
+        },
+        {
+          "line": 574,
+          "text": "            root_read_with_root_deny_glob"
+        }
+      ]
+    }
+  ],
+  "errors": []
+}

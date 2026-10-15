@@ -1,0 +1,44 @@
+{
+  "recordedAt": "2026-10-15T02:27:23.763Z",
+  "containerValidation": {
+    "status": "blocked",
+    "dockerInstalled": true,
+    "daemonAvailable": false,
+    "wslDistributions": [
+      "docker-desktop"
+    ],
+    "approval": {
+      "requestedCommand": [
+        "docker",
+        "desktop",
+        "start",
+        "--help"
+      ],
+      "executed": false,
+      "decision": "rejected",
+      "reason": "blocked by policy",
+      "detail": "Automatic approval review returned no more specific reason. No alternate launch or policy bypass was attempted."
+    },
+    "result": "No container was started; filesystem isolation remains unverified."
+  },
+  "sourceFetchPrototype": {
+    "firstAttempt": "ERR_AMBIGUOUS_MODULE_SYNTAX before fetch or write",
+    "corrected": "ES module imports used in subsequent successful source captures"
+  },
+  "runtimeDiagnostic": {
+    "realModelCalls": 0,
+    "simulatedCliSessions": 2,
+    "backend": "loopback fixed responder; no inference or forwarding",
+    "scope": "synthetic v1 memory runtime context only",
+    "noActualSandboxOrAclCommands": true
+  },
+  "excluded": [
+    "real memory ACL changes",
+    "accounts or credentials",
+    "CLI upgrade or dependency installation",
+    "container images or installations",
+    "real model provider calls",
+    "benchmark scoring or budgets",
+    "external MCP enforcement"
+  ]
+}

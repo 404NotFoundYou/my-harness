@@ -1,0 +1,940 @@
+{
+  "tag": "rust-v0.156.0",
+  "treeSha": "fe74a774532af67b5a4a3dec03ce9469e17f89af",
+  "sources": [
+    {
+      "file": "codex-rs/core/src/prompt_debug.rs",
+      "url": "https://raw.githubusercontent.com/openai/codex/rust-v0.156.0/codex-rs/core/src/prompt_debug.rs",
+      "accessedAt": "2026-10-15T02:17:46.287Z",
+      "sha256": "eb8890f10de877c707b415e602fdd00e9a62dd3b620677757f7a822bdbdd0df9",
+      "lineCount": 115,
+      "excerpts": [
+        {
+          "line": 23,
+          "text": ""
+        },
+        {
+          "line": 24,
+          "text": "/// Build the model-visible `input` list for a single debug turn."
+        },
+        {
+          "line": 25,
+          "text": "#[doc(hidden)]"
+        },
+        {
+          "line": 26,
+          "text": "pub async fn build_prompt_input("
+        },
+        {
+          "line": 27,
+          "text": "    mut config: Config,"
+        },
+        {
+          "line": 28,
+          "text": "    input: Vec<UserInput>,"
+        },
+        {
+          "line": 29,
+          "text": "    state_db: Option<StateDbHandle>,"
+        },
+        {
+          "line": 30,
+          "text": "    extensions: Arc<ExtensionRegistry<Config>>,"
+        },
+        {
+          "line": 31,
+          "text": "    user_instructions_provider: Arc<dyn UserInstructionsProvider>,"
+        },
+        {
+          "line": 73,
+          "text": "        .start_thread(StartThreadOptions::new(config))"
+        },
+        {
+          "line": 74,
+          "text": "        .await?;"
+        },
+        {
+          "line": 75,
+          "text": ""
+        },
+        {
+          "line": 76,
+          "text": "    let output = build_prompt_input_from_session(&thread.thread.session, input).await;"
+        },
+        {
+          "line": 77,
+          "text": "    let shutdown = thread.thread.shutdown_and_wait().await;"
+        },
+        {
+          "line": 78,
+          "text": "    let _removed = thread_manager.remove_thread(&thread.thread_id).await;"
+        },
+        {
+          "line": 79,
+          "text": ""
+        },
+        {
+          "line": 80,
+          "text": "    shutdown?;"
+        },
+        {
+          "line": 81,
+          "text": "    output"
+        },
+        {
+          "line": 82,
+          "text": "}"
+        },
+        {
+          "line": 83,
+          "text": ""
+        },
+        {
+          "line": 84,
+          "text": "pub(crate) async fn build_prompt_input_from_session("
+        },
+        {
+          "line": 85,
+          "text": "    sess: &Arc<Session>,"
+        },
+        {
+          "line": 86,
+          "text": "    input: Vec<UserInput>,"
+        },
+        {
+          "line": 87,
+          "text": ") -> CodexResult<Vec<ResponseItem>> {"
+        },
+        {
+          "line": 88,
+          "text": "    let turn_context = sess.new_default_turn().await;"
+        },
+        {
+          "line": 89,
+          "text": "    // Prompt debugging builds a standalone request without entering run_turn."
+        },
+        {
+          "line": 103,
+          "text": "        .await;"
+        },
+        {
+          "line": 104,
+          "text": "    }"
+        },
+        {
+          "line": 105,
+          "text": ""
+        },
+        {
+          "line": 106,
+          "text": "    let prompt_input = sess"
+        },
+        {
+          "line": 107,
+          "text": "        .clone_history()"
+        },
+        {
+          "line": 108,
+          "text": "        .await"
+        },
+        {
+          "line": 109,
+          "text": "        .for_prompt(&step_context.settings.model_info.input_modalities);"
+        },
+        {
+          "line": 110,
+          "text": "    let base_instructions = sess.get_base_instructions().await;"
+        },
+        {
+          "line": 111,
+          "text": "    let prompt = build_prompt(prompt_input, step_context.as_ref(), base_instructions);"
+        },
+        {
+          "line": 112,
+          "text": ""
+        },
+        {
+          "line": 113,
+          "text": "    Ok(prompt.input)"
+        },
+        {
+          "line": 114,
+          "text": "}"
+        },
+        {
+          "line": 115,
+          "text": ""
+        }
+      ]
+    },
+    {
+      "file": "codex-rs/core/src/context/memory.rs",
+      "url": "https://raw.githubusercontent.com/openai/codex/rust-v0.156.0/codex-rs/core/src/context/memory.rs",
+      "accessedAt": "2026-10-15T02:17:46.278Z",
+      "sha256": "9504a239e287bd680c10c0721c042592d5f20ce6fa9202c650ac1c8ff3f6f9f4",
+      "lineCount": 44,
+      "excerpts": [
+        {
+          "line": 1,
+          "text": "//! Typed, bounded v2 memory context."
+        },
+        {
+          "line": 2,
+          "text": ""
+        },
+        {
+          "line": 3,
+          "text": "use super::ContextualUserFragment;"
+        },
+        {
+          "line": 4,
+          "text": "use codex_protocol::models::ContentItemKind;"
+        },
+        {
+          "line": 5,
+          "text": "use codex_utils_output_truncation::TruncationPolicy;"
+        },
+        {
+          "line": 6,
+          "text": "use codex_utils_output_truncation::truncate_text;"
+        },
+        {
+          "line": 21,
+          "text": "    fn content_kind(&self) -> ContentItemKind {"
+        },
+        {
+          "line": 22,
+          "text": "        ContentItemKind("
+        },
+        {
+          "line": 23,
+          "text": "            match self {"
+        },
+        {
+          "line": 24,
+          "text": "                Self::ReadInstructions(_) => \"memories.instructions\","
+        },
+        {
+          "line": 25,
+          "text": "                Self::ExtractionEvidence(_) => \"memories.extraction_evidence\","
+        },
+        {
+          "line": 26,
+          "text": "            }"
+        },
+        {
+          "line": 27,
+          "text": "            .to_string(),"
+        },
+        {
+          "line": 28,
+          "text": "        )"
+        },
+        {
+          "line": 29,
+          "text": "    }"
+        },
+        {
+          "line": 30,
+          "text": "    fn requires_separate_message(&self) -> bool {"
+        }
+      ]
+    },
+    {
+      "file": "codex-rs/memories/read/src/lib.rs",
+      "url": "https://raw.githubusercontent.com/openai/codex/rust-v0.156.0/codex-rs/memories/read/src/lib.rs",
+      "accessedAt": "2026-10-15T02:17:46.279Z",
+      "sha256": "08d65a132bcf11f439bf251620dedafcefbea713cf9e8569cfe4abcf6f23956a",
+      "lineCount": 16,
+      "excerpts": [
+        {
+          "line": 1,
+          "text": "//! Read-path helpers for Codex memories."
+        },
+        {
+          "line": 2,
+          "text": "//!"
+        },
+        {
+          "line": 3,
+          "text": "//! This crate owns memory injection, memory citation parsing, and telemetry"
+        },
+        {
+          "line": 4,
+          "text": "//! classification for read access to the memory folder. It intentionally does"
+        },
+        {
+          "line": 5,
+          "text": "//! not depend on the memory write pipeline."
+        },
+        {
+          "line": 6,
+          "text": ""
+        },
+        {
+          "line": 7,
+          "text": "pub mod citations;"
+        },
+        {
+          "line": 8,
+          "text": "mod metrics;"
+        },
+        {
+          "line": 9,
+          "text": "pub mod usage;"
+        },
+        {
+          "line": 10,
+          "text": ""
+        },
+        {
+          "line": 11,
+          "text": "use codex_utils_absolute_path::AbsolutePathBuf;"
+        },
+        {
+          "line": 12,
+          "text": ""
+        },
+        {
+          "line": 13,
+          "text": "pub fn memory_root(codex_home: &AbsolutePathBuf) -> AbsolutePathBuf {"
+        },
+        {
+          "line": 14,
+          "text": "    codex_home.join(\"memories\")"
+        },
+        {
+          "line": 15,
+          "text": "}"
+        },
+        {
+          "line": 16,
+          "text": ""
+        }
+      ]
+    },
+    {
+      "file": "codex-rs/cli/src/debug_sandbox.rs",
+      "url": "https://raw.githubusercontent.com/openai/codex/rust-v0.156.0/codex-rs/cli/src/debug_sandbox.rs",
+      "accessedAt": "2026-10-15T02:17:46.512Z",
+      "sha256": "2bbcaee80e17fcf41342e0ca8840dd191a8eff00cbf9ebb821efd3c84c3de472",
+      "lineCount": 1279,
+      "excerpts": [
+        {
+          "line": 25,
+          "text": "use codex_protocol::models::PermissionProfile;"
+        },
+        {
+          "line": 26,
+          "text": "use codex_protocol::models::SandboxEnforcement;"
+        },
+        {
+          "line": 27,
+          "text": "use codex_protocol::permissions::NetworkSandboxPolicy;"
+        },
+        {
+          "line": 28,
+          "text": "use codex_sandboxing::landlock::create_linux_sandbox_command_args_for_permission_profile;"
+        },
+        {
+          "line": 29,
+          "text": "#[cfg(target_os = \"macos\")]"
+        },
+        {
+          "line": 30,
+          "text": "use codex_sandboxing::seatbelt::CreateSeatbeltCommandArgsParams;"
+        },
+        {
+          "line": 31,
+          "text": "#[cfg(target_os = \"macos\")]"
+        },
+        {
+          "line": 32,
+          "text": "use codex_sandboxing::seatbelt::create_seatbelt_command_args;"
+        },
+        {
+          "line": 33,
+          "text": "use codex_sandboxing::with_managed_mitm_ca_readable_root;"
+        },
+        {
+          "line": 251,
+          "text": "    // In practice, this should be `std::env::current_dir()` because this CLI"
+        },
+        {
+          "line": 252,
+          "text": "    // does not support `--cwd`, but let's use the config value for consistency."
+        },
+        {
+          "line": 253,
+          "text": "    let cwd = config.cwd.clone();"
+        },
+        {
+          "line": 254,
+          "text": "    // Non-Windows sandbox launchers still use `sandbox_policy_cwd` for any"
+        },
+        {
+          "line": 255,
+          "text": "    // remaining cwd-dependent policy resolution. `:workspace_roots` entries in"
+        },
+        {
+          "line": 256,
+          "text": "    // the effective profile have already been materialized from config roots."
+        },
+        {
+          "line": 257,
+          "text": "    let sandbox_policy_cwd = cwd.clone();"
+        },
+        {
+          "line": 258,
+          "text": "    let env = create_env("
+        },
+        {
+          "line": 259,
+          "text": "        &config.permissions.shell_environment_policy,"
+        },
+        {
+          "line": 260,
+          "text": "        /*thread_id*/ None,"
+        },
+        {
+          "line": 261,
+          "text": "    );"
+        },
+        {
+          "line": 262,
+          "text": "    let mut permission_profile = match sandbox_state.as_ref() {"
+        },
+        {
+          "line": 263,
+          "text": "        Some(state) => match &state.permission_profile {"
+        },
+        {
+          "line": 264,
+          "text": "            PermissionProfile::External { .. } => {"
+        },
+        {
+          "line": 265,
+          "text": "                // `External` only says that the producer relies on an outer sandbox; it does not"
+        },
+        {
+          "line": 266,
+          "text": "                // include filesystem permissions we can recreate here. The consumer may not share"
+        },
+        {
+          "line": 267,
+          "text": "                // that sandbox, so use a locally enforceable read-only profile instead of spawning"
+        },
+        {
+          "line": 268,
+          "text": "                // without a sandbox."
+        },
+        {
+          "line": 269,
+          "text": "                PermissionProfile::read_only()"
+        },
+        {
+          "line": 270,
+          "text": "            }"
+        },
+        {
+          "line": 271,
+          "text": "            permission_profile => permission_profile.clone(),"
+        },
+        {
+          "line": 272,
+          "text": "        },"
+        },
+        {
+          "line": 273,
+          "text": "        None => config.permissions.effective_permission_profile(),"
+        },
+        {
+          "line": 274,
+          "text": "    };"
+        },
+        {
+          "line": 275,
+          "text": "    if matches!(permission_profile, PermissionProfile::Disabled) && sandbox_state_disable_network {"
+        },
+        {
+          "line": 276,
+          "text": "        anyhow::bail!("
+        },
+        {
+          "line": 277,
+          "text": "            \"--sandbox-state-disable-network cannot be applied to a disabled permission profile\""
+        },
+        {
+          "line": 278,
+          "text": "        );"
+        },
+        {
+          "line": 279,
+          "text": "    }"
+        },
+        {
+          "line": 280,
+          "text": "    if !matches!(permission_profile, PermissionProfile::Disabled)"
+        },
+        {
+          "line": 281,
+          "text": "        && (!sandbox_state_readable_root.is_empty() || sandbox_state_disable_network)"
+        },
+        {
+          "line": 282,
+          "text": "    {"
+        },
+        {
+          "line": 283,
+          "text": "        let file_system = permission_profile"
+        },
+        {
+          "line": 284,
+          "text": "            .file_system_sandbox_policy()"
+        },
+        {
+          "line": 285,
+          "text": "            .with_additional_readable_roots(&cwd, &sandbox_state_readable_root);"
+        },
+        {
+          "line": 286,
+          "text": "        let network = if sandbox_state_disable_network {"
+        },
+        {
+          "line": 287,
+          "text": "            NetworkSandboxPolicy::Restricted"
+        },
+        {
+          "line": 288,
+          "text": "        } else {"
+        },
+        {
+          "line": 289,
+          "text": "            permission_profile.network_sandbox_policy()"
+        },
+        {
+          "line": 290,
+          "text": "        };"
+        },
+        {
+          "line": 291,
+          "text": "        permission_profile = PermissionProfile::from_runtime_permissions(&file_system, network);"
+        },
+        {
+          "line": 292,
+          "text": "    }"
+        },
+        {
+          "line": 293,
+          "text": "    let use_legacy_landlock = sandbox_state.as_ref().map_or_else("
+        },
+        {
+          "line": 294,
+          "text": "        || config.features.use_legacy_landlock(),"
+        },
+        {
+          "line": 295,
+          "text": "        |state| state.use_legacy_landlock,"
+        },
+        {
+          "line": 296,
+          "text": "    );"
+        },
+        {
+          "line": 297,
+          "text": ""
+        },
+        {
+          "line": 298,
+          "text": "    match permission_profile.enforcement() {"
+        },
+        {
+          "line": 299,
+          "text": "        SandboxEnforcement::Managed => {}"
+        },
+        {
+          "line": 300,
+          "text": "        SandboxEnforcement::Disabled | SandboxEnforcement::External => {"
+        },
+        {
+          "line": 301,
+          "text": "            let (program, args) = command"
+        },
+        {
+          "line": 302,
+          "text": "                .split_first()"
+        },
+        {
+          "line": 303,
+          "text": "                .context(\"sandbox command must not be empty\")?;"
+        },
+        {
+          "line": 306,
+          "text": "                args.to_vec(),"
+        },
+        {
+          "line": 307,
+          "text": "                /*arg0*/ None,"
+        },
+        {
+          "line": 308,
+          "text": "                cwd.to_path_buf(),"
+        },
+        {
+          "line": 309,
+          "text": "                permission_profile.network_sandbox_policy(),"
+        },
+        {
+          "line": 310,
+          "text": "                env,"
+        },
+        {
+          "line": 311,
+          "text": "                |_| {},"
+        },
+        {
+          "line": 312,
+          "text": "            )"
+        },
+        {
+          "line": 313,
+          "text": "            .await?;"
+        },
+        {
+          "line": 314,
+          "text": "            handle_exit_status(child.wait().await?);"
+        },
+        {
+          "line": 315,
+          "text": "        }"
+        },
+        {
+          "line": 316,
+          "text": "    }"
+        },
+        {
+          "line": 317,
+          "text": ""
+        },
+        {
+          "line": 318,
+          "text": "    // Legacy Windows sandbox sessions emulate inherited stdio and exit the process."
+        },
+        {
+          "line": 319,
+          "text": "    if let SandboxType::Windows = sandbox_type {"
+        },
+        {
+          "line": 320,
+          "text": "        #[cfg(target_os = \"windows\")]"
+        },
+        {
+          "line": 321,
+          "text": "        {"
+        },
+        {
+          "line": 322,
+          "text": "            if config.permissions.windows_sandbox_type != codex_sandboxing::SandboxType::WindowsMxc"
+        },
+        {
+          "line": 323,
+          "text": "            {"
+        },
+        {
+          "line": 329,
+          "text": "                    .context(\"invalid Windows sandbox workspace roots\")?;"
+        },
+        {
+          "line": 330,
+          "text": "                run_command_under_windows_session("
+        },
+        {
+          "line": 331,
+          "text": "                    &config,"
+        },
+        {
+          "line": 332,
+          "text": "                    &permission_profile,"
+        },
+        {
+          "line": 333,
+          "text": "                    command,"
+        },
+        {
+          "line": 334,
+          "text": "                    cwd,"
+        },
+        {
+          "line": 335,
+          "text": "                    workspace_roots,"
+        },
+        {
+          "line": 336,
+          "text": "                    env,"
+        },
+        {
+          "line": 337,
+          "text": "                )"
+        },
+        {
+          "line": 355,
+          "text": "    let network_proxy = match config.permissions.network.as_ref() {"
+        },
+        {
+          "line": 356,
+          "text": "        Some(spec) => Some("
+        },
+        {
+          "line": 357,
+          "text": "            spec.start_proxy("
+        },
+        {
+          "line": 358,
+          "text": "                &permission_profile,"
+        },
+        {
+          "line": 359,
+          "text": "                managed_proxy_routing_for_windows_sandbox(config.permissions.windows_sandbox_type),"
+        },
+        {
+          "line": 360,
+          "text": "                local_binding_policy_for_sandbox("
+        },
+        {
+          "line": 361,
+          "text": "                    config.permissions.windows_sandbox_type,"
+        },
+        {
+          "line": 362,
+          "text": "                    Some(std::env::consts::OS),"
+        },
+        {
+          "line": 363,
+          "text": "                ),"
+        },
+        {
+          "line": 382,
+          "text": "        Some(network) => network.managed_mitm_ca_trust_bundle_path(),"
+        },
+        {
+          "line": 383,
+          "text": "        None => None,"
+        },
+        {
+          "line": 384,
+          "text": "    };"
+        },
+        {
+          "line": 385,
+          "text": "    let runtime_permission_profile = with_managed_mitm_ca_readable_root("
+        },
+        {
+          "line": 386,
+          "text": "        permission_profile,"
+        },
+        {
+          "line": 387,
+          "text": "        managed_mitm_ca_trust_bundle_path.as_ref(),"
+        },
+        {
+          "line": 388,
+          "text": "        sandbox_policy_cwd.as_path(),"
+        },
+        {
+          "line": 389,
+          "text": "    );"
+        },
+        {
+          "line": 390,
+          "text": ""
+        },
+        {
+          "line": 391,
+          "text": "    let mut child = match sandbox_type {"
+        },
+        {
+          "line": 392,
+          "text": "        #[cfg(target_os = \"macos\")]"
+        },
+        {
+          "line": 393,
+          "text": "        SandboxType::Seatbelt => {"
+        },
+        {
+          "line": 394,
+          "text": "            let (file_system_sandbox_policy, network_sandbox_policy) ="
+        },
+        {
+          "line": 395,
+          "text": "                runtime_permission_profile.to_runtime_permissions();"
+        },
+        {
+          "line": 396,
+          "text": "            let mut args = create_seatbelt_command_args(CreateSeatbeltCommandArgsParams {"
+        },
+        {
+          "line": 397,
+          "text": "                command,"
+        },
+        {
+          "line": 398,
+          "text": "                file_system_sandbox_policy: &file_system_sandbox_policy,"
+        },
+        {
+          "line": 399,
+          "text": "                network_sandbox_policy,"
+        }
+      ]
+    },
+    {
+      "file": "codex-rs/windows-sandbox-rs/src/deny_read_state.rs",
+      "url": "https://raw.githubusercontent.com/openai/codex/rust-v0.156.0/codex-rs/windows-sandbox-rs/src/deny_read_state.rs",
+      "accessedAt": "2026-10-15T02:17:46.429Z",
+      "sha256": "21440472139d6fd03d62fa74262b154ff19379da20e70f768caea2f1e830a5ae",
+      "lineCount": 88,
+      "excerpts": [
+        {
+          "line": 1,
+          "text": "use crate::acl::revoke_ace;"
+        },
+        {
+          "line": 2,
+          "text": "use crate::deny_read_acl::apply_deny_read_acls;"
+        },
+        {
+          "line": 3,
+          "text": "use crate::deny_read_acl::lexical_path_key;"
+        },
+        {
+          "line": 4,
+          "text": "use crate::setup::sandbox_dir;"
+        },
+        {
+          "line": 5,
+          "text": "use anyhow::Context;"
+        },
+        {
+          "line": 6,
+          "text": "use anyhow::Result;"
+        },
+        {
+          "line": 7,
+          "text": "use serde::Deserialize;"
+        },
+        {
+          "line": 8,
+          "text": "use serde::Serialize;"
+        },
+        {
+          "line": 12,
+          "text": "use std::path::Path;"
+        },
+        {
+          "line": 13,
+          "text": "use std::path::PathBuf;"
+        },
+        {
+          "line": 14,
+          "text": ""
+        },
+        {
+          "line": 15,
+          "text": "const DENY_READ_ACL_STATE_FILE: &str = \"deny_read_acl_state.json\";"
+        },
+        {
+          "line": 16,
+          "text": ""
+        },
+        {
+          "line": 17,
+          "text": "#[derive(Default, Deserialize, Serialize)]"
+        },
+        {
+          "line": 18,
+          "text": "struct PersistentDenyReadAclState {"
+        },
+        {
+          "line": 19,
+          "text": "    principals: BTreeMap<String, Vec<PathBuf>>,"
+        },
+        {
+          "line": 20,
+          "text": "}"
+        },
+        {
+          "line": 29,
+          "text": "///"
+        },
+        {
+          "line": 30,
+          "text": "/// # Safety"
+        },
+        {
+          "line": 31,
+          "text": "/// Caller must pass a valid SID pointer matching `principal_sid`."
+        },
+        {
+          "line": 32,
+          "text": "pub unsafe fn sync_persistent_deny_read_acls("
+        },
+        {
+          "line": 33,
+          "text": "    codex_home: &Path,"
+        },
+        {
+          "line": 34,
+          "text": "    principal_sid: &str,"
+        },
+        {
+          "line": 35,
+          "text": "    desired_paths: &[PathBuf],"
+        },
+        {
+          "line": 36,
+          "text": "    psid: *mut c_void,"
+        },
+        {
+          "line": 37,
+          "text": ") -> Result<Vec<PathBuf>> {"
+        },
+        {
+          "line": 43,
+          "text": "        .cloned()"
+        },
+        {
+          "line": 44,
+          "text": "        .unwrap_or_default();"
+        },
+        {
+          "line": 45,
+          "text": ""
+        },
+        {
+          "line": 46,
+          "text": "    let applied_paths = unsafe { apply_deny_read_acls(desired_paths, psid) }?;"
+        },
+        {
+          "line": 47,
+          "text": "    let desired_keys = applied_paths"
+        },
+        {
+          "line": 48,
+          "text": "        .iter()"
+        },
+        {
+          "line": 49,
+          "text": "        .map(|path| lexical_path_key(path))"
+        },
+        {
+          "line": 50,
+          "text": "        .collect::<HashSet<_>>();"
+        },
+        {
+          "line": 51,
+          "text": ""
+        }
+      ]
+    }
+  ],
+  "errors": []
+}

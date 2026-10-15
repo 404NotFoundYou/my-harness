@@ -1,0 +1,228 @@
+{
+  "file": "codex-rs/ext/memories/src/prompts.rs",
+  "url": "https://raw.githubusercontent.com/openai/codex/rust-v0.156.0/codex-rs/ext/memories/src/prompts.rs",
+  "accessedAt": "2026-10-15T02:21:50.550Z",
+  "sha256": "05fd1987748219a053074b9d3a6f79647875eda289f544e6047abafce7d470ab",
+  "excerpts": [
+    {
+      "line": 1,
+      "text": "use crate::MEMORY_TOOL_DEVELOPER_INSTRUCTIONS_SUMMARY_TOKEN_LIMIT;"
+    },
+    {
+      "line": 2,
+      "text": "use codex_protocol::MemoryVersion;"
+    },
+    {
+      "line": 3,
+      "text": "use codex_utils_absolute_path::AbsolutePathBuf;"
+    },
+    {
+      "line": 4,
+      "text": "use codex_utils_output_truncation::TruncationPolicy;"
+    },
+    {
+      "line": 5,
+      "text": "use codex_utils_output_truncation::truncate_text;"
+    },
+    {
+      "line": 6,
+      "text": "use codex_utils_template::Template;"
+    },
+    {
+      "line": 7,
+      "text": "use std::sync::LazyLock;"
+    },
+    {
+      "line": 8,
+      "text": "use tokio::fs;"
+    },
+    {
+      "line": 9,
+      "text": ""
+    },
+    {
+      "line": 10,
+      "text": "static MEMORY_TOOL_DEVELOPER_INSTRUCTIONS_TEMPLATE: LazyLock<Template> = LazyLock::new(|| {"
+    },
+    {
+      "line": 17,
+      "text": "static MEMORY_V2_TEMPLATE: LazyLock<Template> = LazyLock::new(|| {"
+    },
+    {
+      "line": 18,
+      "text": "    parse_embedded_template("
+    },
+    {
+      "line": 19,
+      "text": "        include_str!(\"../templates/memories/read_path_v2.md\"),"
+    },
+    {
+      "line": 20,
+      "text": "        \"memories/read_path_v2.md\","
+    },
+    {
+      "line": 21,
+      "text": "    )"
+    },
+    {
+      "line": 22,
+      "text": "});"
+    },
+    {
+      "line": 23,
+      "text": ""
+    },
+    {
+      "line": 24,
+      "text": "fn parse_embedded_template(source: &'static str, template_name: &str) -> Template {"
+    },
+    {
+      "line": 25,
+      "text": "    match Template::parse(source) {"
+    },
+    {
+      "line": 26,
+      "text": "        Ok(template) => template,"
+    },
+    {
+      "line": 27,
+      "text": "        Err(err) => panic!(\"embedded template {template_name} is invalid: {err}\"),"
+    },
+    {
+      "line": 28,
+      "text": "    }"
+    },
+    {
+      "line": 31,
+      "text": "/// Build the memory read-path prompt that is added to developer instructions."
+    },
+    {
+      "line": 32,
+      "text": "///"
+    },
+    {
+      "line": 33,
+      "text": "/// Large `memory_summary.md` files are truncated at"
+    },
+    {
+      "line": 34,
+      "text": "/// [MEMORY_TOOL_DEVELOPER_INSTRUCTIONS_SUMMARY_TOKEN_LIMIT]."
+    },
+    {
+      "line": 35,
+      "text": "pub(crate) async fn build_memory_tool_developer_instructions("
+    },
+    {
+      "line": 36,
+      "text": "    codex_home: &AbsolutePathBuf,"
+    },
+    {
+      "line": 37,
+      "text": "    version: MemoryVersion,"
+    },
+    {
+      "line": 38,
+      "text": ") -> Option<String> {"
+    },
+    {
+      "line": 39,
+      "text": "    let base_path = codex_home.join(version.directory_name());"
+    },
+    {
+      "line": 40,
+      "text": "    let memory_summary_path = base_path.join(\"memory_summary.md\");"
+    },
+    {
+      "line": 41,
+      "text": "    let memory_summary = fs::read_to_string(&memory_summary_path)"
+    },
+    {
+      "line": 42,
+      "text": "        .await"
+    },
+    {
+      "line": 43,
+      "text": "        .ok()?"
+    },
+    {
+      "line": 44,
+      "text": "        .trim()"
+    },
+    {
+      "line": 45,
+      "text": "        .to_string();"
+    },
+    {
+      "line": 46,
+      "text": "    let memory_summary = truncate_text("
+    },
+    {
+      "line": 47,
+      "text": "        &memory_summary,"
+    },
+    {
+      "line": 48,
+      "text": "        TruncationPolicy::Tokens(MEMORY_TOOL_DEVELOPER_INSTRUCTIONS_SUMMARY_TOKEN_LIMIT),"
+    },
+    {
+      "line": 49,
+      "text": "    );"
+    },
+    {
+      "line": 50,
+      "text": "    if memory_summary.is_empty() {"
+    },
+    {
+      "line": 51,
+      "text": "        return None;"
+    },
+    {
+      "line": 52,
+      "text": "    }"
+    },
+    {
+      "line": 53,
+      "text": "    let base_path = base_path.display().to_string();"
+    },
+    {
+      "line": 54,
+      "text": "    let template = match version {"
+    },
+    {
+      "line": 55,
+      "text": "        MemoryVersion::V1 => &MEMORY_TOOL_DEVELOPER_INSTRUCTIONS_TEMPLATE,"
+    },
+    {
+      "line": 56,
+      "text": "        MemoryVersion::V2 => &MEMORY_V2_TEMPLATE,"
+    },
+    {
+      "line": 57,
+      "text": "    };"
+    },
+    {
+      "line": 58,
+      "text": "    template"
+    },
+    {
+      "line": 59,
+      "text": "        .render(["
+    },
+    {
+      "line": 60,
+      "text": "            (\"base_path\", base_path.as_str()),"
+    },
+    {
+      "line": 61,
+      "text": "            (\"memory_summary\", memory_summary.as_str()),"
+    },
+    {
+      "line": 62,
+      "text": "        ])"
+    },
+    {
+      "line": 63,
+      "text": "        .ok()"
+    }
+  ]
+}

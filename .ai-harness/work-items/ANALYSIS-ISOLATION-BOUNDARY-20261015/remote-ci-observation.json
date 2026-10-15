@@ -1,0 +1,58 @@
+{
+  "observedAt": "2026-10-15T10:19:05.1417779+08:00",
+  "commit": "efb47e1746e6832a44d51ab200e5a0e04483b7b9",
+  "runs": [
+    {
+      "id": 38669504590,
+      "name": "Harness source tests",
+      "status": "in_progress",
+      "conclusion": null,
+      "head_sha": "efb47e1746e6832a44d51ab200e5a0e04483b7b9"
+    },
+    {
+      "id": 38669504599,
+      "name": "AI Harness",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "efb47e1746e6832a44d51ab200e5a0e04483b7b9"
+    }
+  ],
+  "sourceJobs": [
+    {
+      "id": 116209022431,
+      "name": "source-tests (ubuntu-latest, 22)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 116209022614,
+      "name": "source-tests (ubuntu-latest, 24)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 116209022661,
+      "name": "source-tests (windows-latest, 24)",
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "id": 116209022696,
+      "name": "source-tests (windows-latest, 22)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 116209022724,
+      "name": "source-tests (ubuntu-latest, 20)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 116209022769,
+      "name": "source-tests (windows-latest, 20)",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ]
+}

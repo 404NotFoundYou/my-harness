@@ -1,0 +1,46 @@
+{
+  "observedAt": "2026-10-15T02:19:51.888Z",
+  "records": [
+    {
+      "name": "docker-server",
+      "command": "C:\\Program Files\\Docker\\Docker\\resources\\bin\\docker.exe",
+      "args": [
+        "version",
+        "--format",
+        "{{json .Server.Version}}"
+      ],
+      "exitCode": 1,
+      "errorCode": null,
+      "stdout": "",
+      "stderr": "failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified."
+    },
+    {
+      "name": "docker-node-images",
+      "command": "C:\\Program Files\\Docker\\Docker\\resources\\bin\\docker.exe",
+      "args": [
+        "image",
+        "ls",
+        "--filter",
+        "reference=node:*",
+        "--format",
+        "{{.Repository}}:{{.Tag}}"
+      ],
+      "exitCode": 1,
+      "errorCode": null,
+      "stdout": "",
+      "stderr": "failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified."
+    },
+    {
+      "name": "wsl-distributions",
+      "command": "C:\\WINDOWS\\system32\\wsl.exe",
+      "args": [
+        "--list",
+        "--quiet"
+      ],
+      "exitCode": 0,
+      "errorCode": null,
+      "stdout": "docker-desktop",
+      "stderr": ""
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "recordedAt": "2026-10-15T02:22:50.850Z",
+  "actualModelSessions": 0,
+  "platform": "win32",
+  "node": "v22.20.0",
+  "cliEntrySha256": "61b0194f3bb6534439c8d26a3ed57d0805f84b884588b761795323eeb92fcf70",
+  "rows": [
+    {
+      "name": "v1-on",
+      "enabled": true,
+      "use": true,
+      "version": "v1",
+      "ordinaryMarker": false,
+      "featureEnabled": true,
+      "contextMarkerPresent": true,
+      "memoryMarkerPresent": false,
+      "promptSha256": "b96e61b0e6d9251a29912e8eb375ce7c9a1201dfb6c0305a8a228c1a82e9dc55"
+    },
+    {
+      "name": "v1-off",
+      "enabled": false,
+      "use": true,
+      "version": "v1",
+      "ordinaryMarker": false,
+      "featureEnabled": false,
+      "contextMarkerPresent": true,
+      "memoryMarkerPresent": false,
+      "promptSha256": "b1aa38e78e9ac6938cf77dc05f6897a4763a3581eb49077ee1253c2b7209bb08"
+    },
+    {
+      "name": "v1-use-off",
+      "enabled": true,
+      "use": false,
+      "version": "v1",
+      "ordinaryMarker": false,
+      "featureEnabled": true,
+      "contextMarkerPresent": true,
+      "memoryMarkerPresent": false,
+      "promptSha256": "557cddc03b7b8da1f93f8fc10993186631917d9ec8244276120513132a9d7ca0"
+    },
+    {
+      "name": "v2-on",
+      "enabled": true,
+      "use": true,
+      "version": "v2",
+      "ordinaryMarker": false,
+      "featureEnabled": true,
+      "contextMarkerPresent": true,
+      "memoryMarkerPresent": false,
+      "promptSha256": "f30122a3999607870a8efef5e880c72587864e12c8fed64e52287b78b0f32cef"
+    },
+    {
+      "name": "ordinary-marker-control",
+      "enabled": false,
+      "use": true,
+      "version": "v1",
+      "ordinaryMarker": true,
+      "featureEnabled": false,
+      "contextMarkerPresent": true,
+      "memoryMarkerPresent": true,
+      "promptSha256": "5c4fc147d753335d922dabe72019181c049ce2185fef65f1ff24f067fbf6327f"
+    }
+  ],
+  "diagnosticPassed": true,
+  "memoryInjectionVerified": false,
+  "filesystemIsolationVerified": false,
+  "cliVersion": "codex-cli 0.156.0",
+  "boundary": "Real CLI offline renderer with synthetic v1/v2 homes. No model turn, sandbox execution, permission change, or real memory body read. Passing this diagnostic does not establish memory injection or filesystem isolation."
+}

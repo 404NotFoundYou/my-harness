@@ -1,0 +1,38 @@
+{
+  "recordedAt": "2026-10-15T02:27:23.910Z",
+  "ok": true,
+  "commit": "efb47e1746e6832a44d51ab200e5a0e04483b7b9",
+  "remoteJobsSucceeded": 9,
+  "conditionalSkippedWorkflowSteps": [
+    {
+      "job": "source-tests (ubuntu-latest, 22)",
+      "step": "Windows runtime compatibility"
+    },
+    {
+      "job": "source-tests (ubuntu-latest, 24)",
+      "step": "Windows runtime compatibility"
+    },
+    {
+      "job": "source-tests (ubuntu-latest, 20)",
+      "step": "Windows runtime compatibility"
+    }
+  ],
+  "offlineScenarios": 5,
+  "simulatedCliSessions": 2,
+  "realModelCalls": 0,
+  "runtimeV1ContextPositiveAndNegative": true,
+  "filesystemIsolationVerified": false,
+  "protectedHistoricalFilesUnchanged": 514,
+  "trackedProductChanges": 0,
+  "originalPreflightReady": false,
+  "scripts": [
+    {
+      "path": ".ai-harness/work-items/ANALYSIS-ISOLATION-BOUNDARY-20261015/probe-context.mjs",
+      "sha256": "e691891f2e7edfa746247b1556d379f020934141f7e0774984e897555cfc7d3f"
+    },
+    {
+      "path": ".ai-harness/work-items/ANALYSIS-ISOLATION-BOUNDARY-20261015/probe-runtime-context.mjs",
+      "sha256": "4cef5717aa037181b7ae9beddaca2c0ebce09a04322134230b4f48c9376d94a2"
+    }
+  ]
+}

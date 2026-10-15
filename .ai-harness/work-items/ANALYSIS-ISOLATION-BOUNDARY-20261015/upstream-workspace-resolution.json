@@ -1,0 +1,434 @@
+{
+  "tag": "rust-v0.156.0",
+  "sources": [
+    {
+      "file": "codex-rs/core/src/config/permissions.rs",
+      "url": "https://raw.githubusercontent.com/openai/codex/rust-v0.156.0/codex-rs/core/src/config/permissions.rs",
+      "accessedAt": "2026-10-15T02:27:23.619Z",
+      "sha256": "cda9109f6a5405dbf2abbe7d53883b755419c5b6d0b3e7f5834c65710db3479a",
+      "excerpts": [
+        {
+          "line": 70,
+          "text": "    )"
+        },
+        {
+          "line": 71,
+          "text": "}"
+        },
+        {
+          "line": 72,
+          "text": ""
+        },
+        {
+          "line": 73,
+          "text": "fn builtin_permission_profile("
+        },
+        {
+          "line": 74,
+          "text": "    profile_name: &str,"
+        },
+        {
+          "line": 75,
+          "text": "    workspace_write: Option<&WorkspaceWriteSettings>,"
+        },
+        {
+          "line": 76,
+          "text": ") -> Option<PermissionProfile> {"
+        },
+        {
+          "line": 77,
+          "text": "    match profile_name {"
+        },
+        {
+          "line": 78,
+          "text": "        BUILT_IN_READ_ONLY_PROFILE => Some(PermissionProfile::read_only()),"
+        },
+        {
+          "line": 79,
+          "text": "        BUILT_IN_WORKSPACE_PROFILE => Some(match workspace_write {"
+        },
+        {
+          "line": 80,
+          "text": "            Some(WorkspaceWriteSettings {"
+        },
+        {
+          "line": 81,
+          "text": "                writable_roots: _,"
+        },
+        {
+          "line": 82,
+          "text": "                network_access,"
+        },
+        {
+          "line": 83,
+          "text": "                exclude_tmpdir_env_var,"
+        },
+        {
+          "line": 84,
+          "text": "                exclude_slash_tmp,"
+        },
+        {
+          "line": 85,
+          "text": "            }) => PermissionProfile::workspace_write_with("
+        },
+        {
+          "line": 86,
+          "text": "                &[],"
+        },
+        {
+          "line": 87,
+          "text": "                if *network_access {"
+        },
+        {
+          "line": 88,
+          "text": "                    NetworkSandboxPolicy::Enabled"
+        },
+        {
+          "line": 89,
+          "text": "                } else {"
+        },
+        {
+          "line": 90,
+          "text": "                    NetworkSandboxPolicy::Restricted"
+        },
+        {
+          "line": 91,
+          "text": "                },"
+        },
+        {
+          "line": 92,
+          "text": "                *exclude_tmpdir_env_var,"
+        },
+        {
+          "line": 93,
+          "text": "                *exclude_slash_tmp,"
+        },
+        {
+          "line": 94,
+          "text": "            ),"
+        },
+        {
+          "line": 95,
+          "text": "            None => PermissionProfile::workspace_write(),"
+        },
+        {
+          "line": 96,
+          "text": "        }),"
+        },
+        {
+          "line": 97,
+          "text": "        BUILT_IN_DANGER_FULL_ACCESS_PROFILE => Some(PermissionProfile::Disabled),"
+        },
+        {
+          "line": 98,
+          "text": "        _ => None,"
+        },
+        {
+          "line": 99,
+          "text": "    }"
+        },
+        {
+          "line": 208,
+          "text": "    permissions"
+        },
+        {
+          "line": 209,
+          "text": "        .resolve_profile(profile_name, extensible_builtin_parent_profile)"
+        },
+        {
+          "line": 210,
+          "text": "        .map_err(|err| io::Error::new(io::ErrorKind::InvalidInput, err.to_string()))"
+        },
+        {
+          "line": 211,
+          "text": "}"
+        },
+        {
+          "line": 212,
+          "text": ""
+        },
+        {
+          "line": 213,
+          "text": "fn extensible_builtin_parent_profile(profile_name: &str) -> Option<PermissionProfileToml> {"
+        },
+        {
+          "line": 214,
+          "text": "    let file_system = match profile_name {"
+        },
+        {
+          "line": 215,
+          "text": "        BUILT_IN_READ_ONLY_PROFILE => FileSystemSandboxPolicy::read_only(),"
+        },
+        {
+          "line": 216,
+          "text": "        BUILT_IN_WORKSPACE_PROFILE => FileSystemSandboxPolicy::workspace_write("
+        },
+        {
+          "line": 217,
+          "text": "            &[],"
+        },
+        {
+          "line": 218,
+          "text": "            /*exclude_tmpdir_env_var*/ false,"
+        },
+        {
+          "line": 219,
+          "text": "            /*exclude_slash_tmp*/ false,"
+        },
+        {
+          "line": 220,
+          "text": "        ),"
+        },
+        {
+          "line": 221,
+          "text": "        _ => return None,"
+        },
+        {
+          "line": 222,
+          "text": "    };"
+        },
+        {
+          "line": 223,
+          "text": "    Some(permission_profile_toml_from_file_system_policy(file_system))"
+        },
+        {
+          "line": 224,
+          "text": "}"
+        },
+        {
+          "line": 225,
+          "text": ""
+        },
+        {
+          "line": 226,
+          "text": "fn permission_profile_toml_from_file_system_policy("
+        },
+        {
+          "line": 227,
+          "text": "    file_system: FileSystemSandboxPolicy,"
+        },
+        {
+          "line": 228,
+          "text": ") -> PermissionProfileToml {"
+        },
+        {
+          "line": 229,
+          "text": "    let mut filesystem = FilesystemPermissionsToml {"
+        },
+        {
+          "line": 230,
+          "text": "        glob_scan_max_depth: file_system.glob_scan_max_depth,"
+        }
+      ]
+    },
+    {
+      "file": "codex-rs/protocol/src/permissions.rs",
+      "url": "https://raw.githubusercontent.com/openai/codex/rust-v0.156.0/codex-rs/protocol/src/permissions.rs",
+      "accessedAt": "2026-10-15T02:27:23.758Z",
+      "sha256": "0654f2ff45ecb6b0afedfa1ab2e71e22ed0feae0346d2fd460b5b82443930b0a",
+      "excerpts": [
+        {
+          "line": 594,
+          "text": "fn read_only_file_system_entries() -> Vec<FileSystemSandboxEntry> {"
+        },
+        {
+          "line": 595,
+          "text": "    vec![FileSystemSandboxEntry::new("
+        },
+        {
+          "line": 596,
+          "text": "        FileSystemPath::Special {"
+        },
+        {
+          "line": 597,
+          "text": "            value: FileSystemSpecialPath::Root,"
+        },
+        {
+          "line": 598,
+          "text": "        },"
+        },
+        {
+          "line": 599,
+          "text": "        FileSystemAccessMode::Read,"
+        },
+        {
+          "line": 600,
+          "text": "    )]"
+        },
+        {
+          "line": 601,
+          "text": "}"
+        },
+        {
+          "line": 602,
+          "text": ""
+        },
+        {
+          "line": 603,
+          "text": "impl Default for FileSystemSandboxPolicy {"
+        },
+        {
+          "line": 604,
+          "text": "    fn default() -> Self {"
+        },
+        {
+          "line": 605,
+          "text": "        Self::read_only()"
+        },
+        {
+          "line": 606,
+          "text": "    }"
+        },
+        {
+          "line": 607,
+          "text": "}"
+        },
+        {
+          "line": 608,
+          "text": ""
+        },
+        {
+          "line": 609,
+          "text": "impl FileSystemSandboxPolicy {"
+        },
+        {
+          "line": 610,
+          "text": "    pub fn read_only() -> Self {"
+        },
+        {
+          "line": 611,
+          "text": "        Self::restricted(read_only_file_system_entries())"
+        },
+        {
+          "line": 805,
+          "text": "    /// Filesystem policy matching `WorkspaceWrite` semantics without requiring"
+        },
+        {
+          "line": 806,
+          "text": "    /// callers to construct a legacy [`SandboxPolicy`] first."
+        },
+        {
+          "line": 807,
+          "text": "    pub fn workspace_write("
+        },
+        {
+          "line": 808,
+          "text": "        writable_roots: &[AbsolutePathBuf],"
+        },
+        {
+          "line": 809,
+          "text": "        exclude_tmpdir_env_var: bool,"
+        },
+        {
+          "line": 810,
+          "text": "        exclude_slash_tmp: bool,"
+        },
+        {
+          "line": 811,
+          "text": "    ) -> Self {"
+        },
+        {
+          "line": 812,
+          "text": "        let mut entries = vec![FileSystemSandboxEntry::new("
+        },
+        {
+          "line": 813,
+          "text": "            FileSystemPath::Special {"
+        },
+        {
+          "line": 814,
+          "text": "                value: FileSystemSpecialPath::Root,"
+        },
+        {
+          "line": 815,
+          "text": "            },"
+        },
+        {
+          "line": 816,
+          "text": "            FileSystemAccessMode::Read,"
+        },
+        {
+          "line": 817,
+          "text": "        )];"
+        },
+        {
+          "line": 818,
+          "text": ""
+        },
+        {
+          "line": 819,
+          "text": "        entries.push(FileSystemSandboxEntry::new("
+        },
+        {
+          "line": 820,
+          "text": "            FileSystemPath::Special {"
+        },
+        {
+          "line": 821,
+          "text": "                value: FileSystemSpecialPath::project_roots(/*subpath*/ None),"
+        },
+        {
+          "line": 822,
+          "text": "            },"
+        },
+        {
+          "line": 823,
+          "text": "            FileSystemAccessMode::Write,"
+        },
+        {
+          "line": 824,
+          "text": "        ));"
+        },
+        {
+          "line": 825,
+          "text": "        if !exclude_slash_tmp {"
+        },
+        {
+          "line": 826,
+          "text": "            entries.push(FileSystemSandboxEntry::new("
+        },
+        {
+          "line": 827,
+          "text": "                FileSystemPath::Special {"
+        },
+        {
+          "line": 828,
+          "text": "                    value: FileSystemSpecialPath::SlashTmp,"
+        },
+        {
+          "line": 829,
+          "text": "                },"
+        },
+        {
+          "line": 830,
+          "text": "                FileSystemAccessMode::Write,"
+        },
+        {
+          "line": 831,
+          "text": "            ));"
+        },
+        {
+          "line": 832,
+          "text": "        }"
+        },
+        {
+          "line": 833,
+          "text": "        if !exclude_tmpdir_env_var {"
+        },
+        {
+          "line": 834,
+          "text": "            entries.push(FileSystemSandboxEntry::new("
+        },
+        {
+          "line": 835,
+          "text": "                FileSystemPath::Special {"
+        },
+        {
+          "line": 836,
+          "text": "                    value: FileSystemSpecialPath::Tmpdir,"
+        }
+      ]
+    }
+  ],
+  "errors": []
+}

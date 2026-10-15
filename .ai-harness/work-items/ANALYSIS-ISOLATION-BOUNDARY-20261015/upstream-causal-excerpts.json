@@ -1,0 +1,1161 @@
+{
+  "sources": [
+    {
+      "file": "codex-rs/cli/src/main.rs",
+      "url": "https://raw.githubusercontent.com/openai/codex/rust-v0.156.0/codex-rs/cli/src/main.rs",
+      "accessedAt": "2026-10-15T02:19:03.967Z",
+      "sha256": "b4307eff0383a45263a9c328fcf6c13f73c4cd659368043ce71bdef1424f5532",
+      "start": 2410,
+      "end": 2507,
+      "excerpts": [
+        {
+          "line": 2410,
+          "text": ""
+        },
+        {
+          "line": 2411,
+          "text": "async fn run_debug_prompt_input_command("
+        },
+        {
+          "line": 2412,
+          "text": "    cmd: DebugPromptInputCommand,"
+        },
+        {
+          "line": 2413,
+          "text": "    root_config_overrides: CliConfigOverrides,"
+        },
+        {
+          "line": 2414,
+          "text": "    interactive: TuiCli,"
+        },
+        {
+          "line": 2415,
+          "text": "    arg0_paths: Arg0DispatchPaths,"
+        },
+        {
+          "line": 2416,
+          "text": ") -> anyhow::Result<()> {"
+        },
+        {
+          "line": 2417,
+          "text": "    let loader_overrides = loader_overrides_for_profile(interactive.config_profile_v2.as_ref())?;"
+        },
+        {
+          "line": 2418,
+          "text": "    let shared = interactive.shared.into_inner();"
+        },
+        {
+          "line": 2419,
+          "text": "    let mut cli_kv_overrides = root_config_overrides"
+        },
+        {
+          "line": 2420,
+          "text": "        .parse_overrides()"
+        },
+        {
+          "line": 2421,
+          "text": "        .map_err(anyhow::Error::msg)?;"
+        },
+        {
+          "line": 2422,
+          "text": "    if interactive.web_search {"
+        },
+        {
+          "line": 2423,
+          "text": "        cli_kv_overrides.push(("
+        },
+        {
+          "line": 2424,
+          "text": "            \"web_search\".to_string(),"
+        },
+        {
+          "line": 2425,
+          "text": "            toml::Value::String(\"live\".to_string()),"
+        },
+        {
+          "line": 2426,
+          "text": "        ));"
+        },
+        {
+          "line": 2427,
+          "text": "    }"
+        },
+        {
+          "line": 2428,
+          "text": ""
+        },
+        {
+          "line": 2429,
+          "text": "    let approval_policy = if shared.dangerously_bypass_approvals_and_sandbox {"
+        },
+        {
+          "line": 2430,
+          "text": "        Some(AskForApproval::Never)"
+        },
+        {
+          "line": 2431,
+          "text": "    } else {"
+        },
+        {
+          "line": 2432,
+          "text": "        interactive.approval_policy.map(Into::into)"
+        },
+        {
+          "line": 2433,
+          "text": "    };"
+        },
+        {
+          "line": 2434,
+          "text": "    let sandbox_mode = if shared.dangerously_bypass_approvals_and_sandbox {"
+        },
+        {
+          "line": 2435,
+          "text": "        Some(codex_protocol::config_types::SandboxMode::DangerFullAccess)"
+        },
+        {
+          "line": 2436,
+          "text": "    } else {"
+        },
+        {
+          "line": 2437,
+          "text": "        shared.sandbox_mode.map(Into::into)"
+        },
+        {
+          "line": 2438,
+          "text": "    };"
+        },
+        {
+          "line": 2439,
+          "text": "    let overrides = ConfigOverrides {"
+        },
+        {
+          "line": 2440,
+          "text": "        model: shared.model,"
+        },
+        {
+          "line": 2441,
+          "text": "        approval_policy,"
+        },
+        {
+          "line": 2442,
+          "text": "        sandbox_mode,"
+        },
+        {
+          "line": 2443,
+          "text": "        cwd: shared.cwd,"
+        },
+        {
+          "line": 2444,
+          "text": "        codex_self_exe: arg0_paths.codex_self_exe,"
+        },
+        {
+          "line": 2445,
+          "text": "        codex_linux_sandbox_exe: arg0_paths.codex_linux_sandbox_exe,"
+        },
+        {
+          "line": 2446,
+          "text": "        main_execve_wrapper_exe: arg0_paths.main_execve_wrapper_exe,"
+        },
+        {
+          "line": 2447,
+          "text": "        show_raw_agent_reasoning: shared.oss.then_some(true),"
+        },
+        {
+          "line": 2448,
+          "text": "        ephemeral: Some(true),"
+        },
+        {
+          "line": 2449,
+          "text": "        bypass_hook_trust: shared.bypass_hook_trust.then_some(true),"
+        },
+        {
+          "line": 2450,
+          "text": "        additional_writable_roots: shared.add_dir,"
+        },
+        {
+          "line": 2451,
+          "text": "        ..Default::default()"
+        },
+        {
+          "line": 2452,
+          "text": "    };"
+        },
+        {
+          "line": 2453,
+          "text": "    let config = ConfigBuilder::default()"
+        },
+        {
+          "line": 2454,
+          "text": "        .cli_overrides(cli_kv_overrides)"
+        },
+        {
+          "line": 2455,
+          "text": "        .harness_overrides(overrides)"
+        },
+        {
+          "line": 2456,
+          "text": "        .loader_overrides(loader_overrides)"
+        },
+        {
+          "line": 2457,
+          "text": "        .build()"
+        },
+        {
+          "line": 2458,
+          "text": "        .await?;"
+        },
+        {
+          "line": 2459,
+          "text": ""
+        },
+        {
+          "line": 2460,
+          "text": "    let mut input = shared"
+        },
+        {
+          "line": 2461,
+          "text": "        .images"
+        },
+        {
+          "line": 2462,
+          "text": "        .into_iter()"
+        },
+        {
+          "line": 2463,
+          "text": "        .chain(cmd.images)"
+        },
+        {
+          "line": 2464,
+          "text": "        .map(|path| UserInput::LocalImage { path, detail: None })"
+        },
+        {
+          "line": 2465,
+          "text": "        .collect::<Vec<_>>();"
+        },
+        {
+          "line": 2466,
+          "text": "    if let Some(prompt) = cmd.prompt.or(interactive.prompt) {"
+        },
+        {
+          "line": 2467,
+          "text": "        input.push(UserInput::Text {"
+        },
+        {
+          "line": 2468,
+          "text": "            text: prompt.replace(\"\\r\\n\", \"\\n\").replace('\\r', \"\\n\"),"
+        },
+        {
+          "line": 2469,
+          "text": "            text_elements: Vec::new(),"
+        },
+        {
+          "line": 2470,
+          "text": "        });"
+        },
+        {
+          "line": 2471,
+          "text": "    }"
+        },
+        {
+          "line": 2472,
+          "text": ""
+        },
+        {
+          "line": 2473,
+          "text": "    let user_instructions_provider = Arc::new(CodexHomeUserInstructionsProvider::new("
+        },
+        {
+          "line": 2474,
+          "text": "        config.codex_home.clone(),"
+        },
+        {
+          "line": 2475,
+          "text": "    ));"
+        },
+        {
+          "line": 2476,
+          "text": "    let auth_manager ="
+        },
+        {
+          "line": 2477,
+          "text": "        AuthManager::shared_from_config(&config, /*enable_codex_api_key_env*/ false).await?;"
+        },
+        {
+          "line": 2478,
+          "text": "    let mut extensions = codex_extension_api::ExtensionRegistryBuilder::new();"
+        },
+        {
+          "line": 2479,
+          "text": "    codex_git_attribution::install("
+        },
+        {
+          "line": 2480,
+          "text": "        &mut extensions,"
+        },
+        {
+          "line": 2481,
+          "text": "        auth_manager,"
+        },
+        {
+          "line": 2482,
+          "text": "        config.chatgpt_base_url.clone(),"
+        },
+        {
+          "line": 2483,
+          "text": "        config.http_client_factory(),"
+        },
+        {
+          "line": 2484,
+          "text": "    );"
+        },
+        {
+          "line": 2485,
+          "text": "    codex_skills_extension::install(&mut extensions, |config: &Config| {"
+        },
+        {
+          "line": 2486,
+          "text": "        codex_skills_extension::SkillsExtensionConfig {"
+        },
+        {
+          "line": 2487,
+          "text": "            include_instructions: config.include_skill_instructions,"
+        },
+        {
+          "line": 2488,
+          "text": "            max_context_tokens: config.skill_max_context_tokens,"
+        },
+        {
+          "line": 2489,
+          "text": "            bundled_skills_enabled: config.bundled_skills_enabled(),"
+        },
+        {
+          "line": 2490,
+          "text": "            orchestrator_skills_enabled: config.orchestrator_skills_enabled,"
+        },
+        {
+          "line": 2491,
+          "text": "            shadow_selection_enabled: config"
+        },
+        {
+          "line": 2492,
+          "text": "                .features"
+        },
+        {
+          "line": 2493,
+          "text": "                .enabled(codex_features::Feature::SkillSearch),"
+        },
+        {
+          "line": 2494,
+          "text": "        }"
+        },
+        {
+          "line": 2495,
+          "text": "    });"
+        },
+        {
+          "line": 2496,
+          "text": "    let prompt_input = codex_core::build_prompt_input("
+        },
+        {
+          "line": 2497,
+          "text": "        config,"
+        },
+        {
+          "line": 2498,
+          "text": "        input,"
+        },
+        {
+          "line": 2499,
+          "text": "        /*state_db*/ None,"
+        },
+        {
+          "line": 2500,
+          "text": "        Arc::new(extensions.build()),"
+        },
+        {
+          "line": 2501,
+          "text": "        user_instructions_provider,"
+        },
+        {
+          "line": 2502,
+          "text": "    )"
+        },
+        {
+          "line": 2503,
+          "text": "    .await?;"
+        },
+        {
+          "line": 2504,
+          "text": "    println!(\"{}\", serde_json::to_string_pretty(&prompt_input)?);"
+        },
+        {
+          "line": 2505,
+          "text": ""
+        },
+        {
+          "line": 2506,
+          "text": "    Ok(())"
+        },
+        {
+          "line": 2507,
+          "text": "}"
+        }
+      ]
+    },
+    {
+      "file": "codex-rs/protocol/src/permissions.rs",
+      "url": "https://raw.githubusercontent.com/openai/codex/rust-v0.156.0/codex-rs/protocol/src/permissions.rs",
+      "accessedAt": "2026-10-15T02:19:03.935Z",
+      "sha256": "0654f2ff45ecb6b0afedfa1ab2e71e22ed0feae0346d2fd460b5b82443930b0a",
+      "start": 600,
+      "end": 660,
+      "excerpts": [
+        {
+          "line": 600,
+          "text": "    )]"
+        },
+        {
+          "line": 601,
+          "text": "}"
+        },
+        {
+          "line": 602,
+          "text": ""
+        },
+        {
+          "line": 603,
+          "text": "impl Default for FileSystemSandboxPolicy {"
+        },
+        {
+          "line": 604,
+          "text": "    fn default() -> Self {"
+        },
+        {
+          "line": 605,
+          "text": "        Self::read_only()"
+        },
+        {
+          "line": 606,
+          "text": "    }"
+        },
+        {
+          "line": 607,
+          "text": "}"
+        },
+        {
+          "line": 608,
+          "text": ""
+        },
+        {
+          "line": 609,
+          "text": "impl FileSystemSandboxPolicy {"
+        },
+        {
+          "line": 610,
+          "text": "    pub fn read_only() -> Self {"
+        },
+        {
+          "line": 611,
+          "text": "        Self::restricted(read_only_file_system_entries())"
+        },
+        {
+          "line": 612,
+          "text": "    }"
+        },
+        {
+          "line": 613,
+          "text": ""
+        },
+        {
+          "line": 614,
+          "text": "    pub fn unrestricted() -> Self {"
+        },
+        {
+          "line": 615,
+          "text": "        Self {"
+        },
+        {
+          "line": 616,
+          "text": "            kind: FileSystemSandboxKind::Unrestricted,"
+        },
+        {
+          "line": 617,
+          "text": "            glob_scan_max_depth: None,"
+        },
+        {
+          "line": 618,
+          "text": "            entries: Vec::new(),"
+        },
+        {
+          "line": 619,
+          "text": "        }"
+        },
+        {
+          "line": 620,
+          "text": "    }"
+        },
+        {
+          "line": 621,
+          "text": ""
+        },
+        {
+          "line": 622,
+          "text": "    pub fn external_sandbox() -> Self {"
+        },
+        {
+          "line": 623,
+          "text": "        Self {"
+        },
+        {
+          "line": 624,
+          "text": "            kind: FileSystemSandboxKind::ExternalSandbox,"
+        },
+        {
+          "line": 625,
+          "text": "            glob_scan_max_depth: None,"
+        },
+        {
+          "line": 626,
+          "text": "            entries: Vec::new(),"
+        },
+        {
+          "line": 627,
+          "text": "        }"
+        },
+        {
+          "line": 628,
+          "text": "    }"
+        },
+        {
+          "line": 629,
+          "text": ""
+        },
+        {
+          "line": 630,
+          "text": "    pub fn restricted(entries: Vec<FileSystemSandboxEntry>) -> Self {"
+        },
+        {
+          "line": 631,
+          "text": "        Self {"
+        },
+        {
+          "line": 632,
+          "text": "            kind: FileSystemSandboxKind::Restricted,"
+        },
+        {
+          "line": 633,
+          "text": "            glob_scan_max_depth: None,"
+        },
+        {
+          "line": 634,
+          "text": "            entries,"
+        },
+        {
+          "line": 635,
+          "text": "        }"
+        },
+        {
+          "line": 636,
+          "text": "    }"
+        },
+        {
+          "line": 637,
+          "text": ""
+        },
+        {
+          "line": 638,
+          "text": "    /// Removes entries that should be skipped when their paths are missing."
+        },
+        {
+          "line": 639,
+          "text": "    ///"
+        },
+        {
+          "line": 640,
+          "text": "    /// Callers that materialize filesystem ACL targets should not turn these"
+        },
+        {
+          "line": 641,
+          "text": "    /// entries into newly-created sentinel paths."
+        },
+        {
+          "line": 642,
+          "text": "    pub fn remove_skip_missing_path_entries(&mut self) {"
+        },
+        {
+          "line": 643,
+          "text": "        self.entries.retain(|entry| !entry.skips_missing_path());"
+        },
+        {
+          "line": 644,
+          "text": "    }"
+        },
+        {
+          "line": 645,
+          "text": ""
+        },
+        {
+          "line": 646,
+          "text": "    /// Native-path compatibility adapter for local executor boundaries."
+        },
+        {
+          "line": 647,
+          "text": "    /// Selected-executor orchestrators must keep paths as [`PathUri`] and use"
+        },
+        {
+          "line": 648,
+          "text": "    /// context-aware policy APIs instead."
+        },
+        {
+          "line": 649,
+          "text": "    pub fn has_explicit_non_write_entry_for_local_path_with_cwd("
+        },
+        {
+          "line": 650,
+          "text": "        &self,"
+        },
+        {
+          "line": 651,
+          "text": "        path: &Path,"
+        },
+        {
+          "line": 652,
+          "text": "        cwd: &Path,"
+        },
+        {
+          "line": 653,
+          "text": "    ) -> bool {"
+        },
+        {
+          "line": 654,
+          "text": "        let Some(path) = resolve_candidate_path(path, cwd) else {"
+        },
+        {
+          "line": 655,
+          "text": "            return false;"
+        },
+        {
+          "line": 656,
+          "text": "        };"
+        },
+        {
+          "line": 657,
+          "text": "        let cwd = AbsolutePathBuf::from_absolute_path(cwd).ok();"
+        },
+        {
+          "line": 658,
+          "text": "        self.entries.iter().any(|entry| {"
+        },
+        {
+          "line": 659,
+          "text": "            !entry.skips_missing_path()"
+        },
+        {
+          "line": 660,
+          "text": "                && !entry.access.can_write()"
+        }
+      ]
+    },
+    {
+      "file": "codex-rs/ext/memories/src/extension.rs",
+      "url": "https://raw.githubusercontent.com/openai/codex/rust-v0.156.0/codex-rs/ext/memories/src/extension.rs",
+      "accessedAt": "2026-10-15T02:19:03.763Z",
+      "sha256": "d5f4e55a138a4479e9b6286bd08954a7438d2bfb516c5c8717626a2b38736873",
+      "start": 38,
+      "end": 104,
+      "excerpts": [
+        {
+          "line": 38,
+          "text": "pub(crate) struct MemoriesExtensionConfig {"
+        },
+        {
+          "line": 39,
+          "text": "    pub(crate) enabled: bool,"
+        },
+        {
+          "line": 40,
+          "text": "    pub(crate) dedicated_tools: bool,"
+        },
+        {
+          "line": 41,
+          "text": "    pub(crate) codex_home: AbsolutePathBuf,"
+        },
+        {
+          "line": 42,
+          "text": "    pub(crate) version: MemoryVersion,"
+        },
+        {
+          "line": 43,
+          "text": "}"
+        },
+        {
+          "line": 44,
+          "text": ""
+        },
+        {
+          "line": 45,
+          "text": "impl MemoriesExtensionConfig {"
+        },
+        {
+          "line": 46,
+          "text": "    fn from_config(config: &Config) -> Self {"
+        },
+        {
+          "line": 47,
+          "text": "        Self {"
+        },
+        {
+          "line": 48,
+          "text": "            enabled: config.features.enabled(Feature::MemoryTool) && config.memories.use_memories,"
+        },
+        {
+          "line": 49,
+          "text": "            dedicated_tools: config.memories.dedicated_tools,"
+        },
+        {
+          "line": 50,
+          "text": "            codex_home: config.codex_home.clone(),"
+        },
+        {
+          "line": 51,
+          "text": "            version: config.memories.version,"
+        },
+        {
+          "line": 52,
+          "text": "        }"
+        },
+        {
+          "line": 53,
+          "text": "    }"
+        },
+        {
+          "line": 54,
+          "text": "}"
+        },
+        {
+          "line": 55,
+          "text": ""
+        },
+        {
+          "line": 56,
+          "text": "impl ContextContributor for MemoriesExtension {"
+        },
+        {
+          "line": 57,
+          "text": "    fn contribute_thread_context<'a>("
+        },
+        {
+          "line": 58,
+          "text": "        &'a self,"
+        },
+        {
+          "line": 59,
+          "text": "        _session_store: &'a ExtensionData,"
+        },
+        {
+          "line": 60,
+          "text": "        thread_store: &'a ExtensionData,"
+        },
+        {
+          "line": 61,
+          "text": "    ) -> std::pin::Pin<Box<dyn std::future::Future<Output = Vec<PromptFragment>> + Send + 'a>> {"
+        },
+        {
+          "line": 62,
+          "text": "        Box::pin(async move {"
+        },
+        {
+          "line": 63,
+          "text": "            let Some(config) = thread_store.get::<MemoriesExtensionConfig>() else {"
+        },
+        {
+          "line": 64,
+          "text": "                return Vec::new();"
+        },
+        {
+          "line": 65,
+          "text": "            };"
+        },
+        {
+          "line": 66,
+          "text": "            if !config.enabled {"
+        },
+        {
+          "line": 67,
+          "text": "                return Vec::new();"
+        },
+        {
+          "line": 68,
+          "text": "            }"
+        },
+        {
+          "line": 69,
+          "text": ""
+        },
+        {
+          "line": 70,
+          "text": "            let Some(instructions) ="
+        },
+        {
+          "line": 71,
+          "text": "                build_memory_tool_developer_instructions(&config.codex_home, config.version).await"
+        },
+        {
+          "line": 72,
+          "text": "            else {"
+        },
+        {
+          "line": 73,
+          "text": "                return Vec::new();"
+        },
+        {
+          "line": 74,
+          "text": "            };"
+        },
+        {
+          "line": 75,
+          "text": "            let instructions = match config.version {"
+        },
+        {
+          "line": 76,
+          "text": "                MemoryVersion::V1 => vec![instructions],"
+        },
+        {
+          "line": 77,
+          "text": "                MemoryVersion::V2 => {"
+        },
+        {
+          "line": 78,
+          "text": "                    // Keep the complete summary while respecting each fragment's byte cap."
+        },
+        {
+          "line": 79,
+          "text": "                    let mut remaining = instructions.as_str();"
+        },
+        {
+          "line": 80,
+          "text": "                    let mut fragments = Vec::new();"
+        },
+        {
+          "line": 81,
+          "text": "                    while !remaining.is_empty() {"
+        },
+        {
+          "line": 82,
+          "text": "                        let end = remaining.floor_char_boundary(remaining.len().min(8_900));"
+        },
+        {
+          "line": 83,
+          "text": "                        fragments.push("
+        },
+        {
+          "line": 84,
+          "text": "                            MemoryContextFragment::ReadInstructions(remaining[..end].to_string())"
+        },
+        {
+          "line": 85,
+          "text": "                                .render(),"
+        },
+        {
+          "line": 86,
+          "text": "                        );"
+        },
+        {
+          "line": 87,
+          "text": "                        remaining = &remaining[end..];"
+        },
+        {
+          "line": 88,
+          "text": "                    }"
+        },
+        {
+          "line": 89,
+          "text": "                    fragments"
+        },
+        {
+          "line": 90,
+          "text": "                }"
+        },
+        {
+          "line": 91,
+          "text": "            };"
+        },
+        {
+          "line": 92,
+          "text": "            instructions"
+        },
+        {
+          "line": 93,
+          "text": "                .into_iter()"
+        },
+        {
+          "line": 94,
+          "text": "                .map(|instructions| {"
+        },
+        {
+          "line": 95,
+          "text": "                    PromptFragment::developer_policy("
+        },
+        {
+          "line": 96,
+          "text": "                        instructions,"
+        },
+        {
+          "line": 97,
+          "text": "                        ContentItemKind(\"memories.instructions\".to_string()),"
+        },
+        {
+          "line": 98,
+          "text": "                    )"
+        },
+        {
+          "line": 99,
+          "text": "                })"
+        },
+        {
+          "line": 100,
+          "text": "                .collect()"
+        },
+        {
+          "line": 101,
+          "text": "        })"
+        },
+        {
+          "line": 102,
+          "text": "    }"
+        },
+        {
+          "line": 103,
+          "text": "}"
+        },
+        {
+          "line": 104,
+          "text": ""
+        }
+      ]
+    },
+    {
+      "file": "codex-rs/windows-sandbox-rs/src/resolved_permissions.rs",
+      "url": "https://raw.githubusercontent.com/openai/codex/rust-v0.156.0/codex-rs/windows-sandbox-rs/src/resolved_permissions.rs",
+      "accessedAt": "2026-10-15T02:19:03.765Z",
+      "sha256": "5a1ebbe414eab5b32950cfd7300e799d1af4cf77157bece1f29d9219844c6b55",
+      "start": 66,
+      "end": 118,
+      "excerpts": [
+        {
+          "line": 66,
+          "text": "            anyhow::bail!("
+        },
+        {
+          "line": 67,
+          "text": "                \"only managed permission profiles can be enforced by the Windows sandbox\""
+        },
+        {
+          "line": 68,
+          "text": "            );"
+        },
+        {
+          "line": 69,
+          "text": "        }"
+        },
+        {
+          "line": 70,
+          "text": "        let (file_system, network) = permission_profile.to_runtime_permissions();"
+        },
+        {
+          "line": 71,
+          "text": "        if !matches!(file_system.kind, FileSystemSandboxKind::Restricted) {"
+        },
+        {
+          "line": 72,
+          "text": "            anyhow::bail!("
+        },
+        {
+          "line": 73,
+          "text": "                \"only restricted managed filesystem permissions can be enforced by the Windows sandbox\""
+        },
+        {
+          "line": 74,
+          "text": "            );"
+        },
+        {
+          "line": 75,
+          "text": "        }"
+        },
+        {
+          "line": 76,
+          "text": "        Ok(Self {"
+        },
+        {
+          "line": 77,
+          "text": "            file_system,"
+        },
+        {
+          "line": 78,
+          "text": "            network,"
+        },
+        {
+          "line": 79,
+          "text": "        })"
+        },
+        {
+          "line": 80,
+          "text": "    }"
+        },
+        {
+          "line": 81,
+          "text": ""
+        },
+        {
+          "line": 82,
+          "text": "    /// Resolves a managed permission profile and binds symbolic `:workspace_roots`"
+        },
+        {
+          "line": 83,
+          "text": "    /// entries to the workspace roots supplied by the caller."
+        },
+        {
+          "line": 84,
+          "text": "    pub fn try_from_permission_profile_for_workspace_roots("
+        },
+        {
+          "line": 85,
+          "text": "        permission_profile: &PermissionProfile,"
+        },
+        {
+          "line": 86,
+          "text": "        workspace_roots: &[AbsolutePathBuf],"
+        },
+        {
+          "line": 87,
+          "text": "    ) -> Result<Self> {"
+        },
+        {
+          "line": 88,
+          "text": "        let mut permissions = Self::try_from_permission_profile(permission_profile)?;"
+        },
+        {
+          "line": 89,
+          "text": "        permissions.file_system = permissions"
+        },
+        {
+          "line": 90,
+          "text": "            .file_system"
+        },
+        {
+          "line": 91,
+          "text": "            .materialize_project_roots_with_workspace_roots(workspace_roots);"
+        },
+        {
+          "line": 92,
+          "text": "        Ok(permissions)"
+        },
+        {
+          "line": 93,
+          "text": "    }"
+        },
+        {
+          "line": 94,
+          "text": ""
+        },
+        {
+          "line": 95,
+          "text": "    pub(crate) fn should_apply_network_block(&self) -> bool {"
+        },
+        {
+          "line": 96,
+          "text": "        !self.network.is_enabled()"
+        },
+        {
+          "line": 97,
+          "text": "    }"
+        },
+        {
+          "line": 98,
+          "text": ""
+        },
+        {
+          "line": 99,
+          "text": "    pub(crate) fn network_policy(&self) -> NetworkSandboxPolicy {"
+        },
+        {
+          "line": 100,
+          "text": "        self.network"
+        },
+        {
+          "line": 101,
+          "text": "    }"
+        },
+        {
+          "line": 102,
+          "text": ""
+        },
+        {
+          "line": 103,
+          "text": "    /// Rejects filesystem policies that the elevated Windows sandbox cannot"
+        },
+        {
+          "line": 104,
+          "text": "    /// enforce safely."
+        },
+        {
+          "line": 105,
+          "text": "    pub fn validate_elevated_filesystem_policy(&self, cwd: &Path) -> Result<()> {"
+        },
+        {
+          "line": 106,
+          "text": "        let root = cwd"
+        },
+        {
+          "line": 107,
+          "text": "            .ancestors()"
+        },
+        {
+          "line": 108,
+          "text": "            .last()"
+        },
+        {
+          "line": 109,
+          "text": "            .ok_or_else(|| anyhow::anyhow!(\"command cwd has no filesystem root\"))?;"
+        },
+        {
+          "line": 110,
+          "text": "        let root_is_denied = ReadDenyMatcher::try_new_for_local_paths(&self.file_system, cwd)"
+        },
+        {
+          "line": 111,
+          "text": "            .map_err(anyhow::Error::msg)?"
+        },
+        {
+          "line": 112,
+          "text": "            .is_some_and(|matcher| matcher.is_local_path_read_denied(root));"
+        },
+        {
+          "line": 113,
+          "text": "        if !self.file_system.can_read_local_path_with_cwd(root, cwd) || root_is_denied {"
+        },
+        {
+          "line": 114,
+          "text": "            anyhow::bail!(\"elevated Windows sandbox requires effective `:root` read access\");"
+        },
+        {
+          "line": 115,
+          "text": "        }"
+        },
+        {
+          "line": 116,
+          "text": "        Ok(())"
+        },
+        {
+          "line": 117,
+          "text": "    }"
+        },
+        {
+          "line": 118,
+          "text": ""
+        }
+      ]
+    }
+  ],
+  "errors": []
+}

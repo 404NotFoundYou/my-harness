@@ -1,0 +1,31 @@
+{
+  "sources": [
+    {
+      "url": "https://developers.openai.com/codex/config-reference",
+      "accessedAt": "2026-10-15T02:25:59.562Z",
+      "httpStatus": 200,
+      "sha256": "98af89f82bfc1e99d4eb5490cfe0d4ac79f2eeee3f540d5adeb363eb48710af3",
+      "matchedTerms": [
+        "permissions.",
+        "filesystem",
+        "deny",
+        "memories.use_memories"
+      ],
+      "boundary": "Current official documentation provides background; fixed CLI behavior is supported separately by version-tagged source and recorded local observations."
+    },
+    {
+      "url": "https://learn.chatgpt.com/codex/windows/windows-sandbox",
+      "accessedAt": "2026-10-15T02:25:59.960Z",
+      "httpStatus": 200,
+      "sha256": "75a2fd9b7e049bd2ea7661310263a1a9577967ba0f00f9f8c56c9058ad3d2457",
+      "matchedTerms": [
+        "permissions.",
+        "filesystem",
+        "deny",
+        "Check sandbox read access"
+      ],
+      "boundary": "Current official documentation provides background; fixed CLI behavior is supported separately by version-tagged source and recorded local observations."
+    }
+  ],
+  "errors": []
+}

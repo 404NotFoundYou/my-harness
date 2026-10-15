@@ -1,0 +1,84 @@
+{
+  "recordedAt": "2026-10-15T02:24:46.838Z",
+  "actualModelCalls": 0,
+  "simulatedCliSessions": 2,
+  "platform": "win32",
+  "node": "v22.20.0",
+  "cliEntrySha256": "61b0194f3bb6534439c8d26a3ed57d0805f84b884588b761795323eeb92fcf70",
+  "rows": [
+    {
+      "disabled": false,
+      "requests": [
+        {
+          "path": "/v1/responses",
+          "model": "gpt-6-astra",
+          "contextMarkerPresent": true,
+          "memoryMarkerPresent": true,
+          "authorizationHeaderPresent": false,
+          "requestSha256": "8f136d170efe8aabc32be937f10de6ea7bc498d0deaaff7d68c7e167bdb7660c"
+        }
+      ],
+      "args": [
+        "exec",
+        "--ephemeral",
+        "--skip-git-repo-check",
+        "--json",
+        "Return the fixed local diagnostic response. Do not use tools."
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stderrBytes": 315,
+      "stdoutSha256": "bf6b38387e5231b536a7fe9793817aa6259d98c301c895518937035c65b1bcbb",
+      "eventTypes": [
+        "thread.started",
+        "turn.started",
+        "item.completed",
+        "turn.completed"
+      ],
+      "completed": true,
+      "toolCalls": 0
+    },
+    {
+      "disabled": true,
+      "requests": [
+        {
+          "path": "/v1/responses",
+          "model": "gpt-6-astra",
+          "contextMarkerPresent": true,
+          "memoryMarkerPresent": false,
+          "authorizationHeaderPresent": false,
+          "requestSha256": "8566d44d0cc31847a03f93ced9ae8b63551e98805377ebaa58f0aa03b688c060"
+        }
+      ],
+      "args": [
+        "exec",
+        "--ephemeral",
+        "--skip-git-repo-check",
+        "--json",
+        "--disable",
+        "memories",
+        "Return the fixed local diagnostic response. Do not use tools."
+      ],
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stderrBytes": 315,
+      "stdoutSha256": "5bce2756b53869ba49f6d7d8f87d453ff4efadcdf282942e62150efadd27972b",
+      "eventTypes": [
+        "thread.started",
+        "turn.started",
+        "item.completed",
+        "turn.completed"
+      ],
+      "completed": true,
+      "toolCalls": 0
+    }
+  ],
+  "diagnosticPassed": true,
+  "runtimeMemoryControlVerified": true,
+  "filesystemIsolationVerified": false,
+  "cliVersion": "codex-cli 0.156.0",
+  "endpoint": "http://127.0.0.1:39416/v1",
+  "boundary": "Two actual CLI processes use a loopback fixed responder without inference or forwarding. Synthetic memory injection is verified in this local provider runtime only; no real model behavior, host-memory file access isolation, external MCP, or paid benchmark is verified."
+}

@@ -1,0 +1,592 @@
+{
+  "sources": [
+    {
+      "file": "codex-rs/core/src/config/permissions.rs",
+      "url": "https://raw.githubusercontent.com/openai/codex/rust-v0.156.0/codex-rs/core/src/config/permissions.rs",
+      "accessedAt": "2026-10-15T02:21:34.446Z",
+      "sha256": "cda9109f6a5405dbf2abbe7d53883b755419c5b6d0b3e7f5834c65710db3479a",
+      "excerpts": []
+    },
+    {
+      "file": "codex-rs/ext/memories/src/extension.rs",
+      "url": "https://raw.githubusercontent.com/openai/codex/rust-v0.156.0/codex-rs/ext/memories/src/extension.rs",
+      "accessedAt": "2026-10-15T02:21:34.128Z",
+      "sha256": "d5f4e55a138a4479e9b6286bd08954a7438d2bfb516c5c8717626a2b38736873",
+      "excerpts": [
+        {
+          "line": 19,
+          "text": "use codex_utils_absolute_path::AbsolutePathBuf;"
+        },
+        {
+          "line": 20,
+          "text": ""
+        },
+        {
+          "line": 21,
+          "text": "use crate::local::LocalMemoriesBackend;"
+        },
+        {
+          "line": 22,
+          "text": "use crate::prompts::build_memory_tool_developer_instructions;"
+        },
+        {
+          "line": 23,
+          "text": "use crate::tools;"
+        },
+        {
+          "line": 24,
+          "text": ""
+        },
+        {
+          "line": 25,
+          "text": "/// Contributes Codex memory read-path prompt context and memory read tools."
+        },
+        {
+          "line": 26,
+          "text": "#[derive(Clone, Default)]"
+        },
+        {
+          "line": 27,
+          "text": "pub(crate) struct MemoriesExtension {"
+        },
+        {
+          "line": 28,
+          "text": "    metrics_client: Option<MetricsClient>,"
+        },
+        {
+          "line": 29,
+          "text": "}"
+        },
+        {
+          "line": 30,
+          "text": ""
+        },
+        {
+          "line": 31,
+          "text": "impl MemoriesExtension {"
+        },
+        {
+          "line": 32,
+          "text": "    fn new(metrics_client: Option<MetricsClient>) -> Self {"
+        },
+        {
+          "line": 33,
+          "text": "        Self { metrics_client }"
+        },
+        {
+          "line": 34,
+          "text": "    }"
+        },
+        {
+          "line": 68,
+          "text": "            }"
+        },
+        {
+          "line": 69,
+          "text": ""
+        },
+        {
+          "line": 70,
+          "text": "            let Some(instructions) ="
+        },
+        {
+          "line": 71,
+          "text": "                build_memory_tool_developer_instructions(&config.codex_home, config.version).await"
+        },
+        {
+          "line": 72,
+          "text": "            else {"
+        },
+        {
+          "line": 73,
+          "text": "                return Vec::new();"
+        },
+        {
+          "line": 74,
+          "text": "            };"
+        },
+        {
+          "line": 75,
+          "text": "            let instructions = match config.version {"
+        },
+        {
+          "line": 76,
+          "text": "                MemoryVersion::V1 => vec![instructions],"
+        },
+        {
+          "line": 77,
+          "text": "                MemoryVersion::V2 => {"
+        },
+        {
+          "line": 78,
+          "text": "                    // Keep the complete summary while respecting each fragment's byte cap."
+        },
+        {
+          "line": 79,
+          "text": "                    let mut remaining = instructions.as_str();"
+        },
+        {
+          "line": 80,
+          "text": "                    let mut fragments = Vec::new();"
+        },
+        {
+          "line": 81,
+          "text": "                    while !remaining.is_empty() {"
+        },
+        {
+          "line": 82,
+          "text": "                        let end = remaining.floor_char_boundary(remaining.len().min(8_900));"
+        },
+        {
+          "line": 83,
+          "text": "                        fragments.push("
+        }
+      ]
+    },
+    {
+      "file": "codex-rs/protocol/src/permissions.rs",
+      "url": "https://raw.githubusercontent.com/openai/codex/rust-v0.156.0/codex-rs/protocol/src/permissions.rs",
+      "accessedAt": "2026-10-15T02:21:34.290Z",
+      "sha256": "0654f2ff45ecb6b0afedfa1ab2e71e22ed0feae0346d2fd460b5b82443930b0a",
+      "excerpts": [
+        {
+          "line": 591,
+          "text": "    format!(\"{PROJECT_ROOTS_GLOB_PATTERN_PREFIX}{}\", subpath.display())"
+        },
+        {
+          "line": 592,
+          "text": "}"
+        },
+        {
+          "line": 593,
+          "text": ""
+        },
+        {
+          "line": 594,
+          "text": "fn read_only_file_system_entries() -> Vec<FileSystemSandboxEntry> {"
+        },
+        {
+          "line": 595,
+          "text": "    vec![FileSystemSandboxEntry::new("
+        },
+        {
+          "line": 596,
+          "text": "        FileSystemPath::Special {"
+        },
+        {
+          "line": 597,
+          "text": "            value: FileSystemSpecialPath::Root,"
+        },
+        {
+          "line": 598,
+          "text": "        },"
+        },
+        {
+          "line": 599,
+          "text": "        FileSystemAccessMode::Read,"
+        },
+        {
+          "line": 600,
+          "text": "    )]"
+        },
+        {
+          "line": 601,
+          "text": "}"
+        },
+        {
+          "line": 602,
+          "text": ""
+        },
+        {
+          "line": 603,
+          "text": "impl Default for FileSystemSandboxPolicy {"
+        },
+        {
+          "line": 604,
+          "text": "    fn default() -> Self {"
+        },
+        {
+          "line": 605,
+          "text": "        Self::read_only()"
+        },
+        {
+          "line": 606,
+          "text": "    }"
+        },
+        {
+          "line": 804,
+          "text": ""
+        },
+        {
+          "line": 805,
+          "text": "    /// Filesystem policy matching `WorkspaceWrite` semantics without requiring"
+        },
+        {
+          "line": 806,
+          "text": "    /// callers to construct a legacy [`SandboxPolicy`] first."
+        },
+        {
+          "line": 807,
+          "text": "    pub fn workspace_write("
+        },
+        {
+          "line": 808,
+          "text": "        writable_roots: &[AbsolutePathBuf],"
+        },
+        {
+          "line": 809,
+          "text": "        exclude_tmpdir_env_var: bool,"
+        },
+        {
+          "line": 810,
+          "text": "        exclude_slash_tmp: bool,"
+        },
+        {
+          "line": 811,
+          "text": "    ) -> Self {"
+        },
+        {
+          "line": 812,
+          "text": "        let mut entries = vec![FileSystemSandboxEntry::new("
+        },
+        {
+          "line": 813,
+          "text": "            FileSystemPath::Special {"
+        },
+        {
+          "line": 814,
+          "text": "                value: FileSystemSpecialPath::Root,"
+        },
+        {
+          "line": 815,
+          "text": "            },"
+        },
+        {
+          "line": 816,
+          "text": "            FileSystemAccessMode::Read,"
+        },
+        {
+          "line": 817,
+          "text": "        )];"
+        },
+        {
+          "line": 818,
+          "text": ""
+        },
+        {
+          "line": 819,
+          "text": "        entries.push(FileSystemSandboxEntry::new("
+        },
+        {
+          "line": 1219,
+          "text": ""
+        },
+        {
+          "line": 1220,
+          "text": "    /// Replaces symbolic `:workspace_roots` entries with concrete entries for"
+        },
+        {
+          "line": 1221,
+          "text": "    /// each workspace root."
+        },
+        {
+          "line": 1222,
+          "text": "    pub fn materialize_project_roots_with_workspace_roots("
+        },
+        {
+          "line": 1223,
+          "text": "        self,"
+        },
+        {
+          "line": 1224,
+          "text": "        workspace_roots: &[AbsolutePathBuf],"
+        },
+        {
+          "line": 1225,
+          "text": "    ) -> Self {"
+        },
+        {
+          "line": 1226,
+          "text": "        let roots = workspace_roots"
+        },
+        {
+          "line": 1227,
+          "text": "            .iter()"
+        },
+        {
+          "line": 1228,
+          "text": "            .map(PathUri::from_abs_path)"
+        },
+        {
+          "line": 1229,
+          "text": "            .collect::<Vec<_>>();"
+        },
+        {
+          "line": 1230,
+          "text": "        self.materialize_project_roots_with_path_uris(&roots)"
+        },
+        {
+          "line": 1231,
+          "text": "    }"
+        },
+        {
+          "line": 1232,
+          "text": ""
+        },
+        {
+          "line": 1233,
+          "text": "    /// Materializes workspace-root entries without projecting executor paths onto the host."
+        },
+        {
+          "line": 1234,
+          "text": "    /// Legacy home-relative workspace denials clear all grants when their target is unknown."
+        },
+        {
+          "line": 1235,
+          "text": "    pub fn materialize_project_roots_with_path_uris(self, workspace_roots: &[PathUri]) -> Self {"
+        },
+        {
+          "line": 1236,
+          "text": "        self.try_materialize_project_roots_with_path_uris(workspace_roots)"
+        },
+        {
+          "line": 1237,
+          "text": "            .unwrap_or_else(|| Self::restricted(Vec::new()))"
+        },
+        {
+          "line": 1238,
+          "text": "    }"
+        },
+        {
+          "line": 1239,
+          "text": ""
+        },
+        {
+          "line": 1240,
+          "text": "    fn try_materialize_project_roots_with_path_uris("
+        },
+        {
+          "line": 1241,
+          "text": "        mut self,"
+        },
+        {
+          "line": 1242,
+          "text": "        workspace_roots: &[PathUri],"
+        },
+        {
+          "line": 1243,
+          "text": "    ) -> Option<Self> {"
+        },
+        {
+          "line": 1244,
+          "text": "        let mut entries = Vec::with_capacity(self.entries.len());"
+        },
+        {
+          "line": 1245,
+          "text": "        for entry in self.entries {"
+        },
+        {
+          "line": 1246,
+          "text": "            let (subpath, is_glob) = match &entry.path {"
+        },
+        {
+          "line": 1247,
+          "text": "                FileSystemPath::Special {"
+        },
+        {
+          "line": 1315,
+          "text": ""
+        },
+        {
+          "line": 1316,
+          "text": "    /// Preserves symbolic `:workspace_roots` entries while also adding concrete"
+        },
+        {
+          "line": 1317,
+          "text": "    /// entries for each provided workspace root."
+        },
+        {
+          "line": 1318,
+          "text": "    pub fn with_materialized_project_roots_for_workspace_roots("
+        },
+        {
+          "line": 1319,
+          "text": "        self,"
+        },
+        {
+          "line": 1320,
+          "text": "        workspace_roots: &[AbsolutePathBuf],"
+        },
+        {
+          "line": 1321,
+          "text": "    ) -> Self {"
+        },
+        {
+          "line": 1322,
+          "text": "        let roots = workspace_roots"
+        },
+        {
+          "line": 1323,
+          "text": "            .iter()"
+        },
+        {
+          "line": 1324,
+          "text": "            .map(PathUri::from_abs_path)"
+        },
+        {
+          "line": 1325,
+          "text": "            .collect::<Vec<_>>();"
+        },
+        {
+          "line": 1326,
+          "text": "        self.with_materialized_project_roots_for_path_uris(&roots)"
+        },
+        {
+          "line": 1327,
+          "text": "    }"
+        },
+        {
+          "line": 1328,
+          "text": ""
+        },
+        {
+          "line": 1329,
+          "text": "    pub fn with_additional_readable_roots("
+        },
+        {
+          "line": 1330,
+          "text": "        mut self,"
+        },
+        {
+          "line": 1374,
+          "text": "    /// writable-roots semantics by adding exact roots even when they are"
+        },
+        {
+          "line": 1375,
+          "text": "    /// already writable through `:workspace_roots`, and by adding the default"
+        },
+        {
+          "line": 1376,
+          "text": "    /// read-only protected subpaths for each new root."
+        },
+        {
+          "line": 1377,
+          "text": "    pub fn with_additional_legacy_workspace_writable_roots("
+        },
+        {
+          "line": 1378,
+          "text": "        mut self,"
+        },
+        {
+          "line": 1379,
+          "text": "        additional_writable_roots: &[AbsolutePathBuf],"
+        },
+        {
+          "line": 1380,
+          "text": "    ) -> Self {"
+        },
+        {
+          "line": 1381,
+          "text": "        if !matches!(self.kind, FileSystemSandboxKind::Restricted) {"
+        },
+        {
+          "line": 1382,
+          "text": "            return self;"
+        },
+        {
+          "line": 1383,
+          "text": "        }"
+        },
+        {
+          "line": 1384,
+          "text": ""
+        },
+        {
+          "line": 1385,
+          "text": "        for path in additional_writable_roots {"
+        },
+        {
+          "line": 1386,
+          "text": "            if !self.entries.iter().any(|entry| {"
+        },
+        {
+          "line": 1387,
+          "text": "                entry.access.can_write()"
+        },
+        {
+          "line": 1388,
+          "text": "                    && matches!(&entry.path, FileSystemPath::Path { path: existing } if existing == &PathUri::from_abs_path(path))"
+        },
+        {
+          "line": 1389,
+          "text": "            }) {"
+        },
+        {
+          "line": 1956,
+          "text": "///"
+        },
+        {
+          "line": 1957,
+          "text": "/// Rejects absolute paths, traversal, Windows drive changes, and any result"
+        },
+        {
+          "line": 1958,
+          "text": "/// outside the root so foreign-platform permission rules cannot escape scope."
+        },
+        {
+          "line": 1959,
+          "text": "fn resolve_scoped_workspace_path(root: &PathUri, subpath: &str) -> Option<PathUri> {"
+        },
+        {
+          "line": 1960,
+          "text": "    let convention = root.infer_path_convention()?;"
+        },
+        {
+          "line": 1961,
+          "text": "    if subpath.starts_with('/')"
+        },
+        {
+          "line": 1962,
+          "text": "        || convention == PathConvention::Windows && subpath.starts_with('\\\\')"
+        },
+        {
+          "line": 1963,
+          "text": "        || convention"
+        },
+        {
+          "line": 1964,
+          "text": "            .path_segments(subpath)"
+        },
+        {
+          "line": 1965,
+          "text": "            .any(|segment| segment == \".\" || segment == \"..\")"
+        },
+        {
+          "line": 1966,
+          "text": "        || convention == PathConvention::Windows"
+        },
+        {
+          "line": 1967,
+          "text": "            && convention"
+        },
+        {
+          "line": 1968,
+          "text": "                .path_segments(subpath)"
+        },
+        {
+          "line": 1969,
+          "text": "                .any(|segment| segment.contains(':'))"
+        },
+        {
+          "line": 1970,
+          "text": "    {"
+        },
+        {
+          "line": 1971,
+          "text": "        return None;"
+        }
+      ]
+    }
+  ],
+  "errors": []
+}

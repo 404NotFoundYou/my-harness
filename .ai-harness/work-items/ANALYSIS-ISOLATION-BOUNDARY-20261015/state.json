@@ -1,0 +1,186 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 1,
+  "id": "ANALYSIS-ISOLATION-BOUNDARY-20261015",
+  "type": "ANALYSIS",
+  "title": "efb47e1跨平台验收与零模型隔离阻塞诊断",
+  "status": "ANSWERED",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/analysis.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户2026-10-15根据建议执行；仅必要可逆诊断和临时验证，不授予真实ACL账号凭据或费用变更"
+  },
+  "input": {
+    "references": [
+      "用户根据建议执行：收齐当前CI，定位宿主文件读取和记忆正对照阻塞，临时环境验证，不新增模型调用"
+    ],
+    "acceptance": [
+      "记录efb47e1全部远端CI实际结果；用版本对应证据区分权限配置和预检接口能力；在授权范围内给出可复现验证与明确未知，不宣称隔离成功"
+    ],
+    "nonGoals": [],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": null,
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "main@efb47e1746e6832a44d51ab200e5a0e04483b7b9，开始工作区干净；只读benchmarks/preflight.mjs、直接测试、CLI与官方文档；仅新增本分析项产物；历史514文件不改；Node22.20.0 Windows，固定CLI0.156.0"
+    ],
+    "completedAt": "2026-10-15T02:16:16.894Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "efb47e1746e6832a44d51ab200e5a0e04483b7b9",
+      "dirty": false,
+      "changedFiles": [],
+      "fingerprints": {},
+      "source": {
+        "digest": "055ee9536da48c48a0ce1f5d54c1a4186577639f2ad7d70f9f20db669a85b1fb",
+        "document": ".ai-harness/work-items/ANALYSIS-ISOLATION-BOUNDARY-20261015/snapshots/055ee9536da48c48a0ce1f5d54c1a4186577639f2ad7d70f9f20db669a85b1fb.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "pending",
+    "document": null,
+    "evidence": [],
+    "completedAt": null
+  },
+  "database": {
+    "status": "pending",
+    "document": null,
+    "evidence": [],
+    "completedAt": null,
+    "impact": "unknown"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/ANALYSIS-ISOLATION-BOUNDARY-20261015/plan.json",
+    "approved": false,
+    "approvalRef": null
+  },
+  "verification": {
+    "status": "pending",
+    "evidence": [],
+    "stages": []
+  },
+  "review": {
+    "status": "pending",
+    "evidence": [],
+    "independent": false
+  },
+  "acceptance": {
+    "status": "pending",
+    "evidence": []
+  },
+  "analysis": {
+    "status": "pass",
+    "evidence": [
+      "3e1c73c0-4217-4bda-a7ea-54a2de489904",
+      "27053124-8c31-4480-92da-113d85aa4bcd"
+    ],
+    "conclusions": [
+      {
+        "id": "09b2cb0c-32f4-4aa4-b76c-41051c2746ba",
+        "status": "PROVEN",
+        "text": "efb47e1的两个远端workflow全部完成成功，源码Ubuntu/Windows Node20/22/24六组及Runtime Ubuntu三组共9个job成功；Ubuntu的Windows专用步骤按条件跳过。",
+        "evidence": [
+          ".ai-harness/work-items/ANALYSIS-ISOLATION-BOUNDARY-20261015/remote-ci-final.json：GitHub API当前提交号、完成状态及各job/step结果；没有重跑CI。"
+        ]
+      },
+      {
+        "id": "50fc2ccf-5a1c-49aa-95ec-35bad3bf8d47",
+        "status": "PROVEN",
+        "text": "0.156.0固定tag的离线prompt-input入口没有安装memories扩展；本机五个合成离线场景显示普通上下文可见，而开启v1/v2记忆均不出现记忆标记。这个入口不能提供所需的记忆注入正对照。",
+        "evidence": [
+          "upstream-causal-excerpts.json中cli/src/main.rs:2478-2501，upstream-source-notes.json中core/src/prompt_debug.rs:89；probe-context.mjs及prompt-diagnostic.json实际断言通过。"
+        ]
+      },
+      {
+        "id": "2f0b578f-624b-4fc2-9448-f0320ce54da3",
+        "status": "PROVEN",
+        "text": "固定CLI的本地provider实际运行已建立合成v1记忆正反对照：开启时请求包含记忆标记，--disable memories时消失，两侧普通上下文可见；2次模拟CLI会话、0次真实模型调用、0个工具调用。",
+        "evidence": [
+          "probe-runtime-context.mjs使用127.0.0.1固定SSE响应器且不转发；runtime-context-diagnostic.json两次exit0、turn.completed、各一次无Authorization的本地请求；只证明该模拟provider运行路径。"
+        ]
+      },
+      {
+        "id": "e4175521-6606-4a6c-8ca8-88fa5acf608f",
+        "status": "PROVEN",
+        "text": "现有文件预检只继承:workspace且没有显式拒读配置；0.156.0该内置策略映射为包含根目录读取的workspace策略。外部文件可读符合所选策略，但不满足宿主记忆隔离目标，不能据此单独认定沙箱违反其配置。",
+        "evidence": [
+          "benchmarks/preflight.mjs:42及旧release-preflight/preflight.json；upstream-workspace-resolution.json中core/src/config/permissions.rs:79,215和protocol/src/permissions.rs:807-816。"
+        ]
+      },
+      {
+        "id": "835f20f4-5106-491d-b426-227fe533f243",
+        "status": "UNKNOWN",
+        "text": "容器文件访问隔离及实际外部MCP工具链尚未验证；原预检ready=false保持。",
+        "evidence": [
+          "available-isolation-runtimes.json、execution-boundaries.json、旧ITER-MEMORY-PREFLIGHT-20261015/release-preflight/preflight.json。"
+        ]
+      },
+      {
+        "id": "f5bae2bb-6da6-4cd6-9b8d-4344f5392139",
+        "status": "PROPOSAL",
+        "text": "用户启动现有Docker Desktop后，在仅挂临时工作区与合成CODEX_HOME的一次性环境验证宿主文件不可达，并通过实际使用的每条执行器复验；不把本地记忆上下文对照外推为文件或MCP隔离。",
+        "evidence": [
+          "next-isolation-plan.md记录待执行的挂载边界、宿主存在正对照、工具链范围和环境稳定要求；这是未执行方案，不是隔离通过或付费实验批准。"
+        ]
+      }
+    ],
+    "unknowns": [
+      "Docker daemon不可连接，WSL仅docker-desktop；自动审批拒绝docker desktop start --help，理由blocked by policy，无更具体说明，未执行也未换入口；本轮未触碰真实ACL账号凭据。"
+    ],
+    "source": {
+      "digest": "055ee9536da48c48a0ce1f5d54c1a4186577639f2ad7d70f9f20db669a85b1fb",
+      "document": ".ai-harness/work-items/ANALYSIS-ISOLATION-BOUNDARY-20261015/snapshots/055ee9536da48c48a0ce1f5d54c1a4186577639f2ad7d70f9f20db669a85b1fb.json"
+    }
+  },
+  "documentation": {
+    "status": "pending",
+    "evidence": []
+  },
+  "blocked": null,
+  "delivery": null,
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-10-15T02:16:16.620Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-10-15T02:16:16.707Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "ANALYZING",
+      "at": "2026-10-15T02:16:17.055Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "ANALYZING",
+      "to": "ANSWERED",
+      "at": "2026-10-15T02:30:32.981Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-10-15T02:16:16.620Z",
+  "updatedAt": "2026-10-15T02:30:32.981Z"
+}
