@@ -1,0 +1,120 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-15T03:02:40.091Z",
+  "actualModelCalls": 0,
+  "realMemoryPathsAccessed": 0,
+  "imagePulls": 0,
+  "packageInstalls": 0,
+  "image": "postgres:18.6-alpine",
+  "expectedImage": "sha256:77f585114c32fbca283dc835b0596f4e52b51b4c6662d7810b2f4084f60a1873",
+  "docker": {
+    "serverVersion": "29.4.3",
+    "imageId": "sha256:77f585114c32fbca283dc835b0596f4e52b51b4c6662d7810b2f4084f60a1873"
+  },
+  "hostControls": {
+    "inside.txt": {
+      "exists": true,
+      "sha256": "d33eb0c2bae243a7b9888f6e3bfb6a8795f1e3aaf41710604c6d5c955832fff0"
+    },
+    "memory_summary.md": {
+      "exists": true,
+      "sha256": "dd4a9a407a0bfb09e10df822db1e9f08f0e9a7952c0c0fe4840216b66b2f098b"
+    },
+    "outside.txt": {
+      "exists": true,
+      "sha256": "09ed53326f78458831d8ec89d828cfa2bb7bd8d467c18478b1c3b6770f5d5053"
+    },
+    "MEMORY.md": {
+      "exists": true,
+      "sha256": "b697d89038b3edba01a237726f95ce92daecca49010ea05562af1fd282e46260"
+    }
+  },
+  "container": {
+    "idSha256": "a218c5cb0a7afc2f6133a84006f3dfe8b32654f44a57dc1fcd819dc58e9019ef",
+    "createArgs": [
+      "create",
+      "--name",
+      "ai-harness-isolation-31d6943a-2e3a-49f0-b4af-36acafe24f7b",
+      "--pull",
+      "never",
+      "--network",
+      "none",
+      "--read-only",
+      "--user",
+      "65534:65534",
+      "--cap-drop",
+      "ALL",
+      "--security-opt",
+      "no-new-privileges:true",
+      "--pids-limit",
+      "32",
+      "--memory",
+      "64m",
+      "--cpus",
+      "0.5",
+      "--restart",
+      "no",
+      "--mount",
+      "type=bind,src=<temporary-root>\\workspace,dst=/probe/workspace,readonly",
+      "--mount",
+      "type=bind,src=<temporary-root>\\codex-home,dst=/probe/codex-home,readonly",
+      "--mount",
+      "type=tmpfs,dst=/var/lib/postgresql,tmpfs-size=1048576,tmpfs-mode=0700",
+      "--entrypoint",
+      "/bin/sh",
+      "postgres:18.6-alpine",
+      "-c",
+      "set -eu\nworkspace_readable=false\nmemory_readable=false\nexternal_denied=false\nhost_memory_denied=false\nworkspace_read_only=false\nmemory_read_only=false\nroot_read_only=false\n[ \"$(cat /probe/workspace/inside.txt)\" = workspace-canary ] && workspace_readable=true\n[ \"$(cat /probe/codex-home/memories/memory_summary.md)\" = synthetic-memory-canary ] && memory_readable=true\n[ ! -r /probe/external/outside.txt ] && external_denied=true\n[ ! -r /probe/host-memory/MEMORY.md ] && host_memory_denied=true\nif printf x > /probe/workspace/new.txt 2>/dev/null; then :; else workspace_read_only=true; fi\nif printf x > /probe/codex-home/new.txt 2>/dev/null; then :; else memory_read_only=true; fi\nif printf x > /probe-root-write 2>/dev/null; then :; else root_read_only=true; fi\nprintf 'PROBE_RESULT={\"workspaceReadable\":%s,\"syntheticMemoryReadable\":%s,\"externalDenied\":%s,\"hostMemoryDenied\":%s,\"workspaceReadOnly\":%s,\"syntheticMemoryReadOnly\":%s,\"rootReadOnly\":%s}\\n' \"$workspace_readable\" \"$memory_readable\" \"$external_denied\" \"$host_memory_denied\" \"$workspace_read_only\" \"$memory_read_only\" \"$root_read_only\""
+    ],
+    "configuration": {
+      "image": "sha256:77f585114c32fbca283dc835b0596f4e52b51b4c6662d7810b2f4084f60a1873",
+      "networkMode": "none",
+      "readOnlyRoot": true,
+      "user": "65534:65534",
+      "capDrop": [
+        "ALL"
+      ],
+      "securityOptions": [
+        "no-new-privileges:true"
+      ],
+      "mounts": [
+        {
+          "type": "bind",
+          "destination": "/probe/codex-home",
+          "readWrite": false,
+          "sourceSha256": "3eaa73c5013eb416ffe1a782a2175a6b691a31d29ed6a890dfd2bb47c420f504"
+        },
+        {
+          "type": "bind",
+          "destination": "/probe/workspace",
+          "readWrite": false,
+          "sourceSha256": "d81ebb2a9515d1e223b5001af59a3b910f523d3a88be623523db8108b35d8a1a"
+        },
+        {
+          "type": "tmpfs",
+          "destination": "/var/lib/postgresql",
+          "readWrite": true,
+          "sourceSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    "result": {
+      "workspaceReadable": true,
+      "syntheticMemoryReadable": true,
+      "externalDenied": true,
+      "hostMemoryDenied": true,
+      "workspaceReadOnly": true,
+      "syntheticMemoryReadOnly": true,
+      "rootReadOnly": true
+    },
+    "stderrBytes": 204
+  },
+  "cleanup": {
+    "containerRemoved": true,
+    "imageInventoryUnchanged": true,
+    "containerInventoryRestored": true,
+    "volumeInventoryRestored": true
+  },
+  "verified": true,
+  "boundary": "Verified Docker bind-mount isolation for the existing postgres Alpine image only. This did not run Codex or Node inside the container, access any real memory path, test Windows sandbox ACLs, or attest external MCP/tool executors."
+}

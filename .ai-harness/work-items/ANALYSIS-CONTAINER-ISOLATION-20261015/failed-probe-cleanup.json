@@ -1,0 +1,10 @@
+{
+  "recordedAt": "2026-10-15T11:00:53.1929151+08:00",
+  "failedProbeResultPreserved": "container-isolation-first-failure.json",
+  "volume": "1ec7d070afbc1f71dcd7c815a9ed37bdfa3c53bc8af6e653572f82b8d0fa4c52",
+  "createdAt": "2026-10-15T02:58:17Z",
+  "eventAction": "create",
+  "anonymousLabelPresent": true,
+  "attachedContainers": 0,
+  "removed": true
+}

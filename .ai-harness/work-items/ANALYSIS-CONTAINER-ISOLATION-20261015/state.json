@@ -1,0 +1,189 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 1,
+  "id": "ANALYSIS-CONTAINER-ISOLATION-20261015",
+  "type": "ANALYSIS",
+  "title": "Docker容器宿主文件不可见性实测",
+  "status": "ANSWERED",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/analysis.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户2026-10-15根据建议执行；授权必要可逆容器启动与临时文件，未授权镜像拉取、依赖安装、真实模型调用、真实ACL、账号凭据或真实记忆挂载"
+  },
+  "input": {
+    "references": [
+      "用户根据建议执行：在Docker Desktop已启动后，仅使用现有镜像、合成目录和零真实模型调用验证容器文件访问边界"
+    ],
+    "acceptance": [
+      "核验c3cc85a最终远端CI；使用现有镜像且不拉取安装，证明只读挂载的工作区与合成CODEX_HOME可读、未挂载外部和宿主记忆合成文件不可见；记录镜像、命令、失败码、环境边界和未覆盖执行器"
+    ],
+    "nonGoals": [],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": null,
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "main@c3cc85afb5ac16efdaa67c2112c56d9944e7b7ca，开始工作区干净；Docker Desktop 29.4.3 Linux x86_64 daemon可用；唯一现有镜像postgres:18.6-alpine@sha256:77f585114c32fbca283dc835b0596f4e52b51b4c6662d7810b2f4084f60a1873；产品文件只读，仅新增本分析项；不拉取安装、不挂载真实用户目录或真实.codex"
+    ],
+    "completedAt": "2026-10-15T02:52:27.588Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "c3cc85afb5ac16efdaa67c2112c56d9944e7b7ca",
+      "dirty": false,
+      "changedFiles": [],
+      "fingerprints": {},
+      "source": {
+        "digest": "055ee9536da48c48a0ce1f5d54c1a4186577639f2ad7d70f9f20db669a85b1fb",
+        "document": ".ai-harness/work-items/ANALYSIS-CONTAINER-ISOLATION-20261015/snapshots/055ee9536da48c48a0ce1f5d54c1a4186577639f2ad7d70f9f20db669a85b1fb.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "pending",
+    "document": null,
+    "evidence": [],
+    "completedAt": null
+  },
+  "database": {
+    "status": "pending",
+    "document": null,
+    "evidence": [],
+    "completedAt": null,
+    "impact": "unknown"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/ANALYSIS-CONTAINER-ISOLATION-20261015/plan.json",
+    "approved": false,
+    "approvalRef": null
+  },
+  "verification": {
+    "status": "pending",
+    "evidence": [],
+    "stages": []
+  },
+  "review": {
+    "status": "pending",
+    "evidence": [],
+    "independent": false
+  },
+  "acceptance": {
+    "status": "pending",
+    "evidence": []
+  },
+  "analysis": {
+    "status": "pass",
+    "evidence": [
+      "aaffff96-14a1-451a-aecb-3618af2f37f3",
+      "e68f9e1c-12de-48f9-9b86-d879665d43f4"
+    ],
+    "conclusions": [
+      {
+        "id": "4e2bf3d7-270a-4f11-ab3c-bdc177ce4eb3",
+        "status": "PROVEN",
+        "text": "提交c3cc85a的两个GitHub Actions workflow及全部9个job均完成成功：Ubuntu/Windows × Node20/22/24源码测试六组，以及Ubuntu Node20/22/24 Runtime门禁三组。",
+        "evidence": [
+          "remote-ci-final.json绑定完整提交SHA并保存run、job和step状态；Ubuntu中的Windows专用步骤按条件skip，不作为Ubuntu已运行Windows测试。"
+        ]
+      },
+      {
+        "id": "69ec0f0e-45d0-4844-b1d4-432906b7d78c",
+        "status": "PROVEN",
+        "text": "现有postgres:18.6-alpine固定镜像的Docker实测中，仅两个指定合成目录作为只读host bind；未挂载外部与合成宿主记忆路径不可读，两个bind与根文件系统不可写，网络关闭、非root、无capabilities。",
+        "evidence": [
+          "container-isolation-result.json包含实际docker inspect挂载、配置和容器结果；verification-summary.json复核最终布尔矩阵；脚本语法证据为命令8977db49-3e09-49f4-b067-8c4c72787288。"
+        ],
+        "commands": [
+          "8977db49-3e09-49f4-b067-8c4c72787288"
+        ]
+      },
+      {
+        "id": "47a39bf1-eecf-4771-8e4a-c0103d5fbe6e",
+        "status": "PROVEN",
+        "text": "探测没有拉取镜像、安装包、调用真实模型、访问真实记忆路径或修改真实ACL；正常结束后镜像、容器和volume清单恢复原状，514个历史文件SHA不变，产品文件改动为0。",
+        "evidence": [
+          "docker-final-inventory.json、verification-summary.json与container-isolation-result.json；actualModelCalls=0、realMemoryPathsAccessed=0、imagePulls=0、packageInstalls=0。"
+        ]
+      },
+      {
+        "id": "20878e23-c371-4586-965b-fa0d36afc62b",
+        "status": "PROVEN",
+        "text": "首次自动匿名卷及第二次tmpfs字段断言失败均被保留且未计为通过；首次生成卷经事件、时间戳、匿名标签和无引用确认后精确删除，最终无新卷或容器残留。",
+        "evidence": [
+          "container-isolation-first-failure.json、container-isolation-second-failure.json、failed-probe-cleanup.json以及最终volume清单哈希。"
+        ]
+      },
+      {
+        "id": "8caaa412-d65d-4e23-9cf0-339672660b1f",
+        "status": "UNKNOWN",
+        "text": "容器内实际Codex/Node、Windows restricted-token sandbox、真实记忆目录和外部MCP执行器的文件边界仍未验证；原memory preflight仍为ready=false。",
+        "evidence": [
+          "summary.md记录已验证范围；本机唯一现有镜像不含Linux Node/Codex。"
+        ]
+      },
+      {
+        "id": "cb8182c6-ba47-4669-bedd-ffb0753aa0c0",
+        "status": "PROPOSAL",
+        "text": "下一阶段应在新授权后冻结Node Linux镜像digest及Codex 0.156.0包身份，将构建网络与无网络运行分离，再用合成配置和本地固定响应器逐执行器复验。",
+        "evidence": [
+          "next-runtime-plan.md列出身份、挂载、网络、正反对照和ready=false门禁；这是未执行方案，不是放行结论。"
+        ]
+      }
+    ],
+    "unknowns": [
+      "继续需要镜像拉取或包安装的新授权；本轮未执行这些操作，也未将通用Docker挂载结果外推到其他执行器。"
+    ],
+    "source": {
+      "digest": "055ee9536da48c48a0ce1f5d54c1a4186577639f2ad7d70f9f20db669a85b1fb",
+      "document": ".ai-harness/work-items/ANALYSIS-CONTAINER-ISOLATION-20261015/snapshots/055ee9536da48c48a0ce1f5d54c1a4186577639f2ad7d70f9f20db669a85b1fb.json"
+    }
+  },
+  "documentation": {
+    "status": "pending",
+    "evidence": []
+  },
+  "blocked": null,
+  "delivery": null,
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-10-15T02:52:27.265Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-10-15T02:52:27.363Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "ANALYZING",
+      "at": "2026-10-15T02:52:27.784Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "ANALYZING",
+      "to": "ANSWERED",
+      "at": "2026-10-15T03:06:31.619Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-10-15T02:52:27.265Z",
+  "updatedAt": "2026-10-15T03:06:31.619Z"
+}

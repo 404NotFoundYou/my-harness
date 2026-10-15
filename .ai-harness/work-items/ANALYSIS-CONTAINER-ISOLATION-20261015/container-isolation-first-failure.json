@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-15T02:58:16.449Z",
+  "actualModelCalls": 0,
+  "realMemoryPathsAccessed": 0,
+  "imagePulls": 0,
+  "packageInstalls": 0,
+  "image": "postgres:18.6-alpine",
+  "expectedImage": "sha256:77f585114c32fbca283dc835b0596f4e52b51b4c6662d7810b2f4084f60a1873",
+  "docker": {
+    "serverVersion": "29.4.3",
+    "imageId": "sha256:77f585114c32fbca283dc835b0596f4e52b51b4c6662d7810b2f4084f60a1873"
+  },
+  "hostControls": {
+    "inside.txt": {
+      "exists": true,
+      "sha256": "d33eb0c2bae243a7b9888f6e3bfb6a8795f1e3aaf41710604c6d5c955832fff0"
+    },
+    "memory_summary.md": {
+      "exists": true,
+      "sha256": "dd4a9a407a0bfb09e10df822db1e9f08f0e9a7952c0c0fe4840216b66b2f098b"
+    },
+    "outside.txt": {
+      "exists": true,
+      "sha256": "09ed53326f78458831d8ec89d828cfa2bb7bd8d467c18478b1c3b6770f5d5053"
+    },
+    "MEMORY.md": {
+      "exists": true,
+      "sha256": "b697d89038b3edba01a237726f95ce92daecca49010ea05562af1fd282e46260"
+    }
+  },
+  "container": {
+    "idSha256": "6c25aeaa322f98e3ad28af75af7f6e26e573649219b990fb0a30ad957a9d9f27",
+    "createArgs": [
+      "create",
+      "--name",
+      "ai-harness-isolation-60001441-ecec-4311-9783-d143495ec62c",
+      "--pull",
+      "never",
+      "--network",
+      "none",
+      "--read-only",
+      "--user",
+      "65534:65534",
+      "--cap-drop",
+      "ALL",
+      "--security-opt",
+      "no-new-privileges:true",
+      "--pids-limit",
+      "32",
+      "--memory",
+      "64m",
+      "--cpus",
+      "0.5",
+      "--restart",
+      "no",
+      "--mount",
+      "type=bind,src=<temporary-root>\\workspace,dst=/probe/workspace,readonly",
+      "--mount",
+      "type=bind,src=<temporary-root>\\codex-home,dst=/probe/codex-home,readonly",
+      "--entrypoint",
+      "/bin/sh",
+      "postgres:18.6-alpine",
+      "-c",
+      "set -eu\nworkspace_readable=false\nmemory_readable=false\nexternal_denied=false\nhost_memory_denied=false\nworkspace_read_only=false\nmemory_read_only=false\nroot_read_only=false\n[ \"$(cat /probe/workspace/inside.txt)\" = workspace-canary ] && workspace_readable=true\n[ \"$(cat /probe/codex-home/memories/memory_summary.md)\" = synthetic-memory-canary ] && memory_readable=true\n[ ! -r /probe/external/outside.txt ] && external_denied=true\n[ ! -r /probe/host-memory/MEMORY.md ] && host_memory_denied=true\nif printf x > /probe/workspace/new.txt 2>/dev/null; then :; else workspace_read_only=true; fi\nif printf x > /probe/codex-home/new.txt 2>/dev/null; then :; else memory_read_only=true; fi\nif printf x > /probe-root-write 2>/dev/null; then :; else root_read_only=true; fi\nprintf 'PROBE_RESULT={\"workspaceReadable\":%s,\"syntheticMemoryReadable\":%s,\"externalDenied\":%s,\"hostMemoryDenied\":%s,\"workspaceReadOnly\":%s,\"syntheticMemoryReadOnly\":%s,\"rootReadOnly\":%s}\\n' \"$workspace_readable\" \"$memory_readable\" \"$external_denied\" \"$host_memory_denied\" \"$workspace_read_only\" \"$memory_read_only\" \"$root_read_only\""
+    ]
+  },
+  "cleanup": {
+    "emergencyRemoval": {
+      "exitCode": 0,
+      "errorCode": null
+    }
+  },
+  "verified": false,
+  "boundary": "",
+  "error": {
+    "code": "ERR_ASSERTION",
+    "message": "Expected values to be strictly deep-equal:\n+ actual - expected\n... Skipped lines\n\n  [\n    {\n      destination: '/probe/codex-home',\n      readWrite: false,\n      type: 'bind'\n...\n    },\n+   {\n+     destination: '/var/lib/postgresql',\n+     readWrite: true,\n+     type: 'volume'\n+   }\n  ]\n"
+  }
+}

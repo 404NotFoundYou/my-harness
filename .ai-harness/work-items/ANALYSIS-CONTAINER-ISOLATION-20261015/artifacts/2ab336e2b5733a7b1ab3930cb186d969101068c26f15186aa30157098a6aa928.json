@@ -1,0 +1,475 @@
+{
+  "observedAt": "2026-10-15T03:03:46.851Z",
+  "ok": true,
+  "runs": [
+    {
+      "id": 38672573372,
+      "name": "AI Harness",
+      "headSha": "c3cc85afb5ac16efdaa67c2112c56d9944e7b7ca",
+      "status": "completed",
+      "conclusion": "success",
+      "createdAt": "2026-10-15T02:44:21Z",
+      "updatedAt": "2026-10-15T02:45:33Z",
+      "jobs": [
+        {
+          "id": 116218856471,
+          "name": "validate (24)",
+          "status": "completed",
+          "conclusion": "success",
+          "steps": [
+            {
+              "name": "Set up job",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "name": "Run actions/checkout@v7",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "name": "Run actions/setup-node@v7",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "name": "Runtime tests",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "name": "Runtime health",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "name": "Workflow gates",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "name": "Post Run actions/setup-node@v7",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "name": "Post Run actions/checkout@v7",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "name": "Complete job",
+              "status": "completed",
+              "conclusion": "success"
+            }
+          ]
+        },
+        {
+          "id": 116218856611,
+          "name": "validate (20)",
+          "status": "completed",
+          "conclusion": "success",
+          "steps": [
+            {
+              "name": "Set up job",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "name": "Run actions/checkout@v7",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "name": "Run actions/setup-node@v7",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "name": "Runtime tests",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "name": "Runtime health",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "name": "Workflow gates",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "name": "Post Run actions/setup-node@v7",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "name": "Post Run actions/checkout@v7",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "name": "Complete job",
+              "status": "completed",
+              "conclusion": "success"
+            }
+          ]
+        },
+        {
+          "id": 116218856755,
+          "name": "validate (22)",
+          "status": "completed",
+          "conclusion": "success",
+          "steps": [
+            {
+              "name": "Set up job",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "name": "Run actions/checkout@v7",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "name": "Run actions/setup-node@v7",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "name": "Runtime tests",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "name": "Runtime health",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "name": "Workflow gates",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "name": "Post Run actions/setup-node@v7",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "name": "Post Run actions/checkout@v7",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "name": "Complete job",
+              "status": "completed",
+              "conclusion": "success"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 38672573377,
+      "name": "Harness source tests",
+      "headSha": "c3cc85afb5ac16efdaa67c2112c56d9944e7b7ca",
+      "status": "completed",
+      "conclusion": "success",
+      "createdAt": "2026-10-15T02:44:21Z",
+      "updatedAt": "2026-10-15T02:56:18Z",
+      "jobs": [
+        {
+          "id": 116218856389,
+          "name": "source-tests (windows-latest, 22)",
+          "status": "completed",
+          "conclusion": "success",
+          "steps": [
+            {
+              "name": "Set up job",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "name": "Run actions/checkout@v7",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "name": "Run actions/setup-node@v7",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "name": "Benchmark framework tests (no model calls)",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "name": "Windows runtime compatibility",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "name": "Post Run actions/setup-node@v7",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "name": "Post Run actions/checkout@v7",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "name": "Complete job",
+              "status": "completed",
+              "conclusion": "success"
+            }
+          ]
+        },
+        {
+          "id": 116218856625,
+          "name": "source-tests (windows-latest, 24)",
+          "status": "completed",
+          "conclusion": "success",
+          "steps": [
+            {
+              "name": "Set up job",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "name": "Run actions/checkout@v7",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "name": "Run actions/setup-node@v7",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "name": "Benchmark framework tests (no model calls)",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "name": "Windows runtime compatibility",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "name": "Post Run actions/setup-node@v7",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "name": "Post Run actions/checkout@v7",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "name": "Complete job",
+              "status": "completed",
+              "conclusion": "success"
+            }
+          ]
+        },
+        {
+          "id": 116218856660,
+          "name": "source-tests (ubuntu-latest, 20)",
+          "status": "completed",
+          "conclusion": "success",
+          "steps": [
+            {
+              "name": "Set up job",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "name": "Run actions/checkout@v7",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "name": "Run actions/setup-node@v7",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "name": "Benchmark framework tests (no model calls)",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "name": "Windows runtime compatibility",
+              "status": "completed",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Post Run actions/setup-node@v7",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "name": "Post Run actions/checkout@v7",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "name": "Complete job",
+              "status": "completed",
+              "conclusion": "success"
+            }
+          ]
+        },
+        {
+          "id": 116218856673,
+          "name": "source-tests (ubuntu-latest, 22)",
+          "status": "completed",
+          "conclusion": "success",
+          "steps": [
+            {
+              "name": "Set up job",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "name": "Run actions/checkout@v7",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "name": "Run actions/setup-node@v7",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "name": "Benchmark framework tests (no model calls)",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "name": "Windows runtime compatibility",
+              "status": "completed",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Post Run actions/setup-node@v7",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "name": "Post Run actions/checkout@v7",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "name": "Complete job",
+              "status": "completed",
+              "conclusion": "success"
+            }
+          ]
+        },
+        {
+          "id": 116218856728,
+          "name": "source-tests (windows-latest, 20)",
+          "status": "completed",
+          "conclusion": "success",
+          "steps": [
+            {
+              "name": "Set up job",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "name": "Run actions/checkout@v7",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "name": "Run actions/setup-node@v7",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "name": "Benchmark framework tests (no model calls)",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "name": "Windows runtime compatibility",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "name": "Post Run actions/setup-node@v7",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "name": "Post Run actions/checkout@v7",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "name": "Complete job",
+              "status": "completed",
+              "conclusion": "success"
+            }
+          ]
+        },
+        {
+          "id": 116218856730,
+          "name": "source-tests (ubuntu-latest, 24)",
+          "status": "completed",
+          "conclusion": "success",
+          "steps": [
+            {
+              "name": "Set up job",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "name": "Run actions/checkout@v7",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "name": "Run actions/setup-node@v7",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "name": "Benchmark framework tests (no model calls)",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "name": "Windows runtime compatibility",
+              "status": "completed",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "Post Run actions/setup-node@v7",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "name": "Post Run actions/checkout@v7",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "name": "Complete job",
+              "status": "completed",
+              "conclusion": "success"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
