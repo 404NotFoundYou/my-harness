@@ -1,0 +1,11 @@
+{
+  "recordedAt": "2026-10-15T03:22:00Z",
+  "stage": "pre-download Docker inventory",
+  "command": ["docker", "volume", "ls", "--quiet", "--no-trunc"],
+  "exitCode": 125,
+  "error": "unknown flag: --no-trunc",
+  "downloadsStarted": false,
+  "imagePullStarted": false,
+  "cacheDirectoryCreated": true,
+  "cacheContents": []
+}

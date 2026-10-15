@@ -1,0 +1,200 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 1,
+  "id": "ANALYSIS-LINUX-CODEX-ISOLATION-20261015",
+  "type": "ANALYSIS",
+  "title": "固定Linux Codex运行时与零模型隔离验证",
+  "status": "ANSWERED",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/analysis.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户2026-10-15明确表示本次授权根据建议执行，覆盖固定Node镜像拉取与固定Codex包获取/临时安装；不授权真实模型、真实凭据、真实记忆、真实ACL、发布部署或付费实验"
+  },
+  "input": {
+    "references": [
+      "用户明确授权根据建议执行：拉取固定Node Linux镜像、获取并安装固定Codex 0.156.0包，在合成环境和本地固定响应器中验证实际CLI记忆控制及文件访问边界"
+    ],
+    "acceptance": [
+      "先确认b2eb725全部远端CI成功；冻结Node linux/amd64镜像digest及npm tarball integrity；构建阶段与无网络运行阶段分离；实际Linux Codex CLI完成记忆开启/关闭正反对照和Codex sandbox文件边界；零真实模型、零凭据、零真实记忆访问；清理容器、临时包和拉取镜像并记录所有失败与未知"
+    ],
+    "nonGoals": [],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": null,
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "main@b2eb725faf44f8868ab7a982a2bee2029a5c26e5，开始工作区干净且origin/main一致；该提交两个workflow共9个job全部success；Docker Desktop29.4.3 linux/amd64，开始仅postgres:18.6-alpine镜像、0容器、40历史卷；产品文件只读，仅新增本分析项；Node镜像和npm包完成验证后清理"
+    ],
+    "completedAt": "2026-10-15T03:21:08.984Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "b2eb725faf44f8868ab7a982a2bee2029a5c26e5",
+      "dirty": false,
+      "changedFiles": [],
+      "fingerprints": {},
+      "source": {
+        "digest": "055ee9536da48c48a0ce1f5d54c1a4186577639f2ad7d70f9f20db669a85b1fb",
+        "document": ".ai-harness/work-items/ANALYSIS-LINUX-CODEX-ISOLATION-20261015/snapshots/055ee9536da48c48a0ce1f5d54c1a4186577639f2ad7d70f9f20db669a85b1fb.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "pending",
+    "document": null,
+    "evidence": [],
+    "completedAt": null
+  },
+  "database": {
+    "status": "pending",
+    "document": null,
+    "evidence": [],
+    "completedAt": null,
+    "impact": "unknown"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/ANALYSIS-LINUX-CODEX-ISOLATION-20261015/plan.json",
+    "approved": false,
+    "approvalRef": null
+  },
+  "verification": {
+    "status": "pending",
+    "evidence": [],
+    "stages": []
+  },
+  "review": {
+    "status": "pending",
+    "evidence": [],
+    "independent": false
+  },
+  "acceptance": {
+    "status": "pending",
+    "evidence": []
+  },
+  "analysis": {
+    "status": "pass",
+    "evidence": [
+      "5d0025e5-c59b-48c1-b0bf-3a79fde72d0d",
+      "e3546ab4-88b9-4a36-9a1e-5c34936b10d7",
+      "b84d1204-65bf-4ed8-9402-c83c9f8531c1"
+    ],
+    "conclusions": [
+      {
+        "id": "6f97fa35-bae1-4a26-ba2d-6fe32e3dba38",
+        "status": "PROVEN",
+        "text": "b2eb725的两个远端workflow、9个job全部成功；Node22.20.0 linux/amd64镜像manifest digest及Codex0.156.0 wrapper/platform tarball integrity均冻结并验证。",
+        "evidence": [
+          "remote-ci-final.json、runtime-preparation.json；宿主没有安装npm包。"
+        ]
+      },
+      {
+        "id": "6972f964-0a89-467b-aee7-b406f4ca325c",
+        "status": "PROVEN",
+        "text": "真实Linux Codex0.156.0在本地固定provider下完成记忆正反对照：gpt-6-astra开启时请求含合成记忆，--disable memories后消失，两侧普通上下文可见且无Authorization。",
+        "evidence": [
+          "linux-runtime-result.json中2个memoryRows均turn.completed；actualModelCalls=0。"
+        ]
+      },
+      {
+        "id": "ee1ea499-ad16-470e-9af0-05c3c9e704d9",
+        "status": "PROVEN",
+        "text": "真实exec_command已由固定Responses事件触发并返回function_call_output；外层强化Docker中只读工作区可读，未挂载外部和合成宿主记忆路径均ENOENT。",
+        "evidence": [
+          "linux-runtime-result.json中4个loopback请求、toolOutputSha256及解析结果；工具会话使用gpt-5.4 schema并显式bypass内层sandbox。"
+        ],
+        "commands": [
+          "2a661315-45af-452d-872d-0f7d84672129",
+          "1f0ee82a-1efc-4466-9e14-e2b346499478",
+          "31e573d6-502e-4c47-930a-abac3063156b"
+        ]
+      },
+      {
+        "id": "c0ca86a2-a512-445c-a90f-6b265ce098dc",
+        "status": "PROVEN",
+        "text": "默认强化Docker中的codex sandbox无法启动bundled bwrap，因无权创建非特权user namespace而exit1；未使用privileged、新capability或放宽seccomp规避。",
+        "evidence": [
+          "linux-sandbox-capability.json保存命令、exit1和原始错误边界。"
+        ]
+      },
+      {
+        "id": "c45307aa-edbb-4834-99fa-0cd0b9555f2a",
+        "status": "PROVEN",
+        "text": "临时tarball、拉取的Node镜像、容器和fixture均已清理，镜像/容器/40个历史volume清单恢复基线；514个历史实验文件SHA不变，产品文件改动0。",
+        "evidence": [
+          "runtime-cleanup.json、verification-summary.json；真实模型、真实记忆、宿主凭据和真实ACL使用均为0。"
+        ]
+      },
+      {
+        "id": "8685e70d-726c-4be3-8060-22ea1a1f97dd",
+        "status": "UNKNOWN",
+        "text": "外部MCP/Apps执行位置、真实provider行为以及现有宿主benchmark driver是否经过同一Docker边界仍未验证；原preflight继续ready=false。",
+        "evidence": [
+          "summary.md区分outer Docker通过与nested sandbox/MCP未知。"
+        ]
+      },
+      {
+        "id": "38045ab0-4028-4edd-b2e5-a3f7351b41ff",
+        "status": "PROPOSAL",
+        "text": "下一阶段应实现固定身份的容器化Codex benchmark driver，以outer Docker作为唯一强制边界，并默认禁用未验证MCP/Apps；不应为nested bwrap放宽seccomp。",
+        "evidence": [
+          "next-driver-plan.md记录下载/运行分离、挂载、清理、执行器覆盖和零模型回归门禁；这是未实现方案。"
+        ]
+      }
+    ],
+    "unknowns": [
+      "本轮没有修改benchmark driver或预检放行逻辑，也没有启动付费实验。"
+    ],
+    "source": {
+      "digest": "055ee9536da48c48a0ce1f5d54c1a4186577639f2ad7d70f9f20db669a85b1fb",
+      "document": ".ai-harness/work-items/ANALYSIS-LINUX-CODEX-ISOLATION-20261015/snapshots/055ee9536da48c48a0ce1f5d54c1a4186577639f2ad7d70f9f20db669a85b1fb.json"
+    }
+  },
+  "documentation": {
+    "status": "pending",
+    "evidence": []
+  },
+  "blocked": null,
+  "delivery": null,
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-10-15T03:21:08.711Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-10-15T03:21:08.796Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "ANALYZING",
+      "at": "2026-10-15T03:21:09.153Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "ANALYZING",
+      "to": "ANSWERED",
+      "at": "2026-10-15T03:49:04.167Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-10-15T03:21:08.711Z",
+  "updatedAt": "2026-10-15T03:49:04.167Z"
+}

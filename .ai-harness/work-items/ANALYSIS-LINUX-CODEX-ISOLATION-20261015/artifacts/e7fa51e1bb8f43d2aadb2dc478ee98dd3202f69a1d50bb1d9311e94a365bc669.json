@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-15T03:23:09.731Z",
+  "nodeImage": {
+    "tag": "docker.io/library/node:22.20.0-bookworm-slim",
+    "indexDigest": "sha256:b21fe589dfbe5cc39365d0544b9be3f1f33f55f3c86c87a76ff65a02f8f5848e",
+    "linuxAmd64Digest": "sha256:c385ec44d77c785e2364ac0c9b150809a0fdc17fde3dbf061e3dad07242c6a85",
+    "reference": "docker.io/library/node@sha256:c385ec44d77c785e2364ac0c9b150809a0fdc17fde3dbf061e3dad07242c6a85"
+  },
+  "packageDownloads": [
+    {
+      "role": "wrapper",
+      "name": "@openai/codex",
+      "version": "0.156.0",
+      "filename": "openai-codex-0.156.0.tgz",
+      "url": "https://registry.npmjs.org/@openai/codex/-/codex-0.156.0.tgz",
+      "integrity": "sha512-47dfpl2e8F47baSQTE+QaWzF/kKoOeR9YQ2fIBdRGzZZP2/QZ6D0uwLY2ZamS8ypov4UFtg92jZh8m+w65bsGg==",
+      "shasum": "e7c29bfd4e94973af2ea116c98a1f8f7b387e53b",
+      "size": 4902,
+      "sha256": "5ce491a5ba3c0c2489594dfb6807c7c0b51166882e080772659f06f0c1fdc5d6"
+    },
+    {
+      "role": "linux-x64",
+      "name": "@openai/codex",
+      "version": "0.156.0-linux-x64",
+      "filename": "openai-codex-0.156.0-linux-x64.tgz",
+      "url": "https://registry.npmjs.org/@openai/codex/-/codex-0.156.0-linux-x64.tgz",
+      "integrity": "sha512-/PX399ISB715skgBBOtOX5aqLxmPQhYC7wDasZnAJhRrtzt3qgs6kjSnimN9T8OFKv4LDAp+uJdN896tQYaTrA==",
+      "shasum": "d5df296ed9e3b029017b77ad3dcde683aaeb1e28",
+      "size": 148509615,
+      "sha256": "e16d3ee5f51562cdb83a523ac5f2b8929fe4693c744e1484d478112f52e3a239"
+    }
+  ],
+  "dockerBefore": {
+    "images": {
+      "count": 1,
+      "sha256": "1e0f008900c63748dc4837c136797f0d1cafdfcb45e291b6b7240578e38839d1"
+    },
+    "containers": {
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "volumes": {
+      "count": 40,
+      "sha256": "1506bb11bf8a7aec142db12b10a723319902aabe99f7f702e80ce5e990580014"
+    }
+  },
+  "prepared": true,
+  "pull": {
+    "args": [
+      "pull",
+      "--platform",
+      "linux/amd64",
+      "docker.io/library/node@sha256:c385ec44d77c785e2364ac0c9b150809a0fdc17fde3dbf061e3dad07242c6a85"
+    ],
+    "stdoutSha256": "b21e8284182616cb8bbd3de323dd52993cb297a656d59390c8cae427719fccec"
+  },
+  "imageInspection": {
+    "id": "sha256:c385ec44d77c785e2364ac0c9b150809a0fdc17fde3dbf061e3dad07242c6a85",
+    "architecture": "amd64",
+    "os": "linux",
+    "repoDigests": [
+      "node@sha256:c385ec44d77c785e2364ac0c9b150809a0fdc17fde3dbf061e3dad07242c6a85"
+    ],
+    "nodeVersion": "NODE_VERSION=22.20.0"
+  },
+  "dockerAfter": {
+    "images": {
+      "count": 2,
+      "sha256": "32b3aad2ac0a2708c8c56f8beec87828ee1d11c57cddd56416e8ff0b72abafeb"
+    },
+    "containers": {
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "volumes": {
+      "count": 40,
+      "sha256": "1506bb11bf8a7aec142db12b10a723319902aabe99f7f702e80ce5e990580014"
+    }
+  },
+  "boundary": "Downloaded two public npm tarballs with registry integrity verification and pulled one pinned linux/amd64 Node image. No package was installed on the host and no model session ran."
+}

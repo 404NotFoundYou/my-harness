@@ -1,0 +1,421 @@
+{
+  "tag": "rust-v0.156.0",
+  "sources": [
+    {
+      "file": "codex-rs/core/tests/common/responses.rs",
+      "url": "https://raw.githubusercontent.com/openai/codex/rust-v0.156.0/codex-rs/core/tests/common/responses.rs",
+      "accessedAt": "2026-10-15T03:45:25.102Z",
+      "sha256": "ad07af61a11a7551930e4e4f94256e2767128bfc96c2af4b9f21e5a57c87118b",
+      "excerpts": [
+        {
+          "line": 717,
+          "text": "pub fn sse(events: Vec<Value>) -> String {"
+        },
+        {
+          "line": 718,
+          "text": "    use std::fmt::Write as _;"
+        },
+        {
+          "line": 719,
+          "text": "    let mut out = String::new();"
+        },
+        {
+          "line": 720,
+          "text": "    for ev in events {"
+        },
+        {
+          "line": 721,
+          "text": "        let kind = ev.get(\"type\").and_then(|v| v.as_str()).unwrap();"
+        },
+        {
+          "line": 722,
+          "text": "        writeln!(&mut out, \"event: {kind}\").unwrap();"
+        },
+        {
+          "line": 723,
+          "text": "        if !ev.as_object().map(|o| o.len() == 1).unwrap_or(false) {"
+        },
+        {
+          "line": 724,
+          "text": "            write!(&mut out, \"data: {ev}\\n\\n\").unwrap();"
+        },
+        {
+          "line": 725,
+          "text": "        } else {"
+        },
+        {
+          "line": 726,
+          "text": "            out.push('\\n');"
+        },
+        {
+          "line": 727,
+          "text": "        }"
+        },
+        {
+          "line": 728,
+          "text": "    }"
+        },
+        {
+          "line": 729,
+          "text": "    out"
+        },
+        {
+          "line": 730,
+          "text": "}"
+        },
+        {
+          "line": 731,
+          "text": ""
+        },
+        {
+          "line": 732,
+          "text": "pub fn sse_completed(id: &str) -> String {"
+        },
+        {
+          "line": 733,
+          "text": "    sse(vec![ev_response_created(id), ev_completed(id)])"
+        },
+        {
+          "line": 734,
+          "text": "}"
+        },
+        {
+          "line": 735,
+          "text": ""
+        },
+        {
+          "line": 736,
+          "text": "/// Convenience: SSE event for a completed response with a specific id."
+        },
+        {
+          "line": 737,
+          "text": "pub fn ev_completed(id: &str) -> Value {"
+        },
+        {
+          "line": 738,
+          "text": "    serde_json::json!({"
+        },
+        {
+          "line": 739,
+          "text": "        \"type\": \"response.completed\","
+        },
+        {
+          "line": 740,
+          "text": "        \"response\": {"
+        },
+        {
+          "line": 741,
+          "text": "            \"id\": id,"
+        },
+        {
+          "line": 742,
+          "text": "            \"usage\": {\"input_tokens\":0,\"input_tokens_details\":null,\"output_tokens\":0,\"output_tokens_details\":null,\"total_tokens\":0}"
+        },
+        {
+          "line": 743,
+          "text": "        }"
+        },
+        {
+          "line": 744,
+          "text": "    })"
+        },
+        {
+          "line": 745,
+          "text": "}"
+        },
+        {
+          "line": 746,
+          "text": ""
+        },
+        {
+          "line": 747,
+          "text": "/// Convenience: SSE event for a created response with a specific id."
+        },
+        {
+          "line": 748,
+          "text": "pub fn ev_response_created(id: &str) -> Value {"
+        },
+        {
+          "line": 749,
+          "text": "    serde_json::json!({"
+        },
+        {
+          "line": 750,
+          "text": "        \"type\": \"response.created\","
+        },
+        {
+          "line": 751,
+          "text": "        \"response\": {"
+        },
+        {
+          "line": 752,
+          "text": "            \"id\": id,"
+        },
+        {
+          "line": 753,
+          "text": "        }"
+        },
+        {
+          "line": 754,
+          "text": "    })"
+        },
+        {
+          "line": 755,
+          "text": "}"
+        },
+        {
+          "line": 785,
+          "text": "pub fn ev_assistant_message(id: &str, text: &str) -> Value {"
+        },
+        {
+          "line": 786,
+          "text": "    serde_json::json!({"
+        },
+        {
+          "line": 787,
+          "text": "        \"type\": \"response.output_item.done\","
+        },
+        {
+          "line": 788,
+          "text": "        \"item\": {"
+        },
+        {
+          "line": 789,
+          "text": "            \"type\": \"message\","
+        },
+        {
+          "line": 790,
+          "text": "            \"role\": \"assistant\","
+        },
+        {
+          "line": 791,
+          "text": "            \"id\": id,"
+        },
+        {
+          "line": 792,
+          "text": "            \"content\": [{\"type\": \"output_text\", \"text\": text}]"
+        },
+        {
+          "line": 793,
+          "text": "        }"
+        },
+        {
+          "line": 794,
+          "text": "    })"
+        },
+        {
+          "line": 933,
+          "text": "pub fn ev_function_call(call_id: &str, name: &str, arguments: &str) -> Value {"
+        },
+        {
+          "line": 934,
+          "text": "    serde_json::json!({"
+        },
+        {
+          "line": 935,
+          "text": "        \"type\": \"response.output_item.done\","
+        },
+        {
+          "line": 936,
+          "text": "        \"item\": {"
+        },
+        {
+          "line": 937,
+          "text": "            \"type\": \"function_call\","
+        },
+        {
+          "line": 938,
+          "text": "            \"call_id\": call_id,"
+        },
+        {
+          "line": 939,
+          "text": "            \"name\": name,"
+        },
+        {
+          "line": 940,
+          "text": "            \"arguments\": arguments"
+        },
+        {
+          "line": 941,
+          "text": "        }"
+        },
+        {
+          "line": 942,
+          "text": "    })"
+        },
+        {
+          "line": 943,
+          "text": "}"
+        }
+      ]
+    },
+    {
+      "file": "codex-rs/core/tests/suite/tool_harness.rs",
+      "url": "https://raw.githubusercontent.com/openai/codex/rust-v0.156.0/codex-rs/core/tests/suite/tool_harness.rs",
+      "accessedAt": "2026-10-15T03:45:25.359Z",
+      "sha256": "c53581bf66cae60ce7d40f8de64028bb84c670389863deba10d8e19ab40f5cc1",
+      "excerpts": [
+        {
+          "line": 64,
+          "text": "#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]"
+        },
+        {
+          "line": 65,
+          "text": "async fn exec_command_tool_executes_command_and_streams_output() -> anyhow::Result<()> {"
+        },
+        {
+          "line": 66,
+          "text": "    skip_if_no_network!(Ok(()));"
+        },
+        {
+          "line": 67,
+          "text": ""
+        },
+        {
+          "line": 68,
+          "text": "    let server = start_mock_server().await;"
+        },
+        {
+          "line": 69,
+          "text": ""
+        },
+        {
+          "line": 70,
+          "text": "    let mut builder = test_codex().with_model(\"test-gpt-5-codex\");"
+        },
+        {
+          "line": 71,
+          "text": "    let TestCodex {"
+        },
+        {
+          "line": 72,
+          "text": "        codex,"
+        },
+        {
+          "line": 73,
+          "text": "        cwd,"
+        },
+        {
+          "line": 74,
+          "text": "        session_configured,"
+        },
+        {
+          "line": 75,
+          "text": "        .."
+        },
+        {
+          "line": 76,
+          "text": "    } = builder.build(&server).await?;"
+        },
+        {
+          "line": 77,
+          "text": ""
+        },
+        {
+          "line": 78,
+          "text": "    let call_id = \"exec-command-tool-call\";"
+        },
+        {
+          "line": 79,
+          "text": "    let command_args = json!({"
+        },
+        {
+          "line": 80,
+          "text": "        \"cmd\": \"echo tool harness\","
+        },
+        {
+          "line": 81,
+          "text": "        \"login\": false,"
+        },
+        {
+          "line": 82,
+          "text": "    })"
+        },
+        {
+          "line": 83,
+          "text": "    .to_string();"
+        },
+        {
+          "line": 84,
+          "text": "    let first_response = sse(vec!["
+        },
+        {
+          "line": 85,
+          "text": "        ev_response_created(\"resp-1\"),"
+        },
+        {
+          "line": 86,
+          "text": "        ev_function_call(call_id, \"exec_command\", &command_args),"
+        },
+        {
+          "line": 87,
+          "text": "        ev_completed(\"resp-1\"),"
+        },
+        {
+          "line": 88,
+          "text": "    ]);"
+        },
+        {
+          "line": 89,
+          "text": "    responses::mount_sse_once(&server, first_response).await;"
+        },
+        {
+          "line": 90,
+          "text": ""
+        },
+        {
+          "line": 91,
+          "text": "    let second_response = sse(vec!["
+        },
+        {
+          "line": 92,
+          "text": "        ev_assistant_message(\"msg-1\", \"all done\"),"
+        },
+        {
+          "line": 93,
+          "text": "        ev_completed(\"resp-2\"),"
+        },
+        {
+          "line": 94,
+          "text": "    ]);"
+        },
+        {
+          "line": 95,
+          "text": "    let second_mock = responses::mount_sse_once(&server, second_response).await;"
+        }
+      ]
+    },
+    {
+      "file": "codex-rs/features/src/lib.rs",
+      "url": "https://raw.githubusercontent.com/openai/codex/rust-v0.156.0/codex-rs/features/src/lib.rs",
+      "accessedAt": "2026-10-15T03:45:25.675Z",
+      "sha256": "d5f1bf1e16c3053df8a739d48e57d743ee76822e532219cee46cff5a9b1d8d78",
+      "excerpts": [
+        {
+          "line": 1056,
+          "text": "    FeatureSpec {"
+        },
+        {
+          "line": 1057,
+          "text": "        id: Feature::CodeMode,"
+        },
+        {
+          "line": 1058,
+          "text": "        key: \"code_mode\","
+        },
+        {
+          "line": 1059,
+          "text": "        stage: Stage::UnderDevelopment,"
+        },
+        {
+          "line": 1060,
+          "text": "        default_enabled: false,"
+        },
+        {
+          "line": 1061,
+          "text": "    },"
+        }
+      ]
+    }
+  ]
+}

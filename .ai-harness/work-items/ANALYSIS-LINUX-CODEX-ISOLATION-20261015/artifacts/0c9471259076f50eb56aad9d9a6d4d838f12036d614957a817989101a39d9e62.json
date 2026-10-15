@@ -1,0 +1,512 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-15T03:42:16.942Z",
+  "image": "docker.io/library/node@sha256:c385ec44d77c785e2364ac0c9b150809a0fdc17fde3dbf061e3dad07242c6a85",
+  "actualModelCalls": 0,
+  "realMemoryPathsAccessed": 0,
+  "hostControls": {
+    "inside.txt": {
+      "exists": true,
+      "sha256": "f3a232d236851f9f159e7de502bd01ef5a5767d54816967e74fdc09b0c9628f7"
+    },
+    "outside.txt": {
+      "exists": true,
+      "sha256": "89dfb3740e8f173199ccdf6ac65abd368f1122f58dc28fb60067adfe5275067d"
+    },
+    "MEMORY.md": {
+      "exists": true,
+      "sha256": "a1c0b14978c99f2fbc18ee6fede4bbb41ec0531e45f66bee243f30f9563949f7"
+    }
+  },
+  "container": {
+    "idSha256": "952b89c44c829804cdb888c52a8c988a9eb99d3f527441213fcf1701c7be11d2",
+    "createArgs": [
+      "create",
+      "--name",
+      "ai-harness-linux-codex-a9534233-68f3-4869-ab53-2246cbebba67",
+      "--pull",
+      "never",
+      "--network",
+      "none",
+      "--read-only",
+      "--user",
+      "65534:65534",
+      "--cap-drop",
+      "ALL",
+      "--security-opt",
+      "no-new-privileges:true",
+      "--pids-limit",
+      "128",
+      "--memory",
+      "1536m",
+      "--cpus",
+      "2",
+      "--restart",
+      "no",
+      "--env",
+      "HOME=/tmp/home",
+      "--env",
+      "CODEX_HOME=/tmp/codex-home",
+      "--env",
+      "PATH=/opt/runtime/bin:/usr/local/bin:/usr/bin:/bin",
+      "--tmpfs",
+      "/tmp:rw,exec,nosuid,nodev,size=256m,mode=1777",
+      "--tmpfs",
+      "/opt/runtime:rw,exec,nosuid,nodev,size=512m,mode=0777",
+      "--mount",
+      "type=bind,src=<temporary-package-cache>,dst=/packages,readonly",
+      "--mount",
+      "type=bind,src=<analysis-item>\\linux-runtime-inner.mjs,dst=/probe/linux-runtime-inner.mjs,readonly",
+      "--mount",
+      "type=bind,src=<temporary-fixtures>\\workspace,dst=/probe/workspace,readonly",
+      "--entrypoint",
+      "/usr/local/bin/node",
+      "docker.io/library/node@sha256:c385ec44d77c785e2364ac0c9b150809a0fdc17fde3dbf061e3dad07242c6a85",
+      "/probe/linux-runtime-inner.mjs"
+    ],
+    "configuration": {
+      "image": "sha256:c385ec44d77c785e2364ac0c9b150809a0fdc17fde3dbf061e3dad07242c6a85",
+      "networkMode": "none",
+      "readOnlyRoot": true,
+      "user": "65534:65534",
+      "capDrop": [
+        "ALL"
+      ],
+      "securityOptions": [
+        "no-new-privileges:true"
+      ],
+      "mounts": [
+        {
+          "type": "bind",
+          "destination": "/packages",
+          "readWrite": false,
+          "sourceSha256": "1c5d10cb4a985c6b46a720bb34737d607cd945151fe90dfd1fa17c47347bb8b3"
+        },
+        {
+          "type": "bind",
+          "destination": "/probe/linux-runtime-inner.mjs",
+          "readWrite": false,
+          "sourceSha256": "8131c69991a4aa28a650368ef8ebf62e991f46e8bc823c217c6af5d437a14f91"
+        },
+        {
+          "type": "bind",
+          "destination": "/probe/workspace",
+          "readWrite": false,
+          "sourceSha256": "cb26dd1df4e8de86d5d523c619f47f06efcb3be9b991ab1b929a5c966c8f852f"
+        }
+      ]
+    },
+    "stderrBytes": 0
+  },
+  "cleanup": {
+    "containerRemoved": true,
+    "imageInventoryUnchanged": true,
+    "containerInventoryRestored": true,
+    "volumeInventoryRestored": true,
+    "temporaryFixturesRemoved": true
+  },
+  "verified": true,
+  "boundary": "Outer Docker isolation and real Linux Codex memory/exec_command behavior verified with a loopback responder. The exec_command session bypassed the inner Codex sandbox; default nested bwrap failed separately. External MCP and real provider behavior remain unverified.",
+  "packageInputs": [
+    {
+      "name": "openai-codex-0.156.0.tgz",
+      "sha256": "5ce491a5ba3c0c2489594dfb6807c7c0b51166882e080772659f06f0c1fdc5d6"
+    },
+    {
+      "name": "openai-codex-0.156.0-linux-x64.tgz",
+      "sha256": "e16d3ee5f51562cdb83a523ac5f2b8929fe4693c744e1484d478112f52e3a239"
+    }
+  ],
+  "dockerBefore": {
+    "images": {
+      "count": 2,
+      "sha256": "32b3aad2ac0a2708c8c56f8beec87828ee1d11c57cddd56416e8ff0b72abafeb"
+    },
+    "containers": {
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "volumes": {
+      "count": 40,
+      "sha256": "1506bb11bf8a7aec142db12b10a723319902aabe99f7f702e80ce5e990580014"
+    }
+  },
+  "runtime": {
+    "schemaVersion": 1,
+    "recordedAt": "2026-10-15T03:42:18.198Z",
+    "actualModelCalls": 0,
+    "simulatedCliSessions": 3,
+    "localProviderRequests": 4,
+    "realMemoryPathsAccessed": 0,
+    "packageInstall": [
+      {
+        "file": "openai-codex-0.156.0.tgz",
+        "bytes": 4902,
+        "sha256": "5ce491a5ba3c0c2489594dfb6807c7c0b51166882e080772659f06f0c1fdc5d6",
+        "destination": "/opt/runtime/lib/node_modules/@openai/codex"
+      },
+      {
+        "file": "openai-codex-0.156.0-linux-x64.tgz",
+        "bytes": 148509615,
+        "sha256": "e16d3ee5f51562cdb83a523ac5f2b8929fe4693c744e1484d478112f52e3a239",
+        "destination": "/opt/runtime/lib/node_modules/@openai/codex-linux-x64"
+      }
+    ],
+    "identity": {
+      "node": "v22.20.0",
+      "cliVersion": "codex-cli 0.156.0",
+      "wrapperSha256": "61b0194f3bb6534439c8d26a3ed57d0805f84b884588b761795323eeb92fcf70",
+      "nativeBinarySha256": "78a11f06e0a2dda42d13fba1d50dc62e8cbdb2d5f69789722f4d4d99b5cdbe30"
+    },
+    "memoryRows": [
+      {
+        "disabled": false,
+        "request": {
+          "requestSha256": "eb42507fdec6a6c881534e5021dd656b3ec0e6b9ee3257cd28fadc148c24d84c",
+          "model": "gpt-6-astra",
+          "contextMarkerPresent": true,
+          "memoryMarkerPresent": true,
+          "authorizationHeaderPresent": false,
+          "toolNames": []
+        },
+        "eventTypes": [
+          "thread.started",
+          "turn.started",
+          "item.completed",
+          "turn.completed"
+        ],
+        "stderrBytes": 217,
+        "completed": true
+      },
+      {
+        "disabled": true,
+        "request": {
+          "requestSha256": "841ac5b434b54f7d235e86c075ca59083ce40e41db8e5c8ae10dbe8c0f50934f",
+          "model": "gpt-6-astra",
+          "contextMarkerPresent": true,
+          "memoryMarkerPresent": false,
+          "authorizationHeaderPresent": false,
+          "toolNames": []
+        },
+        "eventTypes": [
+          "thread.started",
+          "turn.started",
+          "item.completed",
+          "turn.completed"
+        ],
+        "stderrBytes": 217,
+        "completed": true
+      }
+    ],
+    "tool": {
+      "codexSandboxBypassed": true,
+      "outerDockerBoundaryRequired": true,
+      "requests": [
+        {
+          "requestSha256": "dfc16d0e2796206c668b657bee675c4cdb11ebbe0ba2e6a5c1a3176d1aeca31d",
+          "model": "gpt-5.4",
+          "contextMarkerPresent": true,
+          "memoryMarkerPresent": false,
+          "authorizationHeaderPresent": false,
+          "toolNames": [
+            {
+              "keys": [
+                "description",
+                "name",
+                "parameters",
+                "strict",
+                "type"
+              ],
+              "type": "function",
+              "name": "exec_command",
+              "functionName": null,
+              "namespace": null
+            },
+            {
+              "keys": [
+                "description",
+                "name",
+                "parameters",
+                "strict",
+                "type"
+              ],
+              "type": "function",
+              "name": "write_stdin",
+              "functionName": null,
+              "namespace": null
+            },
+            {
+              "keys": [
+                "description",
+                "name",
+                "parameters",
+                "strict",
+                "type"
+              ],
+              "type": "function",
+              "name": "request_user_input",
+              "functionName": null,
+              "namespace": null
+            },
+            {
+              "keys": [
+                "description",
+                "format",
+                "name",
+                "type"
+              ],
+              "type": "custom",
+              "name": "apply_patch",
+              "functionName": null,
+              "namespace": null
+            },
+            {
+              "keys": [
+                "description",
+                "name",
+                "parameters",
+                "strict",
+                "type"
+              ],
+              "type": "function",
+              "name": "view_image",
+              "functionName": null,
+              "namespace": null
+            },
+            {
+              "keys": [
+                "description",
+                "name",
+                "parameters",
+                "strict",
+                "type"
+              ],
+              "type": "function",
+              "name": "get_goal",
+              "functionName": null,
+              "namespace": null
+            },
+            {
+              "keys": [
+                "description",
+                "name",
+                "parameters",
+                "strict",
+                "type"
+              ],
+              "type": "function",
+              "name": "create_goal",
+              "functionName": null,
+              "namespace": null
+            },
+            {
+              "keys": [
+                "description",
+                "name",
+                "parameters",
+                "strict",
+                "type"
+              ],
+              "type": "function",
+              "name": "update_goal",
+              "functionName": null,
+              "namespace": null
+            },
+            {
+              "keys": [
+                "description",
+                "execution",
+                "parameters",
+                "type"
+              ],
+              "type": "tool_search",
+              "name": null,
+              "functionName": null,
+              "namespace": null
+            },
+            {
+              "keys": [
+                "external_web_access",
+                "search_content_types",
+                "type"
+              ],
+              "type": "web_search",
+              "name": null,
+              "functionName": null,
+              "namespace": null
+            }
+          ]
+        },
+        {
+          "requestSha256": "e45dd39ff3eb432f899efebd5a67d2d20bc2b7698136d290fc23e9c7117f2afe",
+          "model": "gpt-5.4",
+          "contextMarkerPresent": true,
+          "memoryMarkerPresent": false,
+          "authorizationHeaderPresent": false,
+          "toolNames": [
+            {
+              "keys": [
+                "description",
+                "name",
+                "parameters",
+                "strict",
+                "type"
+              ],
+              "type": "function",
+              "name": "exec_command",
+              "functionName": null,
+              "namespace": null
+            },
+            {
+              "keys": [
+                "description",
+                "name",
+                "parameters",
+                "strict",
+                "type"
+              ],
+              "type": "function",
+              "name": "write_stdin",
+              "functionName": null,
+              "namespace": null
+            },
+            {
+              "keys": [
+                "description",
+                "name",
+                "parameters",
+                "strict",
+                "type"
+              ],
+              "type": "function",
+              "name": "request_user_input",
+              "functionName": null,
+              "namespace": null
+            },
+            {
+              "keys": [
+                "description",
+                "format",
+                "name",
+                "type"
+              ],
+              "type": "custom",
+              "name": "apply_patch",
+              "functionName": null,
+              "namespace": null
+            },
+            {
+              "keys": [
+                "description",
+                "name",
+                "parameters",
+                "strict",
+                "type"
+              ],
+              "type": "function",
+              "name": "view_image",
+              "functionName": null,
+              "namespace": null
+            },
+            {
+              "keys": [
+                "description",
+                "name",
+                "parameters",
+                "strict",
+                "type"
+              ],
+              "type": "function",
+              "name": "get_goal",
+              "functionName": null,
+              "namespace": null
+            },
+            {
+              "keys": [
+                "description",
+                "name",
+                "parameters",
+                "strict",
+                "type"
+              ],
+              "type": "function",
+              "name": "create_goal",
+              "functionName": null,
+              "namespace": null
+            },
+            {
+              "keys": [
+                "description",
+                "name",
+                "parameters",
+                "strict",
+                "type"
+              ],
+              "type": "function",
+              "name": "update_goal",
+              "functionName": null,
+              "namespace": null
+            },
+            {
+              "keys": [
+                "description",
+                "execution",
+                "parameters",
+                "type"
+              ],
+              "type": "tool_search",
+              "name": null,
+              "functionName": null,
+              "namespace": null
+            },
+            {
+              "keys": [
+                "external_web_access",
+                "search_content_types",
+                "type"
+              ],
+              "type": "web_search",
+              "name": null,
+              "functionName": null,
+              "namespace": null
+            }
+          ],
+          "toolOutputSha256": "0226a8408727037f360fa9d6cd4c23f607a5fae8b238d28f49d5747c758b1222",
+          "inputTypes": [
+            "message",
+            "message",
+            "message",
+            "function_call",
+            "function_call_output"
+          ]
+        }
+      ],
+      "result": [
+        {
+          "readable": true,
+          "matches": true
+        },
+        {
+          "readable": false,
+          "code": "ENOENT"
+        },
+        {
+          "readable": false,
+          "code": "ENOENT"
+        }
+      ],
+      "eventTypes": [
+        "thread.started",
+        "turn.started",
+        "item.started",
+        "item.completed",
+        "item.completed",
+        "turn.completed"
+      ],
+      "stderrBytes": 217,
+      "completed": true
+    },
+    "verified": true,
+    "boundary": "Verified real Linux Codex 0.156.0 request memory controls and exec_command dispatch against a loopback fixed responder. exec_command intentionally bypassed the inner Codex sandbox and remained bounded by the outer hardened Docker container. External MCP and nested bwrap sandbox remain unverified."
+  }
+}

@@ -1,0 +1,76 @@
+{
+  "recordedAt": "2026-10-15T03:45:27.578Z",
+  "ok": true,
+  "commit": "b2eb725faf44f8868ab7a982a2bee2029a5c26e5",
+  "remoteWorkflowsSucceeded": 2,
+  "remoteJobsSucceeded": 9,
+  "nodeImage": {
+    "indexDigest": "sha256:b21fe589dfbe5cc39365d0544b9be3f1f33f55f3c86c87a76ff65a02f8f5848e",
+    "linuxAmd64Digest": "sha256:c385ec44d77c785e2364ac0c9b150809a0fdc17fde3dbf061e3dad07242c6a85",
+    "nodeVersion": "NODE_VERSION=22.20.0"
+  },
+  "packages": [
+    {
+      "version": "0.156.0",
+      "integrity": "sha512-47dfpl2e8F47baSQTE+QaWzF/kKoOeR9YQ2fIBdRGzZZP2/QZ6D0uwLY2ZamS8ypov4UFtg92jZh8m+w65bsGg==",
+      "sha256": "5ce491a5ba3c0c2489594dfb6807c7c0b51166882e080772659f06f0c1fdc5d6",
+      "size": 4902
+    },
+    {
+      "version": "0.156.0-linux-x64",
+      "integrity": "sha512-/PX399ISB715skgBBOtOX5aqLxmPQhYC7wDasZnAJhRrtzt3qgs6kjSnimN9T8OFKv4LDAp+uJdN896tQYaTrA==",
+      "sha256": "e16d3ee5f51562cdb83a523ac5f2b8929fe4693c744e1484d478112f52e3a239",
+      "size": 148509615
+    }
+  ],
+  "cliIdentity": {
+    "node": "v22.20.0",
+    "cliVersion": "codex-cli 0.156.0",
+    "wrapperSha256": "61b0194f3bb6534439c8d26a3ed57d0805f84b884588b761795323eeb92fcf70",
+    "nativeBinarySha256": "78a11f06e0a2dda42d13fba1d50dc62e8cbdb2d5f69789722f4d4d99b5cdbe30"
+  },
+  "memoryPositiveAndNegative": true,
+  "execCommandDispatched": true,
+  "toolFileResult": [
+    {
+      "readable": true,
+      "matches": true
+    },
+    {
+      "readable": false,
+      "code": "ENOENT"
+    },
+    {
+      "readable": false,
+      "code": "ENOENT"
+    }
+  ],
+  "innerCodexSandbox": "failed-bwrap-user-namespace",
+  "execCommandSandboxBypassed": true,
+  "outerDockerIsolation": true,
+  "actualModelCalls": 0,
+  "realMemoryPathsAccessed": 0,
+  "hostCredentialsUsed": false,
+  "temporaryPackagesRemoved": true,
+  "pulledNodeImageRemoved": true,
+  "dockerRestored": true,
+  "failedAttemptsPreserved": 6,
+  "protectedHistoricalFilesUnchanged": 514,
+  "productFileChanges": 0,
+  "originalPreflightReady": false,
+  "scripts": [
+    {
+      "path": ".ai-harness/work-items/ANALYSIS-LINUX-CODEX-ISOLATION-20261015/prepare-linux-runtime.mjs",
+      "sha256": "27ee350bc5b42dd5f450ef107e278b07400e66440dc5de9cd67c73a6232de064"
+    },
+    {
+      "path": ".ai-harness/work-items/ANALYSIS-LINUX-CODEX-ISOLATION-20261015/linux-runtime-inner.mjs",
+      "sha256": "3893032f7cdec6606c3c75d5216744cad50e8a8293854230e19802b5e1e0a9b2"
+    },
+    {
+      "path": ".ai-harness/work-items/ANALYSIS-LINUX-CODEX-ISOLATION-20261015/probe-linux-runtime.mjs",
+      "sha256": "8a3f752d613c9b568c990770b77d7815b5b8a0d24a2c68b9476b154231cc3e80"
+    }
+  ],
+  "boundary": "Real Linux CLI memory and exec_command dispatch verified in outer Docker isolation; nested bwrap, external MCP, and real provider remain unverified."
+}

@@ -1,0 +1,35 @@
+{
+  "recordedAt": "2026-10-15T03:43:43.532Z",
+  "packageCache": {
+    "files": [
+      "openai-codex-0.156.0-linux-x64.tgz",
+      "openai-codex-0.156.0.tgz"
+    ],
+    "hashes": {
+      "openai-codex-0.156.0-linux-x64.tgz": "e16d3ee5f51562cdb83a523ac5f2b8929fe4693c744e1484d478112f52e3a239",
+      "openai-codex-0.156.0.tgz": "5ce491a5ba3c0c2489594dfb6807c7c0b51166882e080772659f06f0c1fdc5d6"
+    },
+    "removed": true
+  },
+  "nodeImage": {
+    "reference": "docker.io/library/node@sha256:c385ec44d77c785e2364ac0c9b150809a0fdc17fde3dbf061e3dad07242c6a85",
+    "id": "sha256:c385ec44d77c785e2364ac0c9b150809a0fdc17fde3dbf061e3dad07242c6a85",
+    "removeOutputSha256": "3e6ebc29f625156ab7babf46b901077ea61b633ce037d60d3f5d91d42cac17d0",
+    "removed": true
+  },
+  "dockerFinal": {
+    "images": {
+      "count": 1,
+      "sha256": "1e0f008900c63748dc4837c136797f0d1cafdfcb45e291b6b7240578e38839d1"
+    },
+    "containers": {
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "volumes": {
+      "count": 40,
+      "sha256": "1506bb11bf8a7aec142db12b10a723319902aabe99f7f702e80ce5e990580014"
+    }
+  },
+  "restoredToBaseline": true
+}

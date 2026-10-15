@@ -1,0 +1,59 @@
+{
+  "cliVersion": "0.156.0",
+  "models": [
+    {
+      "slug": "gpt-6-astra",
+      "shellType": "unified_exec",
+      "toolMode": "code_mode_only",
+      "visibility": "list"
+    },
+    {
+      "slug": "gpt-5.6-sol",
+      "shellType": "unified_exec",
+      "toolMode": "code_mode_only",
+      "visibility": "list"
+    },
+    {
+      "slug": "gpt-5.6-terra",
+      "shellType": "unified_exec",
+      "toolMode": "code_mode_only",
+      "visibility": "list"
+    },
+    {
+      "slug": "gpt-5.6-luna",
+      "shellType": "unified_exec",
+      "toolMode": "code_mode_only",
+      "visibility": "list"
+    },
+    {
+      "slug": "gpt-daybreak-blue-latest",
+      "shellType": "unified_exec",
+      "toolMode": "code_mode_only",
+      "visibility": "hide"
+    },
+    {
+      "slug": "gpt-daybreak-red-latest",
+      "shellType": "unified_exec",
+      "toolMode": "code_mode_only",
+      "visibility": "hide"
+    },
+    {
+      "slug": "gpt-5.5",
+      "shellType": "unified_exec",
+      "toolMode": null,
+      "visibility": "list"
+    },
+    {
+      "slug": "gpt-5.4",
+      "shellType": "unified_exec",
+      "toolMode": null,
+      "visibility": "hide"
+    },
+    {
+      "slug": "codex-auto-review",
+      "shellType": "unified_exec",
+      "toolMode": "code_mode_only",
+      "visibility": "hide"
+    }
+  ]
+}

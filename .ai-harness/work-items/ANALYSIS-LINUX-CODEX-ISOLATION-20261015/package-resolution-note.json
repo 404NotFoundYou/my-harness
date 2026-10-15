@@ -1,0 +1,11 @@
+{
+  "recordedAt": "2026-10-15T03:17:44Z",
+  "attempted": "@openai/codex-linux-x64@0.156.0",
+  "result": "npm registry HTTP 404",
+  "reason": "The assumed standalone package name does not exist.",
+  "resolvedFrom": "@openai/codex@0.156.0 optionalDependencies",
+  "actualAlias": "@openai/codex-linux-x64",
+  "actualPackage": "@openai/codex",
+  "actualVersion": "0.156.0-linux-x64",
+  "followUp": "The alias target tarball integrity and contents were verified before use."
+}

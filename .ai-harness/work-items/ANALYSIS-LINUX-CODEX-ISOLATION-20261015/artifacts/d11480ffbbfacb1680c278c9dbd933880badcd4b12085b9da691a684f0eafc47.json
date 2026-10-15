@@ -1,0 +1,10 @@
+{
+  "url": "https://developers.openai.com/codex/cli",
+  "accessedAt": "2026-10-15T03:45:27.374Z",
+  "httpStatus": 200,
+  "sha256": "46ea7e113136ddbdecf7a45c392a99c572d0e388240e64a3146e4f889f5320bd",
+  "matchedTerms": [
+    "Codex CLI"
+  ],
+  "boundary": "Current official installation documentation is background; fixed 0.156.0 package and runtime identities are recorded separately."
+}

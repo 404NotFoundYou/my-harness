@@ -1,0 +1,210 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-15T03:38:13.554Z",
+  "image": "docker.io/library/node@sha256:c385ec44d77c785e2364ac0c9b150809a0fdc17fde3dbf061e3dad07242c6a85",
+  "actualModelCalls": 0,
+  "realMemoryPathsAccessed": 0,
+  "hostControls": {
+    "inside.txt": {
+      "exists": true,
+      "sha256": "f3a232d236851f9f159e7de502bd01ef5a5767d54816967e74fdc09b0c9628f7"
+    },
+    "outside.txt": {
+      "exists": true,
+      "sha256": "89dfb3740e8f173199ccdf6ac65abd368f1122f58dc28fb60067adfe5275067d"
+    },
+    "MEMORY.md": {
+      "exists": true,
+      "sha256": "a1c0b14978c99f2fbc18ee6fede4bbb41ec0531e45f66bee243f30f9563949f7"
+    }
+  },
+  "container": {
+    "idSha256": "afe24eddeb037fcd7bdb2154324125d0b42240933bd72527fe5a14b1a67d490c",
+    "createArgs": [
+      "create",
+      "--name",
+      "ai-harness-linux-codex-4e33771d-da13-4413-93d7-9805a2465f5d",
+      "--pull",
+      "never",
+      "--network",
+      "none",
+      "--read-only",
+      "--user",
+      "65534:65534",
+      "--cap-drop",
+      "ALL",
+      "--security-opt",
+      "no-new-privileges:true",
+      "--pids-limit",
+      "128",
+      "--memory",
+      "1536m",
+      "--cpus",
+      "2",
+      "--restart",
+      "no",
+      "--env",
+      "HOME=/tmp/home",
+      "--env",
+      "CODEX_HOME=/tmp/codex-home",
+      "--env",
+      "PATH=/opt/runtime/bin:/usr/local/bin:/usr/bin:/bin",
+      "--tmpfs",
+      "/tmp:rw,exec,nosuid,nodev,size=256m,mode=1777",
+      "--tmpfs",
+      "/opt/runtime:rw,exec,nosuid,nodev,size=512m,mode=0777",
+      "--mount",
+      "type=bind,src=<temporary-package-cache>,dst=/packages,readonly",
+      "--mount",
+      "type=bind,src=<analysis-item>\\linux-runtime-inner.mjs,dst=/probe/linux-runtime-inner.mjs,readonly",
+      "--mount",
+      "type=bind,src=<temporary-fixtures>\\workspace,dst=/probe/workspace,readonly",
+      "--entrypoint",
+      "/usr/local/bin/node",
+      "docker.io/library/node@sha256:c385ec44d77c785e2364ac0c9b150809a0fdc17fde3dbf061e3dad07242c6a85",
+      "/probe/linux-runtime-inner.mjs"
+    ],
+    "configuration": {
+      "image": "sha256:c385ec44d77c785e2364ac0c9b150809a0fdc17fde3dbf061e3dad07242c6a85",
+      "networkMode": "none",
+      "readOnlyRoot": true,
+      "user": "65534:65534",
+      "capDrop": [
+        "ALL"
+      ],
+      "securityOptions": [
+        "no-new-privileges:true"
+      ],
+      "mounts": [
+        {
+          "type": "bind",
+          "destination": "/packages",
+          "readWrite": false,
+          "sourceSha256": "1c5d10cb4a985c6b46a720bb34737d607cd945151fe90dfd1fa17c47347bb8b3"
+        },
+        {
+          "type": "bind",
+          "destination": "/probe/linux-runtime-inner.mjs",
+          "readWrite": false,
+          "sourceSha256": "8131c69991a4aa28a650368ef8ebf62e991f46e8bc823c217c6af5d437a14f91"
+        },
+        {
+          "type": "bind",
+          "destination": "/probe/workspace",
+          "readWrite": false,
+          "sourceSha256": "e4f54e772733a8c13836ab6faff115be2601ceacca689011c8af3f2382adf2b9"
+        }
+      ]
+    }
+  },
+  "cleanup": {
+    "emergencyRemoval": {
+      "exitCode": 0,
+      "errorCode": null
+    },
+    "temporaryFixturesRemoved": true
+  },
+  "verified": false,
+  "boundary": "",
+  "packageInputs": [
+    {
+      "name": "openai-codex-0.156.0.tgz",
+      "sha256": "5ce491a5ba3c0c2489594dfb6807c7c0b51166882e080772659f06f0c1fdc5d6"
+    },
+    {
+      "name": "openai-codex-0.156.0-linux-x64.tgz",
+      "sha256": "e16d3ee5f51562cdb83a523ac5f2b8929fe4693c744e1484d478112f52e3a239"
+    }
+  ],
+  "dockerBefore": {
+    "images": {
+      "count": 2,
+      "sha256": "32b3aad2ac0a2708c8c56f8beec87828ee1d11c57cddd56416e8ff0b72abafeb"
+    },
+    "containers": {
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "volumes": {
+      "count": 40,
+      "sha256": "1506bb11bf8a7aec142db12b10a723319902aabe99f7f702e80ce5e990580014"
+    }
+  },
+  "runtime": {
+    "schemaVersion": 1,
+    "recordedAt": "2026-10-15T03:38:14.757Z",
+    "actualModelCalls": 0,
+    "simulatedCliSessions": 3,
+    "localProviderRequests": 3,
+    "realMemoryPathsAccessed": 0,
+    "packageInstall": [
+      {
+        "file": "openai-codex-0.156.0.tgz",
+        "bytes": 4902,
+        "sha256": "5ce491a5ba3c0c2489594dfb6807c7c0b51166882e080772659f06f0c1fdc5d6",
+        "destination": "/opt/runtime/lib/node_modules/@openai/codex"
+      },
+      {
+        "file": "openai-codex-0.156.0-linux-x64.tgz",
+        "bytes": 148509615,
+        "sha256": "e16d3ee5f51562cdb83a523ac5f2b8929fe4693c744e1484d478112f52e3a239",
+        "destination": "/opt/runtime/lib/node_modules/@openai/codex-linux-x64"
+      }
+    ],
+    "identity": {
+      "node": "v22.20.0",
+      "cliVersion": "codex-cli 0.156.0",
+      "wrapperSha256": "61b0194f3bb6534439c8d26a3ed57d0805f84b884588b761795323eeb92fcf70",
+      "nativeBinarySha256": "78a11f06e0a2dda42d13fba1d50dc62e8cbdb2d5f69789722f4d4d99b5cdbe30"
+    },
+    "memoryRows": [
+      {
+        "disabled": false,
+        "request": {
+          "requestSha256": "253297312e66686b1a0086b405eca08f59390091e054381e3fd3554013b112e0",
+          "contextMarkerPresent": true,
+          "memoryMarkerPresent": true,
+          "authorizationHeaderPresent": false,
+          "toolNames": []
+        },
+        "eventTypes": [
+          "thread.started",
+          "turn.started",
+          "item.completed",
+          "turn.completed"
+        ],
+        "stderrBytes": 217,
+        "completed": true
+      },
+      {
+        "disabled": true,
+        "request": {
+          "requestSha256": "2a0d72305febf68da6e86794a9f15d890bc38f5e8dc06131dce2c0769fcb8f7a",
+          "contextMarkerPresent": true,
+          "memoryMarkerPresent": false,
+          "authorizationHeaderPresent": false,
+          "toolNames": []
+        },
+        "eventTypes": [
+          "thread.started",
+          "turn.started",
+          "item.completed",
+          "turn.completed"
+        ],
+        "stderrBytes": 217,
+        "completed": true
+      }
+    ],
+    "tool": {},
+    "verified": false,
+    "boundary": "",
+    "error": {
+      "code": "ERR_ASSERTION",
+      "message": "exec_command not exposed: []\n\n[] !== undefined\n"
+    }
+  },
+  "error": {
+    "code": "ERR_ASSERTION",
+    "message": "Runtime probe failed: \n\n1 !== 0\n"
+  }
+}
