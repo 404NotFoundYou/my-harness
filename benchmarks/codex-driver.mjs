@@ -4,7 +4,7 @@ import { readFile, writeFile } from "node:fs/promises";
 import { redact } from "../.ai-harness/src/evidence.mjs";
 import { saveJson } from "./runner.mjs";
 import { createToolTiming, toolCategory } from "./timing.mjs";
-import { completedRun, parseFinal, redactProtocolValue, responseSchema } from "./protocol.mjs";
+import { completedRun, inspectFinal, parseFinal, redactProtocolValue, responseSchema } from "./protocol.mjs";
 
 export function codexProtocol(events) {
   events = events.map(redactProtocolValue);
@@ -34,7 +34,7 @@ export function codexDriver(cli) {
       let stderr = "", pending = "", timedOut = false, toolLimit = false, spawnError = null, unparsedLines = 0;
       const protocolLines = [];
       const events = [], toolIds = new Set();
-      const timing = createToolTiming();
+      const timing = createToolTiming({messages:true});
       function stop() {
         if (!child.pid) return;
         if (process.platform === "win32") {
@@ -54,6 +54,7 @@ export function codexDriver(cli) {
         protocolLines.push(JSON.stringify(event));
         events.push(event);
         timing.protocol(at, event.type === "turn.completed");
+        if (event.type === "item.completed" && event.item?.type === "agent_message") timing.message(at, Boolean(parseFinal(event.item.text)));
         if (event.item && ["command_execution","file_change","mcp_tool_call","web_search"].includes(event.item.type)) {
           toolIds.add(event.item.id);
           if (event.type === "item.started") timing.start(event.item.id, at, toolCategory(event.item.type, event.item.command));
@@ -79,9 +80,17 @@ export function codexDriver(cli) {
     });
     await writeFile(path.join(outputDirectory,"events.jsonl"),result.stdout);
     await writeFile(path.join(outputDirectory,"stderr.txt"),result.stderr);
-    let final=null;try{final=parseFinal(await readFile(finalFile,"utf8"));}catch{}
+    let final=null,finalOutput;
+    try {
+      const bytes=await readFile(finalFile),observed=inspectFinal(bytes.toString("utf8"));
+      final=observed.final;
+      finalOutput={version:1,status:observed.status,exists:true,bytes:bytes.length,errorCode:null};
+    } catch (error) {
+      const code=typeof error.code === "string" && /^[A-Z][A-Z0-9_]{0,63}$/.test(error.code) ? error.code : null;
+      finalOutput={version:1,status:code === "ENOENT" ? "missing" : "unreadable",exists:code === "ENOENT" ? false : null,bytes:null,errorCode:code};
+    }
     await writeFile(finalFile, JSON.stringify(final, null, 2) + "\n");
-    return {...result,stdout:undefined,stderr:undefined,final,
+    return {...result,stdout:undefined,stderr:undefined,final,finalOutput,
       completed:completedRun(result, final)};
   };
 }

@@ -56,7 +56,7 @@ for(const client of ["codex","claude","gemini"]){
         syncBuiltinESMExports();
         const result=await clientDriver(client,"synthetic.mjs")({root:directory,model:"synthetic",prompt:"No model or network calls",budget:{timeoutMs:1000,maxToolCalls:80},outputDirectory:directory});
         const points=result.timing.lifecycle;
-        assert.equal(points?.version,1,"lifecycle points must be an explicit optional measurement version");
+        assert.equal(points?.version,client === "codex" ? 2 : 1,"Codex message observations use a new version while other clients retain their existing measurements");
         assert.equal(points.firstProtocolEventMs,scenario==="spawn-error"?null:2,"absent output is unknown rather than zero latency");
         assert.equal(points.terminalEventMs,["await-response","spawn-error"].includes(scenario)?null:scenario==="buffered-terminal"?16:10);
         assert.equal(points.processExitMs,scenario==="spawn-error"?null:scenario.startsWith("await-")?40:12);
@@ -77,4 +77,13 @@ for(const client of ["codex","claude","gemini"]){
 test("protocol timing preserves zero and uses the last terminal event like the protocol reader",()=>{
   const timing=createToolTiming();timing.protocol(0,false);timing.protocol(3,true);timing.protocol(4,true);timing.exited(5);timing.closed(6);
   assert.deepEqual(timing.summarize(6).lifecycle,{version:1,firstProtocolEventMs:0,terminalEventMs:4,processExitMs:5,processCloseMs:6});
+});
+
+test("message observations preserve real zero and distinguish later commentary from a valid response",()=>{
+  const timing=createToolTiming({messages:true});timing.protocol(0);timing.message(0,true);
+  assert.equal(timing.summarize(0).lifecycle.lastFinalResponseMs,0,"an observed zero is not an unknown timestamp");
+  timing.message(3);timing.message(4,true);timing.message(5);
+  const points=timing.summarize(7).lifecycle;
+  assert.equal(points.lastAssistantMessageMs,5);assert.equal(points.lastFinalResponseMs,4);
+  assert.equal(points.terminalEventMs,null,"a response-shaped message cannot create a terminal protocol event");
 });

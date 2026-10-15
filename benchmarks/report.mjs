@@ -8,7 +8,7 @@ import { readExecutionLedger } from "./execution.mjs";
 import { validateExperimentProtocol } from "./experiment.mjs";
 import { hash } from "./runner.mjs";
 import { trialStatistics } from "./statistics.mjs";
-import { redactProtocolValue } from "./protocol.mjs";
+import { redactProtocolValue, validFinalOutput } from "./protocol.mjs";
 import { inspectLock } from "../.ai-harness/src/locking.mjs";
 
 const metrics=["durationMs","toolCalls","inputTokens","outputTokens"];
@@ -30,15 +30,18 @@ function median(values){
 }
 function completionTiming(value,durationMs){
   const lifecycle=value.lifecycle;
-  requireValue(lifecycle==null||(typeof lifecycle==="object"&&!Array.isArray(lifecycle)&&lifecycle.version===1),"INVALID_MEASUREMENT");
+  requireValue(lifecycle==null||(typeof lifecycle==="object"&&!Array.isArray(lifecycle)&&[1,2].includes(lifecycle.version)),"INVALID_MEASUREMENT");
   requireValue(value.spans==null||Array.isArray(value.spans),"INVALID_MEASUREMENT");
   const point=raw=>{const at=measurement(raw);requireValue(at===null||durationMs===null||at<=durationMs,"INVALID_MEASUREMENT");return at;};
   const ends=(value.spans||[]).filter(span=>span?.complete===true).map(span=>point(span.endMs)).filter(at=>at!==null);
   const lastToolEndMs=ends.length?Math.max(...ends):null;
   const firstProtocolEventMs=point(lifecycle?.firstProtocolEventMs),terminalEventMs=point(lifecycle?.terminalEventMs);
   const processExitMs=point(lifecycle?.processExitMs),processCloseMs=point(lifecycle?.processCloseMs);
+  const lastAssistantMessageMs=lifecycle?.version===2?point(lifecycle.lastAssistantMessageMs):null;
+  const lastFinalResponseMs=lifecycle?.version===2?point(lifecycle.lastFinalResponseMs):null;
+  requireValue(lastFinalResponseMs===null||lastAssistantMessageMs!==null&&lastFinalResponseMs<=lastAssistantMessageMs,"INVALID_MEASUREMENT");
   const gap=(later,earlier)=>later!==null&&earlier!==null&&later>=earlier?later-earlier:null;
-  return {firstProtocolEventMs,terminalEventMs,processExitMs,processCloseMs,lastToolEndMs,afterLastToolMs:gap(durationMs,lastToolEndMs),
+  return {firstProtocolEventMs,terminalEventMs,processExitMs,processCloseMs,lastAssistantMessageMs,lastFinalResponseMs,lastToolEndMs,afterLastToolMs:gap(durationMs,lastToolEndMs),
     terminalAfterLastToolMs:gap(terminalEventMs,lastToolEndMs),exitAfterTerminalMs:gap(processExitMs,terminalEventMs),closeAfterExitMs:gap(processCloseMs,processExitMs)};
 }
 function normalizedTiming(value,durationMs){
@@ -69,6 +72,8 @@ function trial(row,entry){
   const usage=row.run.usage;
   requireValue(usage===undefined||usage===null||(typeof usage==="object"&&!Array.isArray(usage)),"INVALID_MEASUREMENT");
   const timing=normalizedTiming(row.run.timing,measurement(row.run.durationMs));
+  const finalOutput=row.run.finalOutput??null;
+  requireValue(finalOutput===null||validFinalOutput(finalOutput),"INVALID_MEASUREMENT");
   const failures=[];
   if(!row.grade.ok)failures.push("functional-failed");
   if(!row.scope.ok)failures.push("scope-failed");
@@ -83,7 +88,7 @@ function trial(row,entry){
   return {resultFile:`${entry.directory}/result.json`,functional:row.grade.ok,sharedDelivery:Boolean(row.run.completed&&row.scope.ok&&row.grade.ok),fullDelivery:row.success,
     failures,censored,censorUnknown:!censored&&(row.run.timedOut==null||row.run.toolLimit==null),
     measurements:{durationMs:measurement(row.run.durationMs),toolCalls:measurement(row.run.toolCalls,true),inputTokens:measurement(usage?.input_tokens,true),outputTokens:measurement(usage?.output_tokens,true)},
-    timing,terminalObserved:row.run.turnCompleted??null};
+    timing,finalOutput,terminalObserved:row.run.turnCompleted??null};
 }
 function timingSummary(trials){
   const known=trials.filter(row=>row.timing?.categories!==null&&row.timing?.categories!==undefined),categories=new Map();
@@ -202,16 +207,22 @@ function markdown(value){
     for(const entry of timing.categories)lines.push(`| ${side} / ${escape(entry.category)} | ${entry.calls} | ${entry.activeMs} | ${timing.observedSamples} / ${timing.unknownSamples} |`);
   }
   lines.push("","## 会话结束时间点","","本地接收时间，单位ms；终态事件收到不等于完整交付。","",
-    "| 题目 / 轮次 / 组别 | 首个协议事件 | 完成协议事件 | 进程exit | 进程close |","| --- | ---: | --- | ---: | ---: |");
+    "| 题目 / 轮次 / 组别 | 首个协议事件 | 最后assistant消息 | 最后格式合格响应 | 完成协议事件 | 进程exit | 进程close |","| --- | ---: | ---: | ---: | --- | ---: | ---: |");
   for(const pair of value.pairs)for(const side of ["baseline","harness"]){const row=pair[side],ending=row.timing?.completion;
     const observed=row.terminalObserved===true?"已收到":row.terminalObserved===false?"未收到":"未知";
-    lines.push(`| ${escape(pair.taskId)} / ${pair.trial} / ${side} | ${number(ending?.firstProtocolEventMs??null)} | ${number(ending?.terminalEventMs??null)}（${observed}） | ${number(ending?.processExitMs??null)} | ${number(ending?.processCloseMs??null)} |`);
+    lines.push(`| ${escape(pair.taskId)} / ${pair.trial} / ${side} | ${number(ending?.firstProtocolEventMs??null)} | ${number(ending?.lastAssistantMessageMs??null)} | ${number(ending?.lastFinalResponseMs??null)} | ${number(ending?.terminalEventMs??null)}（${observed}） | ${number(ending?.processExitMs??null)} | ${number(ending?.processCloseMs??null)} |`);
   }
   lines.push("","| 题目 / 轮次 / 组别 | 最后已结束工具 | 工具后观测间隔 | 完成事件至exit | exit至close |","| --- | ---: | ---: | ---: | ---: |");
   for(const pair of value.pairs)for(const side of ["baseline","harness"]){const ending=pair[side].timing?.completion;
     lines.push(`| ${escape(pair.taskId)} / ${pair.trial} / ${side} | ${number(ending?.lastToolEndMs??null)} | ${number(ending?.afterLastToolMs??null)} | ${number(ending?.exitAfterTerminalMs??null)} | ${number(ending?.closeAfterExitMs??null)} |`);
   }
   lines.push("","未记录的时间点保持未知；事件接收顺序反转时不计算该间隔。旧样本的工具后间隔可由已有spans恢复，不能解释为纯模型或网络耗时。");
+  lines.push("","## 最终输出文件诊断","","原文件规范化之前记录；格式合格不代表会话完成。旧记录保持未知。","",
+    "| 题目 / 轮次 / 组别 | 原文件状态 | 是否存在 | 原始字节数 | 读取错误码 |","| --- | --- | --- | ---: | --- |");
+  for(const pair of value.pairs)for(const side of ["baseline","harness"]){const output=pair[side].finalOutput;
+    const errorCode=output?output.errorCode??(output.status==="unreadable"?"未知":"无"):"未知";
+    lines.push(`| ${escape(pair.taskId)} / ${pair.trial} / ${side} | ${output?.status??"未知"} | ${output?.exists==null?"未知":String(output.exists)} | ${number(output?.bytes??null)} | ${errorCode} |`);
+  }
   lines.push("","## 解释边界","",...value.limitations.map(text=>`- ${escape(text)}`),"");return lines.join("\n");
 }
 

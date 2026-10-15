@@ -6,7 +6,7 @@ import { WORK_ID_PATTERN } from "../.ai-harness/src/constants.mjs";
 import { projectWorkflowContract } from "./task-contract.mjs";
 import { candidateDigest, validateCandidate } from "./candidates.mjs";
 import { hash } from "./runner.mjs";
-import { completedRun } from "./protocol.mjs";
+import { completedRun, parseFinal, validFinalOutput } from "./protocol.mjs";
 import { readProtocolTranscript } from "./client-drivers.mjs";
 
 export async function readExperimentFile(root, relative) {
@@ -24,6 +24,10 @@ export async function auditTrial(directory, protocol, task, group, trial, result
   const definition=protocol.tasks.find(entry=>entry.id===task.id);
   const row = JSON.parse(resultText ?? (await raw(`${folder}/result.json`)).toString("utf8"));
   assert.equal(row.mode, protocol.mode);
+  if (row.run.finalOutput != null) {
+    assert.ok(validFinalOutput(row.run.finalOutput), folder + ": invalid final output diagnostics");
+    assert.equal(row.run.finalOutput.status === "valid", Boolean(parseFinal(row.run.final)), folder + ": final output diagnostics contradict normalized final");
+  }
   if (extended) {
     assert.equal(row.trial, trial);
     if (protocol.mode === "real") assert.equal(row.run.completed, completedRun(row.run, row.run.final));

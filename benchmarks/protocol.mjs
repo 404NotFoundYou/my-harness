@@ -16,12 +16,22 @@ export function redactProtocolValue(value) {
   return value;
 }
 
-export function parseFinal(text) {
+export function inspectFinal(text) {
   try {
     const value = redactProtocolValue(typeof text === "string" ? JSON.parse(text.trim().replace(/^```(?:json)?\s*\n([\s\S]*?)\n```$/, "$1")) : text);
-    return value && !Array.isArray(value) && Object.keys(value).every(key => ["completed", "summary", "tests"].includes(key)) &&
+    const final = value && !Array.isArray(value) && Object.keys(value).every(key => ["completed", "summary", "tests"].includes(key)) &&
       typeof value.completed === "boolean" && typeof value.summary === "string" && Array.isArray(value.tests) && value.tests.every(entry => typeof entry === "string") ? value : null;
-  } catch { return null; }
+    return {status:final ? "valid" : "invalid-schema",final};
+  } catch { return {status:"invalid-json",final:null}; }
+}
+
+export function parseFinal(text) { return inspectFinal(text).final; }
+
+export function validFinalOutput(value) {
+  if (!value || Array.isArray(value) || value.version !== 1 || Object.keys(value).length !== 5) return false;
+  if (["valid", "invalid-json", "invalid-schema"].includes(value.status)) return value.exists === true && Number.isSafeInteger(value.bytes) && value.bytes >= (value.status === "valid" ? 1 : 0) && value.errorCode === null;
+  if (value.status === "missing") return value.exists === false && value.bytes === null && value.errorCode === "ENOENT";
+  return value.status === "unreadable" && value.exists === null && value.bytes === null && (value.errorCode === null || typeof value.errorCode === "string" && /^[A-Z][A-Z0-9_]{0,63}$/.test(value.errorCode));
 }
 
 export function completedRun(result, final) {

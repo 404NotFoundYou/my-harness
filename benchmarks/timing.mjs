@@ -18,14 +18,20 @@ function activeTime(spans, durationMs) {
   return total;
 }
 
-export function createToolTiming() {
+export function createToolTiming({ messages = false } = {}) {
   const tools = new Map();
-  const lifecycle = { version: 1, firstProtocolEventMs: null, terminalEventMs: null, processExitMs: null, processCloseMs: null };
+  const lifecycle = { version: messages ? 2 : 1, firstProtocolEventMs: null, terminalEventMs: null, processExitMs: null, processCloseMs: null,
+    ...(messages ? {lastAssistantMessageMs:null,lastFinalResponseMs:null} : {}) };
   const unmatchedEnds = new Set();
   return {
     protocol(at, terminal = false) {
       lifecycle.firstProtocolEventMs ??= at;
       if (terminal) lifecycle.terminalEventMs = at;
+    },
+    message(at, final = false) {
+      if (!messages) throw new Error("Message timing was not enabled");
+      lifecycle.lastAssistantMessageMs = at;
+      if (final) lifecycle.lastFinalResponseMs = at;
     },
     exited(at) { lifecycle.processExitMs ??= at; },
     closed(at) { lifecycle.processCloseMs ??= at; },

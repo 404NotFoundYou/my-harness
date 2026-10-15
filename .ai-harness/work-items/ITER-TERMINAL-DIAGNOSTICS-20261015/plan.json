@@ -1,0 +1,106 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "ITER-TERMINAL-DIAGNOSTICS-20261015",
+  "mode": "single",
+  "rationale": "单AI单纵向任务。Codex opt-in消息观察生成lifecycle v2，v1与其他客户端保持原状；协议公共解析保留原语义并提供诊断分类，run.finalOutput为可选版本1的安全标量记录，审计校验形状及与规范化final的一致性。报告展示新点和文件分类，历史未记录为null。先以模拟CLI和报告断言形成红证据再作最小实现，不改变completedRun或真实调用配置。",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "终态文件分类与最后响应时间诊断",
+      "module": "compact",
+      "status": "COMPLETED",
+      "attempt": 1,
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        "benchmarks/codex-driver.mjs",
+        "benchmarks/protocol.mjs",
+        "benchmarks/timing.mjs",
+        "benchmarks/audit-trial.mjs",
+        "benchmarks/report.mjs",
+        "benchmarks/tests/driver-diagnostics.test.mjs",
+        "benchmarks/tests/driver-timing.test.mjs",
+        "benchmarks/tests/report.test.mjs",
+        "benchmarks/README.md",
+        ".ai-harness/work-items/ITER-TERMINAL-DIAGNOSTICS-20261015/**"
+      ],
+      "verification": [
+        "node --test benchmarks/tests/driver-diagnostics.test.mjs benchmarks/tests/driver-timing.test.mjs benchmarks/tests/report.test.mjs",
+        "node --test benchmarks/tests/driver-diagnostics.test.mjs benchmarks/tests/driver-process.test.mjs benchmarks/tests/driver-timing.test.mjs benchmarks/tests/multifile.test.mjs benchmarks/tests/project-v2.test.mjs benchmarks/tests/report.test.mjs benchmarks/tests/resume.test.mjs benchmarks/tests/runner.test.mjs benchmarks/tests/spec-guidance.test.mjs benchmarks/tests/status.test.mjs",
+        "node --test .ai-harness/work-items/ITER-TERMINAL-DIAGNOSTICS-20261015/verify-history.test.mjs"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            "--test",
+            "benchmarks/tests/driver-diagnostics.test.mjs",
+            "benchmarks/tests/driver-timing.test.mjs",
+            "benchmarks/tests/report.test.mjs"
+          ]
+        },
+        {
+          "id": "V2",
+          "command": "node",
+          "args": [
+            "--test",
+            "benchmarks/tests/driver-diagnostics.test.mjs",
+            "benchmarks/tests/driver-process.test.mjs",
+            "benchmarks/tests/driver-timing.test.mjs",
+            "benchmarks/tests/multifile.test.mjs",
+            "benchmarks/tests/project-v2.test.mjs",
+            "benchmarks/tests/report.test.mjs",
+            "benchmarks/tests/resume.test.mjs",
+            "benchmarks/tests/runner.test.mjs",
+            "benchmarks/tests/spec-guidance.test.mjs",
+            "benchmarks/tests/status.test.mjs"
+          ]
+        },
+        {
+          "id": "V3",
+          "command": "node",
+          "args": [
+            "--test",
+            ".ai-harness/work-items/ITER-TERMINAL-DIAGNOSTICS-20261015/verify-history.test.mjs"
+          ]
+        }
+      ],
+      "docsImpact": [
+        "benchmarks/README.md",
+        ".ai-harness/work-items/ITER-TERMINAL-DIAGNOSTICS-20261015/summary.md"
+      ],
+      "reviewBatch": "R1",
+      "risk": "medium",
+      "owner": "primary-ai",
+      "verificationStatus": "pass",
+      "reviewStatus": "pass",
+      "evidence": [
+        "e74570ae-5380-42a5-8193-58670aac8914",
+        "ca708fa0-aa11-4ec8-b4ca-ed195fb4573e"
+      ],
+      "deferralApproval": null,
+      "verificationSource": {
+        "digest": "28fbcea0f84c8e2ece82e9ebfc23c5a41201bdd8ce53cc3af5f8f5898a49471a",
+        "document": ".ai-harness/work-items/ITER-TERMINAL-DIAGNOSTICS-20261015/snapshots/28fbcea0f84c8e2ece82e9ebfc23c5a41201bdd8ce53cc3af5f8f5898a49471a.json"
+      },
+      "reviewSource": {
+        "digest": "28fbcea0f84c8e2ece82e9ebfc23c5a41201bdd8ce53cc3af5f8f5898a49471a",
+        "document": ".ai-harness/work-items/ITER-TERMINAL-DIAGNOSTICS-20261015/snapshots/28fbcea0f84c8e2ece82e9ebfc23c5a41201bdd8ce53cc3af5f8f5898a49471a.json"
+      }
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "终态文件分类与最后响应时间诊断",
+      "risk": "medium",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": false
+    }
+  ],
+  "createdAt": "2026-10-15T01:08:23.761Z",
+  "updatedAt": "2026-10-15T01:19:54.729Z"
+}

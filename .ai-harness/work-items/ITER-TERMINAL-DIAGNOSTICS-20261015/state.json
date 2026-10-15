@@ -1,0 +1,242 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 1,
+  "id": "ITER-TERMINAL-DIAGNOSTICS-20261015",
+  "type": "ITERATION",
+  "title": "终态文件分类与最后响应时间诊断",
+  "status": "DONE",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/iteration.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户根据已提出的零模型终态诊断补强建议要求修改；仅实现本地可观测性和兼容测试/文档，不追加真实会话、放宽预算、修改记忆或宿主权限、部署或发布。"
+  },
+  "input": {
+    "references": [
+      "用户根据已说明建议要求修改：保存final原始身份/读取解析分类、最后assistant及有效最终响应接收点，用模拟CLI验证兼容性，无新增真实模型调用。"
+    ],
+    "acceptance": [
+      "模拟CLI验证有效、缺失、读取失败、非法JSON、schema不符及工具后超时的final分类和UTF8字节数；可用终态消息时间被记录、旧缺字段保持未知，旧评分和180秒/80工具及其他客户端行为不变，审计拒绝非法或矛盾诊断；相关定向与框架全套通过，498历史文件SHA不变，工作项DONE且check --ci成功。"
+    ],
+    "nonGoals": [],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": null,
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "用户根据已说明建议要求修改：保存final原始身份/读取解析分类、最后assistant及有效最终响应接收点，用模拟CLI验证兼容性，无新增真实模型调用。"
+    ],
+    "completedAt": "2026-10-15T01:08:23.661Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "eb5ca01ffa9f9c992a1424d1bf900540a6878979",
+      "dirty": false,
+      "changedFiles": [],
+      "fingerprints": {},
+      "source": {
+        "digest": "502e2cb4a9ca4c60189ee01d52c78f5979cdbdf57dd651ecc71e97778fd1dccc",
+        "document": ".ai-harness/work-items/ITER-TERMINAL-DIAGNOSTICS-20261015/snapshots/502e2cb4a9ca4c60189ee01d52c78f5979cdbdf57dd651ecc71e97778fd1dccc.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": ".ai-harness/work-items/ITER-TERMINAL-DIAGNOSTICS-20261015/solution.md",
+    "evidence": [
+      "单AI单纵向任务。Codex opt-in消息观察生成lifecycle v2，v1与其他客户端保持原状；协议公共解析保留原语义并提供诊断分类，run.finalOutput为可选版本1的安全标量记录，审计校验形状及与规范化final的一致性。报告展示新点和文件分类，历史未记录为null。先以模拟CLI和报告断言形成红证据再作最小实现，不改变completedRun或真实调用配置。"
+    ],
+    "completedAt": "2026-10-15T01:08:23.753Z"
+  },
+  "database": {
+    "impact": "none",
+    "status": "not-applicable",
+    "document": null,
+    "evidence": [
+      "仅本地基准CLI事件/最终文件诊断和隔离模拟夹具，无数据库或真实业务数据影响。"
+    ],
+    "completedAt": "2026-10-15T01:08:23.757Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/ITER-TERMINAL-DIAGNOSTICS-20261015/plan.json",
+    "approved": true,
+    "approvalRef": "用户根据已提出的零模型终态诊断补强建议要求修改；仅实现本地可观测性和兼容测试/文档，不追加真实会话、放宽预算、修改记忆或宿主权限、部署或发布。"
+  },
+  "verification": {
+    "status": "pass",
+    "evidence": [
+      "48bd1ca0-ebbe-4a07-b780-f824db94b6e3"
+    ],
+    "stages": [],
+    "source": {
+      "digest": "28fbcea0f84c8e2ece82e9ebfc23c5a41201bdd8ce53cc3af5f8f5898a49471a",
+      "document": ".ai-harness/work-items/ITER-TERMINAL-DIAGNOSTICS-20261015/snapshots/28fbcea0f84c8e2ece82e9ebfc23c5a41201bdd8ce53cc3af5f8f5898a49471a.json"
+    }
+  },
+  "review": {
+    "status": "pass",
+    "evidence": [
+      "d15c503b-47c8-40e6-9392-c7c30fd8913a"
+    ],
+    "independent": false,
+    "source": {
+      "digest": "28fbcea0f84c8e2ece82e9ebfc23c5a41201bdd8ce53cc3af5f8f5898a49471a",
+      "document": ".ai-harness/work-items/ITER-TERMINAL-DIAGNOSTICS-20261015/snapshots/28fbcea0f84c8e2ece82e9ebfc23c5a41201bdd8ce53cc3af5f8f5898a49471a.json"
+    }
+  },
+  "acceptance": {
+    "status": "pass",
+    "evidence": [
+      "a851a437-2be0-487d-97d2-b144eb4a367d"
+    ],
+    "source": {
+      "digest": "28fbcea0f84c8e2ece82e9ebfc23c5a41201bdd8ce53cc3af5f8f5898a49471a",
+      "document": ".ai-harness/work-items/ITER-TERMINAL-DIAGNOSTICS-20261015/snapshots/28fbcea0f84c8e2ece82e9ebfc23c5a41201bdd8ce53cc3af5f8f5898a49471a.json"
+    }
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "pass",
+    "evidence": [
+      "08b44942-1199-4927-aede-e5f9fac9ac66"
+    ]
+  },
+  "blocked": null,
+  "delivery": {
+    "source": {
+      "digest": "28fbcea0f84c8e2ece82e9ebfc23c5a41201bdd8ce53cc3af5f8f5898a49471a",
+      "document": ".ai-harness/work-items/ITER-TERMINAL-DIAGNOSTICS-20261015/snapshots/28fbcea0f84c8e2ece82e9ebfc23c5a41201bdd8ce53cc3af5f8f5898a49471a.json"
+    },
+    "baseline": {
+      "digest": "502e2cb4a9ca4c60189ee01d52c78f5979cdbdf57dd651ecc71e97778fd1dccc",
+      "document": ".ai-harness/work-items/ITER-TERMINAL-DIAGNOSTICS-20261015/snapshots/502e2cb4a9ca4c60189ee01d52c78f5979cdbdf57dd651ecc71e97778fd1dccc.json"
+    },
+    "baselineAt": "2026-10-15T01:08:23.661Z",
+    "ownedChanges": [
+      {
+        "path": "benchmarks/README.md",
+        "before": "100644:9f6025b814fd158f57e5d682d122822a994debe8",
+        "after": "100644:95553afa6f8f98940d8d0ead492e3e50b7edd308"
+      },
+      {
+        "path": "benchmarks/audit-trial.mjs",
+        "before": "100644:d08c5497609ea8c041680caa3922d8b258d3376d",
+        "after": "100644:407d4ffb7341ebd8de1715ec4a39a068c09a6ddc"
+      },
+      {
+        "path": "benchmarks/codex-driver.mjs",
+        "before": "100644:e6839b58bc289856fdd24e9a9b82cbd48cdbe93e",
+        "after": "100644:24022134ba19bde9b4a47f9b2374063779bb5cc7"
+      },
+      {
+        "path": "benchmarks/protocol.mjs",
+        "before": "100644:80eb846325b505013d4f9627224ad246205af382",
+        "after": "100644:bda8837279804c37ef1df3b76df00c0b82ba7529"
+      },
+      {
+        "path": "benchmarks/report.mjs",
+        "before": "100644:cc13d4d344dfd6371e2f1c3b23811aa007c4417a",
+        "after": "100644:f517e5aa5c5fe21d0291dc68267978cd5419cb0d"
+      },
+      {
+        "path": "benchmarks/tests/driver-diagnostics.test.mjs",
+        "before": null,
+        "after": "100644:c783c466caff6595bb6f7072e979cc18b5355ba8"
+      },
+      {
+        "path": "benchmarks/tests/driver-timing.test.mjs",
+        "before": "100644:7bc786cb4d42b7a416fa148c19b1495e4640da79",
+        "after": "100644:cc6c9c9a6400c60218bd08aec4e55a1bf0d2a0b2"
+      },
+      {
+        "path": "benchmarks/tests/report.test.mjs",
+        "before": "100644:93e6ded285601aac121e74611e875dcca1852b81",
+        "after": "100644:bdfea3a675b011f9102ddb2814f82526890daf47"
+      },
+      {
+        "path": "benchmarks/timing.mjs",
+        "before": "100644:ccc1364525cca268a670abcc037993e4a09b5c3e",
+        "after": "100644:380dcfe8898d2a7af35f4e5ee5e96128352fde5a"
+      }
+    ],
+    "planDigest": "59f6fee246ce9461500be4403e04821cba21789118b66a51fa0d99afa50ac729",
+    "at": "2026-10-15T01:19:58.174Z",
+    "head": "eb5ca01ffa9f9c992a1424d1bf900540a6878979"
+  },
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-10-15T01:08:23.542Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-10-15T01:08:23.552Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-10-15T01:08:23.748Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-10-15T01:08:23.782Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-10-15T01:08:23.786Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "VERIFYING",
+      "at": "2026-10-15T01:19:54.745Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "VERIFYING",
+      "to": "CODE_REVIEW",
+      "at": "2026-10-15T01:19:55.358Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "CODE_REVIEW",
+      "to": "READY_FOR_ACCEPTANCE",
+      "at": "2026-10-15T01:19:56.024Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "READY_FOR_ACCEPTANCE",
+      "to": "DONE",
+      "at": "2026-10-15T01:19:58.283Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-10-15T01:08:23.542Z",
+  "updatedAt": "2026-10-15T01:19:58.283Z"
+}

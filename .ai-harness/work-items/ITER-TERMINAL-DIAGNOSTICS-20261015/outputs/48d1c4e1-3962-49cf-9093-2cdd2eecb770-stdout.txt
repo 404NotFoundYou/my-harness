@@ -1,0 +1,542 @@
+TAP version 13
+# Subtest: original final valid remains diagnosable without promoting an incomplete delivery
+not ok 1 - original final valid remains diagnosable without promoting an incomplete delivery
+  ---
+  duration_ms: 15.6626
+  type: 'test'
+  location: 'D:\\Projects\\my-harness\\benchmarks\\tests\\driver-diagnostics.test.mjs:28:31'
+  failureType: 'testCodeFailure'
+  error: |-
+    canonical null must not erase the reason that the original CLI final could not be used
+    + actual - expected
+    
+    + undefined
+    - {
+    -   bytes: 84,
+    -   errorCode: null,
+    -   exists: true,
+    -   status: 'valid',
+    -   version: 1
+    - }
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+    version: 1
+    status: 'valid'
+    exists: true
+    bytes: 84
+    errorCode: ~
+  operator: 'deepStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///D:/Projects/my-harness/benchmarks/tests/driver-diagnostics.test.mjs:67:12)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+# Subtest: original final fenced remains diagnosable without promoting an incomplete delivery
+not ok 2 - original final fenced remains diagnosable without promoting an incomplete delivery
+  ---
+  duration_ms: 5.8907
+  type: 'test'
+  location: 'D:\\Projects\\my-harness\\benchmarks\\tests\\driver-diagnostics.test.mjs:28:31'
+  failureType: 'testCodeFailure'
+  error: |-
+    canonical null must not erase the reason that the original CLI final could not be used
+    + actual - expected
+    
+    + undefined
+    - {
+    -   bytes: 96,
+    -   errorCode: null,
+    -   exists: true,
+    -   status: 'valid',
+    -   version: 1
+    - }
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+    version: 1
+    status: 'valid'
+    exists: true
+    bytes: 96
+    errorCode: ~
+  operator: 'deepStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///D:/Projects/my-harness/benchmarks/tests/driver-diagnostics.test.mjs:67:12)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: original final missing remains diagnosable without promoting an incomplete delivery
+not ok 3 - original final missing remains diagnosable without promoting an incomplete delivery
+  ---
+  duration_ms: 4.7823
+  type: 'test'
+  location: 'D:\\Projects\\my-harness\\benchmarks\\tests\\driver-diagnostics.test.mjs:28:31'
+  failureType: 'testCodeFailure'
+  error: |-
+    canonical null must not erase the reason that the original CLI final could not be used
+    + actual - expected
+    
+    + undefined
+    - {
+    -   bytes: null,
+    -   errorCode: 'ENOENT',
+    -   exists: false,
+    -   status: 'missing',
+    -   version: 1
+    - }
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+    version: 1
+    status: 'missing'
+    exists: false
+    bytes: ~
+    errorCode: 'ENOENT'
+  operator: 'deepStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///D:/Projects/my-harness/benchmarks/tests/driver-diagnostics.test.mjs:67:12)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: original final invalid-json remains diagnosable without promoting an incomplete delivery
+not ok 4 - original final invalid-json remains diagnosable without promoting an incomplete delivery
+  ---
+  duration_ms: 5.3268
+  type: 'test'
+  location: 'D:\\Projects\\my-harness\\benchmarks\\tests\\driver-diagnostics.test.mjs:28:31'
+  failureType: 'testCodeFailure'
+  error: |-
+    canonical null must not erase the reason that the original CLI final could not be used
+    + actual - expected
+    
+    + undefined
+    - {
+    -   bytes: 11,
+    -   errorCode: null,
+    -   exists: true,
+    -   status: 'invalid-json',
+    -   version: 1
+    - }
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+    version: 1
+    status: 'invalid-json'
+    exists: true
+    bytes: 11
+    errorCode: ~
+  operator: 'deepStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///D:/Projects/my-harness/benchmarks/tests/driver-diagnostics.test.mjs:67:12)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: original final invalid-schema remains diagnosable without promoting an incomplete delivery
+not ok 5 - original final invalid-schema remains diagnosable without promoting an incomplete delivery
+  ---
+  duration_ms: 4.6668
+  type: 'test'
+  location: 'D:\\Projects\\my-harness\\benchmarks\\tests\\driver-diagnostics.test.mjs:28:31'
+  failureType: 'testCodeFailure'
+  error: |-
+    canonical null must not erase the reason that the original CLI final could not be used
+    + actual - expected
+    
+    + undefined
+    - {
+    -   bytes: 41,
+    -   errorCode: null,
+    -   exists: true,
+    -   status: 'invalid-schema',
+    -   version: 1
+    - }
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+    version: 1
+    status: 'invalid-schema'
+    exists: true
+    bytes: 41
+    errorCode: ~
+  operator: 'deepStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///D:/Projects/my-harness/benchmarks/tests/driver-diagnostics.test.mjs:67:12)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: original final unreadable remains diagnosable without promoting an incomplete delivery
+not ok 6 - original final unreadable remains diagnosable without promoting an incomplete delivery
+  ---
+  duration_ms: 5.4956
+  type: 'test'
+  location: 'D:\\Projects\\my-harness\\benchmarks\\tests\\driver-diagnostics.test.mjs:28:31'
+  failureType: 'testCodeFailure'
+  error: |-
+    canonical null must not erase the reason that the original CLI final could not be used
+    + actual - expected
+    
+    + undefined
+    - {
+    -   bytes: null,
+    -   errorCode: 'EACCES',
+    -   exists: null,
+    -   status: 'unreadable',
+    -   version: 1
+    - }
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+    version: 1
+    status: 'unreadable'
+    exists: ~
+    bytes: ~
+    errorCode: 'EACCES'
+  operator: 'deepStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///D:/Projects/my-harness/benchmarks/tests/driver-diagnostics.test.mjs:67:12)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: original final valid-without-terminal remains diagnosable without promoting an incomplete delivery
+not ok 7 - original final valid-without-terminal remains diagnosable without promoting an incomplete delivery
+  ---
+  duration_ms: 5.0681
+  type: 'test'
+  location: 'D:\\Projects\\my-harness\\benchmarks\\tests\\driver-diagnostics.test.mjs:28:31'
+  failureType: 'testCodeFailure'
+  error: |-
+    canonical null must not erase the reason that the original CLI final could not be used
+    + actual - expected
+    
+    + undefined
+    - {
+    -   bytes: 84,
+    -   errorCode: null,
+    -   exists: true,
+    -   status: 'valid',
+    -   version: 1
+    - }
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+    version: 1
+    status: 'valid'
+    exists: true
+    bytes: 84
+    errorCode: ~
+  operator: 'deepStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///D:/Projects/my-harness/benchmarks/tests/driver-diagnostics.test.mjs:67:12)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: original final timeout-after-tool remains diagnosable without promoting an incomplete delivery
+not ok 8 - original final timeout-after-tool remains diagnosable without promoting an incomplete delivery
+  ---
+  duration_ms: 4.967
+  type: 'test'
+  location: 'D:\\Projects\\my-harness\\benchmarks\\tests\\driver-diagnostics.test.mjs:28:31'
+  failureType: 'testCodeFailure'
+  error: |-
+    canonical null must not erase the reason that the original CLI final could not be used
+    + actual - expected
+    
+    + undefined
+    - {
+    -   bytes: 84,
+    -   errorCode: null,
+    -   exists: true,
+    -   status: 'valid',
+    -   version: 1
+    - }
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+    version: 1
+    status: 'valid'
+    exists: true
+    bytes: 84
+    errorCode: ~
+  operator: 'deepStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///D:/Projects/my-harness/benchmarks/tests/driver-diagnostics.test.mjs:67:12)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: codex lifecycle distinguishes normal without changing completion rules
+ok 9 - codex lifecycle distinguishes normal without changing completion rules
+  ---
+  duration_ms: 14.3129
+  type: 'test'
+  ...
+# Subtest: codex lifecycle distinguishes await-response without changing completion rules
+ok 10 - codex lifecycle distinguishes await-response without changing completion rules
+  ---
+  duration_ms: 4.9423
+  type: 'test'
+  ...
+# Subtest: codex lifecycle distinguishes await-exit without changing completion rules
+ok 11 - codex lifecycle distinguishes await-exit without changing completion rules
+  ---
+  duration_ms: 4.3426
+  type: 'test'
+  ...
+# Subtest: codex lifecycle distinguishes exit-before-close without changing completion rules
+ok 12 - codex lifecycle distinguishes exit-before-close without changing completion rules
+  ---
+  duration_ms: 5.1283
+  type: 'test'
+  ...
+# Subtest: codex lifecycle distinguishes buffered-terminal without changing completion rules
+ok 13 - codex lifecycle distinguishes buffered-terminal without changing completion rules
+  ---
+  duration_ms: 4.449
+  type: 'test'
+  ...
+# Subtest: codex lifecycle distinguishes spawn-error without changing completion rules
+ok 14 - codex lifecycle distinguishes spawn-error without changing completion rules
+  ---
+  duration_ms: 4.0765
+  type: 'test'
+  ...
+# Subtest: claude lifecycle distinguishes normal without changing completion rules
+ok 15 - claude lifecycle distinguishes normal without changing completion rules
+  ---
+  duration_ms: 4.1303
+  type: 'test'
+  ...
+# Subtest: claude lifecycle distinguishes await-response without changing completion rules
+ok 16 - claude lifecycle distinguishes await-response without changing completion rules
+  ---
+  duration_ms: 3.3566
+  type: 'test'
+  ...
+# Subtest: claude lifecycle distinguishes await-exit without changing completion rules
+ok 17 - claude lifecycle distinguishes await-exit without changing completion rules
+  ---
+  duration_ms: 4.4578
+  type: 'test'
+  ...
+# Subtest: claude lifecycle distinguishes exit-before-close without changing completion rules
+ok 18 - claude lifecycle distinguishes exit-before-close without changing completion rules
+  ---
+  duration_ms: 3.5629
+  type: 'test'
+  ...
+# Subtest: claude lifecycle distinguishes buffered-terminal without changing completion rules
+ok 19 - claude lifecycle distinguishes buffered-terminal without changing completion rules
+  ---
+  duration_ms: 3.3597
+  type: 'test'
+  ...
+# Subtest: claude lifecycle distinguishes spawn-error without changing completion rules
+ok 20 - claude lifecycle distinguishes spawn-error without changing completion rules
+  ---
+  duration_ms: 2.36
+  type: 'test'
+  ...
+# Subtest: gemini lifecycle distinguishes normal without changing completion rules
+ok 21 - gemini lifecycle distinguishes normal without changing completion rules
+  ---
+  duration_ms: 4.2775
+  type: 'test'
+  ...
+# Subtest: gemini lifecycle distinguishes await-response without changing completion rules
+ok 22 - gemini lifecycle distinguishes await-response without changing completion rules
+  ---
+  duration_ms: 2.9767
+  type: 'test'
+  ...
+# Subtest: gemini lifecycle distinguishes await-exit without changing completion rules
+ok 23 - gemini lifecycle distinguishes await-exit without changing completion rules
+  ---
+  duration_ms: 3.3255
+  type: 'test'
+  ...
+# Subtest: gemini lifecycle distinguishes exit-before-close without changing completion rules
+ok 24 - gemini lifecycle distinguishes exit-before-close without changing completion rules
+  ---
+  duration_ms: 2.9483
+  type: 'test'
+  ...
+# Subtest: gemini lifecycle distinguishes buffered-terminal without changing completion rules
+ok 25 - gemini lifecycle distinguishes buffered-terminal without changing completion rules
+  ---
+  duration_ms: 2.5713
+  type: 'test'
+  ...
+# Subtest: gemini lifecycle distinguishes spawn-error without changing completion rules
+ok 26 - gemini lifecycle distinguishes spawn-error without changing completion rules
+  ---
+  duration_ms: 2.4563
+  type: 'test'
+  ...
+# Subtest: protocol timing preserves zero and uses the last terminal event like the protocol reader
+ok 27 - protocol timing preserves zero and uses the last terminal event like the protocol reader
+  ---
+  duration_ms: 0.6828
+  type: 'test'
+  ...
+# Subtest: paired reports align rotated schedules and distinguish functional from full delivery
+ok 28 - paired reports align rotated schedules and distinguish functional from full delivery
+  ---
+  duration_ms: 7967.0229
+  type: 'test'
+  ...
+# Subtest: each metric keeps its own coverage and missing usage never becomes a zero saving
+ok 29 - each metric keeps its own coverage and missing usage never becomes a zero saving
+  ---
+  duration_ms: 262.4465
+  type: 'test'
+  ...
+# Subtest: corrupt results and missing summaries cannot produce a partial comparison
+ok 30 - corrupt results and missing summaries cannot produce a partial comparison
+  ---
+  duration_ms: 226.7263
+  type: 'test'
+  ...
+# Subtest: unfinished and historical experiments stay blocked even when results are present
+ok 31 - unfinished and historical experiments stay blocked even when results are present
+  ---
+  duration_ms: 132.8776
+  type: 'test'
+  ...
+# Subtest: active locks block reports without touching the writer or reading its results
+ok 32 - active locks block reports without touching the writer or reading its results
+  ---
+  duration_ms: 76.0492
+  type: 'test'
+  ...
+# Subtest: changes to candidate bytes revoke reports even when the execution ledger does not change
+ok 33 - changes to candidate bytes revoke reports even when the execution ledger does not change
+  ---
+  duration_ms: 109.4321
+  type: 'test'
+  ...
+# Subtest: invalid measurements are rejected rather than coerced to zero or leaked in diagnostics
+ok 34 - invalid measurements are rejected rather than coerced to zero or leaked in diagnostics
+  ---
+  duration_ms: 1158.6588
+  type: 'test'
+  ...
+# Subtest: absent simulation truncation flags remain unknown rather than claiming an uncensored run
+ok 35 - absent simulation truncation flags remain unknown rather than claiming an uncensored run
+  ---
+  duration_ms: 184.5941
+  type: 'test'
+  ...
+# Subtest: confirmed truncation wins over an unknown flag within and across paired trials
+ok 36 - confirmed truncation wins over an unknown flag within and across paired trials
+  ---
+  duration_ms: 315.636
+  type: 'test'
+  ...
+# Subtest: a reference group is audited but excluded from weak-model pairing
+ok 37 - a reference group is audited but excluded from weak-model pairing
+  ---
+  duration_ms: 4763.1336
+  type: 'test'
+  ...
+# Subtest: a failed audit that races a ledger change is concurrent, not persistent corruption
+ok 38 - a failed audit that races a ledger change is concurrent, not persistent corruption
+  ---
+  duration_ms: 16.7824
+  type: 'test'
+  ...
+# Subtest: linked trial evidence and unknown locks cannot be reported as trustworthy
+ok 39 - linked trial evidence and unknown locks cannot be reported as trustworthy
+  ---
+  duration_ms: 33.7106
+  type: 'test'
+  ...
+# Subtest: CLI emits redacted JSON or escaped Markdown without writing or invoking a client
+ok 40 - CLI emits redacted JSON or escaped Markdown without writing or invoking a client
+  ---
+  duration_ms: 3867.8372
+  type: 'test'
+  ...
+# Subtest: ending observations retain legacy unknowns and derive only the recorded tool tail
+ok 41 - ending observations retain legacy unknowns and derive only the recorded tool tail
+  ---
+  duration_ms: 55.7994
+  type: 'test'
+  ...
+# Subtest: ending observations preserve zero and separate response completion from process exit
+ok 42 - ending observations preserve zero and separate response completion from process exit
+  ---
+  duration_ms: 54.4446
+  type: 'test'
+  ...
+# Subtest: buffered terminal events observed after exit keep an unknown reversed interval
+ok 43 - buffered terminal events observed after exit keep an unknown reversed interval
+  ---
+  duration_ms: 57.2024
+  type: 'test'
+  ...
+# Subtest: invalid lifecycle versions and time values cannot produce a plausible ending report
+ok 44 - invalid lifecycle versions and time values cannot produce a plausible ending report
+  ---
+  duration_ms: 115.381
+  type: 'test'
+  ...
+# Subtest: new response observations and original-file diagnostics survive reports without inventing legacy measurements
+not ok 45 - new response observations and original-file diagnostics survive reports without inventing legacy measurements
+  ---
+  duration_ms: 33.7227
+  type: 'test'
+  location: 'D:\\Projects\\my-harness\\benchmarks\\tests\\report.test.mjs:293:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    
+    false !== true
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///D:/Projects/my-harness/benchmarks/tests/report.test.mjs:299:43)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: invalid new diagnostic measurements are rejected without leaking input values
+not ok 46 - invalid new diagnostic measurements are rejected without leaking input values
+  ---
+  duration_ms: 46.8137
+  type: 'test'
+  location: 'D:\\Projects\\my-harness\\benchmarks\\tests\\report.test.mjs:310:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    
+    true !== false
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: false
+  actual: true
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///D:/Projects/my-harness/benchmarks/tests/report.test.mjs:320:12)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+1..46
+# tests 46
+# suites 0
+# pass 36
+# fail 10
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 19616.9697

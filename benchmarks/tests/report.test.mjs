@@ -271,7 +271,7 @@ test("ending observations preserve zero and separate response completion from pr
   const value=await report(out);assert.equal(value.ok,true);
   const row=value.pairs[0].baseline;
   assert.equal(row.terminalObserved,true);
-  assert.deepEqual(row.timing.completion,{firstProtocolEventMs:0,terminalEventMs:7,processExitMs:9,processCloseMs:10,lastToolEndMs:4,afterLastToolMs:6,terminalAfterLastToolMs:3,exitAfterTerminalMs:2,closeAfterExitMs:1});
+  assert.deepEqual(row.timing.completion,{firstProtocolEventMs:0,terminalEventMs:7,processExitMs:9,processCloseMs:10,lastAssistantMessageMs:null,lastFinalResponseMs:null,lastToolEndMs:4,afterLastToolMs:6,terminalAfterLastToolMs:3,exitAfterTerminalMs:2,closeAfterExitMs:1});
 });
 
 test("buffered terminal events observed after exit keep an unknown reversed interval",async()=>{
@@ -284,8 +284,42 @@ test("buffered terminal events observed after exit keep an unknown reversed inte
 });
 
 test("invalid lifecycle versions and time values cannot produce a plausible ending report",async()=>{
-  for(const lifecycle of [{version:2},{version:1,terminalEventMs:-1},{version:1,processExitMs:"9"},{version:1,processCloseMs:11}]){
+  for(const lifecycle of [{version:3},{version:1,terminalEventMs:-1},{version:1,processExitMs:"9"},{version:1,processCloseMs:11}]){
     const out=await copy();await rewriteRow(out,0,row=>{row.run.timing.lifecycle=lifecycle;});
     const value=await report(out);assert.equal(value.ok,false);assert.equal(value.error.code,"INVALID_MEASUREMENT");
+  }
+});
+
+test("new response observations and original-file diagnostics survive reports without inventing legacy measurements", async () => {
+  const out = await copy();
+  await rewriteRow(out, 0, row => {
+    row.run.finalOutput = { version: 1, status: "valid", exists: true, bytes: 100, errorCode: null };
+    row.run.timing.lifecycle = { version: 2, firstProtocolEventMs: 0, terminalEventMs: 8, processExitMs: 9, processCloseMs: 10, lastAssistantMessageMs: 7, lastFinalResponseMs: 6 };
+  });
+  const value = await report(out); assert.equal(value.ok, true);
+  const observed = value.pairs[0].baseline;
+  assert.equal(observed.finalOutput.status, "valid");
+  assert.equal(observed.timing.completion.lastAssistantMessageMs, 7);
+  assert.equal(observed.timing.completion.lastFinalResponseMs, 6);
+  const legacy = value.pairs[0].harness;
+  assert.equal(legacy.finalOutput, null, "a legacy normalized final cannot reconstruct original file identity");
+  assert.equal(legacy.timing.completion.lastAssistantMessageMs, null);
+  assert.equal(legacy.timing.completion.lastFinalResponseMs, null);
+});
+
+test("invalid new diagnostic measurements are rejected without leaking input values", async () => {
+  for (const mutate of [
+    row => { row.run.finalOutput = { version: 2 }; },
+    row => { row.run.finalOutput = { version: 1, status: "valid", exists: true, bytes: -1, errorCode: null }; },
+    row => { row.run.finalOutput = { version: 1, status: "unreadable", exists: null, bytes: null, errorCode: "private-diagnostic-canary" }; },
+    row => { row.run.timing.lifecycle = { version: 2, lastAssistantMessageMs: -1, lastFinalResponseMs: null }; },
+    row => { row.run.timing.lifecycle = { version: 2, lastAssistantMessageMs: null, lastFinalResponseMs: 11 }; },
+    row => { row.run.timing.lifecycle = { version: 2, lastAssistantMessageMs: 5, lastFinalResponseMs: 6 }; },
+    row => { row.run.timing.lifecycle = { version: 2, lastAssistantMessageMs: null, lastFinalResponseMs: 6 }; },
+  ]) {
+    const out = await copy(); await rewriteRow(out, 0, mutate, { refreshSummary: false });
+    const value = await report(out);
+    assert.equal(value.ok, false); assert.equal(value.error.code, "INVALID_MEASUREMENT");
+    assert.doesNotMatch(JSON.stringify(value), /private-diagnostic-canary/);
   }
 });

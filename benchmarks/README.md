@@ -97,7 +97,11 @@ node benchmarks/status.mjs --out .ai-harness/work-items/<工作项>/project-comp
 
 ## 会话结束阶段观测
 
-新运行在 `run.timing.lifecycle` 保存版本1的四个可空时间点：首次合法协议事件、完成协议事件、进程 `exit`、进程 `close`，均为相对启动的本地接收毫秒。Codex 完成协议事件为 `turn.completed`；Claude/Gemini 为 `result`，收到该事件不等于功能、协议或完整交付通过。返回、预算中断和评分仍沿原路径执行。
+`run.timing.lifecycle` 的版本1保存四个可空时间点：首次合法协议事件、完成协议事件、进程 `exit`、进程 `close`，均为相对启动的本地接收毫秒。新Codex运行使用版本2，另记 `lastAssistantMessageMs`（最后收到的完整assistant消息）及 `lastFinalResponseMs`（最后收到且符合最终响应结构的消息）；后续普通消息不会覆盖后一时间点。其他客户端仍使用版本1。Codex完成协议事件为 `turn.completed`；Claude/Gemini为 `result`。消息格式合格、收到终态事件、工作项DONE均不能单独证明完整交付，返回、预算中断和评分仍沿原路径执行。
+
+新Codex运行在规范化 `final.json` 前保存可选的 `run.finalOutput` 版本1：`status` 为 `valid`、`missing`、`unreadable`、`invalid-json` 或 `invalid-schema`；`exists`、`bytes` 分别记录可确认的原文件存在性和原始UTF-8字节数。读取失败时存在性及字节数为null，不能断言文件不存在；`errorCode` 仅保存受限的系统错误码，不保存异常正文或未脱敏原文。带代码围栏的合法响应继续按旧规则解析。规范化后的最终文件和完成谓词不变。
+
+审计验证诊断版本、字段和与规范化final的一致性；报告展示文件分类及新时间点，拒绝非法度量。原始无效文件正文不归档，因此这些观测不能由规范化后的null重新独立推导，也不证明模型/网络根因。历史缺少 `finalOutput` 或仅有lifecycle v1时，新字段保持未知；不补造旧观测、不修改历史文件或扩展实验预算。
 
 报告逐题展示时间点与末尾间隔。输出可能在 `exit` 之后才被解析；无换行的末条事件使用 `close` 接收时点。未记录及无法按接收顺序计算的间隔为未知，合法0保留；旧记录可从已有工具区间恢复最后工具至观测结束的间隔，不能补造其他锚点或把非工具耗时解释为纯推理/网络时间。历史协议及文件保持只读，新增观测不重跑模型。
 
