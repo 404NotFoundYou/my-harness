@@ -9,7 +9,7 @@
       "title": "修复身份兼容、Docker runtime重验与v4审计契约",
       "module": "benchmarks-runtime",
       "status": "COMPLETED",
-      "attempt": 2,
+      "attempt": 3,
       "blockedBy": [],
       "blocks": [],
       "writeScopes": [
@@ -100,18 +100,17 @@
       "verificationStatus": "pass",
       "reviewStatus": "pass",
       "evidence": [
-        "d8efec38-1061-4889-aeb8-afdb92b42746",
-        "1b205352-e504-4753-8429-668361dcb8ef",
-        "9c9548ab-5299-449c-9f7d-9f801717a493"
+        "44a76dd2-86a2-453c-a381-5103a7f65dd0",
+        "5938245a-20c9-46cd-8309-b88225c7deda"
       ],
       "deferralApproval": null,
       "verificationSource": {
-        "digest": "ee4a905ff050cf905d9e0a61ad18db8be42b44ebb06e072751f62d346133fb3c",
-        "document": ".ai-harness/work-items/ITER-CURRENT-ISSUES-FIX-20261016/snapshots/ee4a905ff050cf905d9e0a61ad18db8be42b44ebb06e072751f62d346133fb3c.json"
+        "digest": "451b5831f972f87e848eab9e91741597eea79893e74c039df4c2f514a2016bed",
+        "document": ".ai-harness/work-items/ITER-CURRENT-ISSUES-FIX-20261016/snapshots/451b5831f972f87e848eab9e91741597eea79893e74c039df4c2f514a2016bed.json"
       },
       "reviewSource": {
-        "digest": "ee4a905ff050cf905d9e0a61ad18db8be42b44ebb06e072751f62d346133fb3c",
-        "document": ".ai-harness/work-items/ITER-CURRENT-ISSUES-FIX-20261016/snapshots/ee4a905ff050cf905d9e0a61ad18db8be42b44ebb06e072751f62d346133fb3c.json"
+        "digest": "451b5831f972f87e848eab9e91741597eea79893e74c039df4c2f514a2016bed",
+        "document": ".ai-harness/work-items/ITER-CURRENT-ISSUES-FIX-20261016/snapshots/451b5831f972f87e848eab9e91741597eea79893e74c039df4c2f514a2016bed.json"
       }
     }
   ],
@@ -127,6 +126,6 @@
     }
   ],
   "createdAt": "2026-10-16T02:07:19.748Z",
-  "updatedAt": "2026-10-16T02:40:41.719Z",
-  "revision": 2
+  "updatedAt": "2026-10-16T03:49:18.494Z",
+  "revision": 3
 }

@@ -9,10 +9,11 @@ import childProcess from "node:child_process";
 import { EventEmitter } from "node:events";
 import { PassThrough } from "node:stream";
 import { syncBuiltinESMExports } from "node:module";
-import { containerIdentity, loadContainerRuntime, validateContainerManifest, verifyContainerIdentity } from "../codex-container.mjs";
+import { containerIdentity, loadContainerRuntime, runtimeUser, validateContainerManifest, verifyContainerIdentity } from "../codex-container.mjs";
 import { codexArguments, codexDriver } from "../codex-driver.mjs";
 import { experimentPlan, runExperiment, validateExperimentProtocol } from "../experiment.mjs";
 import { inspectExperiment } from "../status.mjs";
+import { selectContainerRuntime } from "../run.mjs";
 import { tasksForSuite, taskManifest } from "../task-contract.mjs";
 
 const sourceRoot=path.resolve(path.dirname(fileURLToPath(import.meta.url)),"../..");
@@ -67,6 +68,28 @@ test("container identity recheck does not start a second identity container",asy
   assert.deepEqual(await verifyContainerIdentity(fx.manifest,{expected:identity}),identity);
   const recheck=docker.calls.slice(before);assert.ok(recheck.length>0);assert.ok(recheck.every(args=>args[0]==="image"),"recheck must not create or start an identity container");
  }finally{context.mock.restoreAll();await cleanup(fx.root);}
+});
+
+test("container runtime resume identity load uses lightweight recheck",async context=>{
+ const fx=await fixture();
+ try{
+  const docker=dockerMock();context.mock.method(childProcess,"spawnSync",docker.handler);
+  const identity=await containerIdentity(fx.manifest),before=docker.calls.length;
+  await loadContainerRuntime(fx.manifest,{expectedIdentity:identity});
+  const recheck=docker.calls.slice(before);assert.ok(recheck.length>0);assert.ok(recheck.every(args=>args[0]==="image"),"resume identity load must not create or start an identity container");
+ }finally{context.mock.restoreAll();await cleanup(fx.root);}
+});
+
+test("run resume passes frozen container identity to the lightweight loader",async()=>{
+ const fx=await fixture(),output=path.join(fx.root,"experiment"),frozen={kind:"container",manifest:"/frozen/runtime.json"};await mkdir(output);await writeFile(path.join(output,"protocol.json"),JSON.stringify({schemaVersion:4,driverIdentity:frozen}));
+ try{
+  let received=null;const selected=await selectContainerRuntime({codexRuntime:"docker",manifest:fx.manifest,outputDirectory:output,resume:true,loadRuntime:async(...args)=>{received=args;return "selected";}});
+  assert.equal(selected,"selected");assert.deepEqual(received,[fx.manifest,{expectedIdentity:frozen}]);
+ }finally{await cleanup(fx.root);}
+});
+
+test("container runtime rejects a root POSIX group and keeps the Windows fallback",()=>{
+ assert.throws(()=>runtimeUser({uid:1000,gid:0}),/UID and GID/);assert.equal(runtimeUser({uid:null,gid:null}),"65534:65534");
 });
 
 test("container runtime inspects hardened mounts before start and owns cleanup",async context=>{

@@ -14,10 +14,9 @@ const platformIntegrity="sha512-/PX399ISB715skgBBOtOX5aqLxmPQhYC7wDasZnAJhRrtzt3
 const pidsLimit=128,memoryLimit=1536*1024*1024,nanoCpus=2_000_000_000,tmpfsOptions=["rw","exec","nosuid","nodev","size=268435456","mode=1777"];
 
 const digest=value=>createHash("sha256").update(value).digest("hex");
-function runtimeUser(){
- const uid=typeof process.getuid==="function"?process.getuid():null,gid=typeof process.getgid==="function"?process.getgid():null;
+export function runtimeUser({uid=typeof process.getuid==="function"?process.getuid():null,gid=typeof process.getgid==="function"?process.getgid():null}={}){
  if(uid===null||gid===null)return identityUser;
- assert.ok(Number.isSafeInteger(uid)&&Number.isSafeInteger(gid)&&uid>0,"Docker runtime requires a non-root POSIX host user");
+ assert.ok(Number.isSafeInteger(uid)&&Number.isSafeInteger(gid)&&uid>0&&gid>0,"Docker runtime requires non-root POSIX UID and GID");
  return `${uid}:${gid}`;
 }
 function exactKeys(value,keys,label){assert.ok(value&&typeof value==="object"&&!Array.isArray(value),`Invalid ${label}`);assert.deepEqual(Object.keys(value).sort(),[...keys].sort(),`Invalid ${label} fields`);}
@@ -105,4 +104,4 @@ function createContainerRuntime({manifest,expectedIdentity,docker}){
  };
 }
 
-export async function loadContainerRuntime(file,{docker="docker"}={}){const record=await readContainerManifest(file),identity=await containerIdentity(record.manifest,{docker});assert.equal(record.manifestSha256,identity.manifestSha256,"Container manifest changed while loading");return{cli:record.value.cliEntry,identity,readIdentity:()=>verifyContainerIdentity(record.manifest,{docker,expected:identity}),runtime:createContainerRuntime({manifest:identity.manifest,expectedIdentity:identity,docker})};}
+export async function loadContainerRuntime(file,{docker="docker",expectedIdentity=null}={}){const record=await readContainerManifest(file),identity=expectedIdentity===null?await containerIdentity(record.manifest,{docker}):await verifyContainerIdentity(record.manifest,{docker,expected:expectedIdentity});assert.equal(record.manifestSha256,identity.manifestSha256,"Container manifest changed while loading");return{cli:record.value.cliEntry,identity,readIdentity:()=>verifyContainerIdentity(record.manifest,{docker,expected:identity}),runtime:createContainerRuntime({manifest:identity.manifest,expectedIdentity:identity,docker})};}

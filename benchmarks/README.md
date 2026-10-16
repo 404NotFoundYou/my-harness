@@ -46,9 +46,9 @@ manifest版本1严格包含`image`、`imageId`、`platform`、Node/CLI/native入
 }
 ```
 
-正式试次固定`--pull never`、`--network none`、只读根文件系统、非root、`--cap-drop ALL`和`no-new-privileges`。POSIX宿主使用当前非root UID/GID访问两个可写bind；无法取得POSIX UID/GID时使用`65534:65534` fallback，root宿主直接失败。仅participant工作区和当前试次输出目录以可写bind挂载；容器创建后先inspect核对image、网络、用户、privileged、capabilities、tmpfs完整选项、PID/内存/CPU/restart限制、无volume及两个精确mount，再启动CLI。CLI显式bypass内层sandbox，由外层Docker作为唯一强制边界；apps、plugins、browser/computer/image/remote-plugin、MCP相关feature与web search默认关闭，并以`mcp_servers={}`清空配置。此模式不表示任意外部MCP执行器自动受同一边界保护。
+正式试次固定`--pull never`、`--network none`、只读根文件系统、非root、`--cap-drop ALL`和`no-new-privileges`。POSIX宿主使用当前非root UID/GID访问两个可写bind；无法取得POSIX UID/GID时使用`65534:65534` fallback，UID或GID为root时直接失败。仅participant工作区和当前试次输出目录以可写bind挂载；容器创建后先inspect核对image、网络、用户、privileged、capabilities、tmpfs完整选项、PID/内存/CPU/restart限制、无volume及两个精确mount，再启动CLI。CLI显式bypass内层sandbox，由外层Docker作为唯一强制边界；apps、plugins、browser/computer/image/remote-plugin、MCP相关feature与web search默认关闭，并以`mcp_servers={}`清空配置。此模式不表示任意外部MCP执行器自动受同一边界保护。
 
-首次加载manifest时会运行无挂载/无网络的短生命周期identity容器，实测Node/CLI版本和wrapper/native哈希；manifest还记录固定wrapper/platform tarball integrity。协议冻结后，每次试次前后及恢复/status只重读manifest并检查内容地址image ID和声明identity，不重复启动identity容器。协议v4的`driverIdentity.kind`可为`container`；历史`cli`和`simulated`身份保持原结构。恢复或只读状态检查需显式提供同一manifest：
+首次新建实验加载manifest时会运行无挂载/无网络的短生命周期identity容器，实测Node/CLI版本和wrapper/native哈希；manifest还记录固定wrapper/platform tarball integrity。协议冻结后，每次试次前后、恢复和status只重读manifest并检查内容地址image ID和声明identity，不重复启动identity容器。协议v4的`driverIdentity.kind`可为`container`；历史`cli`和`simulated`身份保持原结构。恢复或只读状态检查需显式提供同一manifest：
 
 Docker runtime固定`--network none`，当前入口不注入远端provider、凭据或宿主socket；除非镜像自行提供本地provider，否则不能据此启动常规远端模型会话。真实Docker、provider和MCP链路仍需独立授权与验证。
 
