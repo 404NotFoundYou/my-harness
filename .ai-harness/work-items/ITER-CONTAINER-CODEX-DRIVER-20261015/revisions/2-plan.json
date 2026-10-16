@@ -1,0 +1,113 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "ITER-CONTAINER-CODEX-DRIVER-20261015",
+  "mode": "single",
+  "rationale": "容器manifest、身份重验、driver生命周期、恢复/status和测试构成单一安全纵向能力，拆分会造成不可验证的中间协议",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "实现容器化Codex driver及兼容验证",
+      "module": "benchmarks",
+      "status": "COMPLETED",
+      "attempt": 1,
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        "benchmarks/codex-container.mjs",
+        "benchmarks/codex-driver.mjs",
+        "benchmarks/client-drivers.mjs",
+        "benchmarks/experiment.mjs",
+        "benchmarks/run.mjs",
+        "benchmarks/status.mjs",
+        "benchmarks/tests/container-driver.test.mjs",
+        "benchmarks/tests/memory-control.test.mjs",
+        "benchmarks/tests/resume.test.mjs",
+        "benchmarks/tests/status.test.mjs",
+        "benchmarks/README.md"
+      ],
+      "verification": [
+        "node --test benchmarks/tests/container-driver.test.mjs benchmarks/tests/memory-control.test.mjs benchmarks/tests/resume.test.mjs benchmarks/tests/status.test.mjs benchmarks/tests/driver-process.test.mjs benchmarks/tests/driver-diagnostics.test.mjs",
+        "node --test benchmarks/tests/container-driver.test.mjs benchmarks/tests/driver-diagnostics.test.mjs benchmarks/tests/driver-process.test.mjs benchmarks/tests/driver-timing.test.mjs benchmarks/tests/memory-control.test.mjs benchmarks/tests/multifile.test.mjs benchmarks/tests/preflight.test.mjs benchmarks/tests/project-v2.test.mjs benchmarks/tests/report.test.mjs benchmarks/tests/resume.test.mjs benchmarks/tests/runner.test.mjs benchmarks/tests/spec-guidance.test.mjs benchmarks/tests/status.test.mjs",
+        "node --test .ai-harness/work-items/ITER-MEMORY-PREFLIGHT-20261015/verify-history.test.mjs"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            "--test",
+            "benchmarks/tests/container-driver.test.mjs",
+            "benchmarks/tests/memory-control.test.mjs",
+            "benchmarks/tests/resume.test.mjs",
+            "benchmarks/tests/status.test.mjs",
+            "benchmarks/tests/driver-process.test.mjs",
+            "benchmarks/tests/driver-diagnostics.test.mjs"
+          ]
+        },
+        {
+          "id": "V2",
+          "command": "node",
+          "args": [
+            "--test",
+            "benchmarks/tests/container-driver.test.mjs",
+            "benchmarks/tests/driver-diagnostics.test.mjs",
+            "benchmarks/tests/driver-process.test.mjs",
+            "benchmarks/tests/driver-timing.test.mjs",
+            "benchmarks/tests/memory-control.test.mjs",
+            "benchmarks/tests/multifile.test.mjs",
+            "benchmarks/tests/preflight.test.mjs",
+            "benchmarks/tests/project-v2.test.mjs",
+            "benchmarks/tests/report.test.mjs",
+            "benchmarks/tests/resume.test.mjs",
+            "benchmarks/tests/runner.test.mjs",
+            "benchmarks/tests/spec-guidance.test.mjs",
+            "benchmarks/tests/status.test.mjs"
+          ]
+        },
+        {
+          "id": "V3",
+          "command": "node",
+          "args": [
+            "--test",
+            ".ai-harness/work-items/ITER-MEMORY-PREFLIGHT-20261015/verify-history.test.mjs"
+          ]
+        }
+      ],
+      "docsImpact": [
+        "benchmarks/README.md"
+      ],
+      "reviewBatch": "R1",
+      "risk": "high",
+      "owner": "primary-ai",
+      "verificationStatus": "pass",
+      "reviewStatus": "pass",
+      "evidence": [
+        "a152e730-8120-4e71-8117-6847d375fd03",
+        "713af110-dec6-4166-9cc4-646bcfde158f"
+      ],
+      "deferralApproval": null,
+      "verificationSource": {
+        "digest": "42c80716c3d8500bbe3f02c1d8567c7b42acd39a4c8e6a83a426fcc964753bcd",
+        "document": ".ai-harness/work-items/ITER-CONTAINER-CODEX-DRIVER-20261015/snapshots/42c80716c3d8500bbe3f02c1d8567c7b42acd39a4c8e6a83a426fcc964753bcd.json"
+      },
+      "reviewSource": {
+        "digest": "42c80716c3d8500bbe3f02c1d8567c7b42acd39a4c8e6a83a426fcc964753bcd",
+        "document": ".ai-harness/work-items/ITER-CONTAINER-CODEX-DRIVER-20261015/snapshots/42c80716c3d8500bbe3f02c1d8567c7b42acd39a4c8e6a83a426fcc964753bcd.json"
+      }
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "容器Codex执行边界",
+      "risk": "high",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": true
+    }
+  ],
+  "createdAt": "2026-10-15T05:53:01.538Z",
+  "updatedAt": "2026-10-15T13:59:57.704Z",
+  "revision": 2
+}

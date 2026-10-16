@@ -1,0 +1,31 @@
+{
+  "recordedAt": "2026-10-16T00:40:43.875Z",
+  "image": "postgres:18.6-alpine",
+  "security": {
+    "networkMode": "none",
+    "readOnlyRoot": true,
+    "privileged": false,
+    "capDrop": [
+      "ALL"
+    ],
+    "noNewPrivileges": true,
+    "pidsLimit": 128,
+    "memory": 1610612736,
+    "nanoCpus": 2000000000,
+    "restartPolicy": {
+      "Name": "no",
+      "MaximumRetryCount": 0
+    },
+    "tmpfsOptions": [
+      "exec",
+      "mode=1777",
+      "nodev",
+      "nosuid",
+      "rw",
+      "size=268435456"
+    ]
+  },
+  "verified": true,
+  "cleanupExit": 0,
+  "fixturesRemoved": true
+}

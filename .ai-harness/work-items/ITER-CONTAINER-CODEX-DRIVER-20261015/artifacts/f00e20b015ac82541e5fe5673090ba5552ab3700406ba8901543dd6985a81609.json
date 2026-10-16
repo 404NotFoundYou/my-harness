@@ -1,0 +1,21 @@
+{
+  "recordedAt": "2026-10-15T13:57:38.273Z",
+  "image": "postgres:18.6-alpine",
+  "created": true,
+  "removed": true,
+  "binds": [
+    {
+      "destination": "/output",
+      "readWrite": true,
+      "sourceMatches": true,
+      "sourceStyle": "windows"
+    },
+    {
+      "destination": "/workspace",
+      "readWrite": true,
+      "sourceMatches": true,
+      "sourceStyle": "windows"
+    }
+  ],
+  "fixturesRemoved": true
+}

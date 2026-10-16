@@ -16,6 +16,46 @@ node benchmarks/audit.mjs .ai-harness/work-items/MODEL-BENCHMARK-001/pilot
 
 `--cli` 为实际二进制或 Node CLI 入口，不使用 shell 拼接或 Windows `.cmd` 回退。`--client codex|claude|gemini` 选择驱动，默认codex。每次180秒、观察到80次工具调用时中断；不自动重试。按任务轮换三组顺序，共9次模型调用；CLI上报用量不等于货币费用。不修改全局凭据或模型配置。
 
+### 可选 Docker Codex runtime
+
+默认`--codex-runtime host`保持上述宿主CLI行为。Codex还可显式选择外层Docker边界；Docker不可用、manifest无效、镜像缺失或实际容器配置不符时直接失败，绝不退回宿主：
+
+```powershell
+node benchmarks/run.mjs --codex-runtime docker --codex-container-manifest '<runtime.json>' --weak '<模型标识>' --comparison paired --out .ai-harness/work-items/<工作项>/comparison --dry-run
+```
+
+`--dry-run`只冻结计划、runtime选择和模型调用数，不读取manifest、不访问Docker、不创建输出目录或容器。正式运行去掉`--dry-run`；Docker模式仅支持Codex，禁止同时传`--cli`。
+
+manifest版本1严格包含`image`、`imageId`、`platform`、Node/CLI/native入口、版本及SHA-256。当前仅接受已验证的Node`v22.20.0`与Codex`0.156.0`。`image`必须是`name@sha256:...`，平台固定`linux/amd64`；镜像需在运行前由独立、受审计的准备流程构建并已存在本地。driver只执行`docker image inspect`和`docker create/start/kill/rm`，不会pull、build、安装包或传递宿主凭据。示意结构：
+
+```json
+{
+  "schemaVersion": 1,
+  "image": "example/codex@sha256:<manifest-digest>",
+  "imageId": "sha256:<image-id>",
+  "platform": "linux/amd64",
+  "nodeEntry": "/usr/local/bin/node",
+  "nodeVersion": "v22.20.0",
+  "cliEntry": "/opt/codex/bin/codex.js",
+  "cliVersion": "0.156.0",
+  "cliSha256": "<64位小写SHA-256>",
+  "nativeEntry": "/opt/codex/bin/codex",
+  "nativeSha256": "<64位小写SHA-256>",
+  "wrapperIntegrity": "sha512-<固定wrapper tarball integrity>",
+  "platformIntegrity": "sha512-<固定linux-x64 tarball integrity>"
+}
+```
+
+正式试次固定`--pull never`、`--network none`、只读根文件系统、非root、`--cap-drop ALL`和`no-new-privileges`。仅participant工作区和当前试次输出目录以可写bind挂载；容器创建后先inspect核对image、网络、用户、privileged、capabilities、tmpfs完整选项、PID/内存/CPU/restart限制、无volume及两个精确mount，再启动CLI。CLI显式bypass内层sandbox，由外层Docker作为唯一强制边界；apps、plugins、browser/computer/image/remote-plugin、MCP相关feature与web search默认关闭，并以`mcp_servers={}`清空配置。此模式不表示任意外部MCP执行器自动受同一边界保护。
+
+首次加载manifest时会运行无挂载/无网络的短生命周期identity容器，实测Node/CLI版本和wrapper/native哈希；manifest还记录固定wrapper/platform tarball integrity。协议冻结后，每次试次前后及恢复/status重读manifest并检查内容地址image ID；相同image ID绑定相同镜像字节，不重复运行identity容器。协议v4的`driverIdentity.kind`可为`container`；历史`cli`和`simulated`身份保持原结构。恢复或只读状态检查需显式提供同一manifest：
+
+```powershell
+node benchmarks/status.mjs --out '<实验目录>' --container-manifest '<runtime.json>'
+```
+
+超时、工具上限、Docker CLI退出、inspect异常或清理失败均使试次不完整；driver会kill并删除其命名容器及volume。容器模式当前不负责密钥注入，未完成独立高风险审查和实际provider验证前，不应据此启动付费实验。
+
 `1.3.0` 保留上述默认配置，并支持先比较同模型两组及重复试次。下面只预览计划，不检查登录、不创建输出目录、不调用客户端：
 
 ```powershell
@@ -158,7 +198,7 @@ node benchmarks/run.mjs --cli '<CLI实际文件路径>' --weak '<原模型标识
 
 每个目录一次只允许一个执行者。活锁、异机或未知锁拒绝续跑；同机确定已退出的所有者可在完整只读校验后恢复锁，再获取独占锁重新校验。仅凭经过时间或PID复用不回收。协议、执行记录、结果和摘要使用同目录临时文件原子替换；这保证进程中断边界的完整可见性，没有fsync/断电持久性或恰好调用一次的承诺。发生未确认调用时保留未知比重复调用更保守；孤儿临时工作区不参与续跑。
 
-`--cli`应指向实际存在的二进制或Node入口文件，记录realpath、文件SHA-256和Node版本，并在试次前后重验。API的真实驱动需显式提供该身份；模拟默认使用函数源码SHA-256，也可声明固定模拟指纹。入口指纹不覆盖加载的全部依赖、函数闭包、全局客户端配置或远端模型别名实现，不能据此证明完整运行环境一致。输出目录放在工作项控制面或源码目录外，避免实验产物本身造成源码漂移。
+host模式的`--cli`应指向实际存在的二进制或Node入口文件，记录realpath、文件SHA-256和Node版本，并在试次前后重验；Docker模式按上述container identity重验。API的真实驱动需显式提供该身份和对应identity reader；模拟默认使用函数源码SHA-256，也可声明固定模拟指纹。入口或镜像指纹不覆盖远端模型别名实现，不能据此证明完整运行环境一致。输出目录放在工作项控制面或源码目录外，避免实验产物本身造成源码漂移。
 
 协议版本2/3/4的审计重建完整试次集合，从原始事件日志重算客户端协议状态，并核对 Codex 最终文件、逐条摘要和聚合统计；v4另校验执行记录、协议/结果原字节哈希及试次源码快照。空日志、未解决终态失败、损坏 JSONL 或非法最终结构不能支持完成。正常警告会保留。版本1的历史九样本记录沿用原统计格式，不改写历史事实。模拟驱动实验始终标注 simulated，测试夹具不作为真实模型效果证据。
 

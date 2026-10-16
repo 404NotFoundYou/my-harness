@@ -1,0 +1,485 @@
+TAP version 13
+# Subtest: container manifest and identity are strict and content addressed
+ok 1 - container manifest and identity are strict and content addressed
+  ---
+  duration_ms: 16.9795
+  type: 'test'
+  ...
+# Subtest: container identity rejects manifest hashes that do not match measured image bytes
+ok 2 - container identity rejects manifest hashes that do not match measured image bytes
+  ---
+  duration_ms: 4.3889
+  type: 'test'
+  ...
+# Subtest: container runtime inspects hardened mounts before start and owns cleanup
+ok 3 - container runtime inspects hardened mounts before start and owns cleanup
+  ---
+  duration_ms: 7.9309
+  type: 'test'
+  ...
+# Subtest: container runtime removes a container when inspect reveals a weaker boundary
+ok 4 - container runtime removes a container when inspect reveals a weaker boundary
+  ---
+  duration_ms: 8.1559
+  type: 'test'
+  ...
+# Subtest: container runtime cleans an uncertain create result by its preallocated name
+ok 5 - container runtime cleans an uncertain create result by its preallocated name
+  ---
+  duration_ms: 7.1742
+  type: 'test'
+  ...
+# Subtest: container runtime rejects every weakened resource boundary
+    # Subtest: tmpfs
+    ok 1 - tmpfs
+      ---
+      duration_ms: 7.1984
+      type: 'test'
+      ...
+    # Subtest: pids
+    ok 2 - pids
+      ---
+      duration_ms: 7.1304
+      type: 'test'
+      ...
+    # Subtest: memory
+    ok 3 - memory
+      ---
+      duration_ms: 7.2152
+      type: 'test'
+      ...
+    # Subtest: cpu
+    ok 4 - cpu
+      ---
+      duration_ms: 7.2045
+      type: 'test'
+      ...
+    # Subtest: restart
+    ok 5 - restart
+      ---
+      duration_ms: 8.1526
+      type: 'test'
+      ...
+    1..5
+ok 6 - container runtime rejects every weakened resource boundary
+  ---
+  duration_ms: 38.2924
+  type: 'test'
+  ...
+# Subtest: container arguments disable external tools and bypass only the inner sandbox
+ok 7 - container arguments disable external tools and bypass only the inner sandbox
+  ---
+  duration_ms: 0.413
+  type: 'test'
+  ...
+# Subtest: container driver owns stop and cleanup after timeout
+ok 8 - container driver owns stop and cleanup after timeout
+  ---
+  duration_ms: 38.7759
+  type: 'test'
+  ...
+# Subtest: container driver owns stop and cleanup after tool-limit
+ok 9 - container driver owns stop and cleanup after tool-limit
+  ---
+  duration_ms: 6.8422
+  type: 'test'
+  ...
+# Subtest: container driver preserves both stop and remove failures
+ok 10 - container driver preserves both stop and remove failures
+  ---
+  duration_ms: 39.4044
+  type: 'test'
+  ...
+# Subtest: container cleanup failure invalidates an otherwise terminal run
+ok 11 - container cleanup failure invalidates an otherwise terminal run
+  ---
+  duration_ms: 6.7403
+  type: 'test'
+  ...
+# Subtest: container identity remains protocol v4 compatible and drift stops before the driver
+ok 12 - container identity remains protocol v4 compatible and drift stops before the driver
+  ---
+  duration_ms: 351.3594
+  type: 'test'
+  ...
+# Subtest: status can verify a frozen container identity without executing a client
+ok 13 - status can verify a frozen container identity without executing a client
+  ---
+  duration_ms: 957.9326
+  type: 'test'
+  ...
+# Subtest: docker dry-run freezes budget without reading a manifest or Docker
+ok 14 - docker dry-run freezes budget without reading a manifest or Docker
+  ---
+  duration_ms: 91.803
+  type: 'test'
+  ...
+# Subtest: runtime CLI rejects ambiguous or unsupported combinations
+ok 15 - runtime CLI rejects ambiguous or unsupported combinations
+  ---
+  duration_ms: 271.0052
+  type: 'test'
+  ...
+# Subtest: original final valid remains diagnosable without promoting an incomplete delivery
+ok 16 - original final valid remains diagnosable without promoting an incomplete delivery
+  ---
+  duration_ms: 28.5381
+  type: 'test'
+  ...
+# Subtest: original final fenced remains diagnosable without promoting an incomplete delivery
+ok 17 - original final fenced remains diagnosable without promoting an incomplete delivery
+  ---
+  duration_ms: 7.0525
+  type: 'test'
+  ...
+# Subtest: original final missing remains diagnosable without promoting an incomplete delivery
+ok 18 - original final missing remains diagnosable without promoting an incomplete delivery
+  ---
+  duration_ms: 6.4107
+  type: 'test'
+  ...
+# Subtest: original final invalid-json remains diagnosable without promoting an incomplete delivery
+ok 19 - original final invalid-json remains diagnosable without promoting an incomplete delivery
+  ---
+  duration_ms: 6.8578
+  type: 'test'
+  ...
+# Subtest: original final invalid-schema remains diagnosable without promoting an incomplete delivery
+ok 20 - original final invalid-schema remains diagnosable without promoting an incomplete delivery
+  ---
+  duration_ms: 6.4343
+  type: 'test'
+  ...
+# Subtest: original final unreadable remains diagnosable without promoting an incomplete delivery
+ok 21 - original final unreadable remains diagnosable without promoting an incomplete delivery
+  ---
+  duration_ms: 6.3191
+  type: 'test'
+  ...
+# Subtest: original final valid-without-terminal remains diagnosable without promoting an incomplete delivery
+ok 22 - original final valid-without-terminal remains diagnosable without promoting an incomplete delivery
+  ---
+  duration_ms: 5.1818
+  type: 'test'
+  ...
+# Subtest: original final timeout-after-tool remains diagnosable without promoting an incomplete delivery
+ok 23 - original final timeout-after-tool remains diagnosable without promoting an incomplete delivery
+  ---
+  duration_ms: 6.1626
+  type: 'test'
+  ...
+# Subtest: codex budget cutoff owns the process group after timeout
+ok 24 - codex budget cutoff owns the process group after timeout
+  ---
+  duration_ms: 400.4839
+  type: 'test'
+  ...
+# Subtest: codex budget cutoff owns the process group after tool-limit
+ok 25 - codex budget cutoff owns the process group after tool-limit
+  ---
+  duration_ms: 6.5754
+  type: 'test'
+  ...
+# Subtest: codex budget cutoff owns the process group after leader-exit
+ok 26 - codex budget cutoff owns the process group after leader-exit
+  ---
+  duration_ms: 35.0325
+  type: 'test'
+  ...
+# Subtest: claude budget cutoff owns the process group after timeout
+ok 27 - claude budget cutoff owns the process group after timeout
+  ---
+  duration_ms: 29.8753
+  type: 'test'
+  ...
+# Subtest: claude budget cutoff owns the process group after tool-limit
+ok 28 - claude budget cutoff owns the process group after tool-limit
+  ---
+  duration_ms: 4.0964
+  type: 'test'
+  ...
+# Subtest: claude budget cutoff owns the process group after leader-exit
+ok 29 - claude budget cutoff owns the process group after leader-exit
+  ---
+  duration_ms: 27.0425
+  type: 'test'
+  ...
+# Subtest: gemini budget cutoff owns the process group after timeout
+ok 30 - gemini budget cutoff owns the process group after timeout
+  ---
+  duration_ms: 31.1676
+  type: 'test'
+  ...
+# Subtest: gemini budget cutoff owns the process group after tool-limit
+ok 31 - gemini budget cutoff owns the process group after tool-limit
+  ---
+  duration_ms: 2.7147
+  type: 'test'
+  ...
+# Subtest: gemini budget cutoff owns the process group after leader-exit
+ok 32 - gemini budget cutoff owns the process group after leader-exit
+  ---
+  duration_ms: 26.8838
+  type: 'test'
+  ...
+# Subtest: codex cutoff closes real descendant pipes after timeout
+ok 33 - codex cutoff closes real descendant pipes after timeout # SKIP
+  ---
+  duration_ms: 0.4095
+  type: 'test'
+  ...
+# Subtest: codex cutoff closes real descendant pipes after tool-limit
+ok 34 - codex cutoff closes real descendant pipes after tool-limit # SKIP
+  ---
+  duration_ms: 0.1321
+  type: 'test'
+  ...
+# Subtest: codex cutoff closes real descendant pipes after leader-exit
+ok 35 - codex cutoff closes real descendant pipes after leader-exit # SKIP
+  ---
+  duration_ms: 0.0463
+  type: 'test'
+  ...
+# Subtest: claude cutoff closes real descendant pipes after timeout
+ok 36 - claude cutoff closes real descendant pipes after timeout # SKIP
+  ---
+  duration_ms: 0.0405
+  type: 'test'
+  ...
+# Subtest: claude cutoff closes real descendant pipes after tool-limit
+ok 37 - claude cutoff closes real descendant pipes after tool-limit # SKIP
+  ---
+  duration_ms: 0.0317
+  type: 'test'
+  ...
+# Subtest: claude cutoff closes real descendant pipes after leader-exit
+ok 38 - claude cutoff closes real descendant pipes after leader-exit # SKIP
+  ---
+  duration_ms: 0.0267
+  type: 'test'
+  ...
+# Subtest: gemini cutoff closes real descendant pipes after timeout
+ok 39 - gemini cutoff closes real descendant pipes after timeout # SKIP
+  ---
+  duration_ms: 0.0255
+  type: 'test'
+  ...
+# Subtest: gemini cutoff closes real descendant pipes after tool-limit
+ok 40 - gemini cutoff closes real descendant pipes after tool-limit # SKIP
+  ---
+  duration_ms: 0.0245
+  type: 'test'
+  ...
+# Subtest: gemini cutoff closes real descendant pipes after leader-exit
+ok 41 - gemini cutoff closes real descendant pipes after leader-exit # SKIP
+  ---
+  duration_ms: 0.0251
+  type: 'test'
+  ...
+# Subtest: context fingerprints detect configuration, memory and manifest drift without storing private contents
+ok 42 - context fingerprints detect configuration, memory and manifest drift without storing private contents
+  ---
+  duration_ms: 39.606
+  type: 'test'
+  ...
+# Subtest: new environment identities are optional for legacy v4 but drift stops before any paid driver
+ok 43 - new environment identities are optional for legacy v4 but drift stops before any paid driver
+  ---
+  duration_ms: 350.7991
+  type: 'test'
+  ...
+# Subtest: completed trials including failed deliveries are audited and never called again
+ok 44 - completed trials including failed deliveries are audited and never called again
+  ---
+  duration_ms: 4808.5196
+  type: 'test'
+  ...
+# Subtest: missing duration stays unknown for new summaries while legacy archives remain auditable
+ok 45 - missing duration stays unknown for new summaries while legacy archives remain auditable
+  ---
+  duration_ms: 4623.2145
+  type: 'test'
+  ...
+# Subtest: a pending trial in a legacy v4 protocol resumes without changing the old accounting rule
+ok 46 - a pending trial in a legacy v4 protocol resumes without changing the old accounting rule
+  ---
+  duration_ms: 3715.5673
+  type: 'test'
+  ...
+# Subtest: a stopped driver stays interrupted while resume runs only untouched trials
+ok 47 - a stopped driver stays interrupted while resume runs only untouched trials
+  ---
+  duration_ms: 4492.5703
+  type: 'test'
+  ...
+# Subtest: callbacks cannot change approved models or budgets by mutating caller-owned objects
+ok 48 - callbacks cannot change approved models or budgets by mutating caller-owned objects
+  ---
+  duration_ms: 3816.974
+  type: 'test'
+  ...
+# Subtest: a stop before the first claim and a lost summary can be resumed without new identities
+ok 49 - a stop before the first claim and a lost summary can be resumed without new identities
+  ---
+  duration_ms: 5177.0157
+  type: 'test'
+  ...
+# Subtest: resume validates the entire stored experiment before spending any pending call
+ok 50 - resume validates the entire stored experiment before spending any pending call
+  ---
+  duration_ms: 3676.817
+  type: 'test'
+  ...
+# Subtest: concurrent resume is refused while the existing driver owns the experiment
+ok 51 - concurrent resume is refused while the existing driver owns the experiment
+  ---
+  duration_ms: 4048.7517
+  type: 'test'
+  ...
+# Subtest: source drift is rejected before resume can launch another trial
+ok 52 - source drift is rejected before resume can launch another trial
+  ---
+  duration_ms: 2143.7133
+  type: 'test'
+  ...
+# Subtest: source changes during a call cannot become trusted completed evidence
+ok 53 - source changes during a call cannot become trusted completed evidence
+  ---
+  duration_ms: 2446.8699
+  type: 'test'
+  ...
+# Subtest: a changed CLI identity cannot publish a reusable result even if its entry is restored
+ok 54 - a changed CLI identity cannot publish a reusable result even if its entry is restored
+  ---
+  duration_ms: 4041.9364
+  type: 'test'
+  ...
+# Subtest: historical or partially initialized experiments and linked evidence are never resumed
+ok 55 - historical or partially initialized experiments and linked evidence are never resumed
+  ---
+  duration_ms: 1469.9962
+  type: 'test'
+  ...
+# Subtest: atomic JSON publication preserves the old record when replacement fails
+ok 56 - atomic JSON publication preserves the old record when replacement fails
+  ---
+  duration_ms: 3.4914
+  type: 'test'
+  ...
+# Subtest: a process crash after result publication recovers its dead lock and reuses the result
+ok 57 - a process crash after result publication recovers its dead lock and reuses the result
+  ---
+  duration_ms: 4108.9212
+  type: 'test'
+  ...
+# Subtest: resume cannot be combined with a fresh-plan dry-run
+ok 58 - resume cannot be combined with a fresh-plan dry-run
+  ---
+  duration_ms: 84.2734
+  type: 'test'
+  ...
+# Subtest: pending preview validates evidence without fixing a corrupt derived summary
+ok 59 - pending preview validates evidence without fixing a corrupt derived summary
+  ---
+  duration_ms: 1336.4709
+  type: 'test'
+  ...
+# Subtest: stored started trials are distinct from projected recovery and are never rewritten
+ok 60 - stored started trials are distinct from projected recovery and are never rewritten
+  ---
+  duration_ms: 3250.1189
+  type: 'test'
+  ...
+# Subtest: an active writer leaves started observations unverified and blocks readiness
+ok 61 - an active writer leaves started observations unverified and blocks readiness
+  ---
+  duration_ms: 1325.0805
+  type: 'test'
+  ...
+# Subtest: a dead owner is inspected without reclaiming its lock
+ok 62 - a dead owner is inspected without reclaiming its lock
+  ---
+  duration_ms: 973.5393
+  type: 'test'
+  ...
+# Subtest: source and explicit identity drift block preview without changing trusted records
+ok 63 - source and explicit identity drift block preview without changing trusted records
+  ---
+  duration_ms: 1551.1729
+  type: 'test'
+  ...
+# Subtest: corrupt or linked evidence is rejected without repairs or raw candidate content in diagnostics
+ok 64 - corrupt or linked evidence is rejected without repairs or raw candidate content in diagnostics
+  ---
+  duration_ms: 2192.8031
+  type: 'test'
+  ...
+# Subtest: observations changed during evidence reading revoke readiness instead of claiming corruption
+ok 65 - observations changed during evidence reading revoke readiness instead of claiming corruption
+  ---
+  duration_ms: 906.9021
+  type: 'test'
+  ...
+# Subtest: a lock acquired while reading is reported as a changed observation
+ok 66 - a lock acquired while reading is reported as a changed observation
+  ---
+  duration_ms: 898.6451
+  type: 'test'
+  ...
+# Subtest: CLI preview needs no installed client unless explicitly checking its identity
+ok 67 - CLI preview needs no installed client unless explicitly checking its identity
+  ---
+  duration_ms: 2091.2483
+  type: 'test'
+  ...
+# Subtest: historical protocols stay unsupported and no pending calls is not completion
+ok 68 - historical protocols stay unsupported and no pending calls is not completion
+  ---
+  duration_ms: 1322.0909
+  type: 'test'
+  ...
+# Subtest: source and explicit CLI changes during inspection revoke earlier identity matches
+ok 69 - source and explicit CLI changes during inspection revoke earlier identity matches
+  ---
+  duration_ms: 1526.3803
+  type: 'test'
+  ...
+# Subtest: failed evidence reads still detect a concurrent writer and do not label records corrupt
+ok 70 - failed evidence reads still detect a concurrent writer and do not label records corrupt
+  ---
+  duration_ms: 1863.3583
+  type: 'test'
+  ...
+# Subtest: foreign, unknown and legacy locks cannot trigger result reads or recovery projections
+ok 71 - foreign, unknown and legacy locks cannot trigger result reads or recovery projections
+  ---
+  duration_ms: 2502.2661
+  type: 'test'
+  ...
+# Subtest: status uses strict frozen protocol and ledger checks before offering any calls
+ok 72 - status uses strict frozen protocol and ledger checks before offering any calls
+  ---
+  duration_ms: 1619.4525
+  type: 'test'
+  ...
+# Subtest: large previews keep exact totals, bounded lists and redacted user fields without a summary
+ok 73 - large previews keep exact totals, bounded lists and redacted user fields without a summary
+  ---
+  duration_ms: 918.9354
+  type: 'test'
+  ...
+# Subtest: all trusted results report completion independently of model task success
+ok 74 - all trusted results report completion independently of model task success
+  ---
+  duration_ms: 4136.701
+  type: 'test'
+  ...
+1..74
+# tests 79
+# suites 0
+# pass 70
+# fail 0
+# cancelled 0
+# skipped 9
+# todo 0
+# duration_ms 48824.0018

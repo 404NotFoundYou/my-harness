@@ -1,0 +1,180 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 2,
+  "id": "ITER-CONTAINER-CODEX-DRIVER-20261015",
+  "type": "ITERATION",
+  "title": "容器化Codex benchmark driver",
+  "status": "CODE_REVIEW",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/iteration.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户2026-10-15先授权根据建议执行并再次要求继续；授权必要可逆代码、测试和本地零模型验证，不授权真实模型、凭据、镜像拉取、部署发布或付费实验"
+  },
+  "input": {
+    "references": [
+      "基于ANALYSIS-LINUX-CODEX-ISOLATION-20261015已验证路径，新增显式Docker runtime；保留host默认与历史协议，不进行真实模型调用、凭据接入、付费实验或nested bwrap放权"
+    ],
+    "acceptance": [
+      "run.mjs显式支持host/docker且docker失败不回退；严格manifest和container identity进入协议v4并在每次试次边界重验；Docker create后inspect实际网络、用户、只读根、capabilities和挂载再start；超时/工具上限/异常均清理容器；MCP/Apps/web默认关闭；零模型测试覆盖参数、漂移、清理、恢复、status及历史兼容；全套测试和check --ci通过；独立高风险审查完成前不标记DONE"
+    ],
+    "nonGoals": [],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": null,
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "main@31b1eba6ce18245ce124c4ec95528ecfac15030d，开始工作区干净且origin/main一致；该提交AI Harness Node20/22/24与Ubuntu/Windows源码Node20/22/24共9个job全部success；当前host driver直接spawn CLI，协议v4仅支持cli/simulated identity；分析已证明outer Docker可隔离但inner bwrap失败；本轮不访问真实模型、凭据或下载镜像"
+    ],
+    "completedAt": "2026-10-15T05:50:39.930Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "31b1eba6ce18245ce124c4ec95528ecfac15030d",
+      "dirty": false,
+      "changedFiles": [],
+      "fingerprints": {},
+      "source": {
+        "digest": "055ee9536da48c48a0ce1f5d54c1a4186577639f2ad7d70f9f20db669a85b1fb",
+        "document": ".ai-harness/work-items/ITER-CONTAINER-CODEX-DRIVER-20261015/snapshots/055ee9536da48c48a0ce1f5d54c1a4186577639f2ad7d70f9f20db669a85b1fb.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": ".ai-harness/work-items/ITER-CONTAINER-CODEX-DRIVER-20261015/solution.md",
+    "evidence": [
+      "方案复用现有Codex协议解析，通过runtime adapter隔离Docker生命周期；严格manifest与container identity兼容协议v4并在试次边界重验；失败不降级、无凭据/下载/真实模型范围已明确"
+    ],
+    "completedAt": "2026-10-15T05:53:01.333Z"
+  },
+  "database": {
+    "impact": "none",
+    "status": "not-applicable",
+    "document": null,
+    "evidence": [
+      "仅修改benchmark进程启动、身份JSON联合类型、CLI参数和测试/文档；无数据库、Schema、查询、迁移或持久化格式变化，实验协议仍为v4"
+    ],
+    "completedAt": "2026-10-15T05:53:01.438Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/ITER-CONTAINER-CODEX-DRIVER-20261015/plan.json",
+    "approved": true,
+    "approvalRef": "用户已授权；仅将Runtime拒绝的聚合入口改为等价显式测试文件数组"
+  },
+  "verification": {
+    "status": "pass",
+    "evidence": [
+      "3fc86635-9b30-4697-b669-4cfd1a8ea4d0"
+    ],
+    "stages": [],
+    "source": {
+      "digest": "42c80716c3d8500bbe3f02c1d8567c7b42acd39a4c8e6a83a426fcc964753bcd",
+      "document": ".ai-harness/work-items/ITER-CONTAINER-CODEX-DRIVER-20261015/snapshots/42c80716c3d8500bbe3f02c1d8567c7b42acd39a4c8e6a83a426fcc964753bcd.json"
+    }
+  },
+  "review": {
+    "status": "fail",
+    "evidence": [
+      "85d1b4cc-1c52-4f3a-8bff-8504294119cd"
+    ],
+    "independent": true
+  },
+  "acceptance": {
+    "status": "pending",
+    "evidence": []
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "pass",
+    "evidence": [
+      "0f2e75b2-e22e-41c6-91e6-cf2a5ae8b28e"
+    ]
+  },
+  "blocked": null,
+  "delivery": null,
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-10-15T05:50:39.655Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-10-15T05:50:39.741Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-10-15T05:50:40.100Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-10-15T05:53:01.994Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-10-15T05:53:02.110Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-10-15T13:53:56.849Z",
+      "reason": "最终V2被Runtime判定COMMAND_REQUIRES_APPROVAL；将聚合runner改为等价的显式node --test文件数组，并将历史检查改为node --test，保留同一覆盖范围且不绕过guard",
+      "action": "replan",
+      "revision": 2
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-10-15T13:54:49.337Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-10-15T13:54:49.423Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "VERIFYING",
+      "at": "2026-10-15T14:00:18.173Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "VERIFYING",
+      "to": "CODE_REVIEW",
+      "at": "2026-10-15T14:00:18.882Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-10-15T05:50:39.655Z",
+  "updatedAt": "2026-10-16T00:29:29.788Z"
+}

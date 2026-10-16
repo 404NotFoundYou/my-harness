@@ -3,6 +3,7 @@ import { realpath } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { isDeepStrictEqual } from "node:util";
 import { cliIdentity, validateExperimentProtocol } from "./experiment.mjs";
+import { containerIdentity } from "./codex-container.mjs";
 import { readExecution, readExecutionLedger } from "./execution.mjs";
 import { readExperimentFile } from "./audit-trial.mjs";
 import { sourceSnapshot } from "../.ai-harness/src/snapshot.mjs";
@@ -32,7 +33,7 @@ function progress(protocol,ledger) {
     trials:trials.slice(0,previewLimit),omittedTrials:Math.max(0,trials.length-previewLimit)};
 }
 
-export async function inspectExperiment({sourceRoot=sourceDirectory,outputDirectory,cliPath,driverIdentity}={}) {
+export async function inspectExperiment({sourceRoot=sourceDirectory,outputDirectory,cliPath,containerManifest,driverIdentity}={}) {
   const report={readOnly:true,integrity:"unverified",protocol:null,observed:null,recoveryPreview:null,
     source:{status:"unverified"},driver:{status:"unverified"},lock:{status:"unknown"},
     observation:{startedAt:new Date().toISOString(),stable:false},blockers:[],
@@ -57,11 +58,13 @@ export async function inspectExperiment({sourceRoot=sourceDirectory,outputDirect
       sourceBefore=await capture(async()=>(await sourceSnapshot(sourceRoot)).digest);
       report.source={status:sourceBefore.error?"unverified":sourceBefore.value===protocol.source?"matched":"mismatch",expected:protocol.source,current:sourceBefore.value ?? null};
       if(report.source.status!=="matched")block(sourceBefore.error?"SOURCE_UNVERIFIED":"SOURCE_MISMATCH","当前源码无法确认与冻结源码一致。");
+      if(cliPath !== undefined&&containerManifest !== undefined)throw new Error("Driver identity inputs conflict");
       if(cliPath !== undefined)readDriver=()=>cliIdentity(cliPath);
+      else if(containerManifest !== undefined)readDriver=()=>containerIdentity(containerManifest,{expected:protocol.driverIdentity});
       else if(mode === "simulated"&&driverIdentity !== undefined)readDriver=async()=>structuredClone(driverIdentity);
       if(readDriver){
         driverBefore=await capture(readDriver);
-        report.driver={status:driverBefore.error?"unverified":isDeepStrictEqual(driverBefore.value,protocol.driverIdentity)?"matched":"mismatch",basis:cliPath !== undefined?"explicit-cli":"caller-declared"};
+        report.driver={status:driverBefore.error?"unverified":isDeepStrictEqual(driverBefore.value,protocol.driverIdentity)?"matched":"mismatch",basis:cliPath !== undefined?"explicit-cli":containerManifest !== undefined?"explicit-container-manifest":"caller-declared"};
       }
       if(report.driver.status!=="matched")block(report.driver.status==="mismatch"?"DRIVER_MISMATCH":"DRIVER_UNVERIFIED","需显式确认与冻结驱动一致的身份；状态检查不执行客户端。");
       if(before.execution.error)throw new Error("Execution unavailable");
@@ -120,15 +123,16 @@ if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.ur
     const options={};
     for(let index=2;index<process.argv.length;index++){
       const key=process.argv[index],value=process.argv[++index];
-      if(!["--out","--cli"].includes(key)||Object.hasOwn(options,key)||!value||value.startsWith("--"))throw new Error("Invalid arguments");
+      if(!["--out","--cli","--container-manifest"].includes(key)||Object.hasOwn(options,key)||!value||value.startsWith("--"))throw new Error("Invalid arguments");
       options[key]=value;
     }
     if(!options["--out"])throw new Error("Missing output directory");
-    const report=await inspectExperiment({outputDirectory:options["--out"],cliPath:options["--cli"]});
+    if(options["--cli"]&&options["--container-manifest"])throw new Error("Driver identity inputs conflict");
+    const report=await inspectExperiment({outputDirectory:options["--out"],cliPath:options["--cli"],containerManifest:options["--container-manifest"]});
     console.log(JSON.stringify(report,null,2));
     process.exitCode=report.resume.canResume?0:report.integrity==="invalid"?1:2;
   }catch{
-    console.error(JSON.stringify({readOnly:true,error:"参数无效。用法：node benchmarks/status.mjs --out <实验目录> [--cli <CLI实际文件路径>]"}));
+    console.error(JSON.stringify({readOnly:true,error:"参数无效。用法：node benchmarks/status.mjs --out <实验目录> [--cli <CLI实际文件路径> | --container-manifest <运行时JSON>]"}));
     process.exitCode=1;
   }
 }

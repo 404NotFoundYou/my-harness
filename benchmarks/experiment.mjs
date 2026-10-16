@@ -10,6 +10,7 @@ import { inspectLock, recoverLock, withFileLock } from "../.ai-harness/src/locki
 import { readExperimentFile } from "./audit-trial.mjs";
 import { executionSummary, initialExecution, readExecution } from "./execution.mjs";
 import { captureCodexEnvironment, validateCodexEnvironment } from "./codex-environment.mjs";
+import { validateContainerIdentity } from "./codex-container.mjs";
 
 export function experimentPlan({ weak, strong, client = "codex", comparison = "reference", repetitions = 1, timeoutMs = budget.timeoutMs, maxToolCalls = budget.maxToolCalls, suite = "core" }) {
   const tasks=tasksForSuite(suite);
@@ -38,14 +39,13 @@ function checkedIdentity(mode, driver, identity) {
     assert.deepEqual(Object.keys(value).sort(),["fingerprint","kind"],"Invalid simulated driver identity");
     assert.equal(value.kind,"simulated");
     assert.match(value.fingerprint,/^[a-f0-9]{64}$/);
-  }else{
+  }else if(value.kind === "cli"){
     assert.deepEqual(Object.keys(value).sort(),["entry","kind","nodeVersion","sha256",...(value.environment === undefined ? [] : ["environment"])].sort(),"Invalid CLI identity");
     if (value.environment !== undefined) validateCodexEnvironment(value.environment);
-    assert.equal(value.kind,"cli");
     assert.ok(typeof value.entry === "string"&&path.isAbsolute(value.entry));
     assert.match(value.sha256,/^[a-f0-9]{64}$/);
     assert.equal(typeof value.nodeVersion,"string");
-  }
+  }else validateContainerIdentity(value);
   return structuredClone(value);
 }
 
@@ -60,7 +60,7 @@ export function validateExperimentProtocol(protocol) {
   assert.deepEqual(stored,{...plan,mode:protocol.mode,source:protocol.source,tasks:tasksForSuite(plan.suite).map(taskManifest),driverIdentity:checkedIdentity(protocol.mode,null,protocol.driverIdentity)},"Invalid frozen protocol");
 }
 
-export async function runExperiment({ plan, sourceRoot, outputDirectory, driver, mode = "real", onProgress = () => {}, resume = false, driverIdentity = null }) {
+export async function runExperiment({ plan, sourceRoot, outputDirectory, driver, mode = "real", onProgress = () => {}, resume = false, driverIdentity = null, readDriverIdentity = null }) {
   assert.ok(["real","simulated"].includes(mode),"Invalid experiment mode");
   assert.equal(typeof resume,"boolean","resume must be a boolean");
   const expected=experimentPlan({weak:plan.groups.find(group=>group.id==="weak-baseline")?.model,strong:plan.groups.find(group=>group.id==="strong-reference")?.model,client:plan.client,comparison:plan.comparison,repetitions:plan.repetitions,timeoutMs:plan.budget.timeoutMs,maxToolCalls:plan.budget.maxToolCalls,suite:plan.suite});
@@ -69,6 +69,8 @@ export async function runExperiment({ plan, sourceRoot, outputDirectory, driver,
   if(!resume)await mkdir(outputDirectory);
   outputDirectory=await realpath(outputDirectory);
   const identity=checkedIdentity(mode,driver,driverIdentity);
+  const identityReader=mode !== "real" ? null : readDriverIdentity ?? (identity.kind === "cli" ? ()=>cliIdentity(identity.entry,{codexEnvironment:identity.environment !== undefined}) : null);
+  if(mode === "real")assert.equal(typeof identityReader,"function","Container experiments need an explicit identity reader");
   const source=(await sourceSnapshot(sourceRoot)).digest;
   const tasks=tasksForSuite(plan.suite);
   const frozen={...plan,mode,source,tasks:tasks.map(taskManifest),driverIdentity:identity,summaryVersion:2};
@@ -76,7 +78,7 @@ export async function runExperiment({ plan, sourceRoot, outputDirectory, driver,
   const save=async(file,value)=>saveJson(await resolveProjectPath(outputDirectory,file,{forWrite:true}),value);
   const assertSource=async()=>{
     assert.equal((await sourceSnapshot(sourceRoot)).digest,source,"Harness source changed during the experiment");
-    if(mode === "real")assert.deepEqual(await cliIdentity(identity.entry,{codexEnvironment:identity.environment !== undefined}),identity,identity.environment === undefined ? "CLI identity changed during the experiment" : "CLI identity changed or Codex environment changed during the experiment");
+    if(mode === "real")assert.deepEqual(await identityReader(),identity,identity.kind === "container" ? "Container identity changed during the experiment" : identity.environment === undefined ? "CLI identity changed during the experiment" : "CLI identity changed or Codex environment changed during the experiment");
   };
   async function load(){
     await assertSource();

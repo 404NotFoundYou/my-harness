@@ -18,26 +18,38 @@ export function codexProtocol(events) {
   return { turnCompleted: Boolean(turn), protocolSuccess: Boolean(turn) && errors.length === 0, usage: turn?.usage ?? null, errors, warnings };
 }
 
-export function codexDriver(cli) {
+const containerDisabledFeatures=["apps","plugins","browser_use","browser_use_external","computer_use","image_generation","remote_plugin","in_app_browser","enable_mcp_apps","codex_apps_mcp_2026_07_28","mcp_2026_07_28","standalone_web_search","tool_call_mcp_elicitation","skill_mcp_dependency_install"];
+export function codexArguments({root,outputDirectory,model,budget,container=false}) {
+  const finalFile=container?path.posix.join(outputDirectory,"final.json"):path.join(outputDirectory,"final.json");
+  const schema=container?path.posix.join(outputDirectory,"response.schema.json"):path.join(outputDirectory,"response.schema.json");
+  const boundary=container?["--dangerously-bypass-approvals-and-sandbox",...containerDisabledFeatures.flatMap(feature=>["--disable",feature]),"-c",'web_search="disabled"',"-c","mcp_servers={}"]:["--sandbox","workspace-write"];
+  return ["exec",...codexMemoryArguments,"--ephemeral","--json","--color","never",...boundary,"-C",root,"-m",model,
+    "-c",`model_reasoning_effort="${budget.reasoning}"`,"--output-schema",schema,"-o",finalFile,"-"];
+}
+
+export function codexDriver(cli,{runtime=null}={}) {
   return async ({ root, model, prompt, budget, outputDirectory }) => {
     const finalFile = path.join(outputDirectory, "final.json");
     const schema = path.join(outputDirectory, "response.schema.json");
     await saveJson(schema, responseSchema);
-    const args = ["exec", ...codexMemoryArguments, "--ephemeral", "--json", "--color", "never", "--sandbox", "workspace-write", "-C", root, "-m", model,
-      "-c", `model_reasoning_effort="${budget.reasoning}"`, "--output-schema", schema, "-o", finalFile, "-"];
-    const command = /\.(m?js)$/i.test(cli) ? process.execPath : cli;
-    const launchArgs = command === process.execPath ? [cli, ...args] : args;
+    const runtimePaths=runtime?runtime.paths({root,outputDirectory}):{root,outputDirectory};
+    const args=codexArguments({...runtimePaths,model,budget,container:Boolean(runtime)});
+    const script=/\.(m?js)$/i.test(cli),hostCommand=script?process.execPath:cli;
+    const launch=runtime?await runtime.prepare({root,outputDirectory,args}):{command:hostCommand,args:script?[cli,...args]:args,cwd:root,detached:process.platform!=="win32",stop:null,cleanup:null};
     const startedAt = new Date().toISOString();
     const result = await new Promise(resolve => {
       const started = Date.now();
-      const child = spawn(command, launchArgs, { cwd: root, shell: false, windowsHide: true, detached: process.platform !== "win32", stdio: ["pipe","pipe","pipe"] });
+      const child = spawn(launch.command, launch.args, { cwd: launch.cwd, shell: false, windowsHide: true, detached: launch.detached, stdio: ["pipe","pipe","pipe"] });
       child.stdout.setEncoding("utf8"); child.stderr.setEncoding("utf8");
       let stderr = "", pending = "", timedOut = false, toolLimit = false, spawnError = null, unparsedLines = 0;
+      const runtimeErrors=[];
+      const runtimeFailure=value=>{if(value&&!runtimeErrors.includes(value))runtimeErrors.push(value);};
       const protocolLines = [];
       const events = [], toolIds = new Set();
       const timing = createToolTiming({messages:true});
       function stop() {
         if (!child.pid) return;
+        runtimeFailure(launch.stop?.() ?? null);
         if (process.platform === "win32") {
           if (child.exitCode !== null) return;
           spawnSync("taskkill", ["/PID",String(child.pid),"/T","/F"], { windowsHide: true, stdio: "ignore" });
@@ -72,9 +84,11 @@ export function codexDriver(cli) {
         const closedAt = Date.now()-started;
         timing.closed(closedAt);
         clearTimeout(timer); if(pending.trim())line(pending, closedAt);
+        runtimeFailure(launch.cleanup?.() ?? null);
         const durationMs = Date.now()-started;
+        const failures=[spawnError,...runtimeErrors].filter(Boolean);
         resolve({ mode: "real", client: "codex", startedAt, durationMs, timing: timing.summarize(durationMs), exitCode, timedOut, toolLimit, toolCalls:toolIds.size,
-          ...codexProtocol(events), unparsedLines, error: spawnError ? redact(spawnError) : null,
+          ...codexProtocol(events), unparsedLines, error: failures.length ? redact(failures.join("; ")) : null,
           stdout: protocolLines.join("\n") + (protocolLines.length ? "\n" : ""), stderr: redact(stderr) });
       });
       child.stdin.end(prompt);

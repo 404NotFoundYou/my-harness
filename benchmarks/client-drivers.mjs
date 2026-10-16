@@ -1,4 +1,5 @@
 import path from "node:path";
+import assert from "node:assert/strict";
 import { spawn, spawnSync } from "node:child_process";
 import { writeFile } from "node:fs/promises";
 import { redact } from "../.ai-harness/src/evidence.mjs";
@@ -62,8 +63,9 @@ export function createClientEventReader(client, timing) {
   };
 }
 
-export function clientDriver(client, cli) {
-  if (client === "codex") return codexDriver(cli);
+export function clientDriver(client, cli, options = {}) {
+  if (client === "codex") return codexDriver(cli, options);
+  assert.deepEqual(options, {}, "Container runtime is only supported for Codex");
   if (!["claude", "gemini"].includes(client)) throw new Error(`Unsupported client: ${client}`);
   return async ({ root, model, prompt, budget, outputDirectory }) => {
     const args = clientArguments(client, model, budget);
