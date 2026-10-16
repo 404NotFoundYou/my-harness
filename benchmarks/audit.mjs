@@ -4,7 +4,7 @@ import { readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { taskManifest, tasksForSuite } from "./task-contract.mjs";
 import { hash, summarize } from "./runner.mjs";
-import { experimentPlan } from "./experiment.mjs";
+import { experimentPlan, validateExperimentProtocol } from "./experiment.mjs";
 import { auditTrial } from "./audit-trial.mjs";
 import { executionSummary, readExecution } from "./execution.mjs";
 
@@ -13,6 +13,7 @@ export async function auditExperiment(directory, { readEvidence } = {}) {
   const protocol = await read("protocol.json");
   const summary = await read("summary.json");
   assert.ok([1, 2, 3, 4].includes(protocol.schemaVersion));
+  if(protocol.schemaVersion===4)validateExperimentProtocol(protocol);
   const extended = protocol.schemaVersion >= 2;
   const resumable=protocol.schemaVersion === 4;
   assert.ok(protocol.summaryVersion===undefined||(resumable&&protocol.summaryVersion===2),"Invalid summary version");

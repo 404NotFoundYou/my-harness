@@ -1,0 +1,1064 @@
+TAP version 13
+# Subtest: pending preview validates evidence without fixing a corrupt derived summary
+ok 1 - pending preview validates evidence without fixing a corrupt derived summary
+  ---
+  duration_ms: 1420.4719
+  type: 'test'
+  ...
+# Subtest: stored started trials are distinct from projected recovery and are never rewritten
+ok 2 - stored started trials are distinct from projected recovery and are never rewritten
+  ---
+  duration_ms: 3617.8825
+  type: 'test'
+  ...
+# Subtest: an active writer leaves started observations unverified and blocks readiness
+ok 3 - an active writer leaves started observations unverified and blocks readiness
+  ---
+  duration_ms: 1519.7609
+  type: 'test'
+  ...
+# Subtest: a dead owner is inspected without reclaiming its lock
+ok 4 - a dead owner is inspected without reclaiming its lock
+  ---
+  duration_ms: 1106.4919
+  type: 'test'
+  ...
+# Subtest: source and explicit identity drift block preview without changing trusted records
+ok 5 - source and explicit identity drift block preview without changing trusted records
+  ---
+  duration_ms: 1694.2218
+  type: 'test'
+  ...
+# Subtest: corrupt or linked evidence is rejected without repairs or raw candidate content in diagnostics
+ok 6 - corrupt or linked evidence is rejected without repairs or raw candidate content in diagnostics
+  ---
+  duration_ms: 2301.4683
+  type: 'test'
+  ...
+# Subtest: observations changed during evidence reading revoke readiness instead of claiming corruption
+ok 7 - observations changed during evidence reading revoke readiness instead of claiming corruption
+  ---
+  duration_ms: 956.1513
+  type: 'test'
+  ...
+# Subtest: a lock acquired while reading is reported as a changed observation
+ok 8 - a lock acquired while reading is reported as a changed observation
+  ---
+  duration_ms: 948.8325
+  type: 'test'
+  ...
+# Subtest: CLI preview needs no installed client unless explicitly checking its identity
+ok 9 - CLI preview needs no installed client unless explicitly checking its identity
+  ---
+  duration_ms: 2215.5471
+  type: 'test'
+  ...
+# Subtest: Codex status preview reuses the frozen environment identity
+not ok 10 - Codex status preview reuses the frozen environment identity
+  ---
+  duration_ms: 712.4183
+  type: 'test'
+  location: 'D:\\Projects\\my-harness\\benchmarks\\tests\\status.test.mjs:216:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly deep-equal:
+    + actual - expected
+    ... Skipped lines
+    
+      {
+        entry: 'C:\\Users\\jhon\\AppData\\Local\\Temp\\ai-harness-status-NqH3Pd\\never-run.mjs',
+        environment: {
+          arch: 'x64',
+          arguments: [
+    ...
+            'C:/Users/jhon/.agents/skills/threat-modeling/SKILL.md': 'file:436226e6760379aed0e3f250fd26d3abc74aed6f8d3ccb6e3a8a9977ec8e2e69',
+    +       'C:/Users/jhon/.codex/AGENTS.md': 'file:b65a13184be3eabcbbeffbd08a307fdf4e0619d306d6739572e8e334137ec33b',
+    +       'C:/Users/jhon/.codex/config.toml': 'file:a51f0b2843874083ab62d889fffb7f82b09d98ee2466d335f6d6217dade4c87c',
+    +       'C:/Users/jhon/.codex/memories/MEMORY.md': 'file:90bc9065db34e2a542a8cd2999a9b9f5741d6cb4adbaf1d12dbcce2008a7fffb',
+    +       'C:/Users/jhon/.codex/memories/memory_summary.md': 'file:0a0b3efed3b2be6c5c249ed99a8d1017c261f0a57e8298557ec6eeaadaa6f1f5',
+    +       'C:/Users/jhon/.codex/plugins/cache': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/.agents': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/.agents/plugins': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/.claude-plugin': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/.claude-plugin/plugin.json': 'file:aaa8449b5cc65a6df6feaa09f9317e87efb51440b17f626104d57222b3611a8e',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/.codex-plugin': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/.codex-plugin/plugin.json': 'file:8f879f5e2f04c5d2a93bd9ea455072384dc35d01f1dfc5307ca1be0cef5be9aa',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/.cursor-plugin': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/.cursor-plugin/plugin.json': 'file:998f2cdd2824c4d84184043d07e94b9fbc0bdb5e79c23c14cd266355d0394fbd',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/.devin-plugin': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/.devin-plugin/plugin.json': 'file:717a5137ee3416c17bf7d2fbffb1edbc820e2bb8a6f5b9bc35b18b23afafd1bb',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/.git': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/.git/hooks': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/.git/info': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/.git/logs': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/.git/logs/refs': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/.git/logs/refs/heads': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/.git/logs/refs/remotes': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/.git/logs/refs/remotes/origin': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/.git/objects': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/.git/objects/info': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/.git/objects/pack': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/.git/refs': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/.git/refs/heads': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/.git/refs/remotes': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/.git/refs/remotes/origin': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/.git/refs/tags': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/.github': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/.github/ISSUE_TEMPLATE': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/.hermes-plugin': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/.kimi-plugin': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/.kimi-plugin/plugin.json': 'file:ea5a1db06d1577f9e08339c4353e9cbcd4d381d64b9523c756d5f237424b2d6e',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/.muse-plugin': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/.muse-plugin/plugin.json': 'file:8ec5ba62667187e5660da986c5e5e21bf363a62bb7e1f461df15095e892eb960',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/.opencode': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/.opencode/plugins': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/.pi': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/.pi/extensions': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/assets': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/docs': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/docs/plans': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/docs/superpowers': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/docs/superpowers/plans': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/docs/superpowers/specs': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/docs/windows': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/hooks': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/scripts': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/skills': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/skills/brainstorming': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/skills/brainstorming/scripts': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/skills/diagnosing-superpowers': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/skills/diagnosing-superpowers/prompts': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/skills/diagnosing-superpowers/references': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/skills/diagnosing-superpowers/templates': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/skills/dispatching-parallel-agents': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/skills/executing-plans': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/skills/executing-plans/scripts': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/skills/finishing-a-development-branch': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/skills/receiving-code-review': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/skills/requesting-code-review': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/skills/subagent-driven-development': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/skills/subagent-driven-development/scripts': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/skills/systematic-debugging': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/skills/test-driven-development': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/skills/using-git-worktrees': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/skills/using-superpowers': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/skills/using-superpowers/references': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/skills/verification-before-completion': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/skills/writing-plans': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/skills/writing-skills': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/skills/writing-skills/examples': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/tests': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/tests/antigravity': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/tests/brainstorm-server': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/tests/claude-code': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/tests/codex': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/tests/codex-plugin-sync': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/tests/devin': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/tests/diagnosing-superpowers': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/tests/explicit-[REDACTED]': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/tests/explicit-[REDACTED]/prompts': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/tests/hermes': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/tests/hooks': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/tests/kimi': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/tests/opencode': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/tests/pi': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/tests/shell-lint': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/tests/systematic-debugging': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/tests/version-bump': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/tests/writing-skills': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-api-curated': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-api-curated/figma': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-api-curated/figma/0722921d': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-api-curated/figma/0722921d/.codex-plugin': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-api-curated/figma/0722921d/.codex-plugin/plugin.json': 'file:4a94826aedb047fed25d2a7b16a07aaf5bc4fb1238d47e51d71985fa3336010d',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-api-curated/figma/0722921d/agents': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-api-curated/figma/0722921d/assets': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-api-curated/figma/0722921d/commands': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-api-curated/figma/0722921d/scripts': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-api-curated/figma/0722921d/skills': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-api-curated/figma/0722921d/skills/figma-code-connect': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-api-curated/figma/0722921d/skills/figma-code-connect/references': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-api-curated/figma/0722921d/skills/figma-create-new-file': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-api-curated/figma/0722921d/skills/figma-design-to-code': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-api-curated/figma/0722921d/skills/figma-generate-design': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-api-curated/figma/0722921d/skills/figma-generate-design/references': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-api-curated/figma/0722921d/skills/figma-generate-diagram': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-api-curated/figma/0722921d/skills/figma-generate-diagram/references': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-api-curated/figma/0722921d/skills/figma-generate-library': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-api-curated/figma/0722921d/skills/figma-generate-library/references': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-api-curated/figma/0722921d/skills/figma-generate-library/scripts': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-api-curated/figma/0722921d/skills/figma-implement-motion': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-api-curated/figma/0722921d/skills/figma-implement-motion/references': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-api-curated/figma/0722921d/skills/figma-swiftui': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-api-curated/figma/0722921d/skills/figma-swiftui/references': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-api-curated/figma/0722921d/skills/figma-use': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-api-curated/figma/0722921d/skills/figma-use-figjam': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-api-curated/figma/0722921d/skills/figma-use-figjam/references': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-api-curated/figma/0722921d/skills/figma-use-motion': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-api-curated/figma/0722921d/skills/figma-use-motion/references': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-api-curated/figma/0722921d/skills/figma-use-slides': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-api-curated/figma/0722921d/skills/figma-use-slides/references': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-api-curated/figma/0722921d/skills/figma-use/references': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-api-curated/figma/0722921d/skills/figma-use/references/working-with-design-systems': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-api-curated/figma/0722921d/ui': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/.codex-plugin': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/.codex-plugin/plugin.json': 'file:d80b9bbd6a70139245a1fc9a2514cb9877dfc4c36289b9083ad1872b4c9864de',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/assets': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/docs': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/docs/capabilities': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/docs/capabilities/browser': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/docs/capabilities/tab': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/abstract-level': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/abstract-level/lib': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/abstract-level/test': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/abstract-level/test/events': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/abstract-level/test/hooks': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/abstract-level/test/self': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/abstract-level/test/traits': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/abstract-level/types': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/classic-level': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/classic-level/deps': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/classic-level/deps/leveldb': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/classic-level/deps/leveldb/leveldb-1.20': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/classic-level/deps/leveldb/leveldb-1.20/db': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/classic-level/deps/leveldb/leveldb-1.20/helpers': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/classic-level/deps/leveldb/leveldb-1.20/helpers/memenv': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/classic-level/deps/leveldb/leveldb-1.20/include': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/classic-level/deps/leveldb/leveldb-1.20/include/leveldb': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/classic-level/deps/leveldb/leveldb-1.20/issues': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/classic-level/deps/leveldb/leveldb-1.20/port': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/classic-level/deps/leveldb/leveldb-1.20/port/win': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/classic-level/deps/leveldb/leveldb-1.20/table': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/classic-level/deps/leveldb/leveldb-1.20/util': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/classic-level/deps/leveldb/patches': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/classic-level/deps/leveldb/port-libuv': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/classic-level/deps/snappy': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/classic-level/deps/snappy/freebsd': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/classic-level/deps/snappy/linux': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/classic-level/deps/snappy/mac': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/classic-level/deps/snappy/openbsd': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/classic-level/deps/snappy/snappy': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/classic-level/deps/snappy/snappy/cmake': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/classic-level/deps/snappy/solaris': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/classic-level/deps/snappy/win32': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/classic-level/prebuilds': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/classic-level/prebuilds/android-arm': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/classic-level/prebuilds/android-arm64': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/classic-level/prebuilds/darwin-x64+arm64': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/classic-level/prebuilds/linux-arm': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/classic-level/prebuilds/linux-arm64': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/classic-level/prebuilds/linux-x64': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/classic-level/prebuilds/win32-ia32': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/classic-level/prebuilds/win32-x64': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/is-buffer': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/level-supports': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/level-supports/test': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/level-transcoder': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/level-transcoder/lib': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/maybe-combine-errors': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/module-error': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/napi-macros': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/node-gyp-build': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/scripts': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/skills': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/.codex-plugin': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/.codex-plugin/plugin.json': 'file:e8ef0a714882cabaf52e82b59989333fc83ab9d1fc716a24838e65519a66a889',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/assets': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/docs': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/docs/capabilities': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/docs/capabilities/browser': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/docs/capabilities/tab': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/extension-host': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/extension-host/windows': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/extension-host/windows/x64': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/abstract-level': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/abstract-level/lib': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/abstract-level/test': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/abstract-level/test/events': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/abstract-level/test/hooks': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/abstract-level/test/self': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/abstract-level/test/traits': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/abstract-level/types': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/classic-level': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/classic-level/deps': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/classic-level/deps/leveldb': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/classic-level/deps/leveldb/leveldb-1.20': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/classic-level/deps/leveldb/leveldb-1.20/db': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/classic-level/deps/leveldb/leveldb-1.20/helpers': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/classic-level/deps/leveldb/leveldb-1.20/helpers/memenv': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/classic-level/deps/leveldb/leveldb-1.20/include': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/classic-level/deps/leveldb/leveldb-1.20/include/leveldb': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/classic-level/deps/leveldb/leveldb-1.20/issues': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/classic-level/deps/leveldb/leveldb-1.20/port': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/classic-level/deps/leveldb/leveldb-1.20/port/win': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/classic-level/deps/leveldb/leveldb-1.20/table': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/classic-level/deps/leveldb/leveldb-1.20/util': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/classic-level/deps/leveldb/patches': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/classic-level/deps/leveldb/port-libuv': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/classic-level/deps/snappy': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/classic-level/deps/snappy/freebsd': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/classic-level/deps/snappy/linux': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/classic-level/deps/snappy/mac': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/classic-level/deps/snappy/openbsd': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/classic-level/deps/snappy/snappy': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/classic-level/deps/snappy/snappy/cmake': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/classic-level/deps/snappy/solaris': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/classic-level/deps/snappy/win32': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/classic-level/prebuilds': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/classic-level/prebuilds/android-arm': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/classic-level/prebuilds/android-arm64': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/classic-level/prebuilds/darwin-x64+arm64': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/classic-level/prebuilds/linux-arm': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/classic-level/prebuilds/linux-arm64': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/classic-level/prebuilds/linux-x64': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/classic-level/prebuilds/win32-ia32': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/classic-level/prebuilds/win32-x64': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/is-buffer': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/level-supports': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/level-supports/test': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/level-transcoder': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/level-transcoder/lib': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/maybe-combine-errors': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/module-error': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/napi-macros': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/node-gyp-build': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/scripts': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/skills': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/latest': 'symlink:bcd2af5858f73f5ed997e7119bbd9e3cf848da05150e6f81f8041831ab2b667b',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/code-review': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/code-review/26.1007.21434': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/codex-app-tools': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/codex-app-tools/0.1.6': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/codex-app-tools/0.1.6/.codex-plugin': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/codex-app-tools/0.1.6/.codex-plugin/plugin.json': 'file:2aba688fc9010dfbc9f24b9ff0eb689b9ef1f3988f3ac73bad1c3a03da36058b',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/codex-app-tools/0.1.6/scripts': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/computer-use': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/computer-use/26.1007.71326': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/computer-use/26.1007.71326/.codex-plugin': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/computer-use/26.1007.71326/.codex-plugin/plugin.json': 'file:909ba1a83a7717d71a3a9c7810feb02f8bc782e065fc96c2cacbe4465c660113',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/computer-use/26.1007.71326/assets': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/computer-use/26.1007.71326/docs': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/computer-use/26.1007.71326/skills': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/computer-use/26.1007.71326/skills/computer-use': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/unified-computer-use': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/unified-computer-use/26.1007.71326': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/unified-computer-use/26.1007.71326/.codex-plugin': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/unified-computer-use/26.1007.71326/.codex-plugin/plugin.json': 'file:5d49cfd6fe6e1ea0d0941c1fa0c29f2cc94cd4c15b3fc852c30b2eb96054943a',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/visualize': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/visualize/1.0.49': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/visualize/1.0.49/.codex-plugin': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/visualize/1.0.49/.codex-plugin/plugin.json': 'file:253debc76a6e9672bf2f69f32b234d9174e54698dfebf33a3f287547c7334c54',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/visualize/1.0.49/assets': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/visualize/1.0.49/skills': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/visualize/1.0.49/skills/visualize': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/visualize/1.0.49/skills/visualize/agents': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/visualize/1.0.49/skills/visualize/assets': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/visualize/1.0.49/skills/visualize/examples': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/visualize/1.0.49/skills/visualize/scripts': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-bundled/visualize/1.0.49/skills/visualize/widgets': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/documents': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/documents/26.1013.11914': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/documents/26.1013.11914/.codex-plugin': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/documents/26.1013.11914/.codex-plugin/plugin.json': 'file:53999643635c432f475d6a004c29410583363f94f34a07f6ccfbe9f47ae78ec2',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/documents/26.1013.11914/assets': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/documents/26.1013.11914/skills': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/documents/26.1013.11914/skills/documents': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/documents/26.1013.11914/skills/documents/agents': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/documents/26.1013.11914/skills/documents/assets': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/documents/26.1013.11914/skills/documents/container_tools': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/documents/26.1013.11914/skills/documents/examples': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/documents/26.1013.11914/skills/documents/ooxml': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/documents/26.1013.11914/skills/documents/references': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/documents/26.1013.11914/skills/documents/scripts': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/documents/26.1013.11914/skills/documents/tasks': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/documents/26.1013.11914/skills/documents/troubleshooting': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/pdf': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/pdf/26.1013.11914': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/pdf/26.1013.11914/.codex-plugin': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/pdf/26.1013.11914/.codex-plugin/plugin.json': 'file:750ec2d1659fd8ba9ec51b149bc8b7c8b80786277a732f9d9c8ed2664cb1a6ca',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/pdf/26.1013.11914/assets': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/pdf/26.1013.11914/skills': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/pdf/26.1013.11914/skills/pdf': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/pdf/26.1013.11914/skills/pdf/agents': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/pdf/26.1013.11914/skills/pdf/assets': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/pdf/26.1013.11914/skills/pdf/container_tools': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/presentations': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/presentations/26.1013.11914': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/presentations/26.1013.11914/.codex-plugin': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/presentations/26.1013.11914/.codex-plugin/plugin.json': 'file:857a7fa858c2047bea5a01b79221a2deb2a614b215b146f2fdf3781183b86cf1',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/presentations/26.1013.11914/assets': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/presentations/26.1013.11914/skills': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/presentations/26.1013.11914/skills/presentations': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/presentations/26.1013.11914/skills/presentations/agents': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/presentations/26.1013.11914/skills/presentations/artifact_tool_docs': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/presentations/26.1013.11914/skills/presentations/artifact_tool_docs/api': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/presentations/26.1013.11914/skills/presentations/artifact_tool_docs/api/references': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/presentations/26.1013.11914/skills/presentations/artifact_tool_docs/api/references/cookbook': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/presentations/26.1013.11914/skills/presentations/assets': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/presentations/26.1013.11914/skills/presentations/container_tools': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/presentations/26.1013.11914/skills/presentations/container_tools/__pycache__': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/presentations/26.1013.11914/skills/presentations/domain_guidance': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/presentations/26.1013.11914/skills/presentations/references': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/presentations/26.1013.11914/skills/presentations/routing': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/presentations/26.1013.11914/skills/presentations/template_following_scripts': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/spreadsheets': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/spreadsheets/26.1013.11914': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/spreadsheets/26.1013.11914/.codex-plugin': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/spreadsheets/26.1013.11914/.codex-plugin/plugin.json': 'file:3717e53efb2a87fb08117ccaab62e0b27772dce5aea485fe78847994468da448',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/spreadsheets/26.1013.11914/assets': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/spreadsheets/26.1013.11914/skills': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/spreadsheets/26.1013.11914/skills/excel-live-control': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/spreadsheets/26.1013.11914/skills/excel-live-control/agents': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/spreadsheets/26.1013.11914/skills/excel-live-control/domain_guidance': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/spreadsheets/26.1013.11914/skills/excel-live-control/features': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/spreadsheets/26.1013.11914/skills/excel-live-control/references': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/spreadsheets/26.1013.11914/skills/excel-live-control/workflows': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/spreadsheets/26.1013.11914/skills/spreadsheets': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/spreadsheets/26.1013.11914/skills/spreadsheets/agents': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/spreadsheets/26.1013.11914/skills/spreadsheets/artifact_tool_docs': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/spreadsheets/26.1013.11914/skills/spreadsheets/assets': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/spreadsheets/26.1013.11914/skills/spreadsheets/container_tools': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/spreadsheets/26.1013.11914/skills/spreadsheets/domain_guidance': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/spreadsheets/26.1013.11914/skills/spreadsheets/features': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/spreadsheets/26.1013.11914/skills/spreadsheets/references': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/spreadsheets/26.1013.11914/skills/spreadsheets/routing': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/spreadsheets/26.1013.11914/skills/spreadsheets/workflows': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/template-creator': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/template-creator/26.1013.11914': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/template-creator/26.1013.11914/.codex-plugin': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/template-creator/26.1013.11914/.codex-plugin/plugin.json': 'file:b4009452479cce2954239805e45f79d3508970918ce61e888a4a61a40b1f7202',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/template-creator/26.1013.11914/assets': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/template-creator/26.1013.11914/skills': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/template-creator/26.1013.11914/skills/template-creator': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/template-creator/26.1013.11914/skills/template-creator/agents': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/template-creator/26.1013.11914/skills/template-creator/assets': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/template-creator/26.1013.11914/skills/template-creator/host': 'directory',
+    +       'C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/template-creator/26.1013.11914/skills/template-creator/scripts': 'directory',
+    +       'C:/Users/jhon/.codex/skills': 'directory',
+    +       'C:/Users/jhon/.codex/skills/.system': 'directory',
+    +       'C:/Users/jhon/.codex/skills/.system/imagegen': 'directory',
+    +       'C:/Users/jhon/.codex/skills/.system/imagegen/SKILL.md': 'file:706d4d96e1d5c9e6023fe3ccabba1bb34b364024d344fd25b8515ec7d28fe3c4',
+    +       'C:/Users/jhon/.codex/skills/.system/imagegen/agents': 'directory',
+    +       'C:/Users/jhon/.codex/skills/.system/imagegen/assets': 'directory',
+    +       'C:/Users/jhon/.codex/skills/.system/imagegen/references': 'directory',
+    +       'C:/Users/jhon/.codex/skills/.system/imagegen/scripts': 'directory',
+    +       'C:/Users/jhon/.codex/skills/.system/openai-docs': 'directory',
+    +       'C:/Users/jhon/.codex/skills/.system/openai-docs/SKILL.md': 'file:8ce8021101bcea594ff92ee6cfd8ca7641a49ee66d7bc6070555f1a33fc239d9',
+    +       'C:/Users/jhon/.codex/skills/.system/openai-docs/agents': 'directory',
+    +       'C:/Users/jhon/.codex/skills/.system/openai-docs/assets': 'directory',
+    +       'C:/Users/jhon/.codex/skills/.system/openai-docs/references': 'directory',
+    +       'C:/Users/jhon/.codex/skills/.system/openai-docs/scripts': 'directory',
+    +       'C:/Users/jhon/.codex/skills/.system/review-agent': 'directory',
+    +       'C:/Users/jhon/.codex/skills/.system/review-agent/SKILL.md': 'file:bb46315f6bc4b7051c05f807d19b1689b20418ac6c42590406d805c10fa2fd1a',
+    +       'C:/Users/jhon/.codex/skills/.system/review-agent/agents': 'directory',
+    +       'C:/Users/jhon/.codex/skills/.system/skill-creator': 'directory',
+    +       'C:/Users/jhon/.codex/skills/.system/skill-creator/SKILL.md': 'file:cccd291077ec57c6f50ca6529f0f3fb93212da09473effb2fcec808e81b21288',
+    +       'C:/Users/jhon/.codex/skills/.system/skill-creator/agents': 'directory',
+    +       'C:/Users/jhon/.codex/skills/.system/skill-creator/assets': 'directory',
+    +       'C:/Users/jhon/.codex/skills/.system/skill-creator/references': 'directory',
+    +       'C:/Users/jhon/.codex/skills/.system/skill-creator/scripts': 'directory',
+    +       'C:/Users/jhon/.codex/skills/.system/[REDACTED]': 'directory',
+    +       'C:/Users/jhon/.codex/skills/.system/[REDACTED]/SKILL.md': 'file:2892d8b2fb11631132118f340aed80ae17e59d5a571fc2c4f4a4a7e73f139d52',
+    +       'C:/Users/jhon/.codex/skills/.system/[REDACTED]/agents': 'directory',
+    +       'C:/Users/jhon/.codex/skills/.system/[REDACTED]/assets': 'directory',
+    +       'C:/Users/jhon/.codex/skills/.system/[REDACTED]/scripts': 'directory',
+    +       'C:/Users/jhon/.codex/skills/code-business-context': 'directory',
+    +       'C:/Users/jhon/.codex/skills/code-business-context/SKILL.md': 'file:f3cd0f8b05889189ce30230d18fe627a67b408f1c18cdab8daf488c43fa11d54',
+    +       'C:/Users/jhon/.codex/skills/code-business-context/agents': 'directory',
+    +       'C:/Users/jhon/.codex/skills/code-business-context/references': 'directory',
+    +       'C:/Users/jhon/.codex/skills/code-business-context/scripts': 'directory',
+    +       'C:/Users/jhon/.codex/skills/harness-creator': 'directory',
+    +       'C:/Users/jhon/.codex/skills/harness-creator/.git': 'directory',
+    +       'C:/Users/jhon/.codex/skills/harness-creator/.git/hooks': 'directory',
+    +       'C:/Users/jhon/.codex/skills/harness-creator/.git/info': 'directory',
+    +       'C:/Users/jhon/.codex/skills/harness-creator/.git/logs': 'directory',
+    +       'C:/Users/jhon/.codex/skills/harness-creator/.git/logs/refs': 'directory',
+    +       'C:/Users/jhon/.codex/skills/harness-creator/.git/logs/refs/heads': 'directory',
+    +       'C:/Users/jhon/.codex/skills/harness-creator/.git/logs/refs/remotes': 'directory',
+    +       'C:/Users/jhon/.codex/skills/harness-creator/.git/logs/refs/remotes/origin': 'directory',
+    +       'C:/Users/jhon/.codex/skills/harness-creator/.git/objects': 'directory',
+    +       'C:/Users/jhon/.codex/skills/harness-creator/.git/objects/info': 'directory',
+    +       'C:/Users/jhon/.codex/skills/harness-creator/.git/objects/pack': 'directory',
+    +       'C:/Users/jhon/.codex/skills/harness-creator/.git/refs': 'directory',
+    +       'C:/Users/jhon/.codex/skills/harness-creator/.git/refs/heads': 'directory',
+    +       'C:/Users/jhon/.codex/skills/harness-creator/.git/refs/remotes': 'directory',
+    +       'C:/Users/jhon/.codex/skills/harness-creator/.git/refs/remotes/origin': 'directory',
+    +       'C:/Users/jhon/.codex/skills/harness-creator/.git/refs/tags': 'directory',
+    +       'C:/Users/jhon/.codex/skills/harness-creator/SKILL.md': 'file:a2a49e29326d147bb514cf6ade723f7ae6dca91d11453d321b4c5cf73c67860e',
+    +       'C:/Users/jhon/.codex/skills/harness-creator/agents': 'directory',
+    +       'C:/Users/jhon/.codex/skills/harness-creator/assets': 'directory',
+    +       'C:/Users/jhon/.codex/skills/harness-creator/references': 'directory',
+    -       'C:/Users/jhon/AppData/Local/Temp/ai-harness-status-NqH3Pd/home/AGENTS.md': 'missing',
+    -       'C:/Users/jhon/AppData/Local/Temp/ai-harness-status-NqH3Pd/home/config.toml': 'file:cc342b86e485f4545a67c7de50977c44e8cacb44799514ae4a342c3dd9af4696',
+    -       'C:/Users/jhon/AppData/Local/Temp/ai-harness-status-NqH3Pd/home/memories/MEMORY.md': 'missing',
+    -       'C:/Users/jhon/AppData/Local/Temp/ai-harness-status-NqH3Pd/home/memories/memory_summary.md': 'missing',
+    -       'C:/Users/jhon/AppData/Local/Temp/ai-harness-status-NqH3Pd/home/plugins/cache': 'missing',
+    -       'C:/Users/jhon/AppData/Local/Temp/ai-harness-status-NqH3Pd/home/skills': 'missing',
+            'C:/Users/jhon/AppData/Local/Temp/package.json': 'missing'
+          },
+          platform: 'win32',
+          policy: 'codex-memory-off',
+          roots: {
+    +       home: 'C:/Users/jhon/.codex',
+    -       home: 'C:/Users/jhon/AppData/Local/Temp/ai-harness-status-NqH3Pd/home',
+            userHome: 'C:/Users/jhon'
+          },
+    +     sha256: '63d117f659648cc2403915de62b811ea6e3a1db9d7b7fd02fe6ff746396c5f01',
+    -     sha256: '2f467ce5a2dc68b5fdf9047d33737597c4bad247adb950ffa3f234084d510c5f',
+          version: 1
+        },
+        kind: 'cli',
+        nodeVersion: 'v22.20.0',
+        sha256: '792789dfdf87254ec64e72335647897986dd9e458e7e5d688ebe2bdf9eee8c48'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+    kind: 'cli'
+    entry: 'C:\\Users\\jhon\\AppData\\Local\\Temp\\ai-harness-status-NqH3Pd\\never-run.mjs'
+    sha256: '792789dfdf87254ec64e72335647897986dd9e458e7e5d688ebe2bdf9eee8c48'
+    nodeVersion: 'v22.20.0'
+    environment:
+      version: 1
+      platform: 'win32'
+      arch: 'x64'
+      policy: 'codex-memory-off'
+      arguments:
+        0: '--disable'
+        1: 'memories'
+      roots:
+        home: 'C:/Users/jhon/AppData/Local/Temp/ai-harness-status-NqH3Pd/home'
+        userHome: 'C:/Users/jhon'
+      files:
+        C:/Users/jhon/.agents/skills: 'directory'
+        C:/Users/jhon/.agents/skills/find-skills: 'directory'
+        C:/Users/jhon/.agents/skills/find-skills/SKILL.md: 'file:78ac83c09f63616f795be5994c8f884e935705878990706c43b67e7e7037f50f'
+        C:/Users/jhon/.agents/skills/threat-modeling: 'directory'
+        C:/Users/jhon/.agents/skills/threat-modeling/SKILL.md: 'file:436226e6760379aed0e3f250fd26d3abc74aed6f8d3ccb6e3a8a9977ec8e2e69'
+        C:/Users/jhon/AppData/Local/Temp/ai-harness-status-NqH3Pd/home/AGENTS.md: 'missing'
+        C:/Users/jhon/AppData/Local/Temp/ai-harness-status-NqH3Pd/home/config.toml: 'file:cc342b86e485f4545a67c7de50977c44e8cacb44799514ae4a342c3dd9af4696'
+        C:/Users/jhon/AppData/Local/Temp/ai-harness-status-NqH3Pd/home/memories/MEMORY.md: 'missing'
+        C:/Users/jhon/AppData/Local/Temp/ai-harness-status-NqH3Pd/home/memories/memory_summary.md: 'missing'
+        C:/Users/jhon/AppData/Local/Temp/ai-harness-status-NqH3Pd/home/plugins/cache: 'missing'
+        C:/Users/jhon/AppData/Local/Temp/ai-harness-status-NqH3Pd/home/skills: 'missing'
+        C:/Users/jhon/AppData/Local/Temp/package.json: 'missing'
+      sha256: '2f467ce5a2dc68b5fdf9047d33737597c4bad247adb950ffa3f234084d510c5f'
+  actual:
+    kind: 'cli'
+    entry: 'C:\\Users\\jhon\\AppData\\Local\\Temp\\ai-harness-status-NqH3Pd\\never-run.mjs'
+    sha256: '792789dfdf87254ec64e72335647897986dd9e458e7e5d688ebe2bdf9eee8c48'
+    nodeVersion: 'v22.20.0'
+    environment:
+      version: 1
+      platform: 'win32'
+      arch: 'x64'
+      policy: 'codex-memory-off'
+      arguments:
+        0: '--disable'
+        1: 'memories'
+      roots:
+        home: 'C:/Users/jhon/.codex'
+        userHome: 'C:/Users/jhon'
+      files:
+        C:/Users/jhon/.agents/skills: 'directory'
+        C:/Users/jhon/.agents/skills/find-skills: 'directory'
+        C:/Users/jhon/.agents/skills/find-skills/SKILL.md: 'file:78ac83c09f63616f795be5994c8f884e935705878990706c43b67e7e7037f50f'
+        C:/Users/jhon/.agents/skills/threat-modeling: 'directory'
+        C:/Users/jhon/.agents/skills/threat-modeling/SKILL.md: 'file:436226e6760379aed0e3f250fd26d3abc74aed6f8d3ccb6e3a8a9977ec8e2e69'
+        C:/Users/jhon/.codex/AGENTS.md: 'file:b65a13184be3eabcbbeffbd08a307fdf4e0619d306d6739572e8e334137ec33b'
+        C:/Users/jhon/.codex/config.toml: 'file:a51f0b2843874083ab62d889fffb7f82b09d98ee2466d335f6d6217dade4c87c'
+        C:/Users/jhon/.codex/memories/MEMORY.md: 'file:90bc9065db34e2a542a8cd2999a9b9f5741d6cb4adbaf1d12dbcce2008a7fffb'
+        C:/Users/jhon/.codex/memories/memory_summary.md: 'file:0a0b3efed3b2be6c5c249ed99a8d1017c261f0a57e8298557ec6eeaadaa6f1f5'
+        C:/Users/jhon/.codex/plugins/cache: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/.agents: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/.agents/plugins: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/.claude-plugin: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/.claude-plugin/plugin.json: 'file:aaa8449b5cc65a6df6feaa09f9317e87efb51440b17f626104d57222b3611a8e'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/.codex-plugin: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/.codex-plugin/plugin.json: 'file:8f879f5e2f04c5d2a93bd9ea455072384dc35d01f1dfc5307ca1be0cef5be9aa'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/.cursor-plugin: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/.cursor-plugin/plugin.json: 'file:998f2cdd2824c4d84184043d07e94b9fbc0bdb5e79c23c14cd266355d0394fbd'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/.devin-plugin: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/.devin-plugin/plugin.json: 'file:717a5137ee3416c17bf7d2fbffb1edbc820e2bb8a6f5b9bc35b18b23afafd1bb'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/.git: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/.git/hooks: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/.git/info: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/.git/logs: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/.git/logs/refs: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/.git/logs/refs/heads: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/.git/logs/refs/remotes: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/.git/logs/refs/remotes/origin: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/.git/objects: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/.git/objects/info: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/.git/objects/pack: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/.git/refs: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/.git/refs/heads: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/.git/refs/remotes: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/.git/refs/remotes/origin: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/.git/refs/tags: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/.github: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/.github/ISSUE_TEMPLATE: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/.hermes-plugin: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/.kimi-plugin: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/.kimi-plugin/plugin.json: 'file:ea5a1db06d1577f9e08339c4353e9cbcd4d381d64b9523c756d5f237424b2d6e'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/.muse-plugin: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/.muse-plugin/plugin.json: 'file:8ec5ba62667187e5660da986c5e5e21bf363a62bb7e1f461df15095e892eb960'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/.opencode: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/.opencode/plugins: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/.pi: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/.pi/extensions: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/assets: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/docs: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/docs/plans: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/docs/superpowers: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/docs/superpowers/plans: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/docs/superpowers/specs: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/docs/windows: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/hooks: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/scripts: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/skills: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/skills/brainstorming: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/skills/brainstorming/scripts: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/skills/diagnosing-superpowers: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/skills/diagnosing-superpowers/prompts: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/skills/diagnosing-superpowers/references: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/skills/diagnosing-superpowers/templates: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/skills/dispatching-parallel-agents: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/skills/executing-plans: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/skills/executing-plans/scripts: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/skills/finishing-a-development-branch: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/skills/receiving-code-review: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/skills/requesting-code-review: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/skills/subagent-driven-development: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/skills/subagent-driven-development/scripts: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/skills/systematic-debugging: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/skills/test-driven-development: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/skills/using-git-worktrees: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/skills/using-superpowers: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/skills/using-superpowers/references: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/skills/verification-before-completion: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/skills/writing-plans: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/skills/writing-skills: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/skills/writing-skills/examples: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/tests: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/tests/antigravity: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/tests/brainstorm-server: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/tests/claude-code: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/tests/codex: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/tests/codex-plugin-sync: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/tests/devin: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/tests/diagnosing-superpowers: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/tests/explicit-[REDACTED]: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/tests/explicit-[REDACTED]/prompts: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/tests/hermes: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/tests/hooks: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/tests/kimi: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/tests/opencode: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/tests/pi: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/tests/shell-lint: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/tests/systematic-debugging: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/tests/version-bump: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/claude-plugins-official/superpowers/6.4.1/tests/writing-skills: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-api-curated: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-api-curated/figma: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-api-curated/figma/0722921d: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-api-curated/figma/0722921d/.codex-plugin: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-api-curated/figma/0722921d/.codex-plugin/plugin.json: 'file:4a94826aedb047fed25d2a7b16a07aaf5bc4fb1238d47e51d71985fa3336010d'
+        C:/Users/jhon/.codex/plugins/cache/openai-api-curated/figma/0722921d/agents: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-api-curated/figma/0722921d/assets: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-api-curated/figma/0722921d/commands: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-api-curated/figma/0722921d/scripts: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-api-curated/figma/0722921d/skills: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-api-curated/figma/0722921d/skills/figma-code-connect: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-api-curated/figma/0722921d/skills/figma-code-connect/references: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-api-curated/figma/0722921d/skills/figma-create-new-file: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-api-curated/figma/0722921d/skills/figma-design-to-code: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-api-curated/figma/0722921d/skills/figma-generate-design: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-api-curated/figma/0722921d/skills/figma-generate-design/references: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-api-curated/figma/0722921d/skills/figma-generate-diagram: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-api-curated/figma/0722921d/skills/figma-generate-diagram/references: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-api-curated/figma/0722921d/skills/figma-generate-library: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-api-curated/figma/0722921d/skills/figma-generate-library/references: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-api-curated/figma/0722921d/skills/figma-generate-library/scripts: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-api-curated/figma/0722921d/skills/figma-implement-motion: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-api-curated/figma/0722921d/skills/figma-implement-motion/references: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-api-curated/figma/0722921d/skills/figma-swiftui: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-api-curated/figma/0722921d/skills/figma-swiftui/references: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-api-curated/figma/0722921d/skills/figma-use: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-api-curated/figma/0722921d/skills/figma-use-figjam: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-api-curated/figma/0722921d/skills/figma-use-figjam/references: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-api-curated/figma/0722921d/skills/figma-use-motion: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-api-curated/figma/0722921d/skills/figma-use-motion/references: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-api-curated/figma/0722921d/skills/figma-use-slides: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-api-curated/figma/0722921d/skills/figma-use-slides/references: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-api-curated/figma/0722921d/skills/figma-use/references: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-api-curated/figma/0722921d/skills/figma-use/references/working-with-design-systems: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-api-curated/figma/0722921d/ui: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/.codex-plugin: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/.codex-plugin/plugin.json: 'file:d80b9bbd6a70139245a1fc9a2514cb9877dfc4c36289b9083ad1872b4c9864de'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/assets: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/docs: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/docs/capabilities: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/docs/capabilities/browser: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/docs/capabilities/tab: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/abstract-level: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/abstract-level/lib: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/abstract-level/test: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/abstract-level/test/events: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/abstract-level/test/hooks: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/abstract-level/test/self: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/abstract-level/test/traits: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/abstract-level/types: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/classic-level: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/classic-level/deps: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/classic-level/deps/leveldb: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/classic-level/deps/leveldb/leveldb-1.20: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/classic-level/deps/leveldb/leveldb-1.20/db: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/classic-level/deps/leveldb/leveldb-1.20/helpers: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/classic-level/deps/leveldb/leveldb-1.20/helpers/memenv: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/classic-level/deps/leveldb/leveldb-1.20/include: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/classic-level/deps/leveldb/leveldb-1.20/include/leveldb: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/classic-level/deps/leveldb/leveldb-1.20/issues: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/classic-level/deps/leveldb/leveldb-1.20/port: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/classic-level/deps/leveldb/leveldb-1.20/port/win: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/classic-level/deps/leveldb/leveldb-1.20/table: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/classic-level/deps/leveldb/leveldb-1.20/util: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/classic-level/deps/leveldb/patches: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/classic-level/deps/leveldb/port-libuv: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/classic-level/deps/snappy: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/classic-level/deps/snappy/freebsd: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/classic-level/deps/snappy/linux: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/classic-level/deps/snappy/mac: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/classic-level/deps/snappy/openbsd: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/classic-level/deps/snappy/snappy: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/classic-level/deps/snappy/snappy/cmake: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/classic-level/deps/snappy/solaris: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/classic-level/deps/snappy/win32: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/classic-level/prebuilds: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/classic-level/prebuilds/android-arm: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/classic-level/prebuilds/android-arm64: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/classic-level/prebuilds/darwin-x64+arm64: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/classic-level/prebuilds/linux-arm: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/classic-level/prebuilds/linux-arm64: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/classic-level/prebuilds/linux-x64: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/classic-level/prebuilds/win32-ia32: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/classic-level/prebuilds/win32-x64: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/is-buffer: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/level-supports: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/level-supports/test: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/level-transcoder: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/level-transcoder/lib: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/maybe-combine-errors: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/module-error: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/napi-macros: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/node_modules/node-gyp-build: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/scripts: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/browser/26.1007.71326/skills: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/.codex-plugin: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/.codex-plugin/plugin.json: 'file:e8ef0a714882cabaf52e82b59989333fc83ab9d1fc716a24838e65519a66a889'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/assets: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/docs: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/docs/capabilities: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/docs/capabilities/browser: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/docs/capabilities/tab: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/extension-host: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/extension-host/windows: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/extension-host/windows/x64: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/abstract-level: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/abstract-level/lib: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/abstract-level/test: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/abstract-level/test/events: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/abstract-level/test/hooks: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/abstract-level/test/self: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/abstract-level/test/traits: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/abstract-level/types: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/classic-level: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/classic-level/deps: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/classic-level/deps/leveldb: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/classic-level/deps/leveldb/leveldb-1.20: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/classic-level/deps/leveldb/leveldb-1.20/db: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/classic-level/deps/leveldb/leveldb-1.20/helpers: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/classic-level/deps/leveldb/leveldb-1.20/helpers/memenv: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/classic-level/deps/leveldb/leveldb-1.20/include: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/classic-level/deps/leveldb/leveldb-1.20/include/leveldb: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/classic-level/deps/leveldb/leveldb-1.20/issues: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/classic-level/deps/leveldb/leveldb-1.20/port: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/classic-level/deps/leveldb/leveldb-1.20/port/win: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/classic-level/deps/leveldb/leveldb-1.20/table: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/classic-level/deps/leveldb/leveldb-1.20/util: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/classic-level/deps/leveldb/patches: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/classic-level/deps/leveldb/port-libuv: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/classic-level/deps/snappy: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/classic-level/deps/snappy/freebsd: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/classic-level/deps/snappy/linux: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/classic-level/deps/snappy/mac: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/classic-level/deps/snappy/openbsd: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/classic-level/deps/snappy/snappy: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/classic-level/deps/snappy/snappy/cmake: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/classic-level/deps/snappy/solaris: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/classic-level/deps/snappy/win32: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/classic-level/prebuilds: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/classic-level/prebuilds/android-arm: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/classic-level/prebuilds/android-arm64: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/classic-level/prebuilds/darwin-x64+arm64: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/classic-level/prebuilds/linux-arm: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/classic-level/prebuilds/linux-arm64: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/classic-level/prebuilds/linux-x64: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/classic-level/prebuilds/win32-ia32: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/classic-level/prebuilds/win32-x64: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/is-buffer: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/level-supports: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/level-supports/test: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/level-transcoder: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/level-transcoder/lib: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/maybe-combine-errors: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/module-error: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/napi-macros: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/node_modules/node-gyp-build: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/scripts: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/26.1007.71326/skills: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/chrome/latest: 'symlink:bcd2af5858f73f5ed997e7119bbd9e3cf848da05150e6f81f8041831ab2b667b'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/code-review: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/code-review/26.1007.21434: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/codex-app-tools: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/codex-app-tools/0.1.6: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/codex-app-tools/0.1.6/.codex-plugin: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/codex-app-tools/0.1.6/.codex-plugin/plugin.json: 'file:2aba688fc9010dfbc9f24b9ff0eb689b9ef1f3988f3ac73bad1c3a03da36058b'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/codex-app-tools/0.1.6/scripts: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/computer-use: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/computer-use/26.1007.71326: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/computer-use/26.1007.71326/.codex-plugin: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/computer-use/26.1007.71326/.codex-plugin/plugin.json: 'file:909ba1a83a7717d71a3a9c7810feb02f8bc782e065fc96c2cacbe4465c660113'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/computer-use/26.1007.71326/assets: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/computer-use/26.1007.71326/docs: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/computer-use/26.1007.71326/skills: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/computer-use/26.1007.71326/skills/computer-use: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/unified-computer-use: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/unified-computer-use/26.1007.71326: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/unified-computer-use/26.1007.71326/.codex-plugin: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/unified-computer-use/26.1007.71326/.codex-plugin/plugin.json: 'file:5d49cfd6fe6e1ea0d0941c1fa0c29f2cc94cd4c15b3fc852c30b2eb96054943a'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/visualize: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/visualize/1.0.49: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/visualize/1.0.49/.codex-plugin: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/visualize/1.0.49/.codex-plugin/plugin.json: 'file:253debc76a6e9672bf2f69f32b234d9174e54698dfebf33a3f287547c7334c54'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/visualize/1.0.49/assets: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/visualize/1.0.49/skills: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/visualize/1.0.49/skills/visualize: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/visualize/1.0.49/skills/visualize/agents: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/visualize/1.0.49/skills/visualize/assets: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/visualize/1.0.49/skills/visualize/examples: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/visualize/1.0.49/skills/visualize/scripts: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-bundled/visualize/1.0.49/skills/visualize/widgets: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/documents: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/documents/26.1013.11914: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/documents/26.1013.11914/.codex-plugin: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/documents/26.1013.11914/.codex-plugin/plugin.json: 'file:53999643635c432f475d6a004c29410583363f94f34a07f6ccfbe9f47ae78ec2'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/documents/26.1013.11914/assets: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/documents/26.1013.11914/skills: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/documents/26.1013.11914/skills/documents: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/documents/26.1013.11914/skills/documents/agents: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/documents/26.1013.11914/skills/documents/assets: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/documents/26.1013.11914/skills/documents/container_tools: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/documents/26.1013.11914/skills/documents/examples: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/documents/26.1013.11914/skills/documents/ooxml: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/documents/26.1013.11914/skills/documents/references: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/documents/26.1013.11914/skills/documents/scripts: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/documents/26.1013.11914/skills/documents/tasks: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/documents/26.1013.11914/skills/documents/troubleshooting: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/pdf: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/pdf/26.1013.11914: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/pdf/26.1013.11914/.codex-plugin: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/pdf/26.1013.11914/.codex-plugin/plugin.json: 'file:750ec2d1659fd8ba9ec51b149bc8b7c8b80786277a732f9d9c8ed2664cb1a6ca'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/pdf/26.1013.11914/assets: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/pdf/26.1013.11914/skills: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/pdf/26.1013.11914/skills/pdf: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/pdf/26.1013.11914/skills/pdf/agents: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/pdf/26.1013.11914/skills/pdf/assets: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/pdf/26.1013.11914/skills/pdf/container_tools: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/presentations: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/presentations/26.1013.11914: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/presentations/26.1013.11914/.codex-plugin: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/presentations/26.1013.11914/.codex-plugin/plugin.json: 'file:857a7fa858c2047bea5a01b79221a2deb2a614b215b146f2fdf3781183b86cf1'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/presentations/26.1013.11914/assets: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/presentations/26.1013.11914/skills: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/presentations/26.1013.11914/skills/presentations: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/presentations/26.1013.11914/skills/presentations/agents: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/presentations/26.1013.11914/skills/presentations/artifact_tool_docs: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/presentations/26.1013.11914/skills/presentations/artifact_tool_docs/api: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/presentations/26.1013.11914/skills/presentations/artifact_tool_docs/api/references: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/presentations/26.1013.11914/skills/presentations/artifact_tool_docs/api/references/cookbook: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/presentations/26.1013.11914/skills/presentations/assets: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/presentations/26.1013.11914/skills/presentations/container_tools: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/presentations/26.1013.11914/skills/presentations/container_tools/__pycache__: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/presentations/26.1013.11914/skills/presentations/domain_guidance: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/presentations/26.1013.11914/skills/presentations/references: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/presentations/26.1013.11914/skills/presentations/routing: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/presentations/26.1013.11914/skills/presentations/template_following_scripts: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/spreadsheets: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/spreadsheets/26.1013.11914: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/spreadsheets/26.1013.11914/.codex-plugin: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/spreadsheets/26.1013.11914/.codex-plugin/plugin.json: 'file:3717e53efb2a87fb08117ccaab62e0b27772dce5aea485fe78847994468da448'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/spreadsheets/26.1013.11914/assets: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/spreadsheets/26.1013.11914/skills: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/spreadsheets/26.1013.11914/skills/excel-live-control: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/spreadsheets/26.1013.11914/skills/excel-live-control/agents: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/spreadsheets/26.1013.11914/skills/excel-live-control/domain_guidance: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/spreadsheets/26.1013.11914/skills/excel-live-control/features: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/spreadsheets/26.1013.11914/skills/excel-live-control/references: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/spreadsheets/26.1013.11914/skills/excel-live-control/workflows: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/spreadsheets/26.1013.11914/skills/spreadsheets: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/spreadsheets/26.1013.11914/skills/spreadsheets/agents: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/spreadsheets/26.1013.11914/skills/spreadsheets/artifact_tool_docs: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/spreadsheets/26.1013.11914/skills/spreadsheets/assets: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/spreadsheets/26.1013.11914/skills/spreadsheets/container_tools: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/spreadsheets/26.1013.11914/skills/spreadsheets/domain_guidance: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/spreadsheets/26.1013.11914/skills/spreadsheets/features: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/spreadsheets/26.1013.11914/skills/spreadsheets/references: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/spreadsheets/26.1013.11914/skills/spreadsheets/routing: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/spreadsheets/26.1013.11914/skills/spreadsheets/workflows: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/template-creator: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/template-creator/26.1013.11914: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/template-creator/26.1013.11914/.codex-plugin: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/template-creator/26.1013.11914/.codex-plugin/plugin.json: 'file:b4009452479cce2954239805e45f79d3508970918ce61e888a4a61a40b1f7202'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/template-creator/26.1013.11914/assets: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/template-creator/26.1013.11914/skills: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/template-creator/26.1013.11914/skills/template-creator: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/template-creator/26.1013.11914/skills/template-creator/agents: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/template-creator/26.1013.11914/skills/template-creator/assets: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/template-creator/26.1013.11914/skills/template-creator/host: 'directory'
+        C:/Users/jhon/.codex/plugins/cache/openai-primary-runtime/template-creator/26.1013.11914/skills/template-creator/scripts: 'directory'
+        C:/Users/jhon/.codex/skills: 'directory'
+        C:/Users/jhon/.codex/skills/.system: 'directory'
+        C:/Users/jhon/.codex/skills/.system/imagegen: 'directory'
+        C:/Users/jhon/.codex/skills/.system/imagegen/SKILL.md: 'file:706d4d96e1d5c9e6023fe3ccabba1bb34b364024d344fd25b8515ec7d28fe3c4'
+        C:/Users/jhon/.codex/skills/.system/imagegen/agents: 'directory'
+        C:/Users/jhon/.codex/skills/.system/imagegen/assets: 'directory'
+        C:/Users/jhon/.codex/skills/.system/imagegen/references: 'directory'
+        C:/Users/jhon/.codex/skills/.system/imagegen/scripts: 'directory'
+        C:/Users/jhon/.codex/skills/.system/openai-docs: 'directory'
+        C:/Users/jhon/.codex/skills/.system/openai-docs/SKILL.md: 'file:8ce8021101bcea594ff92ee6cfd8ca7641a49ee66d7bc6070555f1a33fc239d9'
+        C:/Users/jhon/.codex/skills/.system/openai-docs/agents: 'directory'
+        C:/Users/jhon/.codex/skills/.system/openai-docs/assets: 'directory'
+        C:/Users/jhon/.codex/skills/.system/openai-docs/references: 'directory'
+        C:/Users/jhon/.codex/skills/.system/openai-docs/scripts: 'directory'
+        C:/Users/jhon/.codex/skills/.system/review-agent: 'directory'
+        C:/Users/jhon/.codex/skills/.system/review-agent/SKILL.md: 'file:bb46315f6bc4b7051c05f807d19b1689b20418ac6c42590406d805c10fa2fd1a'
+        C:/Users/jhon/.codex/skills/.system/review-agent/agents: 'directory'
+        C:/Users/jhon/.codex/skills/.system/skill-creator: 'directory'
+        C:/Users/jhon/.codex/skills/.system/skill-creator/SKILL.md: 'file:cccd291077ec57c6f50ca6529f0f3fb93212da09473effb2fcec808e81b21288'
+        C:/Users/jhon/.codex/skills/.system/skill-creator/agents: 'directory'
+        C:/Users/jhon/.codex/skills/.system/skill-creator/assets: 'directory'
+        C:/Users/jhon/.codex/skills/.system/skill-creator/references: 'directory'
+        C:/Users/jhon/.codex/skills/.system/skill-creator/scripts: 'directory'
+        C:/Users/jhon/.codex/skills/.system/[REDACTED]: 'directory'
+        C:/Users/jhon/.codex/skills/.system/[REDACTED]/SKILL.md: 'file:2892d8b2fb11631132118f340aed80ae17e59d5a571fc2c4f4a4a7e73f139d52'
+        C:/Users/jhon/.codex/skills/.system/[REDACTED]/agents: 'directory'
+        C:/Users/jhon/.codex/skills/.system/[REDACTED]/assets: 'directory'
+        C:/Users/jhon/.codex/skills/.system/[REDACTED]/scripts: 'directory'
+        C:/Users/jhon/.codex/skills/code-business-context: 'directory'
+        C:/Users/jhon/.codex/skills/code-business-context/SKILL.md: 'file:f3cd0f8b05889189ce30230d18fe627a67b408f1c18cdab8daf488c43fa11d54'
+        C:/Users/jhon/.codex/skills/code-business-context/agents: 'directory'
+        C:/Users/jhon/.codex/skills/code-business-context/references: 'directory'
+        C:/Users/jhon/.codex/skills/code-business-context/scripts: 'directory'
+        C:/Users/jhon/.codex/skills/harness-creator: 'directory'
+        C:/Users/jhon/.codex/skills/harness-creator/.git: 'directory'
+        C:/Users/jhon/.codex/skills/harness-creator/.git/hooks: 'directory'
+        C:/Users/jhon/.codex/skills/harness-creator/.git/info: 'directory'
+        C:/Users/jhon/.codex/skills/harness-creator/.git/logs: 'directory'
+        C:/Users/jhon/.codex/skills/harness-creator/.git/logs/refs: 'directory'
+        C:/Users/jhon/.codex/skills/harness-creator/.git/logs/refs/heads: 'directory'
+        C:/Users/jhon/.codex/skills/harness-creator/.git/logs/refs/remotes: 'directory'
+        C:/Users/jhon/.codex/skills/harness-creator/.git/logs/refs/remotes/origin: 'directory'
+        C:/Users/jhon/.codex/skills/harness-creator/.git/objects: 'directory'
+        C:/Users/jhon/.codex/skills/harness-creator/.git/objects/info: 'directory'
+        C:/Users/jhon/.codex/skills/harness-creator/.git/objects/pack: 'directory'
+        C:/Users/jhon/.codex/skills/harness-creator/.git/refs: 'directory'
+        C:/Users/jhon/.codex/skills/harness-creator/.git/refs/heads: 'directory'
+        C:/Users/jhon/.codex/skills/harness-creator/.git/refs/remotes: 'directory'
+        C:/Users/jhon/.codex/skills/harness-creator/.git/refs/remotes/origin: 'directory'
+        C:/Users/jhon/.codex/skills/harness-creator/.git/refs/tags: 'directory'
+        C:/Users/jhon/.codex/skills/harness-creator/SKILL.md: 'file:a2a49e29326d147bb514cf6ade723f7ae6dca91d11453d321b4c5cf73c67860e'
+        C:/Users/jhon/.codex/skills/harness-creator/agents: 'directory'
+        C:/Users/jhon/.codex/skills/harness-creator/assets: 'directory'
+        C:/Users/jhon/.codex/skills/harness-creator/references: 'directory'
+        C:/Users/jhon/AppData/Local/Temp/package.json: 'missing'
+      sha256: '63d117f659648cc2403915de62b811ea6e3a1db9d7b7fd02fe6ff746396c5f01'
+  operator: 'deepStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///D:/Projects/my-harness/benchmarks/tests/status.test.mjs:219:12)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: historical protocols stay unsupported and no pending calls is not completion
+ok 11 - historical protocols stay unsupported and no pending calls is not completion
+  ---
+  duration_ms: 1409.2632
+  type: 'test'
+  ...
+# Subtest: source and explicit CLI changes during inspection revoke earlier identity matches
+ok 12 - source and explicit CLI changes during inspection revoke earlier identity matches
+  ---
+  duration_ms: 1575.5679
+  type: 'test'
+  ...
+# Subtest: failed evidence reads still detect a concurrent writer and do not label records corrupt
+ok 13 - failed evidence reads still detect a concurrent writer and do not label records corrupt
+  ---
+  duration_ms: 1971.1425
+  type: 'test'
+  ...
+# Subtest: foreign, unknown and legacy locks cannot trigger result reads or recovery projections
+ok 14 - foreign, unknown and legacy locks cannot trigger result reads or recovery projections
+  ---
+  duration_ms: 2605.8597
+  type: 'test'
+  ...
+# Subtest: status uses strict frozen protocol and ledger checks before offering any calls
+ok 15 - status uses strict frozen protocol and ledger checks before offering any calls
+  ---
+  duration_ms: 1673.9295
+  type: 'test'
+  ...
+# Subtest: large previews keep exact totals, bounded lists and redacted user fields without a summary
+ok 16 - large previews keep exact totals, bounded lists and redacted user fields without a summary
+  ---
+  duration_ms: 960.4311
+  type: 'test'
+  ...
+# Subtest: all trusted results report completion independently of model task success
+ok 17 - all trusted results report completion independently of model task success
+  ---
+  duration_ms: 4342.0344
+  type: 'test'
+  ...
+1..17
+# tests 17
+# suites 0
+# pass 16
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 31179.1588

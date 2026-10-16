@@ -290,7 +290,10 @@ test("repeated paired trials preserve independent outputs and remain explicitly 
     assert.equal(audited.mode, "simulated");
     assert.equal(audited.samples, 12);
     // 只在此临时单元夹具中构造 real 协议形状，验证审计不信任自报字段；没有模型调用。
-    const protocol = JSON.parse(await readFile(path.join(outputDirectory, "protocol.json"), "utf8"));
+    const protocolPath=path.join(outputDirectory,"protocol.json"),originalProtocolBytes=await readFile(protocolPath),protocol = JSON.parse(originalProtocolBytes);
+    const brokenV4={...protocol,mode:"real"};delete brokenV4.driverIdentity;await writeFile(protocolPath,JSON.stringify(brokenV4));
+    await assert.rejects(()=>auditExperiment(outputDirectory),/identity/i);
+    await writeFile(protocolPath,originalProtocolBytes);
     // Preserve explicit v2 compatibility coverage; v4 ledger checks have their own tests.
     protocol.schemaVersion=2;
     delete protocol.summaryVersion;

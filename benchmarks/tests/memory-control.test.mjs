@@ -44,3 +44,13 @@ test("new environment identities are optional for legacy v4 but drift stops befo
   assert.equal(calls,0,"changed contexts must be rejected before a possibly billable session");
  }finally{if(previous===undefined)delete process.env.CODEX_HOME;else process.env.CODEX_HOME=previous;await cleanup(root);}
 });
+
+test("legacy v4 resume keeps the legacy CLI identity when the current Codex adds environment context",async()=>{
+ const {root,home}=await fixture(),previous=process.env.CODEX_HOME;process.env.CODEX_HOME=home;
+ try{
+  await writeFile(path.join(home,"config.toml"),"fixture=1");const cli=path.join(root,"fixture.mjs");await writeFile(cli,"// no model service");
+  const legacy=await cliIdentity(cli),current=await cliIdentity(cli,{codexEnvironment:true}),plan=experimentPlan({weak:"synthetic",suite:"project",comparison:"paired",timeoutMs:5000}),outputDirectory=path.join(root,"experiment");
+  await assert.rejects(()=>runExperiment({plan,sourceRoot,outputDirectory,mode:"real",driverIdentity:legacy,onProgress:event=>{if(event.event==="ready")throw new Error("initial pause");},driver:async()=>{throw new Error("driver must not execute");}}),/initial pause/);
+  await assert.rejects(()=>runExperiment({plan,sourceRoot,outputDirectory,mode:"real",resume:true,driverIdentity:current,onProgress:event=>{if(event.event==="ready")throw new Error("resume pause");},driver:async()=>{throw new Error("driver must not execute");}}),/resume pause/);
+ }finally{if(previous===undefined)delete process.env.CODEX_HOME;else process.env.CODEX_HOME=previous;await cleanup(root);}
+});

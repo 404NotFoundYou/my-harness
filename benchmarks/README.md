@@ -26,7 +26,7 @@ node benchmarks/run.mjs --codex-runtime docker --codex-container-manifest '<runt
 
 `--dry-run`只冻结计划、runtime选择和模型调用数，不读取manifest、不访问Docker、不创建输出目录或容器。正式运行去掉`--dry-run`；Docker模式仅支持Codex，禁止同时传`--cli`。
 
-manifest版本1严格包含`image`、`imageId`、`platform`、Node/CLI/native入口、版本及SHA-256。当前仅接受已验证的Node`v22.20.0`与Codex`0.156.0`。`image`必须是`name@sha256:...`，平台固定`linux/amd64`；镜像需在运行前由独立、受审计的准备流程构建并已存在本地。driver只执行`docker image inspect`和`docker create/start/kill/rm`，不会pull、build、安装包或传递宿主凭据。示意结构：
+manifest版本1严格包含`image`、`imageId`、`platform`、Node/CLI/native入口、版本及SHA-256。当前仅接受已验证的Node`v22.20.0`与Codex`0.156.0`。`image`必须是`name@sha256:...`，平台固定`linux/amd64`；镜像需在运行前由独立、受审计的准备流程构建并已存在本地。driver只执行`docker image inspect`和`docker create/inspect/start/kill/rm`，不会pull、build、安装包或传递宿主凭据。示意结构：
 
 ```json
 {
@@ -46,9 +46,11 @@ manifest版本1严格包含`image`、`imageId`、`platform`、Node/CLI/native入
 }
 ```
 
-正式试次固定`--pull never`、`--network none`、只读根文件系统、非root、`--cap-drop ALL`和`no-new-privileges`。仅participant工作区和当前试次输出目录以可写bind挂载；容器创建后先inspect核对image、网络、用户、privileged、capabilities、tmpfs完整选项、PID/内存/CPU/restart限制、无volume及两个精确mount，再启动CLI。CLI显式bypass内层sandbox，由外层Docker作为唯一强制边界；apps、plugins、browser/computer/image/remote-plugin、MCP相关feature与web search默认关闭，并以`mcp_servers={}`清空配置。此模式不表示任意外部MCP执行器自动受同一边界保护。
+正式试次固定`--pull never`、`--network none`、只读根文件系统、非root、`--cap-drop ALL`和`no-new-privileges`。POSIX宿主使用当前非root UID/GID访问两个可写bind；无法取得POSIX UID/GID时使用`65534:65534` fallback，root宿主直接失败。仅participant工作区和当前试次输出目录以可写bind挂载；容器创建后先inspect核对image、网络、用户、privileged、capabilities、tmpfs完整选项、PID/内存/CPU/restart限制、无volume及两个精确mount，再启动CLI。CLI显式bypass内层sandbox，由外层Docker作为唯一强制边界；apps、plugins、browser/computer/image/remote-plugin、MCP相关feature与web search默认关闭，并以`mcp_servers={}`清空配置。此模式不表示任意外部MCP执行器自动受同一边界保护。
 
-首次加载manifest时会运行无挂载/无网络的短生命周期identity容器，实测Node/CLI版本和wrapper/native哈希；manifest还记录固定wrapper/platform tarball integrity。协议冻结后，每次试次前后及恢复/status重读manifest并检查内容地址image ID；相同image ID绑定相同镜像字节，不重复运行identity容器。协议v4的`driverIdentity.kind`可为`container`；历史`cli`和`simulated`身份保持原结构。恢复或只读状态检查需显式提供同一manifest：
+首次加载manifest时会运行无挂载/无网络的短生命周期identity容器，实测Node/CLI版本和wrapper/native哈希；manifest还记录固定wrapper/platform tarball integrity。协议冻结后，每次试次前后及恢复/status只重读manifest并检查内容地址image ID和声明identity，不重复启动identity容器。协议v4的`driverIdentity.kind`可为`container`；历史`cli`和`simulated`身份保持原结构。恢复或只读状态检查需显式提供同一manifest：
+
+Docker runtime固定`--network none`，当前入口不注入远端provider、凭据或宿主socket；除非镜像自行提供本地provider，否则不能据此启动常规远端模型会话。真实Docker、provider和MCP链路仍需独立授权与验证。
 
 ```powershell
 node benchmarks/status.mjs --out '<实验目录>' --container-manifest '<runtime.json>'

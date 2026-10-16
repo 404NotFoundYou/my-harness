@@ -1,0 +1,138 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 1,
+  "id": "ITER-CURRENT-ISSUES-FIX-20261016",
+  "type": "ITERATION",
+  "title": "修复当前审查发现的benchmark runtime问题",
+  "status": "IMPLEMENTING",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/iteration.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户2026-10-16要求根据审查建议进行修改"
+  },
+  "input": {
+    "references": [
+      "基于ANALYSIS-CURRENT-ISSUES-20261016：修复Codex身份兼容、Docker运行用户/重复身份测量、v4审计协议校验，并同步版本与文档；保留network none，不实现provider接入或真实模型实验"
+    ],
+    "acceptance": [
+      "新旧Codex v4身份可按协议兼容status/resume；POSIX Docker bind使用非root宿主UID并有回归测试；容器重验不重复启动identity容器；v4审计复用完整协议校验；版本/文档反映实际能力；受影响测试、全套benchmark/runtime检查、check --ci和审查通过"
+    ],
+    "nonGoals": [],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": null,
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "当前main@78c978b07371df603dfcf81461e148960a223f50；产品工作树初始无修改，仅保留已完成分析工作项控制面；doctor与check --ci基线成功；当前目标只涉及benchmark runtime/审计/文档，不涉及数据库或真实模型/provider。"
+    ],
+    "completedAt": "2026-10-16T01:58:23.575Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "78c978b07371df603dfcf81461e148960a223f50",
+      "dirty": false,
+      "changedFiles": [],
+      "fingerprints": {},
+      "source": {
+        "digest": "caac602ac083d8cfb8015419ef664d802a6c33c15d2aaa893c15338435160801",
+        "document": ".ai-harness/work-items/ITER-CURRENT-ISSUES-FIX-20261016/snapshots/caac602ac083d8cfb8015419ef664d802a6c33c15d2aaa893c15338435160801.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": ".ai-harness/work-items/ITER-CURRENT-ISSUES-FIX-20261016/solution.md",
+    "evidence": [
+      "方案复用现有experiment/status/codex-container/audit边界：旧v4 CLI identity保持四字段，新增identity只在协议声明时重验environment；runtime容器使用非root宿主UID/GID解决POSIX bind权限，首次完整测量与后续image/manifest重验分离；v4审计复用完整validateExperimentProtocol；不放宽network none或凭据边界。"
+    ],
+    "completedAt": "2026-10-16T02:06:48.221Z"
+  },
+  "database": {
+    "impact": "none",
+    "status": "not-applicable",
+    "document": null,
+    "evidence": [
+      "只修改benchmark运行进程、身份/协议校验、测试和文档；不新增数据库、Schema、迁移、查询或持久化业务数据。"
+    ],
+    "completedAt": "2026-10-16T02:07:00.077Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/ITER-CURRENT-ISSUES-FIX-20261016/plan.json",
+    "approved": true,
+    "approvalRef": "用户2026-10-16明确要求根据审查建议进行修改；本方案不放宽provider/network边界"
+  },
+  "verification": {
+    "status": "pending",
+    "evidence": [],
+    "stages": []
+  },
+  "review": {
+    "status": "pending",
+    "evidence": [],
+    "independent": false
+  },
+  "acceptance": {
+    "status": "pending",
+    "evidence": []
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "pending",
+    "evidence": []
+  },
+  "blocked": null,
+  "delivery": null,
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-10-16T01:57:58.511Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-10-16T01:58:12.002Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-10-16T02:01:27.923Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-10-16T02:08:22.080Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-10-16T02:08:22.173Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-10-16T01:57:58.511Z",
+  "updatedAt": "2026-10-16T02:08:22.267Z"
+}

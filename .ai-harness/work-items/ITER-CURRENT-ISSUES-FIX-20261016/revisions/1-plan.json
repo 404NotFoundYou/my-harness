@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "ITER-CURRENT-ISSUES-FIX-20261016",
+  "mode": "single",
+  "rationale": "目标文件存在连续依赖：先统一身份兼容和容器重验，再同步审计、测试及文档；单AI执行更易保持协议与Docker边界一致。",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "修复身份兼容、Docker runtime重验与v4审计契约",
+      "module": "benchmarks-runtime",
+      "status": "IN_PROGRESS",
+      "attempt": 1,
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        "benchmarks/codex-container.mjs",
+        "benchmarks/codex-driver.mjs",
+        "benchmarks/experiment.mjs",
+        "benchmarks/status.mjs",
+        "benchmarks/run.mjs",
+        "benchmarks/audit.mjs",
+        "benchmarks/tests/container-driver.test.mjs",
+        "benchmarks/tests/status.test.mjs",
+        "benchmarks/tests/runner.test.mjs",
+        "benchmarks/tests/memory-control.test.mjs",
+        "benchmarks/README.md",
+        "README.md",
+        ".ai-harness/manifest.json"
+      ],
+      "verification": [
+        "node benchmarks/tests/run.mjs",
+        "node .ai-harness/tests/run.mjs"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            "benchmarks/tests/run.mjs"
+          ]
+        },
+        {
+          "id": "V2",
+          "command": "node",
+          "args": [
+            ".ai-harness/tests/run.mjs"
+          ]
+        }
+      ],
+      "docsImpact": [
+        "README.md;benchmarks/README.md"
+      ],
+      "reviewBatch": "R1",
+      "risk": "high",
+      "owner": "primary-ai",
+      "verificationStatus": "pending",
+      "reviewStatus": "pending",
+      "evidence": [],
+      "deferralApproval": null
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "benchmark runtime兼容与安全边界",
+      "risk": "high",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": true
+    }
+  ],
+  "createdAt": "2026-10-16T02:07:19.748Z",
+  "updatedAt": "2026-10-16T02:08:22.266Z"
+}

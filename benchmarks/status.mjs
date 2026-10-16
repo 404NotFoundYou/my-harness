@@ -3,7 +3,7 @@ import { realpath } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { isDeepStrictEqual } from "node:util";
 import { cliIdentity, validateExperimentProtocol } from "./experiment.mjs";
-import { containerIdentity } from "./codex-container.mjs";
+import { verifyContainerIdentity } from "./codex-container.mjs";
 import { readExecution, readExecutionLedger } from "./execution.mjs";
 import { readExperimentFile } from "./audit-trial.mjs";
 import { sourceSnapshot } from "../.ai-harness/src/snapshot.mjs";
@@ -59,8 +59,8 @@ export async function inspectExperiment({sourceRoot=sourceDirectory,outputDirect
       report.source={status:sourceBefore.error?"unverified":sourceBefore.value===protocol.source?"matched":"mismatch",expected:protocol.source,current:sourceBefore.value ?? null};
       if(report.source.status!=="matched")block(sourceBefore.error?"SOURCE_UNVERIFIED":"SOURCE_MISMATCH","当前源码无法确认与冻结源码一致。");
       if(cliPath !== undefined&&containerManifest !== undefined)throw new Error("Driver identity inputs conflict");
-      if(cliPath !== undefined)readDriver=()=>cliIdentity(cliPath);
-      else if(containerManifest !== undefined)readDriver=()=>containerIdentity(containerManifest,{expected:protocol.driverIdentity});
+      if(cliPath !== undefined)readDriver=()=>cliIdentity(cliPath,{codexEnvironment:protocol.client==="codex"&&protocol.driverIdentity?.environment!==undefined});
+      else if(containerManifest !== undefined)readDriver=()=>verifyContainerIdentity(containerManifest,{expected:protocol.driverIdentity});
       else if(mode === "simulated"&&driverIdentity !== undefined)readDriver=async()=>structuredClone(driverIdentity);
       if(readDriver){
         driverBefore=await capture(readDriver);

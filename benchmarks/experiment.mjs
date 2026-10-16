@@ -49,6 +49,19 @@ function checkedIdentity(mode, driver, identity) {
   return structuredClone(value);
 }
 
+function legacyCliIdentity(identity) {
+  const {environment: ignored, ...legacy}=identity;
+  return legacy;
+}
+
+async function resumeCompatibleIdentity(outputDirectory, identity, resume) {
+  if(!resume||identity.kind!=="cli"||identity.environment===undefined)return identity;
+  let protocol;
+  try{protocol=JSON.parse((await readExperimentFile(outputDirectory,"protocol.json")).toString("utf8"));}catch{return identity;}
+  const stored=protocol?.driverIdentity;
+  return protocol?.schemaVersion===4&&stored?.kind==="cli"&&stored.environment===undefined?legacyCliIdentity(identity):identity;
+}
+
 export function validateExperimentProtocol(protocol) {
   assert.equal(protocol.schemaVersion,4,"Only protocol v4 can resume; historical experiments are read-only");
   assert.ok(["real","simulated"].includes(protocol.mode),"Invalid experiment mode");
@@ -68,7 +81,8 @@ export async function runExperiment({ plan, sourceRoot, outputDirectory, driver,
   plan=expected;
   if(!resume)await mkdir(outputDirectory);
   outputDirectory=await realpath(outputDirectory);
-  const identity=checkedIdentity(mode,driver,driverIdentity);
+  const requestedIdentity=checkedIdentity(mode,driver,driverIdentity);
+  const identity=await resumeCompatibleIdentity(outputDirectory,requestedIdentity,resume);
   const identityReader=mode !== "real" ? null : readDriverIdentity ?? (identity.kind === "cli" ? ()=>cliIdentity(identity.entry,{codexEnvironment:identity.environment !== undefined}) : null);
   if(mode === "real")assert.equal(typeof identityReader,"function","Container experiments need an explicit identity reader");
   const source=(await sourceSnapshot(sourceRoot)).digest;

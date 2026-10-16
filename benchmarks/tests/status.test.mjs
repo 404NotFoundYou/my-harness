@@ -31,10 +31,12 @@ async function tree(root){
   await walk(root);return output;
 }
 async function cleanup(root){const target=await realpath(root);assert.equal(path.dirname(target),await realpath(tmpdir()));assert.ok(path.basename(target).startsWith("ai-harness-status-"));await rm(target,{recursive:true,force:true});}
-async function fixture({stop="ready",source=sourceRoot,mode="simulated",weak="synthetic",repetitions=1}={}){
+async function fixture({stop="ready",source=sourceRoot,mode="simulated",weak="synthetic",repetitions=1,codexEnvironment=false}={}){
   const directory=await mkdtemp(path.join(tmpdir(),"ai-harness-status-")),outputDirectory=path.join(directory,"run");
+  const previousHome=process.env.CODEX_HOME,restoreEnvironment=()=>{if(previousHome===undefined)delete process.env.CODEX_HOME;else process.env.CODEX_HOME=previousHome;};
+  if(codexEnvironment){const home=path.join(directory,"home");await mkdir(path.join(home,"memories"),{recursive:true});await writeFile(path.join(home,"config.toml"),"fixture=1\n");process.env.CODEX_HOME=home;}
   const cli=path.join(directory,"never-run.mjs");await writeFile(cli,'throw new Error("status must never execute this CLI");\n');
-  const driverIdentity=mode === "real"?await cliIdentity(cli):identity;
+  const driverIdentity=mode === "real"?await cliIdentity(cli,{codexEnvironment}):identity;
   const options={plan:experimentPlan({weak,comparison:"paired",suite:"project",timeoutMs:5000,repetitions}),sourceRoot:source,outputDirectory,mode,driverIdentity};
   try{
     await runExperiment({...options,onProgress:event=>{if(event.event===stop)throw new Error("fixture pause");},driver:async({root,outputDirectory:out})=>{
@@ -43,8 +45,8 @@ async function fixture({stop="ready",source=sourceRoot,mode="simulated",weak="sy
       await writeFile(path.join(out,"events.jsonl"),'{"type":"synthetic"}\n');
       return {mode,client:"codex",completed:true,final:{completed:true,summary:"fixture",tests:[]},durationMs:1,usage:null};
     }});
-  }catch(error){if(!error.message.includes("fixture pause")){await cleanup(directory);throw error;}}
-  return {directory,cli,options};
+  }catch(error){if(!error.message.includes("fixture pause")){restoreEnvironment();await cleanup(directory);throw error;}}
+  return {directory,cli,options,restoreEnvironment};
 }
 async function unchanged(t,root,action){
   const before=await tree(root);let writes=0;
@@ -209,6 +211,15 @@ test("CLI preview needs no installed client unless explicitly checking its ident
     assert.equal(run(["--cli",fx.cli]).status,2);
     assert.deepEqual(await tree(fx.options.outputDirectory),before);
   }finally{t.mock.restoreAll();syncBuiltinESMExports();await cleanup(fx.directory);}
+});
+
+test("Codex status preview reuses the frozen environment identity",async()=>{
+  const fx=await fixture({mode:"real",codexEnvironment:true});
+  try{
+    assert.deepEqual(await cliIdentity(fx.cli,{codexEnvironment:true}),fx.options.driverIdentity);
+    const report=await inspect({...fx.options,cliPath:fx.cli});
+    assert.equal(report.driver.status,"matched");assert.equal(report.resume.canResume,true);
+  }finally{fx.restoreEnvironment();await cleanup(fx.directory);}
 });
 
 test("historical protocols stay unsupported and no pending calls is not completion",async(t)=>{

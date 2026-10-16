@@ -9,7 +9,7 @@ import childProcess from "node:child_process";
 import { EventEmitter } from "node:events";
 import { PassThrough } from "node:stream";
 import { syncBuiltinESMExports } from "node:module";
-import { containerIdentity, loadContainerRuntime, validateContainerManifest } from "../codex-container.mjs";
+import { containerIdentity, loadContainerRuntime, validateContainerManifest, verifyContainerIdentity } from "../codex-container.mjs";
 import { codexArguments, codexDriver } from "../codex-driver.mjs";
 import { experimentPlan, runExperiment, validateExperimentProtocol } from "../experiment.mjs";
 import { inspectExperiment } from "../status.mjs";
@@ -27,11 +27,11 @@ const inspectedImage=()=>JSON.stringify([{Id:imageId,Architecture:"amd64",Os:"li
 const measurement=(overrides={})=>JSON.stringify({nodeVersion:"v22.20.0",cliVersion:"0.156.0",cliSha256:"3".repeat(64),nativeSha256:"4".repeat(64),...overrides});
 const hostConfig=(overrides={})=>({NetworkMode:"none",ReadonlyRootfs:true,Privileged:false,CapDrop:["ALL"],SecurityOpt:["no-new-privileges:true"],Tmpfs:{"/tmp":"rw,exec,nosuid,nodev,size=268435456,mode=1777"},PidsLimit:128,Memory:1610612736,NanoCpus:2000000000,RestartPolicy:{Name:"no",MaximumRetryCount:0},PortBindings:{},...overrides});
 function dockerMock({workspace=null,output=null,runtimeHostConfig={},identityMeasurement={},runtimeCreateFailure=false}={}){
- const calls=[],containers=new Map(),removals=[];
+ const calls=[],containers=new Map(),users=new Map(),removals=[];
  return{calls,removals,handler(command,args){calls.push(args);assert.equal(command,"docker");
   if(args[0]==="image")return ok(inspectedImage());
-  if(args[0]==="create"){const name=args[args.indexOf("--name")+1],type=name.startsWith("ai-harness-identity-")?"identity":"runtime";containers.set(name,type);if(type==="runtime"&&runtimeCreateFailure)return{status:1,signal:null,error:undefined,stdout:"",stderr:"synthetic create uncertainty"};return ok("container-id\n");}
-  if(args[0]==="inspect"){const type=containers.get(args[1]);if(type==="identity")return ok(JSON.stringify([{Image:imageId,Config:{User:"65534:65534",OpenStdin:true},HostConfig:hostConfig(),Mounts:[]}]));if(type==="runtime")return ok(JSON.stringify([{Image:imageId,Config:{User:"65534:65534",OpenStdin:true},HostConfig:hostConfig(runtimeHostConfig),Mounts:[{Type:"bind",Destination:"/workspace",RW:true,Source:workspace},{Type:"bind",Destination:"/output",RW:true,Source:output}]}]));}
+  if(args[0]==="create"){const name=args[args.indexOf("--name")+1],type=name.startsWith("ai-harness-identity-")?"identity":"runtime";containers.set(name,type);users.set(name,args[args.indexOf("--user")+1]);if(type==="runtime"&&runtimeCreateFailure)return{status:1,signal:null,error:undefined,stdout:"",stderr:"synthetic create uncertainty"};return ok("container-id\n");}
+  if(args[0]==="inspect"){const type=containers.get(args[1]);if(type==="identity")return ok(JSON.stringify([{Image:imageId,Config:{User:users.get(args[1]),OpenStdin:true},HostConfig:hostConfig(),Mounts:[]}]));if(type==="runtime")return ok(JSON.stringify([{Image:imageId,Config:{User:users.get(args[1]),OpenStdin:true},HostConfig:hostConfig(runtimeHostConfig),Mounts:[{Type:"bind",Destination:"/workspace",RW:true,Source:workspace},{Type:"bind",Destination:"/output",RW:true,Source:output}]}]));}
   if(args[0]==="start"){if(containers.get(args.at(-1))==="identity")return ok(measurement(identityMeasurement));return ok();}
   if(args[0]==="rm"){removals.push(args);containers.delete(args.at(-1));return ok();}
   if(args[0]==="kill")return ok();
@@ -59,6 +59,16 @@ test("container identity rejects manifest hashes that do not match measured imag
  }finally{context.mock.restoreAll();await cleanup(fx.root);}
 });
 
+test("container identity recheck does not start a second identity container",async context=>{
+ const fx=await fixture();
+ try{
+  const docker=dockerMock();context.mock.method(childProcess,"spawnSync",docker.handler);
+  const identity=await containerIdentity(fx.manifest),before=docker.calls.length;
+  assert.deepEqual(await verifyContainerIdentity(fx.manifest,{expected:identity}),identity);
+  const recheck=docker.calls.slice(before);assert.ok(recheck.length>0);assert.ok(recheck.every(args=>args[0]==="image"),"recheck must not create or start an identity container");
+ }finally{context.mock.restoreAll();await cleanup(fx.root);}
+});
+
 test("container runtime inspects hardened mounts before start and owns cleanup",async context=>{
  const fx=await fixture();const workspace=path.join(fx.root,"workspace"),output=path.join(fx.root,"output");await mkdir(workspace);await mkdir(output);const calls=[];
  try{
@@ -69,6 +79,8 @@ test("container runtime inspects hardened mounts before start and owns cleanup",
   assert.equal(launch.command,"docker");assert.deepEqual(launch.args.slice(0,3),["start","--attach","--interactive"]);
   assert.equal(launch.stop(),null);assert.equal(launch.cleanup(),null);
   assert.ok(calls.some(args=>args[0]==="create"&&args.includes("--pull")&&args.includes("never")));
+   const expectedUser=typeof process.getuid==="function"?`${process.getuid()}:${process.getgid()}`:"65534:65534";
+   const runtimeCreate=calls.find(args=>args[0]==="create"&&args[args.indexOf("--name")+1].startsWith("ai-harness-codex-"));assert.equal(runtimeCreate[runtimeCreate.indexOf("--user")+1],expectedUser);
   assert.ok(calls.some(args=>args[0]==="inspect"));assert.ok(calls.some(args=>args[0]==="kill"));assert.ok(calls.some(args=>args[0]==="rm"));
  }finally{context.mock.restoreAll();await cleanup(fx.root);}
 });
