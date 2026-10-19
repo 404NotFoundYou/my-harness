@@ -1,0 +1,171 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 1,
+  "id": "ANALYSIS-PROVIDER-BOUNDARY-20261019",
+  "type": "ANALYSIS",
+  "title": "真实provider接入边界与费用前置方案",
+  "status": "ANSWERED",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/analysis.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户2026-10-19根据上一轮真实provider只读安全方案建议明确要求执行；不含费用、凭据、外部调用或网络边界变更授权"
+  },
+  "input": {
+    "references": [
+      "用户2026-10-19按建议执行：以现有Docker Codex模型对照为目标假设，比较本地与远端provider接入，形成网络、凭据、预算、失败清理和验收方案；仅只读产品文件，不调用模型或修改凭据/网络"
+    ],
+    "acceptance": [
+      "基于现行代码与官方资料明确本地/远端互斥路径及推荐理由，指出当前network none/无凭据与远端对照的冲突",
+      "给出最小接口/数据边界、可信网关与凭据生命周期、费用硬限制与不可确认调用处理、威胁及验证清单；区分已证实与待验证，不执行付费实验或产品改动"
+    ],
+    "nonGoals": [],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": null,
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "main@ab22c80，工作项创建前工作树干净、doctor通过；远端AI Harness run 39221196910与Harness source tests run 39221196897均成功。源码benchmarks/run.mjs、codex-driver.mjs、codex-container.mjs、experiment.mjs及README已读；Docker仅--network none与两个bind、无宿主凭据。历史零模型六试次审计有效但非真实模型。官方OpenAI/Docker当前文档已于2026-10-19检索，固定Codex0.156.0兼容性尚未以真实provider验证。无数据库或产品代码写入。"
+    ],
+    "completedAt": "2026-10-19T08:31:59.625Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "ab22c80ac565d60ac613046dfb1c5bcab47440a1",
+      "dirty": false,
+      "changedFiles": [],
+      "fingerprints": {},
+      "source": {
+        "digest": "0da98c68c8efc9a34c9eb9dff738f015b5b0b2b71911e873eb314474f45574b0",
+        "document": ".ai-harness/work-items/ANALYSIS-PROVIDER-BOUNDARY-20261019/snapshots/0da98c68c8efc9a34c9eb9dff738f015b5b0b2b71911e873eb314474f45574b0.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "pending",
+    "document": null,
+    "evidence": [],
+    "completedAt": null
+  },
+  "database": {
+    "status": "pending",
+    "document": null,
+    "evidence": [],
+    "completedAt": null,
+    "impact": "unknown"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/ANALYSIS-PROVIDER-BOUNDARY-20261019/plan.json",
+    "approved": false,
+    "approvalRef": null
+  },
+  "verification": {
+    "status": "pending",
+    "evidence": [],
+    "stages": []
+  },
+  "review": {
+    "status": "pending",
+    "evidence": [],
+    "independent": false
+  },
+  "acceptance": {
+    "status": "pending",
+    "evidence": []
+  },
+  "analysis": {
+    "status": "pass",
+    "evidence": [
+      "4ff7be9b-0563-4ebb-aef6-6c97d50d5da5"
+    ],
+    "conclusions": [
+      {
+        "id": "3b30b01b-ecdb-4783-88ff-03c149904ebc",
+        "status": "PROVEN",
+        "text": "当前Docker Codex试次固定network none、只挂工作区/输出两个bind且不注入宿主凭据；容器内关闭CLI内层沙箱。已验证的固定回环响应器和六试次审计不涉及真实远端provider、模型、认证或费用。main@ab22c80工作树在分析启动时干净。",
+        "evidence": [
+          "benchmarks/codex-container.mjs:49-61,88-105；benchmarks/codex-driver.mjs:22-27；benchmarks/README.md:49-59；ANALYSIS-DRIVER-LOOPBACK-20261019/state.json与ANALYSIS-ZEROMODEL-AUDIT-20261019/audit-result.json；本工作项provider-boundary.md SHA256 4EC7E5E76C5BBBDD2AD0F73727CCE46BE03EE74E83E9E3A6DB8AD2BFF92B3200"
+        ],
+        "commands": [
+          "3284ee2b-5a5b-4234-9451-5224168746a1"
+        ]
+      },
+      {
+        "id": "096eeb26-b4d6-45b2-9e15-6d57683263b8",
+        "status": "PROVEN",
+        "text": "现行project-v2 paired重复1次计划为6个试次，但代码没有每试次只发一次provider请求的约束。180秒和80次可见工具调用只限制本地试次，不是费用上限；协议v4的冻结身份不含网关、外部网络、凭据来源或价格，不能据此验证未来远端续跑的这些边界。",
+        "evidence": [
+          "benchmarks/experiment.mjs:15-27,72-90；benchmarks/runner.mjs:14-20；benchmarks/codex-driver.mjs:61-75；benchmarks/run.mjs:49-58；ANALYSIS-ZEROMODEL-AUDIT-20261019/experiment-retry/protocol.json的schedule为6项；provider-boundary.md SHA256 4EC7E5E76C5BBBDD2AD0F73727CCE46BE03EE74E83E9E3A6DB8AD2BFF92B3200"
+        ]
+      },
+      {
+        "id": "075de506-c0d5-456e-b520-8d14f74b1176",
+        "status": "PROPOSAL",
+        "text": "以远端模型对照且保留参试容器外层隔离为目标时，建议后续新高风险工作项实现受信任网关：参试容器仅可到网关，provider密钥只在网关，冻结网关/网络/模型/预算身份并独立审查。不能直接将network none改为默认bridge加API key；同容器本地provider和现有host CLI是互斥备选，分别改变模型目标或宿主权限边界，不可把其中成功等同Docker远端方案验收。",
+        "evidence": [
+          "provider-boundary.md SHA256 4EC7E5E76C5BBBDD2AD0F73727CCE46BE03EE74E83E9E3A6DB8AD2BFF92B3200；benchmarks/run.mjs:27-57、codex-driver.mjs:22-27、codex-container.mjs:88-105；2026-10-19官方OpenAI Codex配置https://developers.openai.com/codex/config-advanced/与Docker none/bridge https://docs.docker.com/engine/network/drivers/none/、https://docs.docker.com/engine/network/drivers/bridge/"
+        ]
+      },
+      {
+        "id": "d7ef895d-17d7-4f2d-af15-aa1a36ee8185",
+        "status": "UNKNOWN",
+        "text": "用户尚未指定本地还是远端目标、provider和模型集合，也未授权凭据、网络边界变更、数据外发或费用。固定Codex0.156.0在真实远端provider下的配置兼容性、网关实际隔离、计费/中断语义、Docker Desktop Windows/Linux出站负对照和真实模型效果均未验证；官方当前文档不能代替固定镜像实测。",
+        "evidence": []
+      }
+    ],
+    "unknowns": [
+      "本轮只读产品并记录方案，没有provider密钥、授权金额或远端请求；后续实施与单试次付费试跑须分别获明确授权并做独立高风险审查。"
+    ],
+    "source": {
+      "digest": "0da98c68c8efc9a34c9eb9dff738f015b5b0b2b71911e873eb314474f45574b0",
+      "document": ".ai-harness/work-items/ANALYSIS-PROVIDER-BOUNDARY-20261019/snapshots/0da98c68c8efc9a34c9eb9dff738f015b5b0b2b71911e873eb314474f45574b0.json"
+    }
+  },
+  "documentation": {
+    "status": "pending",
+    "evidence": []
+  },
+  "blocked": null,
+  "delivery": null,
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-10-19T08:31:22.517Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-10-19T08:31:39.243Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "ANALYZING",
+      "at": "2026-10-19T08:32:23.723Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "ANALYZING",
+      "to": "ANSWERED",
+      "at": "2026-10-19T08:42:35.525Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-10-19T08:31:22.517Z",
+  "updatedAt": "2026-10-19T08:42:35.525Z"
+}
