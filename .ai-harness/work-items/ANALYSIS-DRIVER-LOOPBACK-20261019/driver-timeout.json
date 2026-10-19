@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-19T06:13:04.857Z",
+  "sourceCommit": "1826adc517954e4358cf4f9e1b24bc45507b6905",
+  "mode": "timeout",
+  "imageKind": "derived local loopback fixture",
+  "actualModelCalls": 0,
+  "externalProviderRequests": 0,
+  "credentialsInjected": false,
+  "run": {
+    "mode": "real",
+    "client": "codex",
+    "exitCode": 137,
+    "timedOut": true,
+    "toolLimit": false,
+    "toolCalls": 0,
+    "turnCompleted": false,
+    "protocolSuccess": false,
+    "completed": false,
+    "final": null,
+    "finalOutput": {
+      "version": 1,
+      "status": "missing",
+      "exists": false,
+      "bytes": null,
+      "errorCode": "ENOENT"
+    },
+    "unparsedLines": 0,
+    "errors": [],
+    "warnings": [],
+    "error": null,
+    "durationMs": 7893,
+    "eventsSha256": "a580ca87634c4eaad4b494fb5e77369769896ecd1fa0b661aa12eb4bff52f332",
+    "finalSha256": "38e0b9de817f645c4bec37c0d4a3e58baecccb040f5718dc069a72c7385a0bed",
+    "eventTypes": [
+      "thread.started",
+      "turn.started"
+    ]
+  },
+  "observation": {
+    "mode": "timeout",
+    "count": 1,
+    "requestSha256": "fee3e871938763318502110dab6700d9c85159dbbbaf545820ea2038c3ff1216",
+    "authorizationHeaderPresent": false,
+    "model": "gpt-5.4"
+  },
+  "cleanup": {
+    "inventory": {
+      "images": true,
+      "containers": true,
+      "volumes": true
+    },
+    "fixturesRemoved": true
+  },
+  "verified": true,
+  "imageId": "sha256:99fba1979c485d806a9bce2f6efc59db2c7aaff58abc8809b1f64667787179c4"
+}

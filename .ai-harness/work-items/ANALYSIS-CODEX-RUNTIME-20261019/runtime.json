@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "image": "ai-harness/codex@sha256:7da46787f876ed2bca2214cad59c44d1f1876f6639962390d653e3588b941c74",
+  "imageId": "sha256:7da46787f876ed2bca2214cad59c44d1f1876f6639962390d653e3588b941c74",
+  "platform": "linux/amd64",
+  "nodeEntry": "/usr/local/bin/node",
+  "nodeVersion": "v22.20.0",
+  "cliEntry": "/opt/codex/lib/node_modules/@openai/codex/bin/codex.js",
+  "cliVersion": "0.156.0",
+  "cliSha256": "61b0194f3bb6534439c8d26a3ed57d0805f84b884588b761795323eeb92fcf70",
+  "nativeEntry": "/opt/codex/lib/node_modules/@openai/codex-linux-x64/vendor/x86_64-unknown-linux-musl/bin/codex",
+  "nativeSha256": "78a11f06e0a2dda42d13fba1d50dc62e8cbdb2d5f69789722f4d4d99b5cdbe30",
+  "wrapperIntegrity": "sha512-47dfpl2e8F47baSQTE+QaWzF/kKoOeR9YQ2fIBdRGzZZP2/QZ6D0uwLY2ZamS8ypov4UFtg92jZh8m+w65bsGg==",
+  "platformIntegrity": "sha512-/PX399ISB715skgBBOtOX5aqLxmPQhYC7wDasZnAJhRrtzt3qgs6kjSnimN9T8OFKv4LDAp+uJdN896tQYaTrA=="
+}

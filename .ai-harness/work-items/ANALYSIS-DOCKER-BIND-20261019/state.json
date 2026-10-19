@@ -1,0 +1,161 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 1,
+  "id": "ANALYSIS-DOCKER-BIND-20261019",
+  "type": "ANALYSIS",
+  "title": "零模型Docker可写挂载边界验收",
+  "status": "ANSWERED",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/analysis.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户根据零模型真实Docker验收建议明确要求执行"
+  },
+  "input": {
+    "references": [
+      "用户2026-10-19要求按建议执行零模型真实Docker验证；仅用现有固定postgres镜像和合成临时目录检查Windows Docker Desktop可写bind、非root、网络与清理；不拉取镜像、安装包、传递凭据或调用模型"
+    ],
+    "acceptance": [
+      "保留实际创建和inspect/start结果、工作区与输出bind读写、未挂载目录不可见、资源限制及容器/volume清理证据；明确这不证明Codex镜像和provider链路"
+    ],
+    "nonGoals": [],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": null,
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "main@1826adc517954e4358cf4f9e1b24bc45507b6905，初始工作树干净；doctor和check --ci通过；Docker Desktop Linux daemon 29.4.3可用，本地仅postgres:18.6-alpine固定image ID sha256:77f585114c32fbca283dc835b0596f4e52b51b4c6662d7810b2f4084f60a1873，未发现Node/Codex运行镜像；历史只读bind隔离已验证，本轮关注可写bind和cleanup。"
+    ],
+    "completedAt": "2026-10-19T01:23:05.343Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "1826adc517954e4358cf4f9e1b24bc45507b6905",
+      "dirty": false,
+      "changedFiles": [],
+      "fingerprints": {},
+      "source": {
+        "digest": "451b5831f972f87e848eab9e91741597eea79893e74c039df4c2f514a2016bed",
+        "document": ".ai-harness/work-items/ANALYSIS-DOCKER-BIND-20261019/snapshots/451b5831f972f87e848eab9e91741597eea79893e74c039df4c2f514a2016bed.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "pending",
+    "document": null,
+    "evidence": [],
+    "completedAt": null
+  },
+  "database": {
+    "status": "pending",
+    "document": null,
+    "evidence": [],
+    "completedAt": null,
+    "impact": "unknown"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/ANALYSIS-DOCKER-BIND-20261019/plan.json",
+    "approved": false,
+    "approvalRef": null
+  },
+  "verification": {
+    "status": "pending",
+    "evidence": [],
+    "stages": []
+  },
+  "review": {
+    "status": "pending",
+    "evidence": [],
+    "independent": false
+  },
+  "acceptance": {
+    "status": "pending",
+    "evidence": []
+  },
+  "analysis": {
+    "status": "pass",
+    "evidence": [
+      "4e19071e-b8ce-468f-909d-d15a7c707669"
+    ],
+    "conclusions": [
+      {
+        "id": "b53bebca-ee97-430b-a3b0-651e3b13e987",
+        "status": "PROVEN",
+        "text": "在main@1826adc的Windows Docker Desktop 29.4.3上，使用本机已有且ID固定的postgres:18.6-alpine镜像零模型实测：非root 65534:65534容器的/workspace和/output两个可写bind均可读写，宿主读回精确内容；未挂载合成目录不可读；inspect核对network none、只读根、非privileged、cap-drop ALL、no-new-privileges、PID/内存/CPU/restart限制和mount集合。为覆盖镜像声明volume，额外使用/var/lib/postgresql tmpfs，故不等同于Codex运行镜像的精确配置。",
+        "evidence": [
+          ".ai-harness/work-items/ANALYSIS-DOCKER-BIND-20261019/writable-bind-result.json SHA256 18137A64C1CDE7F613EAD761C0BF975F81AEA7CEF63FFA35B090ECEF61F65613；probe-writable-bind.mjs SHA256 4ED4693A97D26BF1396EC1113AE30557224B963EF9149967346188312E84E7A3；实际node进程退出0"
+        ]
+      },
+      {
+        "id": "8a0f5177-e864-4b51-9a68-fe11c667b7b1",
+        "status": "PROVEN",
+        "text": "探针在实际Docker create/inspect/start后用rm --force --volumes删除唯一名称容器；镜像、容器、volume清单与开始前逐项相同，合成临时目录已删除。本轮没有pull/build/install、模型调用或凭据注入。",
+        "evidence": [
+          ".ai-harness/work-items/ANALYSIS-DOCKER-BIND-20261019/writable-bind-result.json cleanup/before/actualModelCalls字段；独立docker container ls为空、volume数40、唯一镜像ID保持"
+        ]
+      },
+      {
+        "id": "50abb53c-b596-4750-9a97-78b9e2c79245",
+        "status": "UNKNOWN",
+        "text": "本机没有固定Node/Codex运行镜像或其manifest，本次未执行benchmarks/run.mjs的containerIdentity/runtime.prepare/driver真实链路；实际Codex镜像的bind权限、Node/CLI/native身份、Docker异常停止及provider/MCP行为未验证，不能据此启动真实付费benchmark。",
+        "evidence": [
+          "docker image ls --digests只列出postgres:18.6-alpine；benchmarks/codex-container.mjs:25-33,76-108；benchmarks/README.md:19-59"
+        ]
+      }
+    ],
+    "unknowns": [
+      "完整Codex镜像需另行准备且本次无镜像拉取/安装授权；network none下的真实provider接入尚未设计。"
+    ],
+    "source": {
+      "digest": "451b5831f972f87e848eab9e91741597eea79893e74c039df4c2f514a2016bed",
+      "document": ".ai-harness/work-items/ANALYSIS-DOCKER-BIND-20261019/snapshots/451b5831f972f87e848eab9e91741597eea79893e74c039df4c2f514a2016bed.json"
+    }
+  },
+  "documentation": {
+    "status": "pending",
+    "evidence": []
+  },
+  "blocked": null,
+  "delivery": null,
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-10-19T01:22:50.181Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-10-19T01:23:05.153Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "ANALYZING",
+      "at": "2026-10-19T01:23:05.506Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "ANALYZING",
+      "to": "ANSWERED",
+      "at": "2026-10-19T01:28:43.540Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-10-19T01:22:50.181Z",
+  "updatedAt": "2026-10-19T01:28:43.540Z"
+}

@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-19T06:12:44.749Z",
+  "sourceCommit": "1826adc517954e4358cf4f9e1b24bc45507b6905",
+  "mode": "success",
+  "imageKind": "derived local loopback fixture",
+  "actualModelCalls": 0,
+  "externalProviderRequests": 0,
+  "credentialsInjected": false,
+  "run": {
+    "mode": "real",
+    "client": "codex",
+    "exitCode": 0,
+    "timedOut": false,
+    "toolLimit": false,
+    "toolCalls": 0,
+    "turnCompleted": true,
+    "protocolSuccess": true,
+    "completed": true,
+    "final": {
+      "completed": true,
+      "summary": "fixed local response",
+      "tests": []
+    },
+    "finalOutput": {
+      "version": 1,
+      "status": "valid",
+      "exists": true,
+      "bytes": 62,
+      "errorCode": null
+    },
+    "unparsedLines": 0,
+    "errors": [],
+    "warnings": [],
+    "error": null,
+    "durationMs": 674,
+    "eventsSha256": "d3cccbce6aa7aae32cca87e5f736f2eeef96eca2daaceae77b7d9aa9ffd5ebed",
+    "finalSha256": "98a412eb53f12e405c3cad0dafe76859b819742df1d8ff179e7d5626df21d03c",
+    "eventTypes": [
+      "thread.started",
+      "turn.started",
+      "item.completed",
+      "turn.completed"
+    ]
+  },
+  "observation": {
+    "mode": "success",
+    "count": 1,
+    "requestSha256": "8ec6a572573fe8fd66a5307a1aef2488badfa6bea7cca8bb7b3b7e04d1ca7d48",
+    "authorizationHeaderPresent": false,
+    "model": "gpt-5.4"
+  },
+  "cleanup": {
+    "inventory": {
+      "images": true,
+      "containers": true,
+      "volumes": true
+    },
+    "fixturesRemoved": true
+  },
+  "verified": true,
+  "imageId": "sha256:99fba1979c485d806a9bce2f6efc59db2c7aaff58abc8809b1f64667787179c4"
+}

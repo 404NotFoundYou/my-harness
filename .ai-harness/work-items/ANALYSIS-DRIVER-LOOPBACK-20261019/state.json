@@ -1,0 +1,169 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 1,
+  "id": "ANALYSIS-DRIVER-LOOPBACK-20261019",
+  "type": "ANALYSIS",
+  "title": "Codex容器driver零模型联调",
+  "status": "ANSWERED",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/analysis.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户2026-10-19对零模型driver级联调建议明确要求执行"
+  },
+  "input": {
+    "references": [
+      "用户要求按建议执行：以固定本地响应器在派生测试镜像内，保持network none与无宿主凭据，验证codexDriver真实容器正常完成和预算中断；不修改产品代码、不调用真实模型或远端provider"
+    ],
+    "acceptance": [
+      "记录派生fixture镜像身份和config、模拟响应请求元数据、正常trial events/final/completed、预算中断stop/cleanup、前后容器/volume清单与原始固定镜像不变；明确仍未验证真实provider/付费实验"
+    ],
+    "nonGoals": [],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": null,
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "main@1826adc517954e4358cf4f9e1b24bc45507b6905；产品工作树干净，仅前两个ANALYSIS控制面未提交。固定Node22.20.0/Codex0.156.0镜像本机ID sha256:7da46787f876ed2bca2214cad59c44d1f1876f6639962390d653e3588b941c74，Docker Desktop Linux daemon29.4.3；无容器残留，40个历史volume；既有身份/可写bind零模型验证已成功。"
+    ],
+    "completedAt": "2026-10-19T06:07:14.367Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "1826adc517954e4358cf4f9e1b24bc45507b6905",
+      "dirty": false,
+      "changedFiles": [],
+      "fingerprints": {},
+      "source": {
+        "digest": "451b5831f972f87e848eab9e91741597eea79893e74c039df4c2f514a2016bed",
+        "document": ".ai-harness/work-items/ANALYSIS-DRIVER-LOOPBACK-20261019/snapshots/451b5831f972f87e848eab9e91741597eea79893e74c039df4c2f514a2016bed.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "pending",
+    "document": null,
+    "evidence": [],
+    "completedAt": null
+  },
+  "database": {
+    "status": "pending",
+    "document": null,
+    "evidence": [],
+    "completedAt": null,
+    "impact": "unknown"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/ANALYSIS-DRIVER-LOOPBACK-20261019/plan.json",
+    "approved": false,
+    "approvalRef": null
+  },
+  "verification": {
+    "status": "pending",
+    "evidence": [],
+    "stages": []
+  },
+  "review": {
+    "status": "pending",
+    "evidence": [],
+    "independent": false
+  },
+  "acceptance": {
+    "status": "pending",
+    "evidence": []
+  },
+  "analysis": {
+    "status": "pass",
+    "evidence": [
+      "eb4fcf15-401b-4f00-a8ca-e11bf52af9c1"
+    ],
+    "conclusions": [
+      {
+        "id": "cd3c957d-b1dc-438c-a371-ed9b9420e0ce",
+        "status": "PROVEN",
+        "text": "本地派生fixture镜像从已验证原镜像ID sha256:7da467...构建，BuildKit元数据material绑定该digest，新增内容仅为Node预加载器/固定回环响应器和NODE_OPTIONS；fixture镜像ID sha256:99fba1979c485d806a9bce2f6efc59db2c7aaff58abc8809b1f64667787179c4，原Codex wrapper/native仍通过项目loadContainerRuntime真实identity测量。首次Dockerfile FROM本地name@digest被BuildKit误作远端仓库解析并以insufficient_scope失败，未进入COPY；改用事前核对ID的本地tag后构建成功，失败未计作通过。",
+        "evidence": [
+          "build-metadata.json SHA256 E6D5C53766EC71CC7AEF02223A37E0DBF49FD81CAA3C0D4BC19871C0D1769A99；Dockerfile SHA256 5A97E780E37E6D2BF84034131E144B6B83CEA0FC15E3EBA3C7FFCF59CF43F8D1；fixture-runtime.json SHA256 ECC8E7450BD2FBE5880E40783539950B1A8DD39E32C05DC58CEE3E7D9C333BDC；首次构建命令exit1与二次exit0"
+        ]
+      },
+      {
+        "id": "fe00397b-9766-4f11-832f-4256fe2902b0",
+        "status": "PROVEN",
+        "text": "真实Codex0.156.0 CLI和仓库codexDriver在network none容器内访问固定127.0.0.1响应器的成功场景：合成请求1次、无Authorization、无工具调用，收到thread/turn和turn.completed；exit0，finalOutput valid，结构化final为固定JSON，completed=true，容器/volume清单恢复。mode real仅指真实CLI进程，不是模型推理。",
+        "evidence": [
+          "driver-success.json SHA256 623D5C0511DEEA6B054228FFC3FBA03E6374101E1A43E36ECFF6A660527D7148；probe-driver.mjs SHA256 9E032084D161C4D2FA810AD1B0B5394D47458284B1B91C6D20BAD0B4E27E70B2；直接node探针exit0"
+        ]
+      },
+      {
+        "id": "fb527276-ea81-4455-a46b-fa590435a3b4",
+        "status": "PROVEN",
+        "text": "相同固定回环响应器的超时场景已收到1次无认证请求但不回包；codexDriver在7000ms预算后timedOut=true、exit137、turnCompleted=false、finalOutput missing、completed=false，Docker kill/rm完成且镜像/容器/volume清单与执行前一致。实际durationMs 7893包含停止和close边界，不等于仅7000ms。",
+        "evidence": [
+          "driver-timeout.json SHA256 B0DB1EE2BC32831E055B88D8282F268BE01E6EE97354C7682483C426BF793D5D；直接node探针exit0"
+        ]
+      },
+      {
+        "id": "ea31f763-e8de-4aab-9dea-0c513ac6d55c",
+        "status": "UNKNOWN",
+        "text": "本次派生镜像通过预加载器改变了CLI环境，输出由固定本地响应器合成；未执行完整benchmarks/run.mjs计划和评分/result.json审计，未测工具上限、外部MCP或真实provider/model、费用、凭据注入及生产网络边界。fixture manifest绝不能当作真实模型实验输入，镜像只在当前本地daemon存在。",
+        "evidence": [
+          "Dockerfile/preload.cjs/server.cjs及driver-success.json/driver-timeout.json；benchmarks/run.mjs、benchmarks/runner.mjs"
+        ]
+      }
+    ],
+    "unknowns": [
+      "真实provider连通、凭据隔离和付费实验需要独立方案及授权；本轮结果只证明driver协议与预算清理路径。"
+    ],
+    "source": {
+      "digest": "451b5831f972f87e848eab9e91741597eea79893e74c039df4c2f514a2016bed",
+      "document": ".ai-harness/work-items/ANALYSIS-DRIVER-LOOPBACK-20261019/snapshots/451b5831f972f87e848eab9e91741597eea79893e74c039df4c2f514a2016bed.json"
+    }
+  },
+  "documentation": {
+    "status": "pending",
+    "evidence": []
+  },
+  "blocked": null,
+  "delivery": null,
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-10-19T06:07:00.227Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-10-19T06:07:14.134Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "ANALYZING",
+      "at": "2026-10-19T06:07:14.533Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "ANALYZING",
+      "to": "ANSWERED",
+      "at": "2026-10-19T06:15:16.677Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-10-19T06:07:00.227Z",
+  "updatedAt": "2026-10-19T06:15:16.677Z"
+}

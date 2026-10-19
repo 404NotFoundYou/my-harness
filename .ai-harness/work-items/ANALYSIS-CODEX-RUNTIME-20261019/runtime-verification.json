@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-19T01:40:24.734Z",
+  "sourceCommit": "1826adc517954e4358cf4f9e1b24bc45507b6905",
+  "actualModelCalls": 0,
+  "credentialsInjected": false,
+  "providerRequests": 0,
+  "imagePulls": 0,
+  "runtime": {
+    "identity": {
+      "kind": "container",
+      "manifest": "D:\\Projects\\my-harness\\.ai-harness\\work-items\\ANALYSIS-CODEX-RUNTIME-20261019\\runtime.json",
+      "manifestSha256": "a057085320787725f32b434ada4b63484abddced6a44cae172046bdb46d735db",
+      "runtimeVersion": 1,
+      "image": "ai-harness/codex@sha256:7da46787f876ed2bca2214cad59c44d1f1876f6639962390d653e3588b941c74",
+      "imageId": "sha256:7da46787f876ed2bca2214cad59c44d1f1876f6639962390d653e3588b941c74",
+      "platform": "linux/amd64",
+      "nodeVersion": "v22.20.0",
+      "cliVersion": "0.156.0",
+      "cliSha256": "61b0194f3bb6534439c8d26a3ed57d0805f84b884588b761795323eeb92fcf70",
+      "nativeSha256": "78a11f06e0a2dda42d13fba1d50dc62e8cbdb2d5f69789722f4d4d99b5cdbe30",
+      "wrapperIntegrity": "sha512-47dfpl2e8F47baSQTE+QaWzF/kKoOeR9YQ2fIBdRGzZZP2/QZ6D0uwLY2ZamS8ypov4UFtg92jZh8m+w65bsGg==",
+      "platformIntegrity": "sha512-/PX399ISB715skgBBOtOX5aqLxmPQhYC7wDasZnAJhRrtzt3qgs6kjSnimN9T8OFKv4LDAp+uJdN896tQYaTrA=="
+    },
+    "configuration": {
+      "image": "sha256:7da46787f876ed2bca2214cad59c44d1f1876f6639962390d653e3588b941c74",
+      "user": "65534:65534",
+      "network": "none",
+      "readOnlyRoot": true,
+      "privileged": false,
+      "capDrop": [
+        "ALL"
+      ],
+      "pids": 128,
+      "memoryBytes": 1610612736,
+      "nanoCpus": 2000000000,
+      "mounts": [
+        {
+          "type": "bind",
+          "target": "/output",
+          "writable": true
+        },
+        {
+          "type": "bind",
+          "target": "/workspace",
+          "writable": true
+        }
+      ]
+    },
+    "cliVersion": "codex-cli 0.156.0",
+    "containerRemoved": true
+  },
+  "writeProbe": {
+    "configuration": {
+      "image": "sha256:7da46787f876ed2bca2214cad59c44d1f1876f6639962390d653e3588b941c74",
+      "user": "65534:65534",
+      "network": "none",
+      "readOnlyRoot": true,
+      "privileged": false,
+      "capDrop": [
+        "ALL"
+      ],
+      "pids": 128,
+      "memoryBytes": 1610612736,
+      "nanoCpus": 2000000000,
+      "mounts": [
+        {
+          "type": "bind",
+          "target": "/workspace",
+          "writable": true
+        },
+        {
+          "type": "bind",
+          "target": "/output",
+          "writable": true
+        }
+      ]
+    },
+    "result": {
+      "uid": 65534,
+      "gid": 65534,
+      "outsideDenied": true,
+      "rootWriteDenied": true
+    },
+    "hostReadback": true
+  },
+  "cleanup": {
+    "inventory": {
+      "images": true,
+      "containers": true,
+      "volumes": true
+    },
+    "fixturesRemoved": true
+  },
+  "verified": true,
+  "boundary": "Real pinned image identity, Docker adapter and synthetic bind writes only; no model/provider/MCP session.",
+  "before": {
+    "images": {
+      "count": 3,
+      "sha256": "6fc1b6c8681226220fd4d4435292fea0817459bf601d59a851ff0f08d67b856d"
+    },
+    "containers": {
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "volumes": {
+      "count": 40,
+      "sha256": "1506bb11bf8a7aec142db12b10a723319902aabe99f7f702e80ce5e990580014"
+    }
+  }
+}

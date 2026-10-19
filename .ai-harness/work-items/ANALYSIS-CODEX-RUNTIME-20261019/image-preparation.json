@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-19T01:36:36.734Z",
+  "sourceCommit": "1826adc517954e4358cf4f9e1b24bc45507b6905",
+  "base": "docker.io/library/node@sha256:c385ec44d77c785e2364ac0c9b150809a0fdc17fde3dbf061e3dad07242c6a85",
+  "baseId": "sha256:c385ec44d77c785e2364ac0c9b150809a0fdc17fde3dbf061e3dad07242c6a85",
+  "tag": "ai-harness/codex:0.156.0-node22.20.0",
+  "packages": [
+    {
+      "role": "wrapper",
+      "version": "0.156.0",
+      "bytes": 4902,
+      "integrity": "sha512-47dfpl2e8F47baSQTE+QaWzF/kKoOeR9YQ2fIBdRGzZZP2/QZ6D0uwLY2ZamS8ypov4UFtg92jZh8m+w65bsGg==",
+      "shasum": "e7c29bfd4e94973af2ea116c98a1f8f7b387e53b",
+      "sha256": "5ce491a5ba3c0c2489594dfb6807c7c0b51166882e080772659f06f0c1fdc5d6"
+    },
+    {
+      "role": "linux-x64",
+      "version": "0.156.0-linux-x64",
+      "bytes": 148509615,
+      "integrity": "sha512-/PX399ISB715skgBBOtOX5aqLxmPQhYC7wDasZnAJhRrtzt3qgs6kjSnimN9T8OFKv4LDAp+uJdN896tQYaTrA==",
+      "shasum": "d5df296ed9e3b029017b77ad3dcde683aaeb1e28",
+      "sha256": "e16d3ee5f51562cdb83a523ac5f2b8929fe4693c744e1484d478112f52e3a239"
+    }
+  ],
+  "modelCalls": 0,
+  "credentialsInjected": false,
+  "dockerConfig": "empty temporary directory",
+  "buildNetwork": "none",
+  "prepared": true,
+  "cleanup": {
+    "temporaryBuildContextRemoved": true
+  },
+  "dockerVersion": "29.4.3",
+  "before": {
+    "images": {
+      "count": 1,
+      "sha256": "1e0f008900c63748dc4837c136797f0d1cafdfcb45e291b6b7240578e38839d1"
+    },
+    "containers": {
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "volumes": {
+      "count": 40,
+      "sha256": "1506bb11bf8a7aec142db12b10a723319902aabe99f7f702e80ce5e990580014"
+    }
+  },
+  "pull": {
+    "reference": "docker.io/library/node@sha256:c385ec44d77c785e2364ac0c9b150809a0fdc17fde3dbf061e3dad07242c6a85",
+    "resultSha256": "3aefbac03134522f7d606343e76fbff3c3f8f59b40e190d4036b3279fe80b0e0"
+  },
+  "baseInspection": {
+    "id": "sha256:c385ec44d77c785e2364ac0c9b150809a0fdc17fde3dbf061e3dad07242c6a85",
+    "repoDigests": [
+      "node@sha256:c385ec44d77c785e2364ac0c9b150809a0fdc17fde3dbf061e3dad07242c6a85"
+    ]
+  },
+  "dockerfileSha256": "4196f7fb2d333bf3104a5d3a937040d671ebb6f12f16f084245b655286587fa1",
+  "buildOutputSha256": "0ad4d5b63efcc031259e229b483ab4bcc57d29ad39732d62136ba694a1d11ce3",
+  "image": {
+    "id": "sha256:7da46787f876ed2bca2214cad59c44d1f1876f6639962390d653e3588b941c74",
+    "repoDigests": [
+      "ai-harness/codex@sha256:7da46787f876ed2bca2214cad59c44d1f1876f6639962390d653e3588b941c74"
+    ],
+    "size": 377464126
+  },
+  "after": {
+    "images": {
+      "count": 3,
+      "sha256": "6fc1b6c8681226220fd4d4435292fea0817459bf601d59a851ff0f08d67b856d"
+    },
+    "containers": {
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "volumes": {
+      "count": 40,
+      "sha256": "1506bb11bf8a7aec142db12b10a723319902aabe99f7f702e80ce5e990580014"
+    }
+  }
+}

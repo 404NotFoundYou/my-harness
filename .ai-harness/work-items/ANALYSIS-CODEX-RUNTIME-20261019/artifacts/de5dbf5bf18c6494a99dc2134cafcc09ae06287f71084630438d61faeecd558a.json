@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-19T01:41:44.489Z",
+  "image": "ai-harness/codex@sha256:7da46787f876ed2bca2214cad59c44d1f1876f6639962390d653e3588b941c74",
+  "actualModelCalls": 0,
+  "providerRequests": 0,
+  "purpose": "Synthetic long-running Node process; Docker kill/rm only, not the Codex driver timer.",
+  "cleanup": {
+    "removed": true,
+    "inventory": {
+      "images": true,
+      "containers": true,
+      "volumes": true
+    }
+  },
+  "verified": true,
+  "configurationVerified": true,
+  "stopped": true
+}

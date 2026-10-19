@@ -1,0 +1,169 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 1,
+  "id": "ANALYSIS-CODEX-RUNTIME-20261019",
+  "type": "ANALYSIS",
+  "title": "固定Codex容器零模型验收",
+  "status": "ANSWERED",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/analysis.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户2026-10-19针对准备固定镜像及零模型验收明确回复授权"
+  },
+  "input": {
+    "references": [
+      "用户明确授权准备固定Node/Codex Linux镜像；沿用Node22.20.0 linux/amd64内容摘要与Codex0.156.0校验包，离线构建后验证真实image/CLI身份和Docker可写bind；无真实凭据/provider/模型调用、无外部MCP"
+    ],
+    "acceptance": [
+      "记录公开包元数据与下载字节校验、固定基础镜像拉取/离线构建、运行镜像身份、容器inspect和零模型CLI/文件读写、容器/volume清理；如无法生成满足runtime manifest的内容地址引用则明确失败/未知，不伪造"
+    ],
+    "nonGoals": [],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": null,
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "main@1826adc517954e4358cf4f9e1b24bc45507b6905；仅ANALYSIS-DOCKER-BIND-20261019控制面未提交，产品代码无改动；本地Docker 29.4.3只有postgres替身镜像；npm官方registry中0.156.0 wrapper与linux-x64包SHA-512/SHA-1和历史固定值一致；Node固定linux/amd64 digest尚未拉取。"
+    ],
+    "completedAt": "2026-10-19T01:33:06.324Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "1826adc517954e4358cf4f9e1b24bc45507b6905",
+      "dirty": false,
+      "changedFiles": [],
+      "fingerprints": {},
+      "source": {
+        "digest": "451b5831f972f87e848eab9e91741597eea79893e74c039df4c2f514a2016bed",
+        "document": ".ai-harness/work-items/ANALYSIS-CODEX-RUNTIME-20261019/snapshots/451b5831f972f87e848eab9e91741597eea79893e74c039df4c2f514a2016bed.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "pending",
+    "document": null,
+    "evidence": [],
+    "completedAt": null
+  },
+  "database": {
+    "status": "pending",
+    "document": null,
+    "evidence": [],
+    "completedAt": null,
+    "impact": "unknown"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/ANALYSIS-CODEX-RUNTIME-20261019/plan.json",
+    "approved": false,
+    "approvalRef": null
+  },
+  "verification": {
+    "status": "pending",
+    "evidence": [],
+    "stages": []
+  },
+  "review": {
+    "status": "pending",
+    "evidence": [],
+    "independent": false
+  },
+  "acceptance": {
+    "status": "pending",
+    "evidence": []
+  },
+  "analysis": {
+    "status": "pass",
+    "evidence": [
+      "8e2c6615-c21f-452a-ba59-44f0921d81ad"
+    ],
+    "conclusions": [
+      {
+        "id": "c885cb5a-55f9-4c9d-860f-65f308788a57",
+        "status": "PROVEN",
+        "text": "2026-10-19按固定Node22.20.0 linux/amd64 digest拉取基础镜像；官方npm registry的Codex0.156.0 wrapper和0.156.0-linux-x64平台包元数据与SHA-512/SHA-1一致，下载字节另通过SHA-256校验；在network none的Docker build中离线解压，无宿主安装、模型调用或凭据注入。构建得到本机image ID sha256:7da46787f876ed2bca2214cad59c44d1f1876f6639962390d653e3588b941c74，基础镜像ID为sha256:c385ec44d77c785e2364ac0c9b150809a0fdc17fde3dbf061e3dad07242c6a85；构建临时目录已清理，容器/volume数量不变。",
+        "evidence": [
+          ".ai-harness/work-items/ANALYSIS-CODEX-RUNTIME-20261019/image-preparation.json SHA256 34A9777B38042F18DA2D1099EFE712FE239D0BB027F9027713E6C2DBF4B2715F；prepare-fixed-image.mjs SHA256 E42375818D82B4417F73159FEDE15A2AB8FC2C8E0449AEA54A912DF499651947；进程退出0"
+        ]
+      },
+      {
+        "id": "80a3fc6d-e674-488d-b0d7-a9c55fffcea2",
+        "status": "PROVEN",
+        "text": "严格manifest由真实镜像验证通过：项目loadContainerRuntime启动短生命周期identity容器，在镜像内实测Node v22.20.0、codex-cli 0.156.0、wrapper SHA256 61b0194f...92fcf70和native SHA256 78a11f06...5cdbe30；readIdentity轻量重验一致。runtime.prepare实际创建的容器经内置inspect通过，network none、只读根、65534:65534、cap-drop ALL、no-new-privileges及仅两个可写bind，CLI --version正常退出；同镜像合成Node探针两个bind写入及宿主读回成功，未挂载合成路径不可读。无provider请求或模型调用。",
+        "evidence": [
+          ".ai-harness/work-items/ANALYSIS-CODEX-RUNTIME-20261019/runtime-verification.json SHA256 813AD0A63AF86EC3663FF18E78373BECFEEA7AD066FDD4C27A7CEC0C1E09E4BB；runtime.json SHA256 A057085320787725F32B434ADA4B63484ABDDCED6A44CAE172046BDB46D735DB；verify-runtime.mjs SHA256 A6751CA545B4B4D6C73A1D9020F9F9FB9B25CE7AA44BC2E8F3C22BE9228491A9；进程退出0"
+        ]
+      },
+      {
+        "id": "9b3e6fb3-b49d-48d7-b072-425db18de575",
+        "status": "PROVEN",
+        "text": "真实固定镜像中的合成长运行Node进程启动后被docker kill停止，并经rm --force --volumes删除；镜像/容器/volume清单恢复到探针前状态，临时fixture已删除。本测试覆盖Docker层强制停止清理，不等于Codex driver timeout计时器。",
+        "evidence": [
+          ".ai-harness/work-items/ANALYSIS-CODEX-RUNTIME-20261019/forced-cleanup-result.json SHA256 DE5DBF5BF18C6494A99DC2134CAFCC09AE06287F71084630438D61FAEECD558A；probe-forced-cleanup.mjs SHA256 7AA54B340D241D6D2EA2898466DA75DD9A2AB8FCF412C31124585D0235999787；进程退出0"
+        ]
+      },
+      {
+        "id": "2d19c9fa-c343-458b-8eb6-f2fd64d48080",
+        "status": "UNKNOWN",
+        "text": "本轮没有真实provider/model/MCP会话，也没有执行benchmarks/run.mjs的完整模型试次、codexDriver计时器和final.json协议；真实远端连通性、凭据隔离、费用、Windows以外POSIX宿主bind权限仍未知。构建所得ai-harness/codex@sha256:7da467...是当前Docker daemon的本地RepoDigest，尚未发布到远端registry，不证明在其他机器可直接拉取。",
+        "evidence": [
+          "runtime-verification.json actualModelCalls=0 providerRequests=0；forced-cleanup-result.json purpose限定synthetic Node；image-preparation.json image.repoDigests与本地image inspect"
+        ]
+      }
+    ],
+    "unknowns": [
+      "完整真实模型链路需要单独设计受控provider与凭据、核验平台差异并获得费用授权；镜像跨机器分发需要独立发布授权。"
+    ],
+    "source": {
+      "digest": "451b5831f972f87e848eab9e91741597eea79893e74c039df4c2f514a2016bed",
+      "document": ".ai-harness/work-items/ANALYSIS-CODEX-RUNTIME-20261019/snapshots/451b5831f972f87e848eab9e91741597eea79893e74c039df4c2f514a2016bed.json"
+    }
+  },
+  "documentation": {
+    "status": "pending",
+    "evidence": []
+  },
+  "blocked": null,
+  "delivery": null,
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-10-19T01:32:46.495Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-10-19T01:33:06.144Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "ANALYZING",
+      "at": "2026-10-19T01:33:06.488Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "ANALYZING",
+      "to": "ANSWERED",
+      "at": "2026-10-19T01:43:48.274Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-10-19T01:32:46.495Z",
+  "updatedAt": "2026-10-19T01:43:48.274Z"
+}
