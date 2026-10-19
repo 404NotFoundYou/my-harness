@@ -1,0 +1,143 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "BUG-CONTAINER-CROSS-DRIVE-20261019",
+  "mode": "single",
+  "rationale": "单AI修复路径包含判断并补充回归；高风险挂载安全边界要求独立审查",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "恢复跨盘独立挂载并保持重叠拒绝",
+      "module": "benchmarks Docker Codex runtime",
+      "status": "IN_REVIEW",
+      "attempt": 1,
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        "benchmarks/codex-container.mjs",
+        "benchmarks/tests/container-driver.test.mjs"
+      ],
+      "verification": [
+        "node --test benchmarks/tests/container-driver.test.mjs",
+        "node --check benchmarks/codex-container.mjs",
+        "node --check benchmarks/tests/container-driver.test.mjs",
+        "{\"timeoutMs\":600000,\"args\":[\"--test\",\"benchmarks/tests/container-driver.test.mjs\",\"benchmarks/tests/driver-diagnostics.test.mjs\",\"benchmarks/tests/driver-process.test.mjs\",\"benchmarks/tests/driver-timing.test.mjs\",\"benchmarks/tests/memory-control.test.mjs\",\"benchmarks/tests/multifile.test.mjs\",\"benchmarks/tests/preflight.test.mjs\",\"benchmarks/tests/project-v2.test.mjs\",\"benchmarks/tests/report.test.mjs\",\"benchmarks/tests/resume.test.mjs\",\"benchmarks/tests/runner.test.mjs\",\"benchmarks/tests/spec-guidance.test.mjs\",\"benchmarks/tests/status.test.mjs\"],\"command\":\"node\"}",
+        "{\"timeoutMs\":600000,\"args\":[\"--test\",\".ai-harness/tests/acceptance-artifacts.test.mjs\",\".ai-harness/tests/analysis-command.test.mjs\",\".ai-harness/tests/bugfix-pipeline.test.mjs\",\".ai-harness/tests/checker.test.mjs\",\".ai-harness/tests/ci-matrix.test.mjs\",\".ai-harness/tests/cli.test.mjs\",\".ai-harness/tests/command-execution.test.mjs\",\".ai-harness/tests/compact.test.mjs\",\".ai-harness/tests/context-delta.test.mjs\",\".ai-harness/tests/filesystem.test.mjs\",\".ai-harness/tests/finish-resume.test.mjs\",\".ai-harness/tests/git-state.test.mjs\",\".ai-harness/tests/guidance-tools.test.mjs\",\".ai-harness/tests/guide.test.mjs\",\".ai-harness/tests/helpers-fixture.test.mjs\",\".ai-harness/tests/installer-checkout.test.mjs\",\".ai-harness/tests/installer.test.mjs\",\".ai-harness/tests/locking.test.mjs\",\".ai-harness/tests/managed-block.test.mjs\",\".ai-harness/tests/output.test.mjs\",\".ai-harness/tests/policy.test.mjs\",\".ai-harness/tests/reliability.test.mjs\",\".ai-harness/tests/root-alias.test.mjs\",\".ai-harness/tests/snapshot.test.mjs\",\".ai-harness/tests/spec-input.test.mjs\",\".ai-harness/tests/timeout.test.mjs\",\".ai-harness/tests/validator.test.mjs\",\".ai-harness/tests/verification-pipeline.test.mjs\",\".ai-harness/tests/workflow.test.mjs\"],\"command\":\"node\"}"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            "--test",
+            "benchmarks/tests/container-driver.test.mjs"
+          ]
+        },
+        {
+          "id": "V2",
+          "command": "node",
+          "args": [
+            "--check",
+            "benchmarks/codex-container.mjs"
+          ]
+        },
+        {
+          "id": "V3",
+          "command": "node",
+          "args": [
+            "--check",
+            "benchmarks/tests/container-driver.test.mjs"
+          ]
+        },
+        {
+          "id": "V4",
+          "command": "node",
+          "args": [
+            "--test",
+            "benchmarks/tests/container-driver.test.mjs",
+            "benchmarks/tests/driver-diagnostics.test.mjs",
+            "benchmarks/tests/driver-process.test.mjs",
+            "benchmarks/tests/driver-timing.test.mjs",
+            "benchmarks/tests/memory-control.test.mjs",
+            "benchmarks/tests/multifile.test.mjs",
+            "benchmarks/tests/preflight.test.mjs",
+            "benchmarks/tests/project-v2.test.mjs",
+            "benchmarks/tests/report.test.mjs",
+            "benchmarks/tests/resume.test.mjs",
+            "benchmarks/tests/runner.test.mjs",
+            "benchmarks/tests/spec-guidance.test.mjs",
+            "benchmarks/tests/status.test.mjs"
+          ],
+          "timeoutMs": 600000
+        },
+        {
+          "id": "V5",
+          "command": "node",
+          "args": [
+            "--test",
+            ".ai-harness/tests/acceptance-artifacts.test.mjs",
+            ".ai-harness/tests/analysis-command.test.mjs",
+            ".ai-harness/tests/bugfix-pipeline.test.mjs",
+            ".ai-harness/tests/checker.test.mjs",
+            ".ai-harness/tests/ci-matrix.test.mjs",
+            ".ai-harness/tests/cli.test.mjs",
+            ".ai-harness/tests/command-execution.test.mjs",
+            ".ai-harness/tests/compact.test.mjs",
+            ".ai-harness/tests/context-delta.test.mjs",
+            ".ai-harness/tests/filesystem.test.mjs",
+            ".ai-harness/tests/finish-resume.test.mjs",
+            ".ai-harness/tests/git-state.test.mjs",
+            ".ai-harness/tests/guidance-tools.test.mjs",
+            ".ai-harness/tests/guide.test.mjs",
+            ".ai-harness/tests/helpers-fixture.test.mjs",
+            ".ai-harness/tests/installer-checkout.test.mjs",
+            ".ai-harness/tests/installer.test.mjs",
+            ".ai-harness/tests/locking.test.mjs",
+            ".ai-harness/tests/managed-block.test.mjs",
+            ".ai-harness/tests/output.test.mjs",
+            ".ai-harness/tests/policy.test.mjs",
+            ".ai-harness/tests/reliability.test.mjs",
+            ".ai-harness/tests/root-alias.test.mjs",
+            ".ai-harness/tests/snapshot.test.mjs",
+            ".ai-harness/tests/spec-input.test.mjs",
+            ".ai-harness/tests/timeout.test.mjs",
+            ".ai-harness/tests/validator.test.mjs",
+            ".ai-harness/tests/verification-pipeline.test.mjs",
+            ".ai-harness/tests/workflow.test.mjs"
+          ],
+          "timeoutMs": 600000
+        }
+      ],
+      "docsImpact": [
+        "N/A: 恢复既有两个独立挂载的安全契约，公开命令、manifest与文档约定不变；设计与验证记录在本工作项"
+      ],
+      "reviewBatch": "R1",
+      "risk": "high",
+      "owner": "primary-ai",
+      "verificationStatus": "pass",
+      "reviewStatus": "fail",
+      "evidence": [
+        "e72ab8f9-dc83-40d0-be2e-046f1dbcd30e",
+        "e1a9d7b7-fac7-4211-94bc-98b60903e720"
+      ],
+      "deferralApproval": null,
+      "verificationSource": {
+        "digest": "f17c2fa520a8a8a9852183ce4ce11a8371b5999fa272b8ea5dc8097ab0f7711c",
+        "document": ".ai-harness/work-items/BUG-CONTAINER-CROSS-DRIVE-20261019/snapshots/f17c2fa520a8a8a9852183ce4ce11a8371b5999fa272b8ea5dc8097ab0f7711c.json"
+      }
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "跨盘容器挂载安全边界",
+      "risk": "high",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": true
+    }
+  ],
+  "createdAt": "2026-10-19T07:38:08.695Z",
+  "updatedAt": "2026-10-19T07:55:35.307Z",
+  "revision": 2
+}

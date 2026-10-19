@@ -1,0 +1,144 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 1,
+  "id": "BUG-CONTAINER-CROSS-DRIVE-20261019",
+  "type": "BUGFIX",
+  "title": "修复Windows跨盘Docker挂载误判",
+  "status": "IMPLEMENTING",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/bugfix.md",
+    ".ai-harness/policies/verification.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户2026-10-19根据跨盘BUGFIX与独立审查建议明确要求执行"
+  },
+  "input": {
+    "references": [
+      "用户2026-10-19根据建议执行跨盘挂载缺陷修复；分析工作项ANALYSIS-ZEROMODEL-AUDIT-20261019首次试次失败与同盘重试通过"
+    ],
+    "acceptance": [
+      "Windows跨盘独立工作区与输出目录允许创建容器；相同或真正嵌套目录仍在Docker create前拒绝，其他容器隔离参数不变",
+      "修复前失败复现、修复后回归、Windows/Linux Node20/22/24源测试及check --ci有真实证据，完成独立高风险审查"
+    ],
+    "nonGoals": [],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": {
+    "actual": "Windows的C:临时工作区和D:输出目录在Docker create前抛Workspace and output mounts cannot overlap",
+    "expected": "不同盘的独立绝对路径不重叠；相同或祖先/子孙路径仍拒绝",
+    "reproduction": "Windows Node22运行已记录的完整零模型实验：参与者位于默认C: TEMP，实验输出位于D:工作项，首试次在benchmarks/codex-container.mjs:94拒绝；同盘D:兄弟目录后六试次通过"
+  },
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "main@f4ae060，工作项创建前产品与控制面干净；doctor通过。ANALYSIS-ZEROMODEL-AUDIT-20261019已冻结原始失败experiment/summary.json与同盘成功experiment-retry/summary.json；源benchmarks/codex-container.mjs nested()在Windows跨盘path.relative返回绝对路径时误判。直接调用方codexDriver -> runtime.prepare，测试入口benchmarks/tests/container-driver.test.mjs；无持久化或数据库。"
+    ],
+    "completedAt": "2026-10-19T07:36:17.631Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "f4ae060e5b57b30951693191e0231b17f4534156",
+      "dirty": false,
+      "changedFiles": [],
+      "fingerprints": {},
+      "source": {
+        "digest": "451b5831f972f87e848eab9e91741597eea79893e74c039df4c2f514a2016bed",
+        "document": ".ai-harness/work-items/BUG-CONTAINER-CROSS-DRIVE-20261019/snapshots/451b5831f972f87e848eab9e91741597eea79893e74c039df4c2f514a2016bed.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": ".ai-harness/work-items/BUG-CONTAINER-CROSS-DRIVE-20261019/solution.md",
+    "evidence": [
+      "已读codex-container.mjs所有导出与prepare，codex-driver调用及container-driver.test.mjs相关fixture/安全测试；采用path.isAbsolute(relative)区别跨盘结果，保留相同/嵌套拒绝及完整Docker边界。"
+    ],
+    "completedAt": "2026-10-19T07:37:44.149Z"
+  },
+  "database": {
+    "impact": "none",
+    "status": "not-applicable",
+    "document": null,
+    "evidence": [
+      "仅Docker宿主路径包含判断与测试，不接触持久化、数据库Schema、查询或数据迁移。"
+    ],
+    "completedAt": "2026-10-19T07:37:54.237Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/BUG-CONTAINER-CROSS-DRIVE-20261019/plan.json",
+    "approved": true,
+    "approvalRef": "用户2026-10-19根据前述跨盘BUGFIX与独立高风险审查建议明确要求执行"
+  },
+  "verification": {
+    "status": "pending",
+    "evidence": [],
+    "stages": []
+  },
+  "review": {
+    "status": "pending",
+    "evidence": [],
+    "independent": false
+  },
+  "acceptance": {
+    "status": "pending",
+    "evidence": []
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "pending",
+    "evidence": []
+  },
+  "blocked": null,
+  "delivery": null,
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-10-19T07:34:30.481Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-10-19T07:34:47.586Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-10-19T07:36:27.210Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-10-19T07:39:32.863Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-10-19T07:39:43.538Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-10-19T07:34:30.481Z",
+  "updatedAt": "2026-10-19T07:39:52.940Z"
+}

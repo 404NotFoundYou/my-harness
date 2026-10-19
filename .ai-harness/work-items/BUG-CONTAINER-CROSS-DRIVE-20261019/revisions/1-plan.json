@@ -1,0 +1,93 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "BUG-CONTAINER-CROSS-DRIVE-20261019",
+  "mode": "single",
+  "rationale": "单AI修复路径包含判断并补充回归；高风险挂载安全边界要求独立审查",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "恢复跨盘独立挂载并保持重叠拒绝",
+      "module": "benchmarks Docker Codex runtime",
+      "status": "IN_PROGRESS",
+      "attempt": 1,
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        "benchmarks/codex-container.mjs",
+        "benchmarks/tests/container-driver.test.mjs"
+      ],
+      "verification": [
+        "node --test benchmarks/tests/container-driver.test.mjs",
+        "node --check benchmarks/codex-container.mjs",
+        "node --check benchmarks/tests/container-driver.test.mjs",
+        "{\"command\":\"node\",\"args\":[\"benchmarks/tests/run.mjs\"],\"timeoutMs\":600000}",
+        "{\"command\":\"node\",\"args\":[\".ai-harness/tests/run.mjs\"],\"timeoutMs\":600000}"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            "--test",
+            "benchmarks/tests/container-driver.test.mjs"
+          ]
+        },
+        {
+          "id": "V2",
+          "command": "node",
+          "args": [
+            "--check",
+            "benchmarks/codex-container.mjs"
+          ]
+        },
+        {
+          "id": "V3",
+          "command": "node",
+          "args": [
+            "--check",
+            "benchmarks/tests/container-driver.test.mjs"
+          ]
+        },
+        {
+          "id": "V4",
+          "command": "node",
+          "args": [
+            "benchmarks/tests/run.mjs"
+          ],
+          "timeoutMs": 600000
+        },
+        {
+          "id": "V5",
+          "command": "node",
+          "args": [
+            ".ai-harness/tests/run.mjs"
+          ],
+          "timeoutMs": 600000
+        }
+      ],
+      "docsImpact": [
+        "N/A: 恢复既有两个独立挂载的安全契约，公开命令、manifest与文档约定不变；设计与验证记录在本工作项"
+      ],
+      "reviewBatch": "R1",
+      "risk": "high",
+      "owner": "primary-ai",
+      "verificationStatus": "pending",
+      "reviewStatus": "pending",
+      "evidence": [],
+      "deferralApproval": null
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "跨盘容器挂载安全边界",
+      "risk": "high",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": true
+    }
+  ],
+  "createdAt": "2026-10-19T07:38:08.695Z",
+  "updatedAt": "2026-10-19T07:39:52.939Z"
+}

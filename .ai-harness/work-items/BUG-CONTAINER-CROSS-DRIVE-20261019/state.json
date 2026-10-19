@@ -1,0 +1,303 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 3,
+  "id": "BUG-CONTAINER-CROSS-DRIVE-20261019",
+  "type": "BUGFIX",
+  "title": "修复Windows跨盘Docker挂载误判",
+  "status": "DONE",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/bugfix.md",
+    ".ai-harness/policies/verification.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户2026-10-19根据跨盘BUGFIX与独立审查建议明确要求执行"
+  },
+  "input": {
+    "references": [
+      "用户2026-10-19根据建议执行跨盘挂载缺陷修复；分析工作项ANALYSIS-ZEROMODEL-AUDIT-20261019首次试次失败与同盘重试通过"
+    ],
+    "acceptance": [
+      "Windows跨盘独立工作区与输出目录允许创建容器；相同或真正嵌套目录仍在Docker create前拒绝，其他容器隔离参数不变",
+      "修复前失败复现、修复后回归、Windows/Linux Node20/22/24源测试及check --ci有真实证据，完成独立高风险审查"
+    ],
+    "nonGoals": [],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": {
+    "actual": "Windows的C:临时工作区和D:输出目录在Docker create前抛Workspace and output mounts cannot overlap",
+    "expected": "不同盘的独立绝对路径不重叠；相同或祖先/子孙路径仍拒绝",
+    "reproduction": "Windows Node22运行已记录的完整零模型实验：参与者位于默认C: TEMP，实验输出位于D:工作项，首试次在benchmarks/codex-container.mjs:94拒绝；同盘D:兄弟目录后六试次通过"
+  },
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "main@f4ae060，工作项创建前产品与控制面干净；doctor通过。ANALYSIS-ZEROMODEL-AUDIT-20261019已冻结原始失败experiment/summary.json与同盘成功experiment-retry/summary.json；源benchmarks/codex-container.mjs nested()在Windows跨盘path.relative返回绝对路径时误判。直接调用方codexDriver -> runtime.prepare，测试入口benchmarks/tests/container-driver.test.mjs；无持久化或数据库。"
+    ],
+    "completedAt": "2026-10-19T07:36:17.631Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "f4ae060e5b57b30951693191e0231b17f4534156",
+      "dirty": false,
+      "changedFiles": [],
+      "fingerprints": {},
+      "source": {
+        "digest": "451b5831f972f87e848eab9e91741597eea79893e74c039df4c2f514a2016bed",
+        "document": ".ai-harness/work-items/BUG-CONTAINER-CROSS-DRIVE-20261019/snapshots/451b5831f972f87e848eab9e91741597eea79893e74c039df4c2f514a2016bed.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": ".ai-harness/work-items/BUG-CONTAINER-CROSS-DRIVE-20261019/solution.md",
+    "evidence": [
+      "已读codex-container.mjs所有导出与prepare，codex-driver调用及container-driver.test.mjs相关fixture/安全测试；采用path.isAbsolute(relative)区别跨盘结果，保留相同/嵌套拒绝及完整Docker边界。"
+    ],
+    "completedAt": "2026-10-19T07:37:44.149Z"
+  },
+  "database": {
+    "impact": "none",
+    "status": "not-applicable",
+    "document": null,
+    "evidence": [
+      "仅Docker宿主路径包含判断与测试，不接触持久化、数据库Schema、查询或数据迁移。"
+    ],
+    "completedAt": "2026-10-19T07:37:54.237Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/BUG-CONTAINER-CROSS-DRIVE-20261019/plan.json",
+    "approved": true,
+    "approvalRef": "原授权范围内改用允许的node --test显式清单；2026-10-19用户要求完成跨盘修复和高风险审查"
+  },
+  "verification": {
+    "status": "pass",
+    "evidence": [
+      "2284e389-7af7-48d4-a04a-d079767fb7c1",
+      "92a80350-ba43-4726-922a-067fd8f61428",
+      "6d129b83-df43-4a3f-81fe-86ca08c2109d",
+      "867e3130-d548-486a-aba6-808dd6b30f68",
+      "42ec7556-168d-4722-9ed3-5637c81abdfd"
+    ],
+    "stages": [
+      {
+        "stage": "static",
+        "status": "pass",
+        "evidence": [
+          "2284e389-7af7-48d4-a04a-d079767fb7c1"
+        ],
+        "command": null,
+        "revision": 3,
+        "source": {
+          "digest": "0da98c68c8efc9a34c9eb9dff738f015b5b0b2b71911e873eb314474f45574b0",
+          "document": ".ai-harness/work-items/BUG-CONTAINER-CROSS-DRIVE-20261019/snapshots/0da98c68c8efc9a34c9eb9dff738f015b5b0b2b71911e873eb314474f45574b0.json"
+        },
+        "planDigest": "b7bb1b7984798954e424c8901cf49bd315def526717f401c7da9479d4cf2a618"
+      },
+      {
+        "stage": "sandbox",
+        "status": "pass",
+        "evidence": [
+          "92a80350-ba43-4726-922a-067fd8f61428",
+          "6d129b83-df43-4a3f-81fe-86ca08c2109d"
+        ],
+        "command": null,
+        "revision": 3,
+        "source": {
+          "digest": "0da98c68c8efc9a34c9eb9dff738f015b5b0b2b71911e873eb314474f45574b0",
+          "document": ".ai-harness/work-items/BUG-CONTAINER-CROSS-DRIVE-20261019/snapshots/0da98c68c8efc9a34c9eb9dff738f015b5b0b2b71911e873eb314474f45574b0.json"
+        },
+        "planDigest": "b7bb1b7984798954e424c8901cf49bd315def526717f401c7da9479d4cf2a618"
+      },
+      {
+        "stage": "reproduction",
+        "status": "pass",
+        "evidence": [
+          "867e3130-d548-486a-aba6-808dd6b30f68"
+        ],
+        "command": "6e4983dc-8351-400b-9ef4-ce4b6abef5a4",
+        "revision": 3,
+        "source": {
+          "digest": "0da98c68c8efc9a34c9eb9dff738f015b5b0b2b71911e873eb314474f45574b0",
+          "document": ".ai-harness/work-items/BUG-CONTAINER-CROSS-DRIVE-20261019/snapshots/0da98c68c8efc9a34c9eb9dff738f015b5b0b2b71911e873eb314474f45574b0.json"
+        },
+        "planDigest": "b7bb1b7984798954e424c8901cf49bd315def526717f401c7da9479d4cf2a618"
+      },
+      {
+        "stage": "regression",
+        "status": "pass",
+        "evidence": [
+          "42ec7556-168d-4722-9ed3-5637c81abdfd"
+        ],
+        "command": "85074842-7173-4510-b5c3-1d03068b895e",
+        "revision": 3,
+        "source": {
+          "digest": "0da98c68c8efc9a34c9eb9dff738f015b5b0b2b71911e873eb314474f45574b0",
+          "document": ".ai-harness/work-items/BUG-CONTAINER-CROSS-DRIVE-20261019/snapshots/0da98c68c8efc9a34c9eb9dff738f015b5b0b2b71911e873eb314474f45574b0.json"
+        },
+        "planDigest": "b7bb1b7984798954e424c8901cf49bd315def526717f401c7da9479d4cf2a618"
+      }
+    ],
+    "source": {
+      "digest": "0da98c68c8efc9a34c9eb9dff738f015b5b0b2b71911e873eb314474f45574b0",
+      "document": ".ai-harness/work-items/BUG-CONTAINER-CROSS-DRIVE-20261019/snapshots/0da98c68c8efc9a34c9eb9dff738f015b5b0b2b71911e873eb314474f45574b0.json"
+    }
+  },
+  "review": {
+    "status": "pass",
+    "evidence": [
+      "d17ea1d2-bd16-4b83-bcaa-c5198c8d36ba"
+    ],
+    "independent": true,
+    "source": {
+      "digest": "0da98c68c8efc9a34c9eb9dff738f015b5b0b2b71911e873eb314474f45574b0",
+      "document": ".ai-harness/work-items/BUG-CONTAINER-CROSS-DRIVE-20261019/snapshots/0da98c68c8efc9a34c9eb9dff738f015b5b0b2b71911e873eb314474f45574b0.json"
+    }
+  },
+  "acceptance": {
+    "status": "pass",
+    "evidence": [
+      "8eea7bda-5fe7-47fb-a215-f11906225189"
+    ],
+    "source": {
+      "digest": "0da98c68c8efc9a34c9eb9dff738f015b5b0b2b71911e873eb314474f45574b0",
+      "document": ".ai-harness/work-items/BUG-CONTAINER-CROSS-DRIVE-20261019/snapshots/0da98c68c8efc9a34c9eb9dff738f015b5b0b2b71911e873eb314474f45574b0.json"
+    }
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "not-applicable",
+    "evidence": [
+      "0e6e99b6-5195-47ab-9b97-dfba71de091a"
+    ]
+  },
+  "blocked": null,
+  "delivery": {
+    "source": {
+      "digest": "0da98c68c8efc9a34c9eb9dff738f015b5b0b2b71911e873eb314474f45574b0",
+      "document": ".ai-harness/work-items/BUG-CONTAINER-CROSS-DRIVE-20261019/snapshots/0da98c68c8efc9a34c9eb9dff738f015b5b0b2b71911e873eb314474f45574b0.json"
+    },
+    "baseline": {
+      "digest": "451b5831f972f87e848eab9e91741597eea79893e74c039df4c2f514a2016bed",
+      "document": ".ai-harness/work-items/BUG-CONTAINER-CROSS-DRIVE-20261019/snapshots/451b5831f972f87e848eab9e91741597eea79893e74c039df4c2f514a2016bed.json"
+    },
+    "baselineAt": "2026-10-19T07:36:17.631Z",
+    "ownedChanges": [
+      {
+        "path": "benchmarks/codex-container.mjs",
+        "before": "100644:e175a11449f0861ce1f0e564aa9aa9098ff0fa6f",
+        "after": "100644:79a63a298b31dae984e9f8480188a4c5a6246e51"
+      },
+      {
+        "path": "benchmarks/tests/container-driver.test.mjs",
+        "before": "100644:782b2ff797763515bbca203b2dc4e6627a648a9a",
+        "after": "100644:a8f361313f1ff8042a552be4b5fd3371e3f2b1ce"
+      }
+    ],
+    "planDigest": "b7bb1b7984798954e424c8901cf49bd315def526717f401c7da9479d4cf2a618",
+    "at": "2026-10-19T08:10:49.012Z",
+    "head": "f4ae060e5b57b30951693191e0231b17f4534156"
+  },
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-10-19T07:34:30.481Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-10-19T07:34:47.586Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-10-19T07:36:27.210Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-10-19T07:39:32.863Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-10-19T07:39:43.538Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-10-19T07:46:19.570Z",
+      "reason": "已批准的V4/V5使用直接Node脚本入口被命令策略判为ask，未执行；改为node --test显式测试文件清单，保持覆盖和10分钟预算，不改变写入范围或修复目标",
+      "action": "replan",
+      "revision": 2
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-10-19T07:47:20.235Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-10-19T07:47:30.562Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "IMPLEMENTING",
+      "at": "2026-10-19T07:55:46.289Z",
+      "reason": "独立审查发现反向嵌套回归缺口；补用例并重跑当前修订全部检查，保留修订2通过和审查失败证据",
+      "action": "reopen",
+      "revision": 3
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "VERIFYING",
+      "at": "2026-10-19T08:05:11.309Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "VERIFYING",
+      "to": "CODE_REVIEW",
+      "at": "2026-10-19T08:09:24.412Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "CODE_REVIEW",
+      "to": "READY_FOR_ACCEPTANCE",
+      "at": "2026-10-19T08:10:20.434Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "READY_FOR_ACCEPTANCE",
+      "to": "DONE",
+      "at": "2026-10-19T08:10:49.118Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-10-19T07:34:30.481Z",
+  "updatedAt": "2026-10-19T08:10:49.118Z"
+}

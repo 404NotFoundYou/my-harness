@@ -25,7 +25,7 @@ function runDocker(docker,args,{timeout=20000}={}){const result=childProcess.spa
 function dockerOutput(result,label){assert.equal(result.errorCode,null,`${label} could not start`);assert.equal(result.signal,null,`${label} was terminated`);assert.equal(result.status,0,`${label} failed with exit ${result.status}`);return result.stdout.trim();}
 function sameHostPath(left,right){const a=path.resolve(left),b=path.resolve(right);return process.platform==="win32"?a.toLowerCase()===b.toLowerCase():a===b;}
 function safeHostPath(value,label){assert.ok(typeof value==="string"&&!/[\r\n,]/.test(value),`${label} cannot contain commas or line breaks`);return value;}
-function nested(left,right){const relative=path.relative(left,right);return relative===""||(!relative.startsWith(".."+path.sep)&&relative!=="..");}
+function nested(left,right){const relative=path.relative(left,right);return relative===""||(!path.isAbsolute(relative)&&!relative.startsWith(".."+path.sep)&&relative!=="..");}
 
 export function validateContainerManifest(value){
  exactKeys(value,["schemaVersion","image","imageId","platform","nodeEntry","nodeVersion","cliEntry","cliVersion","cliSha256","nativeEntry","nativeSha256","wrapperIntegrity","platformIntegrity"],"container manifest");

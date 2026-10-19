@@ -108,6 +108,30 @@ test("container runtime inspects hardened mounts before start and owns cleanup",
  }finally{context.mock.restoreAll();await cleanup(fx.root);}
 });
 
+test("Windows cross-volume mounts remain independent without weakening the Docker boundary",{skip:process.platform!=="win32"},async context=>{
+ const fx=await fixture();const workspace=path.join(fx.root,"workspace"),output=path.join(fx.root,"output");await mkdir(workspace);await mkdir(output);
+ try{
+  const docker=dockerMock({workspace,output});context.mock.method(childProcess,"spawnSync",docker.handler);
+  const loaded=await loadContainerRuntime(fx.manifest),relative=path.relative;
+  const crossVolume=path.win32.relative("C:\\workspace","D:\\output"),reverse=path.win32.relative("D:\\output","C:\\workspace");
+  assert.equal(path.win32.isAbsolute(crossVolume),true);
+  context.mock.method(path,"relative",(left,right)=>left===workspace&&right===output?crossVolume:left===output&&right===workspace?reverse:relative(left,right));
+  const launch=await loaded.runtime.prepare({root:workspace,outputDirectory:output,args:["exec"]});
+  assert.equal(launch.command,"docker");assert.equal(launch.cleanup(),null);
+  assert.ok(docker.calls.some(args=>args[0]==="create"&&args[args.indexOf("--name")+1].startsWith("ai-harness-codex-")));
+ }finally{context.mock.restoreAll();await cleanup(fx.root);}
+});
+
+test("equal and both nested bind directions are rejected before Docker creates a runtime container",async context=>{
+ const fx=await fixture();const workspace=path.join(fx.root,"workspace"),output=path.join(workspace,"output");await mkdir(workspace);await mkdir(output);
+ try{
+  const docker=dockerMock({workspace,output});context.mock.method(childProcess,"spawnSync",docker.handler);
+  const loaded=await loadContainerRuntime(fx.manifest);
+  for(const candidate of [workspace,output,fx.root])await assert.rejects(()=>loaded.runtime.prepare({root:workspace,outputDirectory:candidate,args:["exec"]}),/mounts cannot overlap/i);
+  assert.equal(docker.calls.filter(args=>args[0]==="create"&&args[args.indexOf("--name")+1].startsWith("ai-harness-codex-")).length,0);
+ }finally{context.mock.restoreAll();await cleanup(fx.root);}
+});
+
 test("container runtime removes a container when inspect reveals a weaker boundary",async context=>{
  const fx=await fixture();const workspace=path.join(fx.root,"workspace"),output=path.join(fx.root,"output");await mkdir(workspace);await mkdir(output);const removals=[];
  try{
