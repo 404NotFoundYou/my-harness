@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 4,
+  "suite": "project-v2",
+  "client": "codex",
+  "comparison": "paired",
+  "repetitions": 1,
+  "groups": [
+    {
+      "id": "weak-baseline",
+      "model": "gpt-5.4",
+      "harness": false
+    },
+    {
+      "id": "weak-harness",
+      "model": "gpt-5.4",
+      "harness": true
+    }
+  ],
+  "budget": {
+    "timeoutMs": 30000,
+    "maxToolCalls": 10,
+    "reasoning": "medium"
+  },
+  "schedule": [
+    {
+      "taskId": "archive-pagination",
+      "group": "weak-baseline",
+      "trial": 1,
+      "directory": "archive-pagination-weak-baseline"
+    },
+    {
+      "taskId": "archive-pagination",
+      "group": "weak-harness",
+      "trial": 1,
+      "directory": "archive-pagination-weak-harness"
+    },
+    {
+      "taskId": "config-layers",
+      "group": "weak-harness",
+      "trial": 1,
+      "directory": "config-layers-weak-harness"
+    },
+    {
+      "taskId": "config-layers",
+      "group": "weak-baseline",
+      "trial": 1,
+      "directory": "config-layers-weak-baseline"
+    },
+    {
+      "taskId": "window-intervals",
+      "group": "weak-baseline",
+      "trial": 1,
+      "directory": "window-intervals-weak-baseline"
+    },
+    {
+      "taskId": "window-intervals",
+      "group": "weak-harness",
+      "trial": 1,
+      "directory": "window-intervals-weak-harness"
+    }
+  ],
+  "mode": "real",
+  "source": "451b5831f972f87e848eab9e91741597eea79893e74c039df4c2f514a2016bed",
+  "tasks": [
+    {
+      "id": "archive-pagination",
+      "split": "development",
+      "taskDigest": "059ffcabf937f0473fb2b6883d08bfec54228c02ac5f6544eae40f6a67c27164",
+      "judgeDigest": "82589b486bef0d3d11688722d23508e9bf542408319a1b9036aba1f0984554c5",
+      "entry": "src/caller.mjs",
+      "name": "fetchPage",
+      "type": "BUGFIX",
+      "writableFiles": [
+        "src/pagination.mjs",
+        "src/repository.mjs"
+      ]
+    },
+    {
+      "id": "config-layers",
+      "split": "development",
+      "taskDigest": "b59d9d1cdfbb96a51a94b13a1ae010eb2c2871fabf3dbc3ce7c97154132d7219",
+      "judgeDigest": "9ad2a2e4e70363a6ac2bda94da9fe1a3653e051c9079cf11665cd3db47d3b459",
+      "entry": "src/caller.mjs",
+      "name": "readConfig",
+      "type": "BUGFIX",
+      "writableFiles": [
+        "src/config.mjs",
+        "src/layers.mjs"
+      ]
+    },
+    {
+      "id": "window-intervals",
+      "split": "holdout",
+      "taskDigest": "d64581fcc701e15e5cfa02ee3ba940d366131e1005e9d9208cdd3841b5913055",
+      "judgeDigest": "f373beb6ff4131998170b4c7f6d1ed760cd730a5f0f2b159fb424f46ad4298d7",
+      "entry": "src/caller.mjs",
+      "name": "getCoverage",
+      "type": "BUGFIX",
+      "writableFiles": [
+        "src/intervals.mjs",
+        "src/window.mjs"
+      ]
+    }
+  ],
+  "driverIdentity": {
+    "kind": "container",
+    "manifest": "D:\\Projects\\my-harness\\.ai-harness\\work-items\\ANALYSIS-DRIVER-LOOPBACK-20261019\\fixture-runtime.json",
+    "manifestSha256": "ecc8e7450bd2fbe5880e40783539950b1a8dd39e32c05dc58cee3e7d9c333bdc",
+    "runtimeVersion": 1,
+    "image": "ai-harness/codex-loopback@sha256:99fba1979c485d806a9bce2f6efc59db2c7aaff58abc8809b1f64667787179c4",
+    "imageId": "sha256:99fba1979c485d806a9bce2f6efc59db2c7aaff58abc8809b1f64667787179c4",
+    "platform": "linux/amd64",
+    "nodeVersion": "v22.20.0",
+    "cliVersion": "0.156.0",
+    "cliSha256": "61b0194f3bb6534439c8d26a3ed57d0805f84b884588b761795323eeb92fcf70",
+    "nativeSha256": "78a11f06e0a2dda42d13fba1d50dc62e8cbdb2d5f69789722f4d4d99b5cdbe30",
+    "wrapperIntegrity": "sha512-47dfpl2e8F47baSQTE+QaWzF/kKoOeR9YQ2fIBdRGzZZP2/QZ6D0uwLY2ZamS8ypov4UFtg92jZh8m+w65bsGg==",
+    "platformIntegrity": "sha512-/PX399ISB715skgBBOtOX5aqLxmPQhYC7wDasZnAJhRrtzt3qgs6kjSnimN9T8OFKv4LDAp+uJdN896tQYaTrA=="
+  },
+  "summaryVersion": 2,
+  "createdAt": "2026-10-19T07:19:20.250Z"
+}

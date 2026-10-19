@@ -1,0 +1,176 @@
+{
+  "schemaVersion": 2,
+  "trial": 1,
+  "mode": "real",
+  "client": "codex",
+  "taskId": "window-intervals",
+  "split": "holdout",
+  "group": "weak-harness",
+  "model": "gpt-5.4",
+  "taskDigest": "d64581fcc701e15e5cfa02ee3ba940d366131e1005e9d9208cdd3841b5913055",
+  "judgeDigest": "f373beb6ff4131998170b4c7f6d1ed760cd730a5f0f2b159fb424f46ad4298d7",
+  "candidateDigest": "e07143a0db394db65c580ae4127aa75a2a2d7f7fc7c04adfef2cd64c5ef4cadd",
+  "budget": {
+    "timeoutMs": 30000,
+    "maxToolCalls": 10,
+    "reasoning": "medium"
+  },
+  "run": {
+    "mode": "real",
+    "client": "codex",
+    "startedAt": "2026-10-19T07:21:45.860Z",
+    "durationMs": 678,
+    "timing": {
+      "basis": "local-event-receive-time",
+      "lifecycle": {
+        "version": 2,
+        "firstProtocolEventMs": 343,
+        "terminalEventMs": 368,
+        "processExitMs": 510,
+        "processCloseMs": 510,
+        "lastAssistantMessageMs": 368,
+        "lastFinalResponseMs": 368
+      },
+      "toolActiveMs": 0,
+      "otherElapsedMs": 678,
+      "spans": [],
+      "categories": {},
+      "unmatchedCompletions": [],
+      "limitation": "工具区间按接收事件估计并合并重叠；其余耗时包含模型、网络、客户端启动和收尾，不等于纯推理耗时。"
+    },
+    "exitCode": 0,
+    "timedOut": false,
+    "toolLimit": false,
+    "toolCalls": 0,
+    "turnCompleted": true,
+    "protocolSuccess": true,
+    "usage": {
+      "input_tokens": 0,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 0,
+      "reasoning_output_tokens": 0
+    },
+    "errors": [],
+    "warnings": [],
+    "unparsedLines": 0,
+    "error": null,
+    "final": {
+      "completed": true,
+      "summary": "fixed local response",
+      "tests": []
+    },
+    "finalOutput": {
+      "version": 1,
+      "status": "valid",
+      "exists": true,
+      "bytes": 62,
+      "errorCode": null
+    },
+    "completed": true
+  },
+  "scope": {
+    "ok": true,
+    "changes": [
+      {
+        "path": ".ai-harness/work-items/benchmark-begin-spec.json",
+        "before": null,
+        "after": "bbf64cae60e12d40cfd27254da75edf17bc7535f5239e6b204fd15d0149c63e6"
+      }
+    ],
+    "violations": []
+  },
+  "workflow": {
+    "ok": false,
+    "errors": [
+      "Project workflow requires BUGFIX development items covering all writable files"
+    ],
+    "workItems": [],
+    "contract": {
+      "requiredType": "BUGFIX",
+      "items": [],
+      "uncoveredFiles": [
+        "src/intervals.mjs",
+        "src/window.mjs"
+      ],
+      "ok": false
+    }
+  },
+  "grade": {
+    "complete": true,
+    "ok": false,
+    "cases": [
+      {
+        "id": "overlap",
+        "pass": false,
+        "error": "Case failed"
+      },
+      {
+        "id": "adjacent",
+        "pass": false,
+        "error": "Case failed"
+      },
+      {
+        "id": "disjoint",
+        "pass": true
+      },
+      {
+        "id": "unsorted",
+        "pass": false,
+        "error": "Case failed"
+      },
+      {
+        "id": "duplicate",
+        "pass": false,
+        "error": "Case failed"
+      },
+      {
+        "id": "clip-left",
+        "pass": false,
+        "error": "Case failed"
+      },
+      {
+        "id": "clip-right",
+        "pass": false,
+        "error": "Case failed"
+      },
+      {
+        "id": "outside-window",
+        "pass": true
+      },
+      {
+        "id": "clip-then-merge",
+        "pass": false,
+        "error": "Case failed"
+      },
+      {
+        "id": "immutable-input",
+        "pass": false,
+        "error": "Case failed"
+      },
+      {
+        "id": "merge-contract",
+        "pass": false,
+        "error": "Case failed"
+      },
+      {
+        "id": "window-contract",
+        "pass": false,
+        "error": "Case failed"
+      }
+    ],
+    "expectedCases": 12,
+    "exitCode": 1,
+    "timedOut": false,
+    "stderr": "",
+    "error": null
+  },
+  "success": false,
+  "falseCompletion": true,
+  "falseFunctionalCompletion": true,
+  "execution": {
+    "protocolSha256": "db2f3ce618207ca6b69e25a0380114c7a302c6e34a3f8c07fecd4efdff51e05e",
+    "sourceBefore": "451b5831f972f87e848eab9e91741597eea79893e74c039df4c2f514a2016bed",
+    "sourceAfter": "451b5831f972f87e848eab9e91741597eea79893e74c039df4c2f514a2016bed"
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "summaryVersion": 2,
+  "mode": "real",
+  "complete": false,
+  "sourceBefore": "451b5831f972f87e848eab9e91741597eea79893e74c039df4c2f514a2016bed",
+  "sourceAfter": "451b5831f972f87e848eab9e91741597eea79893e74c039df4c2f514a2016bed",
+  "error": "Workspace and output mounts cannot overlap",
+  "results": [],
+  "notRun": [
+    {
+      "taskId": "archive-pagination",
+      "group": "weak-harness",
+      "trial": 1,
+      "directory": "archive-pagination-weak-harness"
+    },
+    {
+      "taskId": "config-layers",
+      "group": "weak-harness",
+      "trial": 1,
+      "directory": "config-layers-weak-harness"
+    },
+    {
+      "taskId": "config-layers",
+      "group": "weak-baseline",
+      "trial": 1,
+      "directory": "config-layers-weak-baseline"
+    },
+    {
+      "taskId": "window-intervals",
+      "group": "weak-baseline",
+      "trial": 1,
+      "directory": "window-intervals-weak-baseline"
+    },
+    {
+      "taskId": "window-intervals",
+      "group": "weak-harness",
+      "trial": 1,
+      "directory": "window-intervals-weak-harness"
+    }
+  ],
+  "interrupted": [
+    {
+      "taskId": "archive-pagination",
+      "group": "weak-baseline",
+      "trial": 1,
+      "directory": "archive-pagination-weak-baseline",
+      "startedAt": "2026-10-19T07:19:20.830Z",
+      "reason": "result-unavailable",
+      "usage": null
+    }
+  ],
+  "progress": [
+    {
+      "group": "weak-baseline",
+      "scheduled": 3,
+      "completed": 0,
+      "interrupted": 1,
+      "pending": 2,
+      "usageUnknown": 1
+    },
+    {
+      "group": "weak-harness",
+      "scheduled": 3,
+      "completed": 0,
+      "interrupted": 0,
+      "pending": 3,
+      "usageUnknown": 0
+    }
+  ],
+  "groups": []
+}

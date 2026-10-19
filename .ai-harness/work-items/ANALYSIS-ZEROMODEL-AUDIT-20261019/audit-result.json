@@ -1,0 +1,21 @@
+{
+  "fixtureOnly": true,
+  "actualModelCalls": 0,
+  "imageId": "sha256:99fba1979c485d806a9bce2f6efc59db2c7aaff58abc8809b1f64667787179c4",
+  "auditValid": true,
+  "samples": 6,
+  "mode": "real",
+  "functionalPassed": 0,
+  "fullDelivery": 0,
+  "localResponseCounts": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+  ],
+  "authorizationHeadersPresent": false,
+  "dockerInventoryUnchanged": true,
+  "scratchEmpty": true
+}

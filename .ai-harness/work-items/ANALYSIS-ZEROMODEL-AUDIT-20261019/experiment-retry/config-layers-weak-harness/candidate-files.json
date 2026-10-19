@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "files": {
+    "src/config.mjs": {
+      "status": "present",
+      "content": "import { orderedLayers } from \"./layers.mjs\";\nexport function resolveConfig(layers) { return Object.assign({}, ...layers.map(layer => layer.values)); }\n",
+      "sha256": "7f8356d764bcbe26315b1321ca331afd87bd49474e66208a50e621f19e093ffd"
+    },
+    "src/layers.mjs": {
+      "status": "present",
+      "content": "export function orderedLayers(layers) { return layers.sort((a,b) => a.priority-b.priority); }\n",
+      "sha256": "a0838965a9783006d5d686609e50e4ddea46e4bc216a2c76df6e2280983ef9af"
+    }
+  }
+}

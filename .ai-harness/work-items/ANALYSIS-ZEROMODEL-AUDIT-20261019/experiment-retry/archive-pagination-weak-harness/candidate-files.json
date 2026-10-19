@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "files": {
+    "src/pagination.mjs": {
+      "status": "present",
+      "content": "import { selectVisible } from \"./repository.mjs\";\nimport { MAX_PAGE_SIZE } from \"./limits.mjs\";\nexport function listPage(records, {after=null,limit=2}={}) { const start=after===null?0:records.findIndex(row=>row.id===after); const batch=records.slice(start,start+limit); return {items:selectVisible(batch),nextCursor:batch.at(-1)?.id??null}; }\n",
+      "sha256": "436796ed97d3ceb440c5568f53f7c895cd1f542b84ef40d52fc3840a1cdafeb6"
+    },
+    "src/repository.mjs": {
+      "status": "present",
+      "content": "export function selectVisible(records) { return records.sort((a,b) => a.updatedAt - b.updatedAt); }\n",
+      "sha256": "8bf57cfe69007b2b51d8b38946e6648bafacc7f5da4aab76bc6548dff325aa28"
+    }
+  }
+}

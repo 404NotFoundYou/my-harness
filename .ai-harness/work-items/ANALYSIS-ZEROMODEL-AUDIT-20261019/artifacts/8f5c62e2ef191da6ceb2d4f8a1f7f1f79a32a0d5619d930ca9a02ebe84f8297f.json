@@ -1,0 +1,178 @@
+{
+  "schemaVersion": 2,
+  "trial": 1,
+  "mode": "real",
+  "client": "codex",
+  "taskId": "archive-pagination",
+  "split": "development",
+  "group": "weak-harness",
+  "model": "gpt-5.4",
+  "taskDigest": "059ffcabf937f0473fb2b6883d08bfec54228c02ac5f6544eae40f6a67c27164",
+  "judgeDigest": "82589b486bef0d3d11688722d23508e9bf542408319a1b9036aba1f0984554c5",
+  "candidateDigest": "5aba0d962a37bddbb10127a3ecf78a3c9d6e52908c60f50f7df94b840c46ace2",
+  "budget": {
+    "timeoutMs": 30000,
+    "maxToolCalls": 10,
+    "reasoning": "medium"
+  },
+  "run": {
+    "mode": "real",
+    "client": "codex",
+    "startedAt": "2026-10-19T07:21:32.423Z",
+    "durationMs": 709,
+    "timing": {
+      "basis": "local-event-receive-time",
+      "lifecycle": {
+        "version": 2,
+        "firstProtocolEventMs": 351,
+        "terminalEventMs": 379,
+        "processExitMs": 532,
+        "processCloseMs": 532,
+        "lastAssistantMessageMs": 379,
+        "lastFinalResponseMs": 379
+      },
+      "toolActiveMs": 0,
+      "otherElapsedMs": 709,
+      "spans": [],
+      "categories": {},
+      "unmatchedCompletions": [],
+      "limitation": "工具区间按接收事件估计并合并重叠；其余耗时包含模型、网络、客户端启动和收尾，不等于纯推理耗时。"
+    },
+    "exitCode": 0,
+    "timedOut": false,
+    "toolLimit": false,
+    "toolCalls": 0,
+    "turnCompleted": true,
+    "protocolSuccess": true,
+    "usage": {
+      "input_tokens": 0,
+      "cached_input_tokens": 0,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 0,
+      "reasoning_output_tokens": 0
+    },
+    "errors": [],
+    "warnings": [],
+    "unparsedLines": 0,
+    "error": null,
+    "final": {
+      "completed": true,
+      "summary": "fixed local response",
+      "tests": []
+    },
+    "finalOutput": {
+      "version": 1,
+      "status": "valid",
+      "exists": true,
+      "bytes": 62,
+      "errorCode": null
+    },
+    "completed": true
+  },
+  "scope": {
+    "ok": true,
+    "changes": [
+      {
+        "path": ".ai-harness/work-items/benchmark-begin-spec.json",
+        "before": null,
+        "after": "a685eb3ca0b4e02d5e66c0627a7ee3a9af29a63d7389407c05b48d6bce36cf3a"
+      }
+    ],
+    "violations": []
+  },
+  "workflow": {
+    "ok": false,
+    "errors": [
+      "Project workflow requires BUGFIX development items covering all writable files"
+    ],
+    "workItems": [],
+    "contract": {
+      "requiredType": "BUGFIX",
+      "items": [],
+      "uncoveredFiles": [
+        "src/pagination.mjs",
+        "src/repository.mjs"
+      ],
+      "ok": false
+    }
+  },
+  "grade": {
+    "complete": true,
+    "ok": false,
+    "cases": [
+      {
+        "id": "visible-before-pagination",
+        "pass": false,
+        "error": "Case failed"
+      },
+      {
+        "id": "exclusive-cursor",
+        "pass": false,
+        "error": "Case failed"
+      },
+      {
+        "id": "stable-tie",
+        "pass": false,
+        "error": "Case failed"
+      },
+      {
+        "id": "empty-and-archived",
+        "pass": false,
+        "error": "Case failed"
+      },
+      {
+        "id": "last-page",
+        "pass": false,
+        "error": "Case failed"
+      },
+      {
+        "id": "unknown-cursor",
+        "pass": false,
+        "error": "Case failed"
+      },
+      {
+        "id": "invalid-page-size",
+        "pass": false,
+        "error": "Case failed"
+      },
+      {
+        "id": "page-size-boundary",
+        "pass": false,
+        "error": "Case failed"
+      },
+      {
+        "id": "immutable-input",
+        "pass": false,
+        "error": "Case failed"
+      },
+      {
+        "id": "repository-contract",
+        "pass": false,
+        "error": "Case failed"
+      },
+      {
+        "id": "pagination-contract",
+        "pass": false,
+        "error": "Case failed"
+      },
+      {
+        "id": "walk-without-duplicates",
+        "pass": false,
+        "error": "Case failed"
+      }
+    ],
+    "expectedCases": 12,
+    "exitCode": 1,
+    "timedOut": false,
+    "stderr": "",
+    "error": null
+  },
+  "success": false,
+  "falseCompletion": true,
+  "falseFunctionalCompletion": true,
+  "execution": {
+    "protocolSha256": "db2f3ce618207ca6b69e25a0380114c7a302c6e34a3f8c07fecd4efdff51e05e",
+    "sourceBefore": "451b5831f972f87e848eab9e91741597eea79893e74c039df4c2f514a2016bed",
+    "sourceAfter": "451b5831f972f87e848eab9e91741597eea79893e74c039df4c2f514a2016bed"
+  }
+}

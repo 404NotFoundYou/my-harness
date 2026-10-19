@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "files": {
+    "src/intervals.mjs": {
+      "status": "present",
+      "content": "export function mergeIntervals(intervals) { return intervals.sort((a,b) => a.start-b.start); }\n",
+      "sha256": "e808fe88b74c7da97c6eba1eeec6cb8f7ae93d3be23979059cab6bd6fc7711f3"
+    },
+    "src/window.mjs": {
+      "status": "present",
+      "content": "import { mergeIntervals } from \"./intervals.mjs\";\nexport function clipWindow(intervals, window) { return mergeIntervals(intervals.filter(row => row.end > window.start && row.start < window.end)); }\n",
+      "sha256": "6f1c4b66fb0f3c5bd9c337506eaca494873738f122b50bb707e283453b928719"
+    }
+  }
+}

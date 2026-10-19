@@ -1,0 +1,5 @@
+请完成TASK.md中的BUGFIX，先读规格、src/layers.mjs、src/config.mjs、src/caller.mjs和公共测试，实际复现再修复与回归。
+只有src/config.mjs、src/layers.mjs和新增test/extra.test.mjs可写（Harness组另可通过CLI维护工作项控制面）。不得修改原测试、规格、调用方或固定依赖，不安装依赖、不访问网络、不提交Git。无需询问已授权实现选择。
+预算30秒、10次工具调用；到期如实报告未完成。最终按结构化格式报告completed、summary和实际运行的tests。
+不要修改项目相对路径.ai-harness/work-items/benchmark-begin-spec.json；它已预填writeScopes、公共verification及docsImpact的N/A理由。先运行公共测试确认实际/期望与复现方法，再判断risk和approach，运行node .ai-harness/bin/harness.mjs begin --spec .ai-harness/work-items/benchmark-begin-spec.json --risk <low或medium> --approach "<实际方案>" --actual "<观察到的实际错误>" --expected "<公开期望>" --reproduction "<实际复现方法>" --json。
+创建后用run --id config-layers-bugfix --task T1 --check V1 --json保留修复前失败，完成实现和必要额外测试；最后用run --id config-layers-bugfix --all --json执行当前计划检查，通过后不要继续改产品文件。用guide --id config-layers-bugfix --task T1 --brief --json取得finish模板；保留static/sandbox/reproduction/regression真实阶段证据，从verification.commands选择确实覆盖复现/回归的当前计划命令。立即finish并check --ci，两者通过后尽快返回结构化最终结果；未完成如实说明，不把帮助查询当作收尾。

@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "protocolSha256": "db2f3ce618207ca6b69e25a0380114c7a302c6e34a3f8c07fecd4efdff51e05e",
+  "trials": [
+    {
+      "directory": "archive-pagination-weak-baseline",
+      "status": "completed",
+      "startedAt": "2026-10-19T07:21:27.906Z",
+      "resultSha256": "05d2133236199da99507c1d5a4e0c13965d6e5757c1e52cfd0abd45921eab617"
+    },
+    {
+      "directory": "archive-pagination-weak-harness",
+      "status": "completed",
+      "startedAt": "2026-10-19T07:21:30.637Z",
+      "resultSha256": "8f5c62e2ef191da6ceb2d4f8a1f7f1f79a32a0d5619d930ca9a02ebe84f8297f"
+    },
+    {
+      "directory": "config-layers-weak-harness",
+      "status": "completed",
+      "startedAt": "2026-10-19T07:21:34.718Z",
+      "resultSha256": "f777e7ac3b11a30c123293b4587e6e1575c10de8983ee9576ee20495c66c5bb5"
+    },
+    {
+      "directory": "config-layers-weak-baseline",
+      "status": "completed",
+      "startedAt": "2026-10-19T07:21:38.594Z",
+      "resultSha256": "84129ad4e1d66a8afacb7a5e8d40d947606a354276de10e00f26772bae57e741"
+    },
+    {
+      "directory": "window-intervals-weak-baseline",
+      "status": "completed",
+      "startedAt": "2026-10-19T07:21:41.305Z",
+      "resultSha256": "21c4691c142ccb529e42c26637be721a7a0fd87a6a656839152c4893f754d80b"
+    },
+    {
+      "directory": "window-intervals-weak-harness",
+      "status": "completed",
+      "startedAt": "2026-10-19T07:21:44.129Z",
+      "resultSha256": "bd953442bf2a674065c8b9a74762003f4a9f6ca269b1e778a7d350993bf41b86"
+    }
+  ]
+}
