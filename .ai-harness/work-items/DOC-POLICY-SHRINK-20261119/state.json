@@ -1,0 +1,297 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 2,
+  "id": "DOC-POLICY-SHRINK-20261119",
+  "type": "ITERATION",
+  "title": "收缩文档策略与新项目模板",
+  "status": "DONE",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/iteration.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户在当前对话明确授权完成文档策略收缩和验证"
+  },
+  "input": {
+    "references": [
+      "用户要求解决当前文档策略臃肿且与项目实际不符的问题"
+    ],
+    "acceptance": [
+      "普通任务不再被要求重复维护版本计划和验证文档；新项目模板不生成未使用的数据库、PLAN和VERIFICATION文件；当前无数据库项目不保留空数据库设计页；文档策略、模板、导航和测试保持一致"
+    ],
+    "nonGoals": [],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": null,
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "用户要求解决当前文档策略臃肿且与项目实际不符的问题"
+    ],
+    "completedAt": "2026-11-19T08:21:57.126Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "7d436b36edd1f43fce25cf612bdbb4ac721e9e70",
+      "dirty": false,
+      "changedFiles": [],
+      "fingerprints": {},
+      "source": {
+        "digest": "0da98c68c8efc9a34c9eb9dff738f015b5b0b2b71911e873eb314474f45574b0",
+        "document": ".ai-harness/work-items/DOC-POLICY-SHRINK-20261119/snapshots/0da98c68c8efc9a34c9eb9dff738f015b5b0b2b71911e873eb314474f45574b0.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": ".ai-harness/work-items/DOC-POLICY-SHRINK-20261119/solution.md",
+    "evidence": [
+      "只调整文档策略、初始化模板、当前无数据库项目的导航和对应安装测试，不修改 Runtime 状态门禁"
+    ],
+    "completedAt": "2026-11-19T08:21:57.210Z"
+  },
+  "database": {
+    "impact": "none",
+    "status": "not-applicable",
+    "document": null,
+    "evidence": [
+      "只修改 Markdown 模板、文档导航和安装测试，不涉及数据库模型、迁移、查询或运行时持久化"
+    ],
+    "completedAt": "2026-11-19T08:21:57.214Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/DOC-POLICY-SHRINK-20261119/plan.json",
+    "approved": true,
+    "approvalRef": "用户在当前对话明确授权完成文档策略收缩和验证"
+  },
+  "verification": {
+    "status": "pass",
+    "evidence": [
+      "f3ec3266-4579-4072-81e3-3c50054c8a2e"
+    ],
+    "stages": [],
+    "source": {
+      "digest": "8a89d139dfd6464bfeb3b63540efaaea564880405302e165e6e392d2eb18976b",
+      "document": ".ai-harness/work-items/DOC-POLICY-SHRINK-20261119/snapshots/8a89d139dfd6464bfeb3b63540efaaea564880405302e165e6e392d2eb18976b.json"
+    }
+  },
+  "review": {
+    "status": "pass",
+    "evidence": [
+      "a23c8d8a-b3e1-4675-bbec-6c8c80b262a0"
+    ],
+    "independent": false,
+    "source": {
+      "digest": "8a89d139dfd6464bfeb3b63540efaaea564880405302e165e6e392d2eb18976b",
+      "document": ".ai-harness/work-items/DOC-POLICY-SHRINK-20261119/snapshots/8a89d139dfd6464bfeb3b63540efaaea564880405302e165e6e392d2eb18976b.json"
+    }
+  },
+  "acceptance": {
+    "status": "pass",
+    "evidence": [
+      "56193244-721a-473f-8cd2-a097646f7cb2"
+    ],
+    "source": {
+      "digest": "8a89d139dfd6464bfeb3b63540efaaea564880405302e165e6e392d2eb18976b",
+      "document": ".ai-harness/work-items/DOC-POLICY-SHRINK-20261119/snapshots/8a89d139dfd6464bfeb3b63540efaaea564880405302e165e6e392d2eb18976b.json"
+    }
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "pass",
+    "evidence": [
+      "4b0dfb08-b4a2-4b75-8f28-166064284e7a"
+    ]
+  },
+  "blocked": null,
+  "delivery": {
+    "source": {
+      "digest": "8a89d139dfd6464bfeb3b63540efaaea564880405302e165e6e392d2eb18976b",
+      "document": ".ai-harness/work-items/DOC-POLICY-SHRINK-20261119/snapshots/8a89d139dfd6464bfeb3b63540efaaea564880405302e165e6e392d2eb18976b.json"
+    },
+    "baseline": {
+      "digest": "0da98c68c8efc9a34c9eb9dff738f015b5b0b2b71911e873eb314474f45574b0",
+      "document": ".ai-harness/work-items/DOC-POLICY-SHRINK-20261119/snapshots/0da98c68c8efc9a34c9eb9dff738f015b5b0b2b71911e873eb314474f45574b0.json"
+    },
+    "baselineAt": "2026-11-19T08:21:57.126Z",
+    "ownedChanges": [
+      {
+        "path": ".ai-harness/policies/documentation.md",
+        "before": "100644:4f67236a90552160af895fb0ed448674bf201e16",
+        "after": "100644:6d39d278c8a6a03faad43bd0d047874282b42ffd"
+      },
+      {
+        "path": ".ai-harness/policies/new-project.md",
+        "before": "100644:7ef13064e99f2bd36cdd224f2df96481c1970e0f",
+        "after": "100644:a70fb07e929bb1f16fd73d4ff27f274723928e50"
+      },
+      {
+        "path": ".ai-harness/templates/new-project/docs/README.md",
+        "before": "100644:5f4baf0834afa47cd594821ce1d51c672511ad12",
+        "after": "100644:8b9195fa729beff077ef825430132e1edd96e580"
+      },
+      {
+        "path": ".ai-harness/templates/new-project/docs/architecture/database.md",
+        "before": "100644:68521796efc091a8e960ff0d3e54e7f2861b32fa",
+        "after": null
+      },
+      {
+        "path": ".ai-harness/templates/new-project/docs/versions/v1.0/PLAN.md",
+        "before": "100644:40d58527841bd96cb454e6163feadf293e346af3",
+        "after": null
+      },
+      {
+        "path": ".ai-harness/templates/new-project/docs/versions/v1.0/README.md",
+        "before": "100644:010f4017eafbd42434da1de5da8e9692eede6cab",
+        "after": "100644:427912ca01c07580059d755deea689598ae79e91"
+      },
+      {
+        "path": ".ai-harness/templates/new-project/docs/versions/v1.0/VERIFICATION.md",
+        "before": "100644:ed31cf692c891023ed9fc5f9836efa6e7fd01ab5",
+        "after": null
+      },
+      {
+        "path": ".ai-harness/tests/installer.test.mjs",
+        "before": "100644:c0afdd92924d3f9f00a430d94f1a113e2f0156af",
+        "after": "100644:8bf03fca89ca567fa8205bfd3ec53937dd6b4a83"
+      },
+      {
+        "path": "README.md",
+        "before": "100644:d3d7d878f564ffad99ac265b389a3fa2d46de8ca",
+        "after": "100644:2776297fb9965dd50f4c27b02fd6613ec39b91c3"
+      },
+      {
+        "path": "docs/README.md",
+        "before": "100644:ec361bf6ad8d59957c16c32d7f7d3d16086adb5b",
+        "after": "100644:971e01ac2a847130106ff4db21cab6b0894b089e"
+      },
+      {
+        "path": "docs/architecture/database.md",
+        "before": "100644:94eee002fa2b1ac75ba97bdfc5baf5b77c2be9b4",
+        "after": null
+      },
+      {
+        "path": "docs/guides/getting-started.md",
+        "before": "100644:fbcf988aace7c50a870d20cd3ef17ba94e9ee4be",
+        "after": "100644:502897e55b9f6c70141f31de10bb0e5bdf233418"
+      },
+      {
+        "path": "docs/guides/usage.md",
+        "before": "100644:49b486c0c528fda44c87722cfb020b1816d9848d",
+        "after": "100644:ea5ed30955b2e6d837811b811f950bf9ceb439b6"
+      },
+      {
+        "path": "docs/versions/v1.0/PLAN.md",
+        "before": "100644:7543129bb5a761efecdf66be909e73bfdd441333",
+        "after": "100644:7b8ab9edb80f473543957ef3917ea5df076deae0"
+      },
+      {
+        "path": "docs/versions/v1.0/README.md",
+        "before": "100644:111d77747b41d4ef3cae31a87872368104da15d3",
+        "after": "100644:061435baf7211db18714766aa569010a3eb4a942"
+      },
+      {
+        "path": "docs/versions/v1.0/STATE.md",
+        "before": "100644:252e7acfc62663107ce7bafdc8553b1b63babdf6",
+        "after": "100644:afcb2fa8224c5a93d56e3a64d6c77b7787d2bb59"
+      }
+    ],
+    "planDigest": "8a419bbdf401fbbbea1e958e959750755953a83667331014a602753773c826ea",
+    "at": "2026-11-20T02:18:06.633Z",
+    "head": "7d436b36edd1f43fce25cf612bdbb4ac721e9e70"
+  },
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-11-19T08:21:57.019Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-11-19T08:21:57.029Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-11-19T08:21:57.205Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-11-19T08:21:57.238Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-11-19T08:21:57.242Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-11-19T08:23:56.027Z",
+      "reason": "删除当前无数据库项目的设计页后，移除历史版本中的失效路径并保留版本事实",
+      "action": "replan",
+      "revision": 2
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-11-20T02:08:15.801Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-11-20T02:08:15.876Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "VERIFYING",
+      "at": "2026-11-20T02:16:43.122Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "VERIFYING",
+      "to": "CODE_REVIEW",
+      "at": "2026-11-20T02:17:23.107Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "CODE_REVIEW",
+      "to": "READY_FOR_ACCEPTANCE",
+      "at": "2026-11-20T02:17:44.697Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "READY_FOR_ACCEPTANCE",
+      "to": "DONE",
+      "at": "2026-11-20T02:18:06.731Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-11-19T08:21:57.019Z",
+  "updatedAt": "2026-11-20T02:18:06.731Z"
+}

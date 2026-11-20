@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "DOC-POLICY-SHRINK-20261119",
+  "mode": "single",
+  "rationale": "只调整文档策略、初始化模板、当前无数据库项目的导航和对应安装测试，不修改 Runtime 状态门禁",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "收缩文档策略与新项目模板",
+      "module": "compact",
+      "status": "IN_PROGRESS",
+      "attempt": 1,
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        ".ai-harness/policies/documentation.md",
+        ".ai-harness/policies/new-project.md",
+        ".ai-harness/templates/new-project/docs/README.md",
+        ".ai-harness/templates/new-project/docs/architecture/database.md",
+        ".ai-harness/templates/new-project/docs/versions/v1.0/PLAN.md",
+        ".ai-harness/templates/new-project/docs/versions/v1.0/README.md",
+        ".ai-harness/templates/new-project/docs/versions/v1.0/VERIFICATION.md",
+        "docs/README.md",
+        "docs/architecture/database.md",
+        "docs/versions/v1.0/README.md",
+        "README.md",
+        ".ai-harness/tests/installer.test.mjs"
+      ],
+      "verification": [
+        "node --test .ai-harness/tests/installer.test.mjs",
+        "node .ai-harness/tests/run.mjs"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            "--test",
+            ".ai-harness/tests/installer.test.mjs"
+          ]
+        },
+        {
+          "id": "V2",
+          "command": "node",
+          "args": [
+            ".ai-harness/tests/run.mjs"
+          ]
+        }
+      ],
+      "docsImpact": [
+        ".ai-harness/policies/documentation.md",
+        ".ai-harness/policies/new-project.md",
+        ".ai-harness/templates/new-project/docs/README.md",
+        ".ai-harness/templates/new-project/docs/architecture/database.md",
+        ".ai-harness/templates/new-project/docs/versions/v1.0/PLAN.md",
+        ".ai-harness/templates/new-project/docs/versions/v1.0/README.md",
+        ".ai-harness/templates/new-project/docs/versions/v1.0/VERIFICATION.md",
+        "docs/README.md",
+        "docs/architecture/database.md",
+        "docs/versions/v1.0/README.md",
+        "README.md"
+      ],
+      "reviewBatch": "R1",
+      "risk": "medium",
+      "owner": "primary-ai",
+      "verificationStatus": "pending",
+      "reviewStatus": "pending",
+      "evidence": [],
+      "deferralApproval": null
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "收缩文档策略与新项目模板",
+      "risk": "medium",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": false
+    }
+  ],
+  "createdAt": "2026-11-19T08:21:57.218Z",
+  "updatedAt": "2026-11-19T08:21:57.246Z"
+}

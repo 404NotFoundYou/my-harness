@@ -72,7 +72,20 @@ Runtime 文本与标准 CI 通过随包分发的局部 `.gitattributes` 固定�
 
 ## 初始化
 
-新项目会创建可迭代的 `v1.0` 文档模板：
+新项目会创建可迭代的 `v1.0` 最小文档基线：
+
+```text
+README.md
+docs/
+  README.md
+  product/overview.md
+  architecture/overview.md
+  architecture/decisions/
+  versions/v1.0/README.md
+  versions/v1.0/STATE.md
+```
+
+数据库、前端和移动端文档按实际能力创建。普通任务的计划、验证和证据保存在 `.ai-harness/work-items/`，不会默认生成版本目录下的 `PLAN.md` 和 `VERIFICATION.md`。
 
 ```powershell
 git init

@@ -172,7 +172,7 @@ node .ai-harness/bin/harness.mjs start --id NEW-001 --type NEW_PROJECT --title "
   --authorization autonomous --authorization-source "端到端授权" --json
 ```
 
-架构来源只能是 `HUMAN_PROVIDED` 或 `AI_RECOMMENDED`。默认文档版本为 `v1.0`。
+架构来源只能是 `HUMAN_PROVIDED` 或 `AI_RECOMMENDED`。默认文档版本为 `v1.0`。默认初始化只创建产品、架构、索引和版本状态基线；能力文档及版本计划/验证快照按实际需要添加。
 
 ### 版本迭代
 

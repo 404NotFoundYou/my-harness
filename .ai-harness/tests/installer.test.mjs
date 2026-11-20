@@ -741,6 +741,9 @@ test("new project init creates templates but refuses conflicting docs", async ()
     git(target, ["init"]);
     await initializeProject(target, { mode: "new", docsMode: "default" });
     assert.equal(await exists(path.join(target, "docs", "versions", "v1.0", "STATE.md")), true);
+    assert.equal(await exists(path.join(target, "docs", "architecture", "database.md")), false);
+    assert.equal(await exists(path.join(target, "docs", "versions", "v1.0", "PLAN.md")), false);
+    assert.equal(await exists(path.join(target, "docs", "versions", "v1.0", "VERIFICATION.md")), false);
   } finally {
     await cleanup(target);
   }

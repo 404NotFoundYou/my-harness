@@ -14,11 +14,12 @@
 - 远程数据库或控制面。
 - 自带多代理调度器。
 
+普通任务的计划、验证、审查、验收和证据以 `.ai-harness/work-items/<WORK-ID>/` 为准。本目录的 `PLAN.md` 和 `VERIFICATION.md` 仅保留 v1.0 历史交付快照。
+
 ## 文档
 
 - [当前状态](STATE.md)
-- [开发计划](PLAN.md)
-- [验证记录](VERIFICATION.md)
+- [开发计划（历史快照）](PLAN.md)
+- [验证记录（历史快照）](VERIFICATION.md)
 - [架构](../../architecture/overview.md)
-- [数据库设计](../../architecture/database.md)
 - [安装与工作流](../../guides/usage.md)

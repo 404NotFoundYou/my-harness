@@ -1,0 +1,138 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 1,
+  "id": "DOC-POLICY-SHRINK-20261119",
+  "type": "ITERATION",
+  "title": "收缩文档策略与新项目模板",
+  "status": "IMPLEMENTING",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/iteration.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户在当前对话明确授权完成文档策略收缩和验证"
+  },
+  "input": {
+    "references": [
+      "用户要求解决当前文档策略臃肿且与项目实际不符的问题"
+    ],
+    "acceptance": [
+      "普通任务不再被要求重复维护版本计划和验证文档；新项目模板不生成未使用的数据库、PLAN和VERIFICATION文件；当前无数据库项目不保留空数据库设计页；文档策略、模板、导航和测试保持一致"
+    ],
+    "nonGoals": [],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": null,
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "用户要求解决当前文档策略臃肿且与项目实际不符的问题"
+    ],
+    "completedAt": "2026-11-19T08:21:57.126Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "7d436b36edd1f43fce25cf612bdbb4ac721e9e70",
+      "dirty": false,
+      "changedFiles": [],
+      "fingerprints": {},
+      "source": {
+        "digest": "0da98c68c8efc9a34c9eb9dff738f015b5b0b2b71911e873eb314474f45574b0",
+        "document": ".ai-harness/work-items/DOC-POLICY-SHRINK-20261119/snapshots/0da98c68c8efc9a34c9eb9dff738f015b5b0b2b71911e873eb314474f45574b0.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": ".ai-harness/work-items/DOC-POLICY-SHRINK-20261119/solution.md",
+    "evidence": [
+      "只调整文档策略、初始化模板、当前无数据库项目的导航和对应安装测试，不修改 Runtime 状态门禁"
+    ],
+    "completedAt": "2026-11-19T08:21:57.210Z"
+  },
+  "database": {
+    "impact": "none",
+    "status": "not-applicable",
+    "document": null,
+    "evidence": [
+      "只修改 Markdown 模板、文档导航和安装测试，不涉及数据库模型、迁移、查询或运行时持久化"
+    ],
+    "completedAt": "2026-11-19T08:21:57.214Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/DOC-POLICY-SHRINK-20261119/plan.json",
+    "approved": true,
+    "approvalRef": "用户在当前对话明确授权完成文档策略收缩和验证"
+  },
+  "verification": {
+    "status": "pending",
+    "evidence": [],
+    "stages": []
+  },
+  "review": {
+    "status": "pending",
+    "evidence": [],
+    "independent": false
+  },
+  "acceptance": {
+    "status": "pending",
+    "evidence": []
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "pending",
+    "evidence": []
+  },
+  "blocked": null,
+  "delivery": null,
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-11-19T08:21:57.019Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-11-19T08:21:57.029Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-11-19T08:21:57.205Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-11-19T08:21:57.238Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-11-19T08:21:57.242Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-11-19T08:21:57.019Z",
+  "updatedAt": "2026-11-19T08:21:57.246Z"
+}

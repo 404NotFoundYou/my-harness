@@ -1,0 +1,107 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "DOC-POLICY-SHRINK-20261119",
+  "mode": "single",
+  "rationale": "只调整文档策略、初始化模板、当前无数据库项目的导航和对应安装测试，不修改 Runtime 状态门禁",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "收缩文档策略与新项目模板",
+      "module": "compact",
+      "status": "COMPLETED",
+      "attempt": 1,
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        ".ai-harness/policies/documentation.md",
+        ".ai-harness/policies/new-project.md",
+        ".ai-harness/templates/new-project/docs/README.md",
+        ".ai-harness/templates/new-project/docs/architecture/database.md",
+        ".ai-harness/templates/new-project/docs/versions/v1.0/PLAN.md",
+        ".ai-harness/templates/new-project/docs/versions/v1.0/README.md",
+        ".ai-harness/templates/new-project/docs/versions/v1.0/STATE.md",
+        ".ai-harness/templates/new-project/docs/versions/v1.0/VERIFICATION.md",
+        "docs/README.md",
+        "docs/architecture/database.md",
+        "docs/versions/v1.0/README.md",
+        "docs/versions/v1.0/PLAN.md",
+        "docs/versions/v1.0/STATE.md",
+        "README.md",
+        "docs/guides/usage.md",
+        "docs/guides/getting-started.md",
+        ".ai-harness/tests/installer.test.mjs"
+      ],
+      "verification": [
+        "node --test .ai-harness/tests/installer.test.mjs",
+        "node .ai-harness/tests/run.mjs"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            "--test",
+            ".ai-harness/tests/installer.test.mjs"
+          ]
+        },
+        {
+          "id": "V2",
+          "command": "node",
+          "args": [
+            ".ai-harness/tests/run.mjs"
+          ]
+        }
+      ],
+      "docsImpact": [
+        ".ai-harness/policies/documentation.md",
+        ".ai-harness/policies/new-project.md",
+        ".ai-harness/templates/new-project/docs/README.md",
+        ".ai-harness/templates/new-project/docs/architecture/database.md",
+        ".ai-harness/templates/new-project/docs/versions/v1.0/PLAN.md",
+        ".ai-harness/templates/new-project/docs/versions/v1.0/README.md",
+        ".ai-harness/templates/new-project/docs/versions/v1.0/STATE.md",
+        ".ai-harness/templates/new-project/docs/versions/v1.0/VERIFICATION.md",
+        "docs/README.md",
+        "docs/architecture/database.md",
+        "docs/versions/v1.0/README.md",
+        "docs/versions/v1.0/PLAN.md",
+        "docs/versions/v1.0/STATE.md",
+        "README.md",
+        "docs/guides/usage.md",
+        "docs/guides/getting-started.md"
+      ],
+      "reviewBatch": "R1",
+      "risk": "medium",
+      "owner": "primary-ai",
+      "verificationStatus": "pass",
+      "reviewStatus": "pass",
+      "evidence": [
+        "0dd421fe-87f7-4129-b2aa-0eb970741b23",
+        "d7aa5048-f770-4859-932d-7858d87f4451"
+      ],
+      "deferralApproval": null,
+      "verificationSource": {
+        "digest": "8a89d139dfd6464bfeb3b63540efaaea564880405302e165e6e392d2eb18976b",
+        "document": ".ai-harness/work-items/DOC-POLICY-SHRINK-20261119/snapshots/8a89d139dfd6464bfeb3b63540efaaea564880405302e165e6e392d2eb18976b.json"
+      },
+      "reviewSource": {
+        "digest": "8a89d139dfd6464bfeb3b63540efaaea564880405302e165e6e392d2eb18976b",
+        "document": ".ai-harness/work-items/DOC-POLICY-SHRINK-20261119/snapshots/8a89d139dfd6464bfeb3b63540efaaea564880405302e165e6e392d2eb18976b.json"
+      }
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "收缩文档策略与新项目模板",
+      "risk": "medium",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": false
+    }
+  ],
+  "createdAt": "2026-11-19T08:21:57.218Z",
+  "updatedAt": "2026-11-20T02:16:35.416Z",
+  "revision": 2
+}

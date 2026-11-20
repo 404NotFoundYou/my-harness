@@ -4,6 +4,7 @@
 
 - [产品概览](product/overview.md)
 - [架构概览](architecture/overview.md)
-- [数据库设计](architecture/database.md)
 - [ADR](architecture/decisions/)
 - [v1.0](versions/v1.0/README.md)
+
+数据库、前端和移动端文档按项目实际能力创建后再加入本索引。

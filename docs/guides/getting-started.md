@@ -303,4 +303,4 @@ node .ai-harness/bin/harness.mjs check --ci --json
 
 - 查看[完整 CLI 工作流](usage.md)，了解状态推进、计划、任务、验证和 Review 命令。
 - 查看[架构概览](../architecture/overview.md)，了解 Runtime 边界和无损接入设计。
-- 查看[版本验证记录](../versions/v1.0/VERIFICATION.md)，了解已验证能力和剩余边界。
+- 查看[v1.0 历史验证记录](../versions/v1.0/VERIFICATION.md)，了解该版本已验证能力和剩余边界。

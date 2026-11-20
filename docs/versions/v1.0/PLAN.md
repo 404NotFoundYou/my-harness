@@ -2,7 +2,8 @@
 
 ## 输入与边界
 
-- 数据库设计：`docs/architecture/database.md`，影响不适用。
+这是 v1.0 的历史开发计划快照。后续普通任务以 `.ai-harness/work-items/<WORK-ID>/` 中的计划和证据为准。
+
 - 架构：`docs/architecture/overview.md`、ADR-0001。
 - 授权：用户要求端到端完成整改，不逐任务询问继续。
 - Node.js：最低 20，当前验证环境 v22.20.0。
