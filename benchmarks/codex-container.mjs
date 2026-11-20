@@ -40,7 +40,7 @@ export function validateContainerManifest(value){
 
 export function validateContainerIdentity(value){
  exactKeys(value,["kind","manifest","manifestSha256","runtimeVersion","image","imageId","platform","nodeVersion","cliVersion","cliSha256","nativeSha256","wrapperIntegrity","platformIntegrity"],"container identity");
- assert.equal(value.kind,"container");assert.ok(path.isAbsolute(value.manifest),"Container manifest path must be absolute");assert.match(value.manifestSha256,sha256);
+ assert.equal(value.kind,"container");assert.ok(path.posix.isAbsolute(value.manifest)||path.win32.isAbsolute(value.manifest),"Container manifest path must be absolute");assert.match(value.manifestSha256,sha256);
  assert.equal(value.runtimeVersion,containerRuntimeVersion);assert.match(value.image,imageDigest);assert.match(value.imageId,/^sha256:[a-f0-9]{64}$/);assert.equal(value.platform,"linux/amd64");
  assert.equal(value.nodeVersion,"v22.20.0");assert.equal(value.cliVersion,"0.156.0");assert.match(value.cliSha256,sha256);assert.match(value.nativeSha256,sha256);assert.equal(value.wrapperIntegrity,wrapperIntegrity);assert.equal(value.platformIntegrity,platformIntegrity);
  return structuredClone(value);

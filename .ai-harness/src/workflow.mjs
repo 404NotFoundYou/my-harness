@@ -124,7 +124,7 @@ async function assertNewProjectDocs(root, version) {
   for (const relative of required) {
     const absolute = await resolveProjectPath(root, relative, { mustExist: true });
     const content = await readFile(absolute, "utf8");
-    invariant(!content.includes("HARNESS:REQUIRED"), "DOCS_INCOMPLETE", `新项目基线文档尚未填写：${relative}`);
+    invariant(content.trim() && !content.includes("HARNESS:REQUIRED"), "DOCS_INCOMPLETE", `新项目基线文档尚未填写：${relative}`);
   }
 }
 

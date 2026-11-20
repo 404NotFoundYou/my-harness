@@ -45,7 +45,7 @@ function addOption(options, key, value) {
 
 export function parseArgs(argv) {
   const positional = [];
-  const options = {};
+  const options = Object.create(null);
   let passthrough = [];
   for (let index = 0; index < argv.length; index += 1) {
     const token = argv[index];
@@ -111,7 +111,7 @@ function helpText() {
   uninstall     从 --target 安全卸载（预检用 --dry-run，正式执行需 --confirm）
   init          初始化项目元数据：--mode new|existing --docs default|existing
   doctor        检查 runtime、适配器、Git 和项目初始化
-  check         校验全部工作项、门禁和 Git 写入范围（CI 使用 --ci）
+  check         校验全部工作项与 Git 范围（CI 使用 --ci --base <COMMIT>）
   policies      读取实际策略：--id ID；或 --type TYPE [--flag frontend ...] [--database-impact none|required|unknown]
 
 工作项：
@@ -253,7 +253,18 @@ export async function runCli(argv, io = { stdout: console.log, stderr: console.e
     return result.ok ? 0 : 1;
   }
   if (command === "check") {
-    const result = await checkProject(root, { ci: flag(parsed, "ci") });
+    const allowed = ["ci", "base", "json"];
+    for (const option of Object.keys(parsed.options)) {
+      invariant(allowed.includes(option), "UNKNOWN_OPTION", `check 不支持 --${option}。`);
+      const value = parsed.options[option];
+      invariant(option === "base" ? typeof value === "string" : [true, "true", "false", "1", "0"].includes(value),
+        "INVALID_OPTION", `check 的 --${option} 参数无效或重复。`);
+    }
+    invariant(parsed.positional.length === 1 && parsed.passthrough.length === 0, "INVALID_OPTION", "check 不接收额外参数。");
+    const ci = flag(parsed, "ci");
+    const base = one(parsed, "base");
+    invariant(base === null || (ci && /^(?:[0-9a-f]{40}|[0-9a-f]{64})$/.test(base)), "INVALID_OPTION", "--base 需与 --ci 一起使用并提供完整提交标识。");
+    const result = await checkProject(root, { ci, base });
     emit(io, parsed, result);
     return result.ok ? 0 : 1;
   }

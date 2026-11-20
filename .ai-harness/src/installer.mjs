@@ -139,13 +139,14 @@ async function loadInstallReceipt(targetRoot, { required = false, code = "INSTAL
   return { receipt, content, targetPath };
 }
 
-async function listFiles(directory, prefix = "") {
+async function listFiles(directory, prefix = "", skip = () => false) {
   const output = [];
   for (const entry of await readdir(directory, { withFileTypes: true })) {
     const relative = prefix ? `${prefix}/${entry.name}` : entry.name;
+    if (skip(relative)) continue;
     const absolute = path.join(directory, entry.name);
     if (entry.isSymbolicLink()) throw new HarnessError("SOURCE_SYMLINK", `安装源包含符号链接：${relative}`);
-    if (entry.isDirectory()) output.push(...(await listFiles(absolute, relative)));
+    if (entry.isDirectory()) output.push(...(await listFiles(absolute, relative, skip)));
     else if (entry.isFile()) output.push(relative);
   }
   return output;
@@ -220,15 +221,9 @@ export async function installationFiles(sourceRoot) {
     "SOURCE_SYMLINK",
     "安装源 .ai-harness 必须是普通目录，不能是符号链接或联接。",
   );
-  for (const relative of await listFiles(runtimeRoot)) {
-    if (
-      relative === "project.json"
-      || relative === "install-receipt.json"
-      || relative.startsWith("work-items/")
-      || relative.startsWith("backups/")
-    ) continue;
-    files.push(`.ai-harness/${relative}`);
-  }
+  const excluded = new Set(["project.json", "install-receipt.json", "work-items", "backups"]);
+  const payload = await listFiles(runtimeRoot, "", (relative) => excluded.has(relative));
+  files.push(...payload.map(relative => `.ai-harness/${relative}`));
   for (const relative of [STANDARD_WORKFLOW_RELATIVE, WORKFLOW_ATTRIBUTES_RELATIVE]) {
     if (await exists(path.join(sourceRoot, relative))) {
       await assertSourceFile(sourceRoot, relative);
@@ -518,6 +513,7 @@ export async function installRuntime(sourceRoot, target, { dryRun = false, force
   const manifest = await readJson(path.join(source, ".ai-harness", "manifest.json"));
   const files = await installationFiles(source);
   const previousReceiptInfo = await loadInstallReceipt(targetRoot);
+  const previouslyInstalled = new Map(previousReceiptInfo?.receipt.files.map(({ relative, sha256 }) => [relative, sha256]));
   const operations = await planInstructionOperations(source, targetRoot, manifest.version, force);
   const instructionOperations = [...operations];
   const payloadOperations = [];
@@ -538,7 +534,8 @@ export async function installRuntime(sourceRoot, target, { dryRun = false, force
     const targetInfo = await lstat(targetPath);
     invariant(targetInfo.isFile() && !targetInfo.isSymbolicLink(), "TARGET_TYPE_CONFLICT", `目标不是普通文件：${relative}`);
     const targetContent = await readFile(targetPath);
-    if (hash(sourceContent) === hash(targetContent)) {
+    const snapshotHash = hash(targetContent);
+    if (hash(sourceContent) === snapshotHash) {
       const operation = {
         relative,
         action: "skip",
@@ -546,24 +543,37 @@ export async function installRuntime(sourceRoot, target, { dryRun = false, force
         sourceContent,
         targetPath,
         existing: true,
-        snapshotHash: hash(targetContent),
+        snapshotHash,
       };
       operations.push(operation);
       payloadOperations.push(operation);
     } else {
       const operation = {
         relative,
-        action: force ? "replace" : "conflict",
+        action: force || previouslyInstalled.get(relative) === snapshotHash ? "replace" : "conflict",
         sourcePath,
         targetPath,
         sourceContent,
         targetContent,
         existing: true,
-        snapshotHash: hash(targetContent),
+        snapshotHash,
       };
       operations.push(operation);
       payloadOperations.push(operation);
     }
+  }
+
+  const currentPaths = new Set(files);
+  for (const [relative, installedHash] of previouslyInstalled) {
+    if (currentPaths.has(relative)) continue;
+    const targetPath = path.join(targetRoot, relative);
+    await assertWritableParents(targetRoot, relative);
+    const info = await fileInfo(targetPath);
+    if (!info) continue;
+    invariant(info.isFile() && !info.isSymbolicLink(), "TARGET_TYPE_CONFLICT", `退役目标不是普通文件：${relative}`);
+    const snapshotHash = hash(await readFile(targetPath));
+    operations.push({ relative, targetPath, existing: true, snapshotHash,
+      action: snapshotHash === installedHash ? "remove-retired" : "conflict" });
   }
 
   const receipt = buildInstallReceipt(
@@ -611,6 +621,7 @@ export async function installRuntime(sourceRoot, target, { dryRun = false, force
         invariant(hash(await readFile(backupPath)) === operation.snapshotHash,
           "INSTALL_TARGET_CHANGED", `安装目标在迁移到备份期间已变化：${operation.relative}`);
       }
+      if (operation.action === "remove-retired") continue;
       await assertWritableParents(targetRoot, operation.relative);
       await mkdir(path.dirname(operation.targetPath), { recursive: true });
       await assertWritableParents(targetRoot, operation.relative);

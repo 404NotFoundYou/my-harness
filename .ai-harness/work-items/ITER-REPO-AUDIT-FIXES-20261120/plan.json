@@ -1,0 +1,105 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "ITER-REPO-AUDIT-FIXES-20261120",
+  "mode": "single",
+  "rationale": "复用同一产品快照和一组验收，独立高风险审查覆盖整个改动。",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "修复十项问题并回归",
+      "module": "runtime-and-benchmarks",
+      "status": "COMPLETED",
+      "attempt": 2,
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        ".ai-harness/src/**",
+        ".ai-harness/tests/**",
+        ".github/workflows/ai-harness.yml",
+        ".github/workflows/source-tests.yml",
+        "benchmarks/**",
+        ".ai-harness/work-items/MODEL-BENCHMARK-001/pilot/**",
+        ".ai-harness/work-items/MODEL-BENCHMARK-001/followup/**",
+        ".ai-harness/work-items/MODEL-PAIRED-20261013/pilot/**",
+        ".ai-harness/work-items/MODEL-COMPLETION-PAIRED-20261014/pilot/**",
+        ".ai-harness/work-items/MODEL-PROJECT-V2-20261014/project-v2-comparison/**",
+        ".ai-harness/work-items/MODEL-PROJECT-V2-RECHECK-20261014/project-v2-comparison/**",
+        ".ai-harness/work-items/MODEL-PROJECT-V2-STRUCTURED-20261014/project-v2-comparison/**",
+        ".ai-harness/work-items/ANALYSIS-ZEROMODEL-AUDIT-20261019/experiment-retry/**"
+      ],
+      "verification": [
+        "node .ai-harness/tests/run.mjs",
+        "node --test benchmarks/tests/container-driver.test.mjs benchmarks/tests/driver-diagnostics.test.mjs benchmarks/tests/driver-process.test.mjs benchmarks/tests/driver-timing.test.mjs benchmarks/tests/memory-control.test.mjs benchmarks/tests/multifile.test.mjs benchmarks/tests/preflight.test.mjs benchmarks/tests/project-v2.test.mjs benchmarks/tests/report.test.mjs benchmarks/tests/resume.test.mjs benchmarks/tests/runner.test.mjs benchmarks/tests/spec-guidance.test.mjs benchmarks/tests/status.test.mjs"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            ".ai-harness/tests/run.mjs"
+          ]
+        },
+        {
+          "id": "V2",
+          "command": "node",
+          "args": [
+            "--test",
+            "benchmarks/tests/container-driver.test.mjs",
+            "benchmarks/tests/driver-diagnostics.test.mjs",
+            "benchmarks/tests/driver-process.test.mjs",
+            "benchmarks/tests/driver-timing.test.mjs",
+            "benchmarks/tests/memory-control.test.mjs",
+            "benchmarks/tests/multifile.test.mjs",
+            "benchmarks/tests/preflight.test.mjs",
+            "benchmarks/tests/project-v2.test.mjs",
+            "benchmarks/tests/report.test.mjs",
+            "benchmarks/tests/resume.test.mjs",
+            "benchmarks/tests/runner.test.mjs",
+            "benchmarks/tests/spec-guidance.test.mjs",
+            "benchmarks/tests/status.test.mjs"
+          ]
+        }
+      ],
+      "docsImpact": [
+        "docs/guides/usage.md",
+        "docs/guides/getting-started.md",
+        "docs/reports/model-comparison.md",
+        "README.md",
+        "docs/architecture/overview.md",
+        "docs/architecture/decisions/0003-safe-uninstall.md"
+      ],
+      "reviewBatch": "R1",
+      "risk": "high",
+      "owner": "primary-ai",
+      "verificationStatus": "pass",
+      "reviewStatus": "pass",
+      "evidence": [
+        "557d3eac-566e-4c71-ad12-205607c72ba0",
+        "0b756369-5de2-4aa9-9cbe-7bab35501250"
+      ],
+      "deferralApproval": null,
+      "verificationSource": {
+        "digest": "f5c95d6e3b98612e2a8b494a5cc7cacf5792bc634907a9db94cc885f29e62fd8",
+        "document": ".ai-harness/work-items/ITER-REPO-AUDIT-FIXES-20261120/snapshots/f5c95d6e3b98612e2a8b494a5cc7cacf5792bc634907a9db94cc885f29e62fd8.json"
+      },
+      "reviewSource": {
+        "digest": "f5c95d6e3b98612e2a8b494a5cc7cacf5792bc634907a9db94cc885f29e62fd8",
+        "document": ".ai-harness/work-items/ITER-REPO-AUDIT-FIXES-20261120/snapshots/f5c95d6e3b98612e2a8b494a5cc7cacf5792bc634907a9db94cc885f29e62fd8.json"
+      }
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "CI 范围、安装数据及证据完整性",
+      "risk": "high",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": true
+    }
+  ],
+  "createdAt": "2026-11-20T02:51:35.422Z",
+  "updatedAt": "2026-11-20T03:30:49.121Z",
+  "revision": 4
+}

@@ -1,0 +1,392 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 4,
+  "id": "ITER-REPO-AUDIT-FIXES-20261120",
+  "type": "ITERATION",
+  "title": "修复整库复审中的十项问题",
+  "status": "DONE",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/iteration.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户明确要求全部修复，并授权本地必要可逆修改及校验"
+  },
+  "input": {
+    "references": [
+      "用户要求全部修复 ANALYSIS-REPO-AUDIT-20261120 的十项问题"
+    ],
+    "acceptance": [
+      "CI 按真实变更基准精确审计，新旧交付范围不能复用，显式的单文件 Markdown 内容编辑可由常规复核处理，错误参数失败",
+      "升级按旧收据哈希更新或备份并退役文件，用户修改受到保护，空文档拒绝建基线",
+      "历史评测产物可逐字节恢复并审计，运行及评测减少重复工作，旧统计可审计且新统计正确"
+    ],
+    "nonGoals": [],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": null,
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "main@22787ff，Windows Node v22.20.0。本轮前无产品差异，现存 4 个未跟踪分析项保留。上轮记录 CI 参数错误实测与本地检查中位 5.4 秒。"
+    ],
+    "completedAt": "2026-11-20T02:51:35.004Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "22787ff8069767451c4b4892952819623bd7c8e6",
+      "dirty": false,
+      "changedFiles": [],
+      "fingerprints": {},
+      "source": {
+        "digest": "8a89d139dfd6464bfeb3b63540efaaea564880405302e165e6e392d2eb18976b",
+        "document": ".ai-harness/work-items/ITER-REPO-AUDIT-FIXES-20261120/snapshots/8a89d139dfd6464bfeb3b63540efaaea564880405302e165e6e392d2eb18976b.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": ".ai-harness/work-items/ITER-REPO-AUDIT-FIXES-20261120/solution.md",
+    "evidence": [
+      "按十项根因分别修复，守住权限、证据和安装数据边界。"
+    ],
+    "completedAt": "2026-11-20T02:51:35.264Z"
+  },
+  "database": {
+    "impact": "none",
+    "status": "not-applicable",
+    "document": null,
+    "evidence": [
+      "改动为 Git 提交校验、本地文件收据、状态校验和评测统计，不涉及数据库。"
+    ],
+    "completedAt": "2026-11-20T02:51:35.343Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/ITER-REPO-AUDIT-FIXES-20261120/plan.json",
+    "approved": true,
+    "approvalRef": "用户授权修复并验证全部审查项，同一验证范围内使用已允许的测试命令"
+  },
+  "verification": {
+    "status": "pass",
+    "evidence": [
+      "c46c6f99-362d-4187-9163-a8195717f651"
+    ],
+    "stages": [],
+    "source": {
+      "digest": "f5c95d6e3b98612e2a8b494a5cc7cacf5792bc634907a9db94cc885f29e62fd8",
+      "document": ".ai-harness/work-items/ITER-REPO-AUDIT-FIXES-20261120/snapshots/f5c95d6e3b98612e2a8b494a5cc7cacf5792bc634907a9db94cc885f29e62fd8.json"
+    }
+  },
+  "review": {
+    "status": "pass",
+    "evidence": [
+      "59f38ebf-9851-4c7b-bd91-1edae8096633"
+    ],
+    "independent": true,
+    "source": {
+      "digest": "f5c95d6e3b98612e2a8b494a5cc7cacf5792bc634907a9db94cc885f29e62fd8",
+      "document": ".ai-harness/work-items/ITER-REPO-AUDIT-FIXES-20261120/snapshots/f5c95d6e3b98612e2a8b494a5cc7cacf5792bc634907a9db94cc885f29e62fd8.json"
+    }
+  },
+  "acceptance": {
+    "status": "pass",
+    "evidence": [
+      "701f8cf2-8d2d-495f-8858-2fe1e6d896a9"
+    ],
+    "source": {
+      "digest": "f5c95d6e3b98612e2a8b494a5cc7cacf5792bc634907a9db94cc885f29e62fd8",
+      "document": ".ai-harness/work-items/ITER-REPO-AUDIT-FIXES-20261120/snapshots/f5c95d6e3b98612e2a8b494a5cc7cacf5792bc634907a9db94cc885f29e62fd8.json"
+    }
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "pass",
+    "evidence": [
+      "3db6e31e-7ffc-4a07-819e-22fe308be921"
+    ]
+  },
+  "blocked": null,
+  "delivery": {
+    "source": {
+      "digest": "f5c95d6e3b98612e2a8b494a5cc7cacf5792bc634907a9db94cc885f29e62fd8",
+      "document": ".ai-harness/work-items/ITER-REPO-AUDIT-FIXES-20261120/snapshots/f5c95d6e3b98612e2a8b494a5cc7cacf5792bc634907a9db94cc885f29e62fd8.json"
+    },
+    "baseline": {
+      "digest": "8a89d139dfd6464bfeb3b63540efaaea564880405302e165e6e392d2eb18976b",
+      "document": ".ai-harness/work-items/ITER-REPO-AUDIT-FIXES-20261120/snapshots/8a89d139dfd6464bfeb3b63540efaaea564880405302e165e6e392d2eb18976b.json"
+    },
+    "baselineAt": "2026-11-20T02:51:35.004Z",
+    "ownedChanges": [
+      {
+        "path": ".ai-harness/src/checker.mjs",
+        "before": "100644:8356c8894a0e8acab48b299f7f1f8cce518f4a93",
+        "after": "100644:0454c77d731f684c3f7bb227c4f4901deb0ebcf1"
+      },
+      {
+        "path": ".ai-harness/src/cli.mjs",
+        "before": "100644:486b8fc47d948df223201a8bfca228872f75204e",
+        "after": "100644:1baff1a9b636165e29177640d43ff0518d6628aa"
+      },
+      {
+        "path": ".ai-harness/src/constants.mjs",
+        "before": "100644:10796806d0bda09077090b636a6d72e27631ade6",
+        "after": "100644:6e14862cc72f9826e078516a0b7f5e221c4b995a"
+      },
+      {
+        "path": ".ai-harness/src/filesystem.mjs",
+        "before": "100644:76f74fa0cc99a910bd0cb4629c5cdec89df44533",
+        "after": "100644:b769bee3bd6ad4178b476fb01e11b801e609e371"
+      },
+      {
+        "path": ".ai-harness/src/installer.mjs",
+        "before": "100644:370bb02544b59f445574c0c27ac5dc534fd53e2a",
+        "after": "100644:83f8815218949dd5a824c3012435b951f8d994ae"
+      },
+      {
+        "path": ".ai-harness/src/scope.mjs",
+        "before": "100644:0b1c77445abe9451239090867c87c001840858d3",
+        "after": "100644:e7a131ad2090fd3a4d1af358e57710d6e3e50838"
+      },
+      {
+        "path": ".ai-harness/src/validator.mjs",
+        "before": "100644:b2641937255b525ffeab62ae139dcb844eee0d30",
+        "after": "100644:bebe8b5999428db1f38d9e50043132c366b83a74"
+      },
+      {
+        "path": ".ai-harness/src/verification.mjs",
+        "before": "100644:f73f26378d9e99e67434492ef45aeba6c2b2bd58",
+        "after": "100644:3564bfd6d5200854b11fb953885a46e949de8cff"
+      },
+      {
+        "path": ".ai-harness/src/workflow.mjs",
+        "before": "100644:fa67b97148a9eddb3a127903182151222258825a",
+        "after": "100644:6767a13e3d21861d8ec452f1ffaf2004f4bc0a66"
+      },
+      {
+        "path": ".ai-harness/tests/checker.test.mjs",
+        "before": "100644:3643b8cd86375760262163165a4da20c059dfe3f",
+        "after": "100644:5dd39b9a5e39e25ca32b69242cf6c07da7929ec0"
+      },
+      {
+        "path": ".ai-harness/tests/ci-matrix.test.mjs",
+        "before": "100644:3f9edfc06bffe7781ce825a6d292c6d83fd8b659",
+        "after": "100644:21fa95f9ac2ca744f70427762f6aacca773e15fe"
+      },
+      {
+        "path": ".ai-harness/tests/installer.test.mjs",
+        "before": "100644:8bf03fca89ca567fa8205bfd3ec53937dd6b4a83",
+        "after": "100644:e61893053603f464531c291fa1dee84eb04d5b3f"
+      },
+      {
+        "path": ".ai-harness/tests/reliability.test.mjs",
+        "before": "100644:aff704f964d17efe704c537dc98d94f7a095bc23",
+        "after": "100644:1874e769c2699b9d565b1d3577011f37b930b222"
+      },
+      {
+        "path": ".github/workflows/ai-harness.yml",
+        "before": "100644:de9b125336b72736ad7f5ae429c6cc811066b961",
+        "after": "100644:f8ebeac09c1d134d0b63b5c10f9d5757871f2cc0"
+      },
+      {
+        "path": ".github/workflows/source-tests.yml",
+        "before": "100644:d5ca3d9621b66429c6d9e81aff5927b19d58f2f5",
+        "after": "100644:eef7b65194028af26398d2c9547e6f5a25c5a5fc"
+      },
+      {
+        "path": "README.md",
+        "before": "100644:2776297fb9965dd50f4c27b02fd6613ec39b91c3",
+        "after": "100644:09a0a57d1de70fd55ed79357b4383f9333dddb43"
+      },
+      {
+        "path": "benchmarks/README.md",
+        "before": "100644:d76b7d73191356e35b920ae1a33bc07f65fbed9d",
+        "after": "100644:c3402939390ddd6b728b7bfe1cfd79ce31732d22"
+      },
+      {
+        "path": "benchmarks/archive-manifest.json",
+        "before": null,
+        "after": "100644:148ef33ebc7654fae4198c3de9b82a30a3e53c3a"
+      },
+      {
+        "path": "benchmarks/audit.mjs",
+        "before": "100644:3d08dafe3b6704455941ae5c1ea7618e12bb018b",
+        "after": "100644:395b6771c3942fc5f9204686290339e1bcf0710d"
+      },
+      {
+        "path": "benchmarks/codex-container.mjs",
+        "before": "100644:79a63a298b31dae984e9f8480188a4c5a6246e51",
+        "after": "100644:b863f8cbc42ca28b2389407eeb54b244b45ccfd3"
+      },
+      {
+        "path": "benchmarks/execution.mjs",
+        "before": "100644:6ae00de15f5d6c4451bb2ce6e5ef2e7af41218f8",
+        "after": "100644:8c6ea28cb1d3e90be6cfb21b83edc864748d2de0"
+      },
+      {
+        "path": "benchmarks/experiment.mjs",
+        "before": "100644:be2102be2087e6324294f476b571e51e50536fb3",
+        "after": "100644:0d9e94e1dd97aaebb60a9cafc36f0ca2d8fd449e"
+      },
+      {
+        "path": "benchmarks/tests/resume.test.mjs",
+        "before": "100644:5eea34a095916964693d73b6518106f6c2a604f6",
+        "after": "100644:357dd35a911136796cfb2a2f3bfc80b778ac87ce"
+      },
+      {
+        "path": "benchmarks/tests/runner.test.mjs",
+        "before": "100644:acbac0ca829ef68fd4c90d9085335fa1e1df7154",
+        "after": "100644:03331b1c10a2b2d409affa7abf9a7ca14e238e6a"
+      },
+      {
+        "path": "docs/architecture/decisions/0003-safe-uninstall.md",
+        "before": "100644:9a69a95cac27aab83789bb6de273c30153704403",
+        "after": "100644:f97ffcd945f61c31dc6921d1670fe283a0c4dc25"
+      },
+      {
+        "path": "docs/architecture/overview.md",
+        "before": "100644:36dc641407e5c9e17a80d501048331c101c2ce70",
+        "after": "100644:3d43a1cebb9b74dd585ed57c7a76958b2d23c475"
+      },
+      {
+        "path": "docs/guides/getting-started.md",
+        "before": "100644:502897e55b9f6c70141f31de10bb0e5bdf233418",
+        "after": "100644:eeaa05c6b55a0d1bbf45cd4ac00cafcf992798e6"
+      },
+      {
+        "path": "docs/guides/usage.md",
+        "before": "100644:ea5ed30955b2e6d837811b811f950bf9ceb439b6",
+        "after": "100644:48c8ebdacb30bad00e1bebaefddb7b700c621bd3"
+      },
+      {
+        "path": "docs/reports/model-comparison.md",
+        "before": "100644:4cf2c5998dae8664fddec053ea2ac98bc9aab608",
+        "after": "100644:2584ff98b5570eb76b828f681ecdf373a87127c7"
+      }
+    ],
+    "planDigest": "58ad850b4e0eb43552f665609b22bc6fdb67c4dc2131c960aa6a4392ab2cf28a",
+    "at": "2026-11-20T03:30:52.525Z",
+    "head": "22787ff8069767451c4b4892952819623bd7c8e6"
+  },
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-11-20T02:51:34.694Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-11-20T02:51:34.825Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-11-20T02:51:35.165Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-11-20T02:51:35.751Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-11-20T02:51:35.833Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-11-20T03:00:39.353Z",
+      "reason": "将八个已跟踪实验目录的可验证冷归档及归档测试所需 CI 配置加入明确写入范围",
+      "action": "replan",
+      "revision": 2
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-11-20T03:00:39.795Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-11-20T03:00:39.905Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-11-20T03:14:25.404Z",
+      "reason": "Runtime 策略不允许运行评测包装脚本，V2 改为该脚本执行的等价 node --test 文件清单，保持权限策略",
+      "action": "replan",
+      "revision": 3
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-11-20T03:14:25.874Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-11-20T03:14:25.986Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "IMPLEMENTING",
+      "at": "2026-11-20T03:26:21.142Z",
+      "reason": "R1 发现 CI 必须核对基准祖先历史，阻止已从基准树移除的工作项编号再次授权变更",
+      "action": "reopen",
+      "revision": 4
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "VERIFYING",
+      "at": "2026-11-20T03:30:49.206Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "VERIFYING",
+      "to": "CODE_REVIEW",
+      "at": "2026-11-20T03:30:49.936Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "CODE_REVIEW",
+      "to": "READY_FOR_ACCEPTANCE",
+      "at": "2026-11-20T03:30:50.607Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "READY_FOR_ACCEPTANCE",
+      "to": "DONE",
+      "at": "2026-11-20T03:30:52.616Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-11-20T02:51:34.694Z",
+  "updatedAt": "2026-11-20T03:30:52.616Z"
+}

@@ -10,11 +10,11 @@ import {
 import { getGitBaseline } from "./git.mjs";
 import { exists, readJson } from "./filesystem.mjs";
 import { inspectManagedBlock, normalizeManagedBody } from "./managed-block.mjs";
-import { collectPlanErrors } from "./validator.mjs";
+import { collectPlanErrors, collectProgressErrors } from "./validator.mjs";
 import { collectScopeErrors } from "./scope.mjs";
 import { itemPolicyFiles } from "./policy-routing.mjs";
 import { assertArtifacts } from "./artifacts.mjs";
-import { loadConfig, loadPlan, loadWorkItem, validateWorkItem, workItemPaths } from "./workflow.mjs";
+import { loadConfig, loadPlan, loadWorkItem, workItemPaths } from "./workflow.mjs";
 
 const CHANGED_FILES_PREVIEW_LIMIT = 50;
 
@@ -176,7 +176,7 @@ function stateRequiresCompletePlan(status) {
   return ["PLANNED", "IMPLEMENTING", "VERIFYING", "CODE_REVIEW", "READY_FOR_ACCEPTANCE", "DONE"].includes(status);
 }
 
-export async function collectEvidenceErrors(root, item, plan) {
+async function inspectEvidence(root, item, plan) {
   const errors = [];
   const paths = await workItemPaths(root, item.id);
   let raw = "";
@@ -197,7 +197,7 @@ export async function collectEvidenceErrors(root, item, plan) {
       errors.push(`evidence.jsonl:${index + 1} 不是有效 JSON：${error.message}`);
       continue;
     }
-    if (event.schemaVersion !== 1 || !event.id?.trim() || event.workItemId !== item.id) {
+    if (event?.schemaVersion !== 1 || typeof event.id !== "string" || !event.id.trim() || event.workItemId !== item.id) {
       errors.push(`evidence.jsonl:${index + 1} 基本结构或 workItemId 无效。`);
       continue;
     }
@@ -279,10 +279,14 @@ export async function collectEvidenceErrors(root, item, plan) {
       }
     }
   }
-  return errors;
+  return { errors, events };
 }
 
-export async function checkProject(root, { ci = false } = {}) {
+export async function collectEvidenceErrors(root, item, plan) {
+  return (await inspectEvidence(root, item, plan)).errors;
+}
+
+export async function checkProject(root, { ci = false, base = null } = {}) {
   const doctor = await doctorProject(root, { requireInitialized: true });
   const errors = [...doctor.errors];
   const warnings = [...doctor.warnings];
@@ -290,7 +294,8 @@ export async function checkProject(root, { ci = false } = {}) {
   const policyIndex = await readJson(path.join(root, ".ai-harness", "policies", "index.json"));
   const records = [];
   const items = [];
-  for (const id of await workItemIds(root, config)) {
+  const ids = await workItemIds(root, config);
+  for (const id of ids) {
     try {
       const item = await loadWorkItem(root, id);
       items.push(item);
@@ -299,10 +304,10 @@ export async function checkProject(root, { ci = false } = {}) {
         errors.push(`${id}: policyFiles 与工作类型/flags 的确定性路由不一致。`);
       }
       const plan = await loadPlan(root, id, { optional: true });
-      const progressErrors = await validateWorkItem(root, id);
+      const evidence = await inspectEvidence(root, item, plan);
+      errors.push(...evidence.errors.map((message) => `${id}: ${message}`));
+      const progressErrors = await collectProgressErrors(root, item, plan, { events: evidence.events });
       errors.push(...progressErrors.map((message) => `${id}: ${message}`));
-      const evidenceErrors = await collectEvidenceErrors(root, item, plan);
-      errors.push(...evidenceErrors.map((message) => `${id}: ${message}`));
       if (plan) {
         const planErrors = collectPlanErrors(plan, id, { requireComplete: item.plan.approved || stateRequiresCompletePlan(item.status) });
         errors.push(...planErrors.map((message) => `${id}: ${message}`));
@@ -315,7 +320,7 @@ export async function checkProject(root, { ci = false } = {}) {
       if (error.details?.errors) errors.push(...error.details.errors.map((message) => `${id}: ${message}`));
     }
   }
-  const scope = await collectScopeErrors(root, records, items);
+  const scope = await collectScopeErrors(root, records, items, { base });
   errors.push(...scope.errors);
   warnings.push(...scope.warnings);
   if (ci) {
@@ -330,8 +335,9 @@ export async function checkProject(root, { ci = false } = {}) {
     warnings: [...new Set(warnings)],
     details: {
       ...doctor.details,
-      workItems: await workItemIds(root, config),
+      workItems: ids,
       changedFiles: scope.changedFiles,
+      ...(base !== null ? { base, trivialDoc: scope.trivialDoc } : {}),
       allowedScopes: scope.scopes,
     },
   };

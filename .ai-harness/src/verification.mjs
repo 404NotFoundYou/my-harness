@@ -147,7 +147,9 @@ export async function verificationReport(root, item, plan, { taskId = null, snap
 
 export async function assertVerification(root, item, plan, options = {}) {
   assertAcceptanceCoverage(item, plan);
-  const report = await verificationReport(root, item, plan, options);
+  const { events = null, readSnapshot = (reference) => loadSnapshot(root, reference) } = options;
+  const evidence = events ?? await readEvidence(root, item.id);
+  const report = await verificationReport(root, item, plan, { ...options, events: evidence });
   const taskIds = [...new Set([
     ...(options.taskId ? [options.taskId] : []),
     ...report.missing.map((check) => check.taskId),
@@ -166,16 +168,17 @@ export async function assertVerification(root, item, plan, options = {}) {
     ...(next ? { next } : {}),
   });
   for (const event of report.successful) {
-    await loadSnapshot(root, event.command.source);
-    await loadSnapshot(root, event.command.sourceAfter);
+    await readSnapshot(event.command.source);
+    await readSnapshot(event.command.sourceAfter);
   }
-  for (const event of await readEvidence(root, item.id)) {
+  for (const event of evidence) {
     if ((event.revision || 1) === (item.revision || 1) && event.status === "pass") await assertArtifacts(root, item.id, event.artifacts);
   }
   return report;
 }
 
 export async function assertCommandEvidence(root, item, plan, commandId, options = {}) {
+  const { readSnapshot = (reference) => loadSnapshot(root, reference) } = options;
   const events = options.events || await readEvidence(root, item.id);
   const current = options.snapshot || await sourceSnapshot(root);
   const index = events.findIndex((candidate) => candidate.id === commandId);
@@ -204,19 +207,19 @@ export async function assertCommandEvidence(root, item, plan, commandId, options
       availableCommands: report.commands,
     });
   }
-  await loadSnapshot(root, event.command.source);
-  await loadSnapshot(root, event.command.sourceAfter);
+  await readSnapshot(event.command.source);
+  await readSnapshot(event.command.sourceAfter);
   return event;
 }
 
-export async function assertVerificationStages(root, item, plan, snapshot) {
-  const events = await readEvidence(root, item.id);
+export async function assertVerificationStages(root, item, plan, snapshot, { events = null, readSnapshot = (reference) => loadSnapshot(root, reference) } = {}) {
+  events ??= await readEvidence(root, item.id);
   const report = await verificationReport(root, item, plan, { snapshot, events });
   invariant(report.missingStages.length === 0, "STALE_VERIFICATION_STAGE", "验证阶段必须对应同一代码和计划版本。", { missing: report.missingStages });
   for (const stage of item.verification.stages || []) {
     if (!requiredVerificationStages(item).includes(stage.stage)) continue;
-    await loadSnapshot(root, stage.source);
-    if (isRunBackedStage(stage.stage)) await assertCommandEvidence(root, item, plan, stage.command, { snapshot, events });
+    await readSnapshot(stage.source);
+    if (isRunBackedStage(stage.stage)) await assertCommandEvidence(root, item, plan, stage.command, { snapshot, events, readSnapshot });
   }
 }
 

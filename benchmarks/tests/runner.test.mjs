@@ -1,14 +1,14 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import path from "node:path";
-import { spawnSync } from "node:child_process";
+import { execFileSync, spawnSync } from "node:child_process";
 import { syncBuiltinESMExports } from "node:module";
 import { fileURLToPath } from "node:url";
 import { mkdir, mkdtemp, readFile, readdir, realpath, rm, writeFile } from "node:fs/promises";
 import fsPromises from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { tasks } from "../tasks.mjs";
-import { budget, cleanupSandbox, createParticipant, gradeCandidate, groups, inspectChanges, parseGrade, participantPrompt, runCase, summarize } from "../runner.mjs";
+import { budget, cleanupSandbox, createParticipant, gradeCandidate, groups, hash, inspectChanges, parseGrade, participantPrompt, runCase, summarize } from "../runner.mjs";
 import { createToolTiming, toolCategory } from "../timing.mjs";
 import { clientArguments, clientDriver, createClientEventReader, readProtocolTranscript } from "../client-drivers.mjs";
 import { experimentPlan, runExperiment } from "../experiment.mjs";
@@ -348,13 +348,46 @@ test("dry-run reveals the frozen call budget without invoking a client or writin
   } finally { await rm(directory, { recursive: true, force: true }); }
 });
 
-test("historical nine-sample protocols retain their original statistics and evidence", async () => {
-  for (const round of ["pilot", "followup"]) {
-    const result = await auditExperiment(path.join(sourceRoot, ".ai-harness/work-items/MODEL-BENCHMARK-001", round));
-    assert.equal(result.samples, 9);
-    assert.equal(result.mode, "real");
-    assert.equal(result.groups.find(group => group.group === "weak-baseline").completed, 3);
-    assert.equal(result.groups.find(group => group.group === "weak-harness").completed, 1);
+test("archived experiments restore byte for byte and retain their original audit results", async () => {
+  const manifest = JSON.parse(await readFile(path.join(sourceRoot, "benchmarks/archive-manifest.json"), "utf8"));
+  const restored = await mkdtemp(path.join(tmpdir(), "ai-harness-archive-test-"));
+  const archive = path.join(restored, "experiments.tar");
+  async function listFiles(directory, prefix = "") {
+    const files = [];
+    for (const entry of await readdir(path.join(directory, prefix), { withFileTypes: true })) {
+      const file = prefix + entry.name;
+      if (entry.isDirectory()) files.push(...await listFiles(directory, `${file}/`));
+      else {
+        assert.ok(entry.isFile(), `Invalid archive entry: ${file}`);
+        files.push(file);
+      }
+    }
+    return files;
+  }
+  try {
+    execFileSync("git", ["archive", "--format=tar", `--output=${archive}`, manifest.commit, "--",
+      ...manifest.experiments.map(entry => entry.directory)], { cwd: sourceRoot, windowsHide: true, timeout: 30000 });
+    execFileSync("tar", ["-xf", archive, "-C", restored], { windowsHide: true, timeout: 30000 });
+    for (const entry of manifest.experiments) {
+      const directory = path.join(restored, entry.directory);
+      const filenames = (await listFiles(directory)).sort();
+      const contents = await Promise.all(filenames.map(file => readFile(path.join(directory, file))));
+      assert.equal(filenames.length, entry.files, entry.directory);
+      assert.equal(contents.reduce((total, bytes) => total + bytes.length, 0), entry.bytes, entry.directory);
+      assert.equal(hash(JSON.stringify(filenames.map((file, index) => [file, hash(contents[index])]))), entry.sha256, entry.directory);
+      const result = await auditExperiment(directory);
+      assert.equal(result.valid, true);
+      assert.equal(result.mode, "real");
+      if (entry.directory.includes("/MODEL-BENCHMARK-001/")) {
+        assert.equal(result.samples, 9);
+        assert.equal(result.groups.find(group => group.group === "weak-baseline").completed, 3);
+        assert.equal(result.groups.find(group => group.group === "weak-harness").completed, 1);
+      } else assert.equal(result.samples, 6);
+    }
+  } finally {
+    assert.equal(path.dirname(restored), path.resolve(tmpdir()));
+    assert.ok(path.basename(restored).startsWith("ai-harness-archive-test-"));
+    await rm(restored, { recursive: true, force: true });
   }
 });
 

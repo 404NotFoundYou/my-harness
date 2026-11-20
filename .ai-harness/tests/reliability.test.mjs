@@ -138,6 +138,60 @@ test("completed scopes do not authorize a later task's unrelated modifications",
   } finally { await cleanup(root); }
 });
 
+test("commit-range CI can accept a declared doc edit but cannot replay an old delivery", async () => {
+  const root = await createInstalledProject();
+  try {
+    const doc = path.join(root, "README.md");
+    const product = path.join(root, "sample.mjs");
+    await writeFile(doc, "# Initial wording\n");
+    git(root, ["add", "README.md"]);
+    git(root, ["commit", "-m", "documentation baseline"]);
+    const before = git(root, ["rev-parse", "HEAD"]).stdout.trim();
+    await beginWorkItem(root, options("DELIVERY"));
+    await writeFile(product, "const delivered = true;\n");
+    const verified = await run(root, "DELIVERY");
+    await finishWorkItem(root, "DELIVERY", verdict(verified.id));
+    git(root, ["add", "."]);
+    git(root, ["commit", "-m", "verified product delivery"]);
+    const delivered = git(root, ["rev-parse", "HEAD"]).stdout.trim();
+    assert.equal((await checkProject(root, { ci: true, base: before })).ok, true);
+
+    await writeFile(doc, "# Corrected wording\n");
+    git(root, ["add", "README.md"]);
+    git(root, ["commit", "-m", "correct wording", "-m", "Harness-Trivial-Doc: README.md"]);
+    const checked = await checkProject(root, { ci: true, base: delivered });
+    assert.equal(checked.ok, true);
+    assert.equal(checked.details.trivialDoc, "README.md");
+
+    await rm(product);
+    git(root, ["add", "-u"]);
+    git(root, ["commit", "-m", "fixture returns the file to its state before delivery"]);
+    const base = git(root, ["rev-parse", "HEAD"]).stdout.trim();
+    await writeFile(product, "const delivered = true;\n");
+    const state = path.join(root, ".ai-harness/work-items/DELIVERY/state.json");
+    await writeFile(state, (await readFile(state, "utf8")) + "\n");
+    git(root, ["add", "."]);
+    git(root, ["commit", "-m", "replay previously delivered bytes and touch the old record"]);
+    const replayed = await checkProject(root, { ci: true, base });
+    assert.equal(replayed.ok, false);
+    assert.deepEqual(replayed.details.changedFiles, ["sample.mjs"]);
+
+    const historicalItem = ".ai-harness/work-items/DELIVERY";
+    git(root, ["rm", "-r", "--cached", "--", "sample.mjs", historicalItem]);
+    git(root, ["commit", "-m", "fixture archives prior product and work item"]);
+    const archivedBase = git(root, ["rev-parse", "HEAD"]).stdout.trim();
+    git(root, ["add", "--", "sample.mjs", historicalItem]);
+    git(root, ["commit", "-m", "fixture restores archived files"]);
+    const restored = await checkProject(root, { ci: true, base: archivedBase });
+    assert.equal(restored.ok, false, "an ID already present in the base history cannot certify a new delivery");
+    assert.deepEqual(restored.details.changedFiles, ["sample.mjs"]);
+
+    const shallow = path.join(root, "shallow-fixture");
+    git(root, ["clone", "--no-local", "--depth=2", root, shallow]);
+    await assert.rejects(() => checkProject(shallow, { ci: true, base: archivedBase }), { code: "CI_HISTORY_REQUIRED" });
+  } finally { await cleanup(root); }
+});
+
 test("analysis records are valid control changes without authorizing product writes", async () => {
   const root = await createInstalledProject();
   try {

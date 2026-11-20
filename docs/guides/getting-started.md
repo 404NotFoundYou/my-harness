@@ -234,7 +234,7 @@ Set-Location D:\Projects\your-project
 node .ai-harness/bin/harness.mjs doctor --json
 ```
 
-升级时不要再次运行 `init`。重复安装不会重复追加托管块，目标项目自己的规则也不会传播到其他项目。
+安装会根据旧收据的文件哈希更新原版文件。新版已退役且目标未修改的文件在预检中显示为 `remove-retired`，执行时移入备份。已修改的退役文件显示为冲突，必须先处理这些文件，`--force` 也无法覆盖。升级时不要再次运行 `init`。重复安装不会重复追加托管块，目标项目自己的规则也不会传播到其他项目。
 
 ## 10. 卸载 Harness
 

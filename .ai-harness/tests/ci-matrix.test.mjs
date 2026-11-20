@@ -14,7 +14,8 @@ test("CI keeps every supported Node line in Ubuntu and Windows coverage", async 
     .map(([, os, version]) => `${os}:${version}`).sort(),
   ["ubuntu-latest:20", "ubuntu-latest:22", "ubuntu-latest:24", "windows-latest:20", "windows-latest:22", "windows-latest:24"]);
   assert.match(runtime, /run: node \.ai-harness\/tests\/run\.mjs/);
-  assert.match(runtime, /run: node \.ai-harness\/bin\/harness\.mjs check --ci --json/);
+  assert.match(runtime, /node \.ai-harness\/bin\/harness\.mjs check --ci --base "\$HARNESS_BASE" --json/);
+  assert.match(runtime, /github\.event\.pull_request\.base\.sha \|\| github\.event\.before \|\| inputs\.base/);
   assert.match(source, /run: node benchmarks\/tests\/run\.mjs/);
   assert.match(source, /run: node \.ai-harness\/tests\/run\.mjs/);
 });

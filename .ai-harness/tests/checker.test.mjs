@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { spawnSync } from "node:child_process";
 import { mkdir, mkdtemp, readFile, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
@@ -170,4 +171,68 @@ test("check rejects policy files that do not match type and flags", async () => 
   } finally {
     await cleanup(root);
   }
+});
+
+
+test("CI checks the selected commit range even when the checkout is clean", async () => {
+  const root = await createInstalledProject();
+  try {
+    const base = git(root, ["rev-parse", "HEAD"]).stdout.trim();
+    await writeFile(path.join(root, "unexpected.mjs"), "export const changed = true;\n");
+    git(root, ["add", "unexpected.mjs"]);
+    git(root, ["commit", "-m", "untracked-by-work-item change"]);
+    const result = await checkProject(root, { ci: true, base });
+    assert.equal(result.ok, false);
+    assert.deepEqual(result.details.changedFiles, ["unexpected.mjs"]);
+  } finally { await cleanup(root); }
+});
+
+test("CI accepts a declared existing-doc edit and binds it to the committed content", async () => {
+  const root = await createInstalledProject();
+  try {
+    const file = path.join(root, "README.md");
+    await writeFile(file, "# Orginal wording\n");
+    git(root, ["add", "README.md"]);
+    git(root, ["commit", "-m", "docs baseline"]);
+    const base = git(root, ["rev-parse", "HEAD"]).stdout.trim();
+    await writeFile(file, "# Original wording\n");
+    git(root, ["add", "README.md"]);
+    git(root, ["commit", "-m", "docs typo", "-m", "Harness-Trivial-Doc: README.md"]);
+    const allowed = await checkProject(root, { ci: true, base });
+    assert.equal(allowed.ok, true);
+    assert.equal(allowed.details.trivialDoc, "README.md");
+    await writeFile(file, "# Later change\n");
+    assert.equal((await checkProject(root, { ci: true, base })).ok, false);
+    await writeFile(file, "# Original wording\n");
+    await writeFile(path.join(root, "unexpected.mjs"), "export {};\n");
+    assert.equal((await checkProject(root, { ci: true, base })).ok, false);
+  } finally { await cleanup(root); }
+});
+
+test("invalid check flags cannot silently select a less strict check", async () => {
+  const root = await createInstalledProject();
+  try {
+    for (const args of [["--c1"], ["--ci=tru"], ["--ci", "--ci=false"], ["--base", "HEAD"]]) {
+      const run = spawnSync(process.execPath, [path.join(root, ".ai-harness/bin/harness.mjs"), "check", ...args, "--json"], { cwd: root, encoding: "utf8" });
+      assert.equal(run.status, 1, args.join(" "));
+      assert.match(run.stderr, /UNKNOWN_OPTION|INVALID_OPTION/);
+    }
+  } finally { await cleanup(root); }
+});
+
+test("blank required documentation cannot establish a new project baseline", async () => {
+  const root = await createInstalledProject({ mode: "new", docsMode: "default" });
+  try {
+    await createWorkItemState(root, {
+      id: "BLANK-DOC", type: "NEW_PROJECT", title: "Initial product", references: ["request"], acceptance: ["baseline is populated"],
+      authorizationMode: "autonomous", authorizationSource: "fixture", architectureSource: "HUMAN_PROVIDED", architectureApproval: "fixture",
+    });
+    await transitionWorkItem(root, "BLANK-DOC", "BASELINING");
+    for (const file of ["docs/README.md", "docs/product/overview.md", "docs/architecture/overview.md",
+      "docs/versions/v1.0/README.md", "docs/versions/v1.0/STATE.md"]) {
+      await writeFile(path.join(root, file), "# Filled baseline\n");
+    }
+    await writeFile(path.join(root, "README.md"), "  \n");
+    await assert.rejects(() => completeBaseline(root, "BLANK-DOC", { evidence: ["first version"] }), /README\.md/);
+  } finally { await cleanup(root); }
 });

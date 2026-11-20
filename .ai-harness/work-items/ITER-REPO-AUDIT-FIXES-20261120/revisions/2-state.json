@@ -1,0 +1,160 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 2,
+  "id": "ITER-REPO-AUDIT-FIXES-20261120",
+  "type": "ITERATION",
+  "title": "修复整库复审中的十项问题",
+  "status": "IMPLEMENTING",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/iteration.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户明确要求全部修复，并授权本地必要可逆修改及校验"
+  },
+  "input": {
+    "references": [
+      "用户要求全部修复 ANALYSIS-REPO-AUDIT-20261120 的十项问题"
+    ],
+    "acceptance": [
+      "CI 按真实变更基准精确审计，新旧交付范围不能复用，显式的单文件 Markdown 内容编辑可由常规复核处理，错误参数失败",
+      "升级按旧收据哈希更新或备份并退役文件，用户修改受到保护，空文档拒绝建基线",
+      "历史评测产物可逐字节恢复并审计，运行及评测减少重复工作，旧统计可审计且新统计正确"
+    ],
+    "nonGoals": [],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": null,
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "main@22787ff，Windows Node v22.20.0。本轮前无产品差异，现存 4 个未跟踪分析项保留。上轮记录 CI 参数错误实测与本地检查中位 5.4 秒。"
+    ],
+    "completedAt": "2026-11-20T02:51:35.004Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "22787ff8069767451c4b4892952819623bd7c8e6",
+      "dirty": false,
+      "changedFiles": [],
+      "fingerprints": {},
+      "source": {
+        "digest": "8a89d139dfd6464bfeb3b63540efaaea564880405302e165e6e392d2eb18976b",
+        "document": ".ai-harness/work-items/ITER-REPO-AUDIT-FIXES-20261120/snapshots/8a89d139dfd6464bfeb3b63540efaaea564880405302e165e6e392d2eb18976b.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": ".ai-harness/work-items/ITER-REPO-AUDIT-FIXES-20261120/solution.md",
+    "evidence": [
+      "按十项根因分别修复，守住权限、证据和安装数据边界。"
+    ],
+    "completedAt": "2026-11-20T02:51:35.264Z"
+  },
+  "database": {
+    "impact": "none",
+    "status": "not-applicable",
+    "document": null,
+    "evidence": [
+      "改动为 Git 提交校验、本地文件收据、状态校验和评测统计，不涉及数据库。"
+    ],
+    "completedAt": "2026-11-20T02:51:35.343Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/ITER-REPO-AUDIT-FIXES-20261120/plan.json",
+    "approved": true,
+    "approvalRef": "用户要求修复整库审查全部十项，涵盖原审查明确提出的可恢复历史归档"
+  },
+  "verification": {
+    "status": "pending",
+    "evidence": [],
+    "stages": []
+  },
+  "review": {
+    "status": "pending",
+    "evidence": [],
+    "independent": false
+  },
+  "acceptance": {
+    "status": "pending",
+    "evidence": []
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "pending",
+    "evidence": []
+  },
+  "blocked": null,
+  "delivery": null,
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-11-20T02:51:34.694Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-11-20T02:51:34.825Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-11-20T02:51:35.165Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-11-20T02:51:35.751Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-11-20T02:51:35.833Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-11-20T03:00:39.353Z",
+      "reason": "将八个已跟踪实验目录的可验证冷归档及归档测试所需 CI 配置加入明确写入范围",
+      "action": "replan",
+      "revision": 2
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-11-20T03:00:39.795Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-11-20T03:00:39.905Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-11-20T02:51:34.694Z",
+  "updatedAt": "2026-11-20T03:00:39.998Z"
+}

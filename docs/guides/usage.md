@@ -11,16 +11,16 @@ node <HARNESS_REPO>/.ai-harness/bin/harness.mjs install --target <TARGET> --json
 
 - `AGENTS.md`、`CLAUDE.md`、`GEMINI.md` 已存在时，默认保留原文并追加 Harness 托管块；原文逐字保留在托管块外。
 - `CLAUDE.md` 已有独立行 `@AGENTS.md`，或 `GEMINI.md` 已有独立行 `@./AGENTS.md` 时，适配器保持字节不变。
-- 托管块带 Runtime 版本和正文 SHA-256。重复安装为 `skip`；升级只更新托管块，不从安装源根规则复制项目私有内容。
+- 托管块带 Runtime 版本和正文 SHA-256。重复安装为 `skip`。升级更新托管块，项目原文保留在块外。
 - 修改已有文件前先备份到 `.ai-harness/backups/<ID>/`；成功结果中的 `backup` 给出相对路径。备份目录不会被再次分发。
-- 普通 Runtime/CI 文件内容不同时为 `conflict`，默认在任何写入前失败；`--dry-run` 只返回完整操作计划。
+- 升级可按旧收据哈希替换未修改的 Runtime/CI 文件。未修改的退役文件显示为 `remove-retired`，执行后保存在备份中。其他不同内容默认预检冲突。`--dry-run` 返回完整操作计划。
 - 托管块内容被改动时默认报 `MANAGED_BLOCK_MODIFIED`；`--force` 只修复该块。标记缺失一半、重复或不独占一行时报 `MANAGED_BLOCK_MALFORMED`，`--force` 也不覆盖。
-- `--force` 可在明确授权后备份并替换普通冲突文件，但不会替换托管块外的项目规则。
+- `--force` 可在明确授权后备份并替换普通冲突文件。块外项目规则和已修改的退役文件仍受保护。
 - 新项目在不存在 `docs` 目录时使用 `init --mode new --docs default`；默认文档先在项目内完整准备，再发布 `docs`，已有目录（即使部分文件与模板相同）也会拒绝，需改用 `--docs existing` 并沿用既有文档。
 - 已有项目使用 `init --mode existing --docs existing`。
 - 运行开发工作项前，先建立包含 Harness、初始代码和文档的 Git 提交。
 
-从 `1.3.1` 起，`.ai-harness/.gitattributes` 将 Runtime 文本固定为 LF，`.github/workflows/.gitattributes` 只约束自身及标准 `ai-harness.yml`。这两个文件随安装进入收据、冲突预检、备份和卸载流程；已有不同属性文件默认拒绝覆盖，不修改项目根属性或其他 workflow 的规则。源仓库和安装目标都应保留这两个属性文件，避免不同 `core.autocrlf` 设置导致收据字节不一致。规则文件中的托管正文沿用既有规范化哈希，卸载仅适配生成分隔符的 LF/CRLF，保留检出后的用户正文；丢失边界仍失败。旧安装升级按原冲突/备份规则处理，不自动强制覆盖；旧收据不补写哈希。
+从 `1.3.1` 起，`.ai-harness/.gitattributes` 将 Runtime 文本固定为 LF，`.github/workflows/.gitattributes` 只约束自身及标准 `ai-harness.yml`。这两个文件随安装进入收据、冲突预检、备份和卸载流程；已有不同属性文件默认拒绝覆盖，不修改项目根属性或其他 workflow 的规则。源仓库和安装目标都应保留这两个属性文件，避免不同 `core.autocrlf` 设置导致收据字节不一致。规则文件中的托管正文沿用既有规范化哈希，卸载仅适配生成分隔符的 LF/CRLF，保留检出后的用户正文；丢失边界仍失败。目标内容只有匹配原收据哈希时才能自动更新或退役。
 
 托管块形态如下；项目规则写在块外，不要手工编辑块内正文或标记：
 
@@ -379,10 +379,12 @@ node .ai-harness/bin/harness.mjs guard -- <COMMAND> [ARGS...]
 ```text
 node .ai-harness/tests/run.mjs
 node .ai-harness/bin/harness.mjs doctor --json
-node .ai-harness/bin/harness.mjs check --ci --json
+node .ai-harness/bin/harness.mjs check --ci --base <完整基准提交 SHA> --json
 ```
 
-其他 CI 平台调用相同命令即可。CI 是合并门禁，不替代客户端权限、代码托管分支保护或人工独立复核。
+`--base` 必须是当前 `HEAD` 的可用祖先。示例工作流使用 PR 目标分支基准或 push 前提交，新分支首次 push 使用与默认分支的共同祖先。手动运行时提供明确基准。合并门禁只认可本次范围内新增或更新、且内容与变更基准相符的交付。已出现在基准历史中的工作项编号不能重新作为新交付使用。CI 平台需要检出完整 Git 历史并传入实际事件基准。本机收尾继续使用 `check --ci --json` 检查交付快照。
+
+如果整个变更范围只包含对一个现有 `README.md` 或 `docs/` 下普通 Markdown 文件的机械编辑，可在该提交的尾注声明 `Harness-Trivial-Doc: README.md`，把示例路径替换为实际路径。Runtime 核对路径、文件类型和提交内容，人工审查整个范围是否属于机械编辑。新建文件、删除文件、指令文件和多文件变更须按实际任务路径处理。CI 门禁与客户端权限、分支保护和人工独立复核配合使用。
 
 Harness 源仓库另有 `source-tests.yml`：Windows/Linux 执行评测框架测试，Windows 执行 Runtime 回归；Linux Runtime 仍由标准工作流覆盖。源仓库专用工作流不会复制到目标项目，测试不会调用真实模型。
 

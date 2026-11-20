@@ -11,7 +11,7 @@ Harness 可以无损安装和升级，但缺少对称的卸载入口。直接递
 
 提供 `uninstall --target <TARGET>`。命令必须从独立 Harness 源仓库执行，以便与目标文件做可信内容对比；禁止目标项目使用自身 Runtime 自卸载。`--dry-run` 只返回完整操作计划；正式执行还必须显式提供 `--confirm`。
 
-安装时生成 `.ai-harness/install-receipt.json`，以带自校验哈希的结构记录实际 payload 路径/文件哈希，以及托管规则块的创建归属和插入边界。卸载仅处理该收据能确定归属的内容：
+安装时生成 `.ai-harness/install-receipt.json`，以带自校验哈希的结构记录实际 payload 路径/文件哈希，以及托管规则块的创建归属和插入边界。升级同样用旧收据核对原版文件，退役文件移入备份，已修改的退役文件会阻塞安装。卸载仅处理该收据能确定归属的内容：
 
 - 从 `AGENTS.md`、`CLAUDE.md`、`GEMINI.md` 移除结构和哈希均有效的 Harness 托管块，保留块外项目内容；仅含托管块的文件可以删除。
 - 移除安装收据中记录、且当前独立源和目标内容都与安装哈希一致的 Runtime 文件、标准 CI 文件，以及安装收据自身和 `.ai-harness/project.json`。

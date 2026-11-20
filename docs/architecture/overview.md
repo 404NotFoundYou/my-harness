@@ -29,7 +29,7 @@ CLAUDE.md / GEMINI.md        # 已有客户端规则/导入 + 可选托管块
 - **持久化**：仓库内 JSON/JSONL 文件，原子临时文件替换；状态可以随 Git 审查和恢复。
 - **结构契约**：JSON Schema 作为公开格式，自定义确定性校验器作为零依赖执行实现。
 - **CLI**：参数数组解析，不通过 shell 拼接命令；机器输出支持 JSON，人工输出保持简洁。
-- **CI**：统一执行 `node .ai-harness/bin/harness.mjs check --ci`，具体 CI 平台只负责调用。
+- **CI**：合并门禁执行 `node .ai-harness/bin/harness.mjs check --ci --base <完整基准提交 SHA>`，由 CI 平台提供事件基准。
 
 ## 模块职责
 

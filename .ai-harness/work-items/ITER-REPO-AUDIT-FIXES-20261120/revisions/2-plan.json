@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "ITER-REPO-AUDIT-FIXES-20261120",
+  "mode": "single",
+  "rationale": "复用同一产品快照和一组验收，独立高风险审查覆盖整个改动。",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "修复十项问题并回归",
+      "module": "runtime-and-benchmarks",
+      "status": "IN_PROGRESS",
+      "attempt": 1,
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        ".ai-harness/src/**",
+        ".ai-harness/tests/**",
+        ".github/workflows/ai-harness.yml",
+        ".github/workflows/source-tests.yml",
+        "benchmarks/**",
+        ".ai-harness/work-items/MODEL-BENCHMARK-001/pilot/**",
+        ".ai-harness/work-items/MODEL-BENCHMARK-001/followup/**",
+        ".ai-harness/work-items/MODEL-PAIRED-20261013/pilot/**",
+        ".ai-harness/work-items/MODEL-COMPLETION-PAIRED-20261014/pilot/**",
+        ".ai-harness/work-items/MODEL-PROJECT-V2-20261014/project-v2-comparison/**",
+        ".ai-harness/work-items/MODEL-PROJECT-V2-RECHECK-20261014/project-v2-comparison/**",
+        ".ai-harness/work-items/MODEL-PROJECT-V2-STRUCTURED-20261014/project-v2-comparison/**",
+        ".ai-harness/work-items/ANALYSIS-ZEROMODEL-AUDIT-20261019/experiment-retry/**"
+      ],
+      "verification": [
+        "node .ai-harness/tests/run.mjs",
+        "node benchmarks/tests/run.mjs"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            ".ai-harness/tests/run.mjs"
+          ]
+        },
+        {
+          "id": "V2",
+          "command": "node",
+          "args": [
+            "benchmarks/tests/run.mjs"
+          ]
+        }
+      ],
+      "docsImpact": [
+        "docs/guides/usage.md",
+        "docs/guides/getting-started.md",
+        "docs/reports/model-comparison.md",
+        "README.md",
+        "docs/architecture/overview.md",
+        "docs/architecture/decisions/0003-safe-uninstall.md"
+      ],
+      "reviewBatch": "R1",
+      "risk": "high",
+      "owner": "primary-ai",
+      "verificationStatus": "pending",
+      "reviewStatus": "pending",
+      "evidence": [],
+      "deferralApproval": null
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "CI 范围、安装数据及证据完整性",
+      "risk": "high",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": true
+    }
+  ],
+  "createdAt": "2026-11-20T02:51:35.422Z",
+  "updatedAt": "2026-11-20T03:00:39.997Z",
+  "revision": 2
+}

@@ -928,3 +928,39 @@ test("fault injection still protects concurrent edits when the system temp path 
     await cleanup(holder); await cleanup(actual);
   }
 });
+
+
+test("upgrade uses receipt ownership to replace and retire unmodified payload", async () => {
+  const source = await temporaryTarget("ai-harness-upgrade-source-");
+  const target = await temporaryTarget("ai-harness-upgrade-target-");
+  try {
+    await cp(path.join(sourceRoot, ".ai-harness/templates"), path.join(source, ".ai-harness/templates"), { recursive: true });
+    for (const file of ["manifest.json", "config.json"]) {
+      await cp(path.join(sourceRoot, ".ai-harness", file), path.join(source, ".ai-harness", file));
+    }
+    const managed = ".ai-harness/templates/new-project/README.md";
+    const retired = ".ai-harness/templates/new-project/retired.md";
+    const original = await readFile(path.join(source, managed), "utf8");
+    await writeFile(path.join(source, retired), "old template\n");
+    await installRuntime(source, target);
+    await writeFile(path.join(source, managed), "new README template\n");
+    await rm(path.join(source, retired));
+    await writeFile(path.join(target, retired), "user customization\n");
+    await assert.rejects(() => installRuntime(source, target, { force: true }), { code: "INSTALL_CONFLICT" });
+    assert.equal(await readFile(path.join(target, retired), "utf8"), "user customization\n");
+    assert.equal(await readFile(path.join(target, managed), "utf8"), original);
+    await writeFile(path.join(target, retired), "old template\n");
+    const preview = await installRuntime(source, target, { dryRun: true });
+    assert.equal(preview.operations.find(operation => operation.relative === managed)?.action, "replace");
+    assert.equal(preview.operations.find(operation => operation.relative === retired)?.action, "remove-retired");
+    const upgrade = await installRuntime(source, target);
+    assert.equal(await readFile(path.join(target, managed), "utf8"), "new README template\n");
+    assert.equal(await readFile(path.join(target, upgrade.backup, managed), "utf8"), original);
+    assert.equal(await readFile(path.join(target, upgrade.backup, retired), "utf8"), "old template\n");
+    await assert.rejects(() => readFile(path.join(target, retired)), { code: "ENOENT" });
+    assert.equal((await installRuntime(source, target)).backup, null);
+  } finally {
+    await cleanup(source);
+    await cleanup(target);
+  }
+});

@@ -4,6 +4,11 @@ on:
   pull_request:
   push:
   workflow_dispatch:
+    inputs:
+      base:
+        description: Full base commit SHA
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -28,4 +33,11 @@ jobs:
       - name: Runtime health
         run: node .ai-harness/bin/harness.mjs doctor --json
       - name: Workflow gates
-        run: node .ai-harness/bin/harness.mjs check --ci --json
+        env:
+          HARNESS_BASE: ${{ github.event.pull_request.base.sha || github.event.before || inputs.base }}
+          HARNESS_DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          if [[ "$HARNESS_BASE" =~ ^0+$ ]]; then
+            HARNESS_BASE=$(git merge-base HEAD "refs/remotes/origin/$HARNESS_DEFAULT_BRANCH")
+          fi
+          node .ai-harness/bin/harness.mjs check --ci --base "$HARNESS_BASE" --json

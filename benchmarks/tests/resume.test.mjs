@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import path from "node:path";
 import { tmpdir } from "node:os";
+import { appendFileSync } from "node:fs";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { spawnSync } from "node:child_process";
 import { mkdir, mkdtemp, readFile, readdir, realpath, rm, symlink, writeFile } from "node:fs/promises";
@@ -44,49 +45,95 @@ test("completed trials including failed deliveries are audited and never called 
   }finally{await cleanup(directory);}
 });
 
-test("missing duration stays unknown for new summaries while legacy archives remain auditable",async()=>{
+test("a locked run audits each new candidate once and audits all candidates at the end",async(t)=>{
+  const directory=await fixture(),opts={...options(directory),driver:fakeDriver,
+    plan:experimentPlan({weak:"synthetic",comparison:"paired",suite:"project",repetitions:2,timeoutMs:5000})};
+  const candidateReads=[];
+  const readFileOriginal=fsPromises.readFile;
+  try{
+    t.mock.method(fsPromises,"readFile",async(file,...args)=>{
+      if(typeof file==="string"&&path.basename(file)==="candidate-files.json")candidateReads.push(path.basename(path.dirname(file)));
+      return readFileOriginal(file,...args);
+    });
+    syncBuiltinESMExports();
+    const order=opts.plan.schedule.map(entry=>entry.directory);
+    const summary=await runExperiment({...opts,onProgress:event=>{
+      if(event.event==="finished")assert.deepEqual(candidateReads,order.slice(0,order.indexOf(event.directory)+1));
+    }});
+    assert.equal(summary.complete,true);
+    assert.deepEqual(candidateReads,[...order,...order]);
+    assert.deepEqual(summary.results.map(({taskId,group,trial})=>({taskId,group,trial})),
+      opts.plan.schedule.map(({taskId,group,trial})=>({taskId,group,trial})));
+  }finally{t.mock.restoreAll();syncBuiltinESMExports();await cleanup(directory);}
+});
+
+test("the final audit rejects tampering after a trial was recorded as completed",async()=>{
+  const directory=await fixture(),opts={...options(directory),driver:fakeDriver};
+  try{
+    const [first,last]=opts.plan.schedule;
+    await assert.rejects(()=>runExperiment({...opts,onProgress:event=>{
+      if(event.event==="finished"&&event.directory===last.directory){
+        appendFileSync(path.join(opts.outputDirectory,first.directory,"result.json"),"\n");
+      }
+    }}),/Completed trial result hash differs/);
+    assert.equal((await read(opts.outputDirectory,"summary.json")).complete,false,"only a successful final audit may publish completion");
+    await assert.rejects(()=>runExperiment({...opts,resume:true}),/Completed trial result hash differs/);
+  }finally{await cleanup(directory);}
+});
+
+test("new summaries count partial usage as unknown and old v4 statistics still audit and resume",async()=>{
   const directory=await fixture();let calls=0;
   try{
-    const opts={...options(directory),driver:async input=>({...await fakeDriver(input),durationMs:++calls===1?undefined:0})};
+    const opts={...options(directory),driver:async input=>({...await fakeDriver(input),durationMs:++calls===1?undefined:0,usage:calls===1?{input_tokens:12}:{input_tokens:0,output_tokens:0}})};
     const summary=await runExperiment(opts),out=opts.outputDirectory;
     const protocolPath=path.join(out,"protocol.json"),summaryPath=path.join(out,"summary.json"),ledgerPath=path.join(out,"execution.json");
     const protocol=await read(out,"protocol.json"),originalProtocol=await readFile(protocolPath),originalSummary=await readFile(summaryPath);
-    assert.equal(protocol.summaryVersion,2);
-    assert.equal(summary.summaryVersion,2);
+    assert.equal(protocol.summaryVersion,3);
+    assert.equal(summary.summaryVersion,3);
+    const missingGroup=protocol.schedule[0].group;
+    const knownGroup=protocol.schedule[1].group;
+    assert.equal(summary.progress.find(row=>row.group===missingGroup).usageUnknown,1);
+    assert.equal(summary.progress.find(row=>row.group===knownGroup).usageUnknown,0);
+    assert.equal(summary.groups.find(row=>row.group===missingGroup).statistics.usageSamples,0);
+    assert.equal(summary.groups.find(row=>row.group===knownGroup).statistics.usageSamples,1);
     assert.equal(summary.groups.find(row=>row.group===protocol.schedule[0].group).durationMs,null,"a missing sample cannot be a zero-length run");
     assert.equal(summary.groups.find(row=>row.group===protocol.schedule[1].group).durationMs,0,"an observed zero remains known");
     assert.equal((await auditExperiment(out)).valid,true);
-    assert.throws(()=>validateExperimentProtocol({...protocol,summaryVersion:3}),/Invalid summary version/);
+    assert.throws(()=>validateExperimentProtocol({...protocol,summaryVersion:4}),/Invalid summary version/);
     const {summaryVersion: removedVersion,...downgraded}=summary;
     await writeFile(summaryPath,JSON.stringify(downgraded));
     await assert.rejects(()=>auditExperiment(out),/Summary accounting version differs/,"a new protocol cannot audit through legacy summary rules");
-    await writeFile(protocolPath,JSON.stringify({...protocol,summaryVersion:3}));
-    await writeFile(summaryPath,JSON.stringify({...summary,summaryVersion:3}));
+    await writeFile(protocolPath,JSON.stringify({...protocol,summaryVersion:4}));
+    await writeFile(summaryPath,JSON.stringify({...summary,summaryVersion:4}));
     await assert.rejects(()=>auditExperiment(out),/Invalid summary version/,"matching unknown markers cannot downgrade accounting rules");
     await writeFile(protocolPath,originalProtocol);
     await writeFile(summaryPath,originalSummary);
 
-    delete protocol.summaryVersion;
-    await writeFile(protocolPath,JSON.stringify(protocol));
-    const ledger=await read(out,"execution.json");ledger.protocolSha256=hash(await readFile(protocolPath));
-    for(const [index,entry] of protocol.schedule.entries()){
-      const resultPath=path.join(out,entry.directory,"result.json"),result=await read(out,`${entry.directory}/result.json`);
-      result.execution.protocolSha256=ledger.protocolSha256;
-      await writeFile(resultPath,JSON.stringify(result));
-      ledger.trials[index].resultSha256=hash(await readFile(resultPath));
+    for(const version of [2,undefined]){
+      if(version===undefined)delete protocol.summaryVersion;
+      else protocol.summaryVersion=version;
+      await writeFile(protocolPath,JSON.stringify(protocol));
+      const ledger=await read(out,"execution.json");ledger.protocolSha256=hash(await readFile(protocolPath));
+      for(const [index,entry] of protocol.schedule.entries()){
+        const resultPath=path.join(out,entry.directory,"result.json"),result=await read(out,`${entry.directory}/result.json`);
+        result.execution.protocolSha256=ledger.protocolSha256;
+        await writeFile(resultPath,JSON.stringify(result));
+        ledger.trials[index].resultSha256=hash(await readFile(resultPath));
+      }
+      await writeFile(ledgerPath,JSON.stringify(ledger));
+      const recovered=await readExecution(out,protocol);
+      assert.equal(recovered.changed,false);
+      const legacy=executionSummary(protocol,recovered.ledger,recovered.rows,protocol.source);
+      assert.equal(legacy.summaryVersion,version);
+      assert.equal(legacy.progress.find(row=>row.group===missingGroup).usageUnknown,0,"frozen summaries preserve the original usage rule");
+      assert.equal(legacy.groups.find(row=>row.group===missingGroup).durationMs,version===undefined?0:null,"old archives retain their original duration rule");
+      await writeFile(summaryPath,JSON.stringify(legacy));
+      assert.equal((await auditExperiment(out)).valid,true);
+      const resumed=await runExperiment({...opts,resume:true});
+      assert.equal(calls,2,"auditing or resuming old completed results must not start new trials");
+      assert.equal(resumed.summaryVersion,version);
+      assert.equal((await auditExperiment(out)).valid,true);
     }
-    await writeFile(ledgerPath,JSON.stringify(ledger));
-    const recovered=await readExecution(out,protocol);
-    assert.equal(recovered.changed,false);
-    const legacy=executionSummary(protocol,recovered.ledger,recovered.rows,protocol.source);
-    assert.equal(legacy.summaryVersion,undefined);
-    assert.equal(legacy.groups.find(row=>row.group===protocol.schedule[0].group).durationMs,0,"old archives retain their original aggregate");
-    await writeFile(summaryPath,JSON.stringify(legacy));
-    assert.equal((await auditExperiment(out)).valid,true);
-    const resumed=await runExperiment({...opts,resume:true});
-    assert.equal(calls,2,"auditing or resuming old completed results must not start new trials");
-    assert.equal(resumed.summaryVersion,undefined);
-    assert.equal((await auditExperiment(out)).valid,true);
   }finally{await cleanup(directory);}
 });
 test("a pending trial in a legacy v4 protocol resumes without changing the old accounting rule",async()=>{

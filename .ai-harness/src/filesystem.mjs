@@ -133,16 +133,7 @@ export async function readJson(target) {
 }
 
 export async function atomicWriteJson(target, value) {
-  await mkdir(path.dirname(target), { recursive: true });
-  const temporary = path.join(path.dirname(target), `.${path.basename(target)}.${randomUUID()}.tmp`);
-  const content = `${JSON.stringify(value, null, 2)}\n`;
-  await writeFile(temporary, content, { encoding: "utf8", flag: "wx" });
-  try {
-    await rename(temporary, target);
-  } catch (error) {
-    await rm(temporary, { force: true });
-    throw error;
-  }
+  return writeFileAtomic(target, `${JSON.stringify(value, null, 2)}\n`);
 }
 
 export async function appendJsonLine(target, value) {

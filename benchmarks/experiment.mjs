@@ -8,7 +8,7 @@ import { redact } from "../.ai-harness/src/evidence.mjs";
 import { resolveProjectPath } from "../.ai-harness/src/filesystem.mjs";
 import { inspectLock, recoverLock, withFileLock } from "../.ai-harness/src/locking.mjs";
 import { readExperimentFile } from "./audit-trial.mjs";
-import { executionSummary, initialExecution, readExecution } from "./execution.mjs";
+import { executionSummary, initialExecution, readExecution, readExecutionLedger, reconcileTrial } from "./execution.mjs";
 import { captureCodexEnvironment, validateCodexEnvironment } from "./codex-environment.mjs";
 import { validateContainerIdentity } from "./codex-container.mjs";
 
@@ -42,7 +42,7 @@ function checkedIdentity(mode, driver, identity) {
   }else if(value.kind === "cli"){
     assert.deepEqual(Object.keys(value).sort(),["entry","kind","nodeVersion","sha256",...(value.environment === undefined ? [] : ["environment"])].sort(),"Invalid CLI identity");
     if (value.environment !== undefined) validateCodexEnvironment(value.environment);
-    assert.ok(typeof value.entry === "string"&&path.isAbsolute(value.entry));
+    assert.ok(typeof value.entry === "string"&&(path.posix.isAbsolute(value.entry)||path.win32.isAbsolute(value.entry)));
     assert.match(value.sha256,/^[a-f0-9]{64}$/);
     assert.equal(typeof value.nodeVersion,"string");
   }else validateContainerIdentity(value);
@@ -68,7 +68,7 @@ export function validateExperimentProtocol(protocol) {
   assert.match(protocol.source,/^[a-f0-9]{64}$/,"Invalid source digest");
   const {createdAt,summaryVersion,...stored}=protocol;
   assert.ok(typeof createdAt === "string"&&Number.isFinite(Date.parse(createdAt)),"Invalid protocol creation time");
-  assert.ok(summaryVersion===undefined||summaryVersion===2,"Invalid summary version");
+  assert.ok([undefined,2,3].includes(summaryVersion),"Invalid summary version");
   const plan=experimentPlan({weak:protocol.groups.find(group=>group.id==="weak-baseline")?.model,strong:protocol.groups.find(group=>group.id==="strong-reference")?.model,client:protocol.client,comparison:protocol.comparison,repetitions:protocol.repetitions,timeoutMs:protocol.budget.timeoutMs,maxToolCalls:protocol.budget.maxToolCalls,suite:protocol.suite});
   assert.deepEqual(stored,{...plan,mode:protocol.mode,source:protocol.source,tasks:tasksForSuite(plan.suite).map(taskManifest),driverIdentity:checkedIdentity(protocol.mode,null,protocol.driverIdentity)},"Invalid frozen protocol");
 }
@@ -87,7 +87,7 @@ export async function runExperiment({ plan, sourceRoot, outputDirectory, driver,
   if(mode === "real")assert.equal(typeof identityReader,"function","Container experiments need an explicit identity reader");
   const source=(await sourceSnapshot(sourceRoot)).digest;
   const tasks=tasksForSuite(plan.suite);
-  const frozen={...plan,mode,source,tasks:tasks.map(taskManifest),driverIdentity:identity,summaryVersion:2};
+  const frozen={...plan,mode,source,tasks:tasks.map(taskManifest),driverIdentity:identity};
   const lock=await resolveProjectPath(outputDirectory,".experiment.lock",{forWrite:true});
   const save=async(file,value)=>saveJson(await resolveProjectPath(outputDirectory,file,{forWrite:true}),value);
   const assertSource=async()=>{
@@ -98,9 +98,8 @@ export async function runExperiment({ plan, sourceRoot, outputDirectory, driver,
     await assertSource();
     const protocol=JSON.parse((await readExperimentFile(outputDirectory,"protocol.json")).toString("utf8"));
     validateExperimentProtocol(protocol);
-    const {createdAt,...stored}=protocol;
-    const {summaryVersion: ignoredVersion,...legacyFrozen}=frozen;
-    assert.deepEqual(stored,protocol.summaryVersion===undefined?legacyFrozen:frozen,"Frozen protocol, source or driver differs");
+    const {createdAt,summaryVersion,...stored}=protocol;
+    assert.deepEqual(stored,frozen,"Frozen protocol, source or driver differs");
     return {protocol,...await readExecution(outputDirectory,protocol)};
   }
   if(resume){
@@ -109,7 +108,7 @@ export async function runExperiment({ plan, sourceRoot, outputDirectory, driver,
   }
   return withFileLock(lock,async()=>{
     if(!resume){
-      await save("protocol.json",{...frozen,createdAt:new Date().toISOString()});
+      await save("protocol.json",{...frozen,summaryVersion:3,createdAt:new Date().toISOString()});
       const bytes=await readExperimentFile(outputDirectory,"protocol.json");
       await save("execution.json",initialExecution(JSON.parse(bytes.toString("utf8")),bytes));
     }
@@ -117,6 +116,11 @@ export async function runExperiment({ plan, sourceRoot, outputDirectory, driver,
     const loaded=await load(),protocol=loaded.protocol;
     if(loaded.changed)await save("execution.json",loaded.ledger);
     let ledger=loaded.ledger,rows=loaded.rows;
+    async function reconcileExecution(){
+      const current=await readExecution(outputDirectory,protocol);
+      ledger=current.ledger;rows=current.rows;
+      if(current.changed)await save("execution.json",ledger);
+    }
     async function summary(error=null){
       const value=executionSummary(protocol,ledger,rows,(await sourceSnapshot(sourceRoot)).digest,error);
       await save("summary.json",value);
@@ -135,20 +139,21 @@ export async function runExperiment({ plan, sourceRoot, outputDirectory, driver,
         onProgress({event:"started",...entry,model:group.model});
         await runCase({task,group,trial:entry.trial,suite:protocol.suite,sourceRoot,outputDirectory:destination,driver,runBudget:{...protocol.budget},execution:{protocolSha256:ledger.protocolSha256,sourceBefore:source},beforePublish:assertSource});
         await assertSource();
-        const current=await readExecution(outputDirectory,protocol);
-        ledger=current.ledger;rows=current.rows;
+        assert.deepEqual(await readExecutionLedger(outputDirectory,protocol),ledger,"Execution ledger changed while running a trial");
+        const result=await reconcileTrial(outputDirectory,protocol,entry,ledger.trials[index]);
+        assert.ok(result,"Published trial result is missing");
+        const preceding=ledger.trials.slice(0,index).filter(state=>state.status === "completed").length;
+        rows.splice(preceding,0,result);
         await save("execution.json",ledger);
-        const result=rows.find(row=>row.taskId===entry.taskId&&row.group===entry.group&&row.trial===entry.trial);
         onProgress({event:"finished",...entry,functional:result.grade.ok,success:result.success,timeout:result.run.timedOut,durationMs:result.run.durationMs});
-        await summary();
+        if(ledger.trials.some(state=>state.status !== "completed"))await summary();
       }
       await assertSource();
+      await reconcileExecution();
       return summary();
     }catch(error){
       try{
-        const current=await readExecution(outputDirectory,protocol);
-        ledger=current.ledger;rows=current.rows;
-        if(current.changed)await save("execution.json",ledger);
+        await reconcileExecution();
         await summary(redact(error.message));
       }catch(recoveryError){
         throw new AggregateError([error,recoveryError],`Experiment failed and evidence could not be reconciled: ${redact(error.message)}; ${redact(recoveryError.message)}`);

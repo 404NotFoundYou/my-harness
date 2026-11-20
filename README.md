@@ -49,7 +49,7 @@ node "$HarnessRepo\.ai-harness\bin\harness.mjs" install --target $TargetProject 
 Set-Location $TargetProject
 ```
 
-已有 `AGENTS.md`、`CLAUDE.md`、`GEMINI.md` 会保留原文，并在文件末尾增加带版本和 SHA-256 的 Harness 托管块；已有兼容导入 `@AGENTS.md` 或 `@./AGENTS.md` 的适配器保持字节不变。重复安装不会重复追加，升级只更新托管块。所有被修改的已有文件会先备份到命令返回的 `.ai-harness/backups/<ID>/`。
+已有 `AGENTS.md`、`CLAUDE.md`、`GEMINI.md` 会保留原文，并在文件末尾增加带版本和 SHA-256 的 Harness 托管块；已有兼容导入 `@AGENTS.md` 或 `@./AGENTS.md` 的适配器保持字节不变。重复安装不会重复追加。升级会更新托管块和收据中仍与原版字节一致的 Runtime 文件。所有被修改的已有文件会先备份到命令返回的 `.ai-harness/backups/<ID>/`。
 
 其他 Runtime/CI 文件内容不同时仍默认失败，并保证预检阶段不写入。`--force` 只用于修复结构完整但内容被修改的托管块，或在明确授权后替换普通冲突文件；它不会覆盖托管块外的项目规则。标记损坏、重复或合并后 `AGENTS.md` 超过大小上限时，即使使用 `--force` 也会失败。
 
@@ -164,7 +164,7 @@ Runtime 能确定性拒绝非法状态跳跃、未完成数据库设计、无批
 
 1. 客户端加载 `AGENTS.md`，并配置其权限/沙箱。
 2. AI 使用 `.ai-harness/bin/harness.mjs` 维护状态和执行允许命令。
-3. 合并前 CI 执行 `node .ai-harness/bin/harness.mjs check --ci --json`。
+3. 合并前 CI 执行 `node .ai-harness/bin/harness.mjs check --ci --base <完整基准提交 SHA> --json`。
 
 `CLAUDE.md` 和 `GEMINI.md` 是薄适配器；其他 AI 客户端必须显式加载根 `AGENTS.md`。任何仓库内文件都无法单独构成对恶意进程的安全沙箱或防篡改签名系统。
 

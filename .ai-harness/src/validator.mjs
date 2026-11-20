@@ -350,7 +350,27 @@ async function assertEvidenceDocument(root, gate, name, { documentRequired = fal
   }
 }
 
-export async function assertTransitionGates(root, item, plan, target) {
+function gateChecks(root, item, plan, evidence = null) {
+  const snapshots = new Map();
+  const readSnapshot = (reference) => {
+    const key = JSON.stringify([reference?.digest, reference?.document]);
+    if (!snapshots.has(key)) snapshots.set(key, loadSnapshot(root, reference));
+    return snapshots.get(key);
+  };
+  const readEvents = async () => evidence ??= await readEvidence(root, item.id);
+  let verified;
+  return {
+    readEvents,
+    verifiedSnapshot: () => verified ??= (async () => {
+      const snapshot = item.status === "DONE" ? await readSnapshot(item.delivery?.source) : await sourceSnapshot(root);
+      await assertVerification(root, item, plan, { snapshot, events: await readEvents(), readSnapshot });
+      return snapshot;
+    })(),
+    assertStages: async (snapshot) => assertVerificationStages(root, item, plan, snapshot, { events: await readEvents(), readSnapshot }),
+  };
+}
+
+export async function assertTransitionGates(root, item, plan, target, checks = gateChecks(root, item, plan)) {
   if (target === "BLOCKED" || item.status === "BLOCKED") return;
   if (target === "BASELINING") {
     invariant(nonEmptyStrings(item.input.references), "INPUT_REQUIRED", "工作项至少需要一个权威输入或问题引用。" );
@@ -412,9 +432,8 @@ export async function assertTransitionGates(root, item, plan, target) {
     invariant(item.verification.status === "pass" && nonEmptyStrings(item.verification.evidence), "FINAL_VERIFICATION_REQUIRED", "工作项验证尚未通过。" );
     invariant(["pass", "not-applicable"].includes(item.documentation.status) && nonEmptyStrings(item.documentation.evidence), "DOCUMENTATION_REQUIRED", "文档同步尚未确认。" );
     if (!(item.status === "DONE" && !item.integrityVersion)) {
-      const snapshot = item.status === "DONE" ? await loadSnapshot(root, item.delivery?.source) : await sourceSnapshot(root);
-      await assertVerification(root, item, plan, { snapshot });
-      await assertVerificationStages(root, item, plan, snapshot);
+      const snapshot = await checks.verifiedSnapshot();
+      await checks.assertStages(snapshot);
       invariant(item.verification.source?.digest === snapshot.digest, "STALE_VERIFICATION", "验证结论不对应当前待交付代码。" );
     }
     return;
@@ -424,8 +443,7 @@ export async function assertTransitionGates(root, item, plan, target) {
     const independentRequired = plan?.reviewBatches?.some((batch) => batch.independentRequired) || false;
     invariant(!independentRequired || item.review.independent, "INDEPENDENT_REVIEW_REQUIRED", "高风险批次需要独立复核证据。" );
     if (!(item.status === "DONE" && !item.integrityVersion)) {
-      const snapshot = item.status === "DONE" ? await loadSnapshot(root, item.delivery?.source) : await sourceSnapshot(root);
-      await assertVerification(root, item, plan, { snapshot });
+      const snapshot = await checks.verifiedSnapshot();
       invariant(item.review.source?.digest === snapshot.digest, "STALE_REVIEW", "审查结论不对应当前待交付代码。" );
     }
     return;
@@ -433,8 +451,7 @@ export async function assertTransitionGates(root, item, plan, target) {
   if (target === "DONE") {
     invariant(item.acceptance.status === "pass" && nonEmptyStrings(item.acceptance.evidence), "ACCEPTANCE_REQUIRED", "DONE 前缺少有权验收证据。" );
     if (!(item.status === "DONE" && !item.integrityVersion)) {
-      const snapshot = item.status === "DONE" ? await loadSnapshot(root, item.delivery?.source) : await sourceSnapshot(root);
-      await assertVerification(root, item, plan, { snapshot });
+      const snapshot = await checks.verifiedSnapshot();
       invariant(item.review.source?.digest === snapshot.digest && item.acceptance.source?.digest === snapshot.digest, "STALE_ACCEPTANCE", "验收和审查必须对应同一待交付代码版本。" );
     }
     return;
@@ -454,8 +471,8 @@ export async function assertTransitionGates(root, item, plan, target) {
     }
     const commands = item.analysis.conclusions.flatMap((conclusion) => conclusion.commands || []);
     if (commands.length) {
-      const [events, snapshot] = await Promise.all([readEvidence(root, item.id), sourceSnapshot(root)]);
-      for (const commandId of commands) await assertAnalysisCommandEvidence(root, item, commandId, { events, snapshot });
+      const events = await checks.readEvents();
+      for (const commandId of commands) await assertAnalysisCommandEvidence(root, item, commandId, { events });
     }
   }
 }
@@ -483,12 +500,13 @@ export function collectHistoryErrors(item) {
   return errors;
 }
 
-export async function collectProgressErrors(root, item, plan, { allowStale = false } = {}) {
+export async function collectProgressErrors(root, item, plan, { allowStale = false, events = null } = {}) {
   const errors = [...collectWorkItemShapeErrors(item), ...collectHistoryErrors(item)];
   if (item.status === "BLOCKED") return [...new Set(errors)];
+  const checks = gateChecks(root, item, plan, events);
   const addGateError = async (target) => {
     try {
-      await assertTransitionGates(root, item, plan, target);
+      await assertTransitionGates(root, item, plan, target, checks);
     } catch (error) {
       if (allowStale && ["VERIFICATION_NOT_CURRENT", "STALE_VERIFICATION", "STALE_VERIFICATION_STAGE", "STALE_REVIEW", "STALE_ACCEPTANCE"].includes(error.code)) return;
       errors.push(`${target}: ${error.message}`);

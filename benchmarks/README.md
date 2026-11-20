@@ -9,12 +9,25 @@
 node benchmarks/tests/run.mjs
 
 # 真实调用；复用现有 Codex CLI 登录，运行前应取得模型调用授权
-node benchmarks/run.mjs --cli 'D:/Program Files/nodejs/node_global/node_modules/@openai/codex/bin/codex.js' --weak gpt-5.6-luna --strong gpt-5.6-sol --out .ai-harness/work-items/MODEL-BENCHMARK-001/pilot
+node benchmarks/run.mjs --cli 'D:/Program Files/nodejs/node_global/node_modules/@openai/codex/bin/codex.js' --weak gpt-5.6-luna --strong gpt-5.6-sol --out .ai-harness/work-items/MODEL-EXAMPLE/run
 # 检查九项结果、输入/判定/代码哈希及统计一致性（不再次调用模型）
-node benchmarks/audit.mjs .ai-harness/work-items/MODEL-BENCHMARK-001/pilot
+node benchmarks/audit.mjs .ai-harness/work-items/MODEL-EXAMPLE/run
 ```
 
 `--cli` 为实际二进制或 Node CLI 入口，不使用 shell 拼接或 Windows `.cmd` 回退。`--client codex|claude|gemini` 选择驱动，默认codex。每次180秒、观察到80次工具调用时中断；不自动重试。按任务轮换三组顺序，共9次模型调用；CLI上报用量不等于货币费用。不修改全局凭据或模型配置。
+
+### 恢复历史实验
+
+[归档清单](archive-manifest.json)记录八组实验的冻结提交、目录、文件数、字节数和 SHA-256。每组的哈希基于按相对路径排序的 `[路径, 文件 SHA-256]` JSON 数组。框架测试从 Git 历史提取全部归档、核对字节并审计结果。源码测试需要完整 Git 历史及 `tar`，安装 Runtime 仍可使用下载的源码 ZIP。
+
+在源码仓库运行以下命令，把 ZIP 解压到新目录，再将实际解压目录传给审计命令。将清单中的其他实验目录替换到命令中即可恢复对应实验。
+
+```powershell
+$experiment = '.ai-harness/work-items/MODEL-BENCHMARK-001/pilot'
+git archive --format=zip --output=historical-pilot.zip 22787ff8069767451c4b4892952819623bd7c8e6 -- $experiment
+Expand-Archive -LiteralPath historical-pilot.zip -DestinationPath historical-pilot
+node benchmarks/audit.mjs "historical-pilot/$experiment"
+```
 
 ### 可选 Docker Codex runtime
 
@@ -196,7 +209,7 @@ node benchmarks/run.mjs --cli '<CLI实际文件路径>' --weak '<原模型标识
 
 摘要丢失或损坏可由可信执行记录及结果重建。`notRun`只列pending，`interrupted`单独列出中断试次及usage:null；`progress`按组给出scheduled/completed/interrupted/pending/usageUnknown。groups统计只基于已完成结果，其通过率不能解释为全部计划的通过率。`--resume`与`--dry-run`不能共用，避免将全计划调用数误报为剩余调用数。
 
-新建v4实验在冻结的`protocol.json`与`summary.json`中均标注`summaryVersion: 2`：任一已完成试次的耗时缺失或非法时，该组`durationMs`总量为`null`（未知），真实零耗时仍为`0`。无此标识的历史归档保持原汇总口径并可按原证据审计；标识不一致则拒绝审计，不改写历史实验原件。
+新建 v4 实验在 `protocol.json` 和 `summary.json` 中记录 `summaryVersion: 3`。`usageUnknown` 包括中断试次和缺少有效输入或输出 token 数的已完成试次，与统计中的有效样本数口径一致。耗时缺失或非法时，该组 `durationMs` 为 `null`，真实零耗时仍为 `0`。无版本标识及版本 2 的旧实验保留冻结口径。审计会拒绝版本不匹配的协议和摘要。续跑仍要求源码与驱动身份匹配原实验。
 
 每个目录一次只允许一个执行者。活锁、异机或未知锁拒绝续跑；同机确定已退出的所有者可在完整只读校验后恢复锁，再获取独占锁重新校验。仅凭经过时间或PID复用不回收。协议、执行记录、结果和摘要使用同目录临时文件原子替换；这保证进程中断边界的完整可见性，没有fsync/断电持久性或恰好调用一次的承诺。发生未确认调用时保留未知比重复调用更保守；孤儿临时工作区不参与续跑。
 

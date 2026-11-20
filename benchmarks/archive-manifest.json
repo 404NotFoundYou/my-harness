@@ -1,0 +1,53 @@
+{
+  "commit": "22787ff8069767451c4b4892952819623bd7c8e6",
+  "experiments": [
+    {
+      "directory": ".ai-harness/work-items/ANALYSIS-ZEROMODEL-AUDIT-20261019/experiment-retry",
+      "files": 51,
+      "bytes": 51896,
+      "sha256": "8389e2772167ada0c0550fcd50b1aa336a4881e2f572080a40f368fa2e06d495"
+    },
+    {
+      "directory": ".ai-harness/work-items/MODEL-BENCHMARK-001/followup",
+      "files": 83,
+      "bytes": 491140,
+      "sha256": "c495fc81641471cd540080b9dd4c9e5430469674c8b470403f51626241feb4e8"
+    },
+    {
+      "directory": ".ai-harness/work-items/MODEL-BENCHMARK-001/pilot",
+      "files": 68,
+      "bytes": 375001,
+      "sha256": "10542ee53ddf3bc9848db92f7917de98c39ed80b28ff46518a32747f79bd24c0"
+    },
+    {
+      "directory": ".ai-harness/work-items/MODEL-COMPLETION-PAIRED-20261014/pilot",
+      "files": 63,
+      "bytes": 481085,
+      "sha256": "7d09ea030142483890dbfbbd0a30554f0a220cba873e0ee1a2fe7cbf9810dcac"
+    },
+    {
+      "directory": ".ai-harness/work-items/MODEL-PAIRED-20261013/pilot",
+      "files": 64,
+      "bytes": 468482,
+      "sha256": "e5f217e1d99ac3a0d660f69682d68ee7fb020b1f6d3144e449e7e1f7dbe0d2cc"
+    },
+    {
+      "directory": ".ai-harness/work-items/MODEL-PROJECT-V2-20261014/project-v2-comparison",
+      "files": 63,
+      "bytes": 681557,
+      "sha256": "00cc4853c3d1cd1d3a0e674d7f29751c3cfdd5f2535c5b047a57b5567f703462"
+    },
+    {
+      "directory": ".ai-harness/work-items/MODEL-PROJECT-V2-RECHECK-20261014/project-v2-comparison",
+      "files": 63,
+      "bytes": 545885,
+      "sha256": "6a75f3de1da837256e73d24fda3ba7e6bd0f862757682169be102fd63439c8da"
+    },
+    {
+      "directory": ".ai-harness/work-items/MODEL-PROJECT-V2-STRUCTURED-20261014/project-v2-comparison",
+      "files": 63,
+      "bytes": 526947,
+      "sha256": "07314f259e2f36a976879234e08184f04a5305f8ce7221ef6800f0dfe4a860de"
+    }
+  ]
+}

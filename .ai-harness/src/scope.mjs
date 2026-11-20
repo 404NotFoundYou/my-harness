@@ -48,7 +48,55 @@ async function legacyArchive(root, item, config) {
   invariant(false, "LEGACY_ARCHIVE_REQUIRED", `旧终态工作项 ${item.id} 缺少已提交的归档依据。`);
 }
 
-export async function collectScopeErrors(root, records, items) {
+function declaredTrivialDoc(root, base, ancestor, current) {
+  const changed = snapshotChanges(ancestor, current);
+  if (changed.length !== 1) return null;
+  const [file] = changed;
+  if (!(file === "README.md" || /^docs\/.+\.md$/.test(file)) || /(?:^|\/)(?:AGENTS|CLAUDE|GEMINI)\.md$/i.test(file)) return null;
+  if (!ancestor.files[file]?.startsWith("100644:") || !current.files[file]?.startsWith("100644:")) return null;
+  const commit = gitResult(root, ["--literal-pathspecs", "log", "-1", "--no-merges", "--format=%H", `${base}..HEAD`, "--", file]).stdout.trim();
+  if (!commit) return null;
+  const declaration = gitResult(root, ["show", "-s", "--format=%(trailers:key=Harness-Trivial-Doc,valueonly)", commit]).stdout.trim();
+  if (declaration !== file) return null;
+  const blob = gitResult(root, ["rev-parse", `${commit}:${file}`]).stdout.trim();
+  return current.files[file] === `100644:${blob}` ? file : null;
+}
+
+async function compareCommitRange(root, config, base, current, ordered) {
+  invariant(/^(?:[0-9a-f]{40}|[0-9a-f]{64})$/.test(base) &&
+    gitResult(root, ["rev-parse", "--verify", `${base}^{commit}`], { allowFailure: true }).stdout.trim() === base &&
+    gitResult(root, ["merge-base", "--is-ancestor", base, "HEAD"], { allowFailure: true }).status === 0,
+  "INVALID_CI_BASE", "CI 基准必须是当前 HEAD 的可用祖先提交，使用完整提交标识。");
+  invariant(gitResult(root, ["rev-parse", "--is-shallow-repository"]).stdout.trim() === "false",
+    "CI_HISTORY_REQUIRED", "CI 基准检查需要完整 Git 历史以核对过去的工作项归属。");
+  const ancestor = await commitSnapshot(root, base);
+  const directory = config.workItemsDirectory;
+  const existing = new Set(gitResult(root, ["--literal-pathspecs", "ls-tree", "-r", "-z", "--name-only", base, "--", directory]).stdout.split("\0"));
+  const touched = new Set(gitResult(root, ["--literal-pathspecs", "diff", "--name-only", "--no-renames", "-z", base, "--", directory]).stdout.split("\0"));
+  const files = Object.assign(Object.create(null), ancestor.files);
+  for (const archive of ordered) {
+    if (archive.legacy) continue;
+    const state = `${directory}/${archive.item.id}/state.json`;
+    if (existing.has(state)) {
+      if (!touched.has(state)) continue;
+      const previous = JSON.parse(gitResult(root, ["show", `${base}:${state}`]).stdout).delivery;
+      const delivery = archive.item.delivery;
+      if (previous?.source?.digest === delivery.source.digest && previous?.planDigest === delivery.planDigest) continue;
+    } else if (gitResult(root, ["--literal-pathspecs", "log", "--full-history", "-1", "--format=%H", base, "--", state]).stdout.trim()) {
+      continue;
+    }
+    for (const change of archive.changes) {
+      if ((files[change.path] ?? null) !== change.before) continue;
+      if (change.after === null) delete files[change.path];
+      else files[change.path] = change.after;
+    }
+  }
+  const unexplained = snapshotChanges(makeSnapshot(files), current);
+  const trivialDoc = unexplained.length ? declaredTrivialDoc(root, base, ancestor, current) : null;
+  return { changedFiles: unexplained.filter(file => file !== trivialDoc), trivialDoc };
+}
+
+export async function collectScopeErrors(root, records, items, { base = null } = {}) {
   const config = await readJson(path.join(root, ".ai-harness/config.json"));
   const current = await sourceSnapshot(root);
   const errors = [];
@@ -74,6 +122,11 @@ export async function collectScopeErrors(root, records, items) {
   }
   const controls = items.map((item) => `${config.workItemsDirectory}/${item.id}/**`);
   const ordered = archives.toSorted((left, right) => left.at.localeCompare(right.at));
+  if (base !== null) {
+    const { changedFiles, trivialDoc } = await compareCommitRange(root, config, base, current, ordered);
+    for (const file of changedFiles) errors.push(`CI 基准后的变更缺少对应的本次交付：${file}`);
+    return { errors, warnings, changedFiles, scopes: controls.sort(), trivialDoc };
+  }
   const first = active.toSorted((left, right) => left.item.baseline.completedAt.localeCompare(right.item.baseline.completedAt))[0];
   const latest = ordered.at(-1);
   let frontier = first ? await baselineSnapshot(root, first.item, current, config)
