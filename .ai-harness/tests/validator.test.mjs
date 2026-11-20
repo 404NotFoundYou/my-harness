@@ -62,3 +62,30 @@ test("scope matching is deterministic", () => {
   assert.equal(fileMatchesScope("src/other/a.mjs", "src/core/**"), false);
   assert.equal(fileMatchesScope("README.md", "README.md"), true);
 });
+
+test("review fixes: only unordered tasks that can write the same file conflict", () => {
+  const plan = createPlan({ workItemId: "WORK-1", mode: "multi", rationale: "parallel" });
+  const batch = createReviewBatch({ id: "R1", title: "parallel", risk: "medium", independentRequired: false });
+  plan.reviewBatches.push(batch);
+  for (const id of ["T1", "T2"]) {
+    plan.tasks.push(createTask({ id, title: id, module: "core", blockedBy: [], writeScopes: ["src/" + id], verification: ["test"], docsImpact: ["N/A: fixture"], reviewBatch: "R1", risk: "medium", owner: id }));
+    batch.taskIds.push(id);
+  }
+  const [left, right] = plan.tasks;
+  const conflicts = () => collectPlanErrors(plan).filter(message => message.includes("写入范围重叠"));
+  left.docsImpact = right.docsImpact = ["docs/guide.md"];
+  assert.equal(conflicts().length, 1, "both owners publish the same document");
+  right.docsImpact = ["N/A: fixture"];
+  right.writeScopes = ["docs/guide.md"];
+  assert.equal(conflicts().length, 1, "a document is also a write target");
+  for (const [a, b, overlaps] of [["src/app*.mjs", "src/apple.mjs", true], ["src/app*.mjs", "src/a?ple.*", true], ["src/**/x.js", "src/y/z*/x.js", true], ["src/*.css", "src/*.mjs", false], ["src/*.js", "src/sub/*.js", false]]) {
+    left.writeScopes = [a]; right.writeScopes = [b];
+    assert.equal(conflicts().length > 0, overlaps, a + " vs " + b);
+  }
+  right.docsImpact = ["**"];
+  assert.ok(collectPlanErrors(plan).some(message => message.includes("越界文档范围")));
+  right.docsImpact = ["N/A: fixture"];
+  right.writeScopes = left.writeScopes;
+  left.blocks.push(right.id); right.blockedBy.push(left.id);
+  assert.deepEqual(conflicts(), [], "ordered handoffs may share a file");
+});

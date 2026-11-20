@@ -47,12 +47,11 @@ function containsLine(content, expected) {
     .some((line) => line.trim() === expected);
 }
 
-export async function doctorProject(root, { requireInitialized = true } = {}) {
+export async function doctorProject(root, { requireInitialized = true, config } = {}) {
   const errors = [];
   const warnings = [];
   const details = {};
   let manifest;
-  let config;
   try {
     manifest = await readJson(path.join(root, ".ai-harness", "manifest.json"));
     details.harnessVersion = manifest.version;
@@ -63,7 +62,7 @@ export async function doctorProject(root, { requireInitialized = true } = {}) {
     errors.push(error.message);
   }
   try {
-    config = await loadConfig(root);
+    config ??= await loadConfig(root);
     if (config.schemaVersion !== 1) errors.push("config.json schemaVersion 必须为 1。");
   } catch (error) {
     errors.push(error.message);
@@ -176,9 +175,9 @@ function stateRequiresCompletePlan(status) {
   return ["PLANNED", "IMPLEMENTING", "VERIFYING", "CODE_REVIEW", "READY_FOR_ACCEPTANCE", "DONE"].includes(status);
 }
 
-async function inspectEvidence(root, item, plan) {
+async function inspectEvidence(root, item, plan, paths, config) {
   const errors = [];
-  const paths = await workItemPaths(root, item.id);
+  paths ??= await workItemPaths(root, item.id, config);
   let raw = "";
   try {
     raw = await readFile(paths.evidence, "utf8");
@@ -208,7 +207,7 @@ async function inspectEvidence(root, item, plan) {
       errors.push(`evidence.jsonl:${index + 1} 结果状态无效。`);
     }
     if (byId.has(event.id)) errors.push(`evidence.jsonl 包含重复 ID：${event.id}`);
-    try { await assertEvidenceArtifacts(root, item.id, event); } catch (error) { errors.push(`${event.id}: ${error.code || "ARTIFACT_INVALID"}: ${error.message}`); }
+    try { await assertEvidenceArtifacts(root, item.id, event, config); } catch (error) { errors.push(`${event.id}: ${error.code || "ARTIFACT_INVALID"}: ${error.message}`); }
     byId.set(event.id, event);
     events.push(event);
   }
@@ -287,26 +286,27 @@ export async function collectEvidenceErrors(root, item, plan) {
 }
 
 export async function checkProject(root, { ci = false, base = null } = {}) {
-  const doctor = await doctorProject(root, { requireInitialized: true });
+  const config = await loadConfig(root);
+  const doctor = await doctorProject(root, { config });
   const errors = [...doctor.errors];
   const warnings = [...doctor.warnings];
-  const config = await loadConfig(root);
   const policyIndex = await readJson(path.join(root, ".ai-harness", "policies", "index.json"));
   const records = [];
   const items = [];
   const ids = await workItemIds(root, config);
   for (const id of ids) {
     try {
-      const item = await loadWorkItem(root, id);
+      const paths = await workItemPaths(root, id, config);
+      const item = await loadWorkItem(root, id, paths);
       items.push(item);
       const expectedPolicies = itemPolicyFiles(policyIndex, item);
       if (JSON.stringify(item.policyFiles) !== JSON.stringify(expectedPolicies)) {
         errors.push(`${id}: policyFiles 与工作类型/flags 的确定性路由不一致。`);
       }
-      const plan = await loadPlan(root, id, { optional: true });
-      const evidence = await inspectEvidence(root, item, plan);
+      const plan = await loadPlan(root, id, { optional: true, paths });
+      const evidence = await inspectEvidence(root, item, plan, paths, config);
       errors.push(...evidence.errors.map((message) => `${id}: ${message}`));
-      const progressErrors = await collectProgressErrors(root, item, plan, { events: evidence.events });
+      const progressErrors = await collectProgressErrors(root, item, plan, { events: evidence.events, config });
       errors.push(...progressErrors.map((message) => `${id}: ${message}`));
       if (plan) {
         const planErrors = collectPlanErrors(plan, id, { requireComplete: item.plan.approved || stateRequiresCompletePlan(item.status) });
@@ -320,7 +320,7 @@ export async function checkProject(root, { ci = false, base = null } = {}) {
       if (error.details?.errors) errors.push(...error.details.errors.map((message) => `${id}: ${message}`));
     }
   }
-  const scope = await collectScopeErrors(root, records, items, { base });
+  const scope = await collectScopeErrors(root, records, items, { base, config });
   errors.push(...scope.errors);
   warnings.push(...scope.warnings);
   if (ci) {

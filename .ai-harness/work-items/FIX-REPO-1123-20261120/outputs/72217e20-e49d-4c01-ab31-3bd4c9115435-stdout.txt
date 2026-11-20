@@ -1,0 +1,433 @@
+TAP version 13
+# Subtest: review fixes: check reads one configuration per invocation, and honors changes between invocations
+ok 1 - review fixes: check reads one configuration per invocation, and honors changes between invocations
+  ---
+  duration_ms: 2265.6418
+  type: 'test'
+  ...
+# Subtest: review fixes: repeated explicit Runtime files have one actionable omission, controls stay excluded
+ok 2 - review fixes: repeated explicit Runtime files have one actionable omission, controls stay excluded
+  ---
+  duration_ms: 1396.182
+  type: 'test'
+  ...
+# Subtest: review fixes: default init retries a failed metadata publication and preserves concurrent edits
+ok 3 - review fixes: default init retries a failed metadata publication and preserves concurrent edits
+  ---
+  duration_ms: 1751.8653
+  type: 'test'
+  ...
+# Subtest: review fixes: retry finishes witness cleanup after project metadata has committed
+not ok 4 - review fixes: retry finishes witness cleanup after project metadata has committed
+  ---
+  duration_ms: 480.3691
+  type: 'test'
+  location: 'D:\\Projects\\my-harness\\.ai-harness\\tests\\installer.test.mjs:1023:1'
+  failureType: 'testCodeFailure'
+  error: '项目已经初始化；如需重建必须显式使用 --force。'
+  code: 'PROJECT_INITIALIZED'
+  name: 'HarnessError'
+  stack: |-
+    invariant (file:///D:/Projects/my-harness/.ai-harness/src/errors.mjs:12:11)
+    initializeProject (file:///D:/Projects/my-harness/.ai-harness/src/installer.mjs:948:3)
+    async TestContext.<anonymous> (file:///D:/Projects/my-harness/.ai-harness/tests/installer.test.mjs:1038:22)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: review fixes: interrupted first creation is retryable only with an otherwise empty work item
+ok 5 - review fixes: interrupted first creation is retryable only with an otherwise empty work item
+  ---
+  duration_ms: 1618.966
+  type: 'test'
+  ...
+# Subtest: review fixes: only unordered tasks that can write the same file conflict
+ok 6 - review fixes: only unordered tasks that can write the same file conflict
+  ---
+  duration_ms: 4.3365
+  type: 'test'
+  ...
+# Subtest: review fixes: rejected and interrupted plan additions leave the plan and audit trail untouched
+not ok 7 - review fixes: rejected and interrupted plan additions leave the plan and audit trail untouched
+  ---
+  duration_ms: 1767.5346
+  type: 'test'
+  location: 'D:\\Projects\\my-harness\\.ai-harness\\tests\\workflow.test.mjs:318:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    partial publication must not consume the batch ID or tear the log
+    + actual - expected
+    ... Skipped lines
+    
+      [
+        '{\n' +
+          '  "schemaVersion": 1,\n' +
+          '  "workItemId": "REJECTED",\n' +
+          '  "mode": "single",\n' +
+    ...
+          '      "independentRequired": false\n' +
+    +     '    },\n' +
+    +     '    {\n' +
+    +     '      "id": "R2",\n' +
+    +     '      "title": "REJECTED",\n' +
+    +     '      "risk": "low",\n' +
+    +     '      "taskIds": [],\n' +
+    +     '      "independentRequired": false\n' +
+          '    }\n' +
+          '  ],\n' +
+          '  "createdAt": "2026-11-20T09:39:07.258Z",\n' +
+    +     '  "updatedAt": "2026-11-20T09:39:07.276Z"\n' +
+    -     '  "updatedAt": "2026-11-20T09:39:07.262Z"\n' +
+          '}\n',
+        '{\n' +
+          '  "schemaVersion": 1,\n' +
+          '  "policyRoutingVersion": 2,\n' +
+          '  "integrityVersion": 1,\n' +
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+    0: |-
+      {
+        "schemaVersion": 1,
+        "workItemId": "REJECTED",
+        "mode": "single",
+        "rationale": "fixture",
+        "tasks": [],
+        "reviewBatches": [
+          {
+            "id": "R1",
+            "title": "REJECTED",
+            "risk": "low",
+            "taskIds": [],
+            "independentRequired": false
+          }
+        ],
+        "createdAt": "2026-11-20T09:39:07.258Z",
+        "updatedAt": "2026-11-20T09:39:07.262Z"
+      }
+      
+    1: |-
+      {
+        "schemaVersion": 1,
+        "policyRoutingVersion": 2,
+        "integrityVersion": 1,
+        "revision": 1,
+        "id": "REJECTED",
+        "type": "ITERATION",
+        "title": "REJECTED",
+        "status": "SOLUTION_DESIGN",
+        "flags": [],
+        "policyFiles": [
+          ".ai-harness/policies/core.md",
+          ".ai-harness/policies/security.md",
+          ".ai-harness/policies/documentation.md",
+          ".ai-harness/policies/iteration.md"
+        ],
+        "authorization": {
+          "mode": "autonomous",
+          "source": "fixture"
+        },
+        "input": {
+          "references": [
+            "AGENTS.md"
+          ],
+          "acceptance": [
+            "consistent audit"
+          ],
+          "nonGoals": [],
+          "version": null
+        },
+        "architecture": {
+          "source": null,
+          "approvalRef": null
+        },
+        "bug": null,
+        "baseline": {
+          "status": "complete",
+          "document": null,
+          "evidence": [
+            "fixture baseline"
+          ],
+          "completedAt": "2026-11-20T09:39:07.097Z",
+          "repository": {
+            "isGit": true,
+            "branch": "master",
+            "commit": "22b3800ac6ef9382645f7394d1e94d261fd6a26c",
+            "dirty": false,
+            "changedFiles": [],
+            "fingerprints": {},
+            "source": {
+              "digest": "e58eae6f6345fd8d16eb75a668dc1b9889ce0d7309aa6501a61accd1ac6fb2af",
+              "document": ".ai-harness/work-items/REJECTED/snapshots/e58eae6f6345fd8d16eb75a668dc1b9889ce0d7309aa6501a61accd1ac6fb2af.json"
+            }
+          }
+        },
+        "solution": {
+          "status": "complete",
+          "document": "AGENTS.md",
+          "evidence": [
+            "fixture plan"
+          ],
+          "completedAt": "2026-11-20T09:39:07.249Z"
+        },
+        "database": {
+          "impact": "none",
+          "status": "not-applicable",
+          "document": null,
+          "evidence": [
+            "files only"
+          ],
+          "completedAt": "2026-11-20T09:39:07.254Z"
+        },
+        "plan": {
+          "path": ".ai-harness/work-items/REJECTED/plan.json",
+          "approved": false,
+          "approvalRef": null
+        },
+        "verification": {
+          "status": "pending",
+          "evidence": [],
+          "stages": []
+        },
+        "review": {
+          "status": "pending",
+          "evidence": [],
+          "independent": false
+        },
+        "acceptance": {
+          "status": "pending",
+          "evidence": []
+        },
+        "analysis": {
+          "status": "pending",
+          "evidence": [],
+          "conclusions": [],
+          "unknowns": []
+        },
+        "documentation": {
+          "status": "pending",
+          "evidence": []
+        },
+        "blocked": null,
+        "delivery": null,
+        "history": [
+          {
+            "from": null,
+            "to": "INTAKE",
+            "at": "2026-11-20T09:39:06.895Z",
+            "reason": "work-item-created"
+          },
+          {
+            "from": "INTAKE",
+            "to": "BASELINING",
+            "at": "2026-11-20T09:39:06.910Z",
+            "reason": "gate-passed"
+          },
+          {
+            "from": "BASELINING",
+            "to": "SOLUTION_DESIGN",
+            "at": "2026-11-20T09:39:07.243Z",
+            "reason": "gate-passed"
+          }
+        ],
+        "createdAt": "2026-11-20T09:39:06.895Z",
+        "updatedAt": "2026-11-20T09:39:07.263Z"
+      }
+      
+    2: |-
+      {"schemaVersion":1,"id":"1fcc7f91-711e-4517-9c44-d1b216769d56","workItemId":"REJECTED","action":"work-item-created","timestamp":"2026-11-20T09:39:06.904Z","status":"INTAKE","type":"ITERATION"}
+      {"schemaVersion":1,"id":"d4ede896-80d5-48b0-b0b6-6cb47685a92e","workItemId":"REJECTED","action":"state-transition","timestamp":"2026-11-20T09:39:06.911Z","from":"INTAKE","to":"BASELINING","reason":null}
+      {"schemaVersion":1,"id":"a97ed842-2668-4df1-aa74-ca73562304ff","workItemId":"REJECTED","action":"baseline-completed","timestamp":"2026-11-20T09:39:07.238Z","repository":{"isGit":true,"branch":"master","commit":"22b3800ac6ef9382645f7394d1e94d261fd6a26c","dirty":false,"changedFiles":[],"fingerprints":{},"source":{"digest":"e58eae6f6345fd8d16eb75a668dc1b9889ce0d7309aa6501a61accd1ac6fb2af","document":".ai-harness/work-items/REJECTED/snapshots/e58eae6f6345fd8d16eb75a668dc1b9889ce0d7309aa6501a61accd1ac6fb2af.json"}},"evidence":["fixture baseline"]}
+      {"schemaVersion":1,"id":"8c718fb1-47f0-49a0-bad0-559c3d3dae32","workItemId":"REJECTED","action":"state-transition","timestamp":"2026-11-20T09:39:07.244Z","from":"BASELINING","to":"SOLUTION_DESIGN","reason":null}
+      {"schemaVersion":1,"id":"a57591e6-f264-4dc6-8d15-d62c5059d13b","workItemId":"REJECTED","action":"solution-completed","timestamp":"2026-11-20T09:39:07.249Z","document":"AGENTS.md","evidence":["fixture plan"]}
+      {"schemaVersion":1,"id":"e1dbb3b4-f7f0-493c-81ab-563e6e1e8256","workItemId":"REJECTED","action":"database-decision","timestamp":"2026-11-20T09:39:07.254Z","impact":"none","status":"not-applicable","document":null,"evidence":["files only"]}
+      {"schemaVersion":1,"id":"f4d79262-7987-4c7a-ae3d-a57c06eaa283","workItemId":"REJECTED","action":"plan-initialized","timestamp":"2026-11-20T09:39:07.259Z","mode":"single","rationale":"fixture"}
+      {"schemaVersion":1,"id":"7453e9c4-7bd4-4c53-9412-3fbf2e6ee38e","workItemId":"REJECTED","action":"review-batch-added","timestamp":"2026-11-20T09:39:07.264Z","batchId":"R1"}
+      
+  actual:
+    0: |-
+      {
+        "schemaVersion": 1,
+        "workItemId": "REJECTED",
+        "mode": "single",
+        "rationale": "fixture",
+        "tasks": [],
+        "reviewBatches": [
+          {
+            "id": "R1",
+            "title": "REJECTED",
+            "risk": "low",
+            "taskIds": [],
+            "independentRequired": false
+          },
+          {
+            "id": "R2",
+            "title": "REJECTED",
+            "risk": "low",
+            "taskIds": [],
+            "independentRequired": false
+          }
+        ],
+        "createdAt": "2026-11-20T09:39:07.258Z",
+        "updatedAt": "2026-11-20T09:39:07.276Z"
+      }
+      
+    1: |-
+      {
+        "schemaVersion": 1,
+        "policyRoutingVersion": 2,
+        "integrityVersion": 1,
+        "revision": 1,
+        "id": "REJECTED",
+        "type": "ITERATION",
+        "title": "REJECTED",
+        "status": "SOLUTION_DESIGN",
+        "flags": [],
+        "policyFiles": [
+          ".ai-harness/policies/core.md",
+          ".ai-harness/policies/security.md",
+          ".ai-harness/policies/documentation.md",
+          ".ai-harness/policies/iteration.md"
+        ],
+        "authorization": {
+          "mode": "autonomous",
+          "source": "fixture"
+        },
+        "input": {
+          "references": [
+            "AGENTS.md"
+          ],
+          "acceptance": [
+            "consistent audit"
+          ],
+          "nonGoals": [],
+          "version": null
+        },
+        "architecture": {
+          "source": null,
+          "approvalRef": null
+        },
+        "bug": null,
+        "baseline": {
+          "status": "complete",
+          "document": null,
+          "evidence": [
+            "fixture baseline"
+          ],
+          "completedAt": "2026-11-20T09:39:07.097Z",
+          "repository": {
+            "isGit": true,
+            "branch": "master",
+            "commit": "22b3800ac6ef9382645f7394d1e94d261fd6a26c",
+            "dirty": false,
+            "changedFiles": [],
+            "fingerprints": {},
+            "source": {
+              "digest": "e58eae6f6345fd8d16eb75a668dc1b9889ce0d7309aa6501a61accd1ac6fb2af",
+              "document": ".ai-harness/work-items/REJECTED/snapshots/e58eae6f6345fd8d16eb75a668dc1b9889ce0d7309aa6501a61accd1ac6fb2af.json"
+            }
+          }
+        },
+        "solution": {
+          "status": "complete",
+          "document": "AGENTS.md",
+          "evidence": [
+            "fixture plan"
+          ],
+          "completedAt": "2026-11-20T09:39:07.249Z"
+        },
+        "database": {
+          "impact": "none",
+          "status": "not-applicable",
+          "document": null,
+          "evidence": [
+            "files only"
+          ],
+          "completedAt": "2026-11-20T09:39:07.254Z"
+        },
+        "plan": {
+          "path": ".ai-harness/work-items/REJECTED/plan.json",
+          "approved": false,
+          "approvalRef": null
+        },
+        "verification": {
+          "status": "pending",
+          "evidence": [],
+          "stages": []
+        },
+        "review": {
+          "status": "pending",
+          "evidence": [],
+          "independent": false
+        },
+        "acceptance": {
+          "status": "pending",
+          "evidence": []
+        },
+        "analysis": {
+          "status": "pending",
+          "evidence": [],
+          "conclusions": [],
+          "unknowns": []
+        },
+        "documentation": {
+          "status": "pending",
+          "evidence": []
+        },
+        "blocked": null,
+        "delivery": null,
+        "history": [
+          {
+            "from": null,
+            "to": "INTAKE",
+            "at": "2026-11-20T09:39:06.895Z",
+            "reason": "work-item-created"
+          },
+          {
+            "from": "INTAKE",
+            "to": "BASELINING",
+            "at": "2026-11-20T09:39:06.910Z",
+            "reason": "gate-passed"
+          },
+          {
+            "from": "BASELINING",
+            "to": "SOLUTION_DESIGN",
+            "at": "2026-11-20T09:39:07.243Z",
+            "reason": "gate-passed"
+          }
+        ],
+        "createdAt": "2026-11-20T09:39:06.895Z",
+        "updatedAt": "2026-11-20T09:39:07.263Z"
+      }
+      
+    2: |-
+      {"schemaVersion":1,"id":"1fcc7f91-711e-4517-9c44-d1b216769d56","workItemId":"REJECTED","action":"work-item-created","timestamp":"2026-11-20T09:39:06.904Z","status":"INTAKE","type":"ITERATION"}
+      {"schemaVersion":1,"id":"d4ede896-80d5-48b0-b0b6-6cb47685a92e","workItemId":"REJECTED","action":"state-transition","timestamp":"2026-11-20T09:39:06.911Z","from":"INTAKE","to":"BASELINING","reason":null}
+      {"schemaVersion":1,"id":"a97ed842-2668-4df1-aa74-ca73562304ff","workItemId":"REJECTED","action":"baseline-completed","timestamp":"2026-11-20T09:39:07.238Z","repository":{"isGit":true,"branch":"master","commit":"22b3800ac6ef9382645f7394d1e94d261fd6a26c","dirty":false,"changedFiles":[],"fingerprints":{},"source":{"digest":"e58eae6f6345fd8d16eb75a668dc1b9889ce0d7309aa6501a61accd1ac6fb2af","document":".ai-harness/work-items/REJECTED/snapshots/e58eae6f6345fd8d16eb75a668dc1b9889ce0d7309aa6501a61accd1ac6fb2af.json"}},"evidence":["fixture baseline"]}
+      {"schemaVersion":1,"id":"8c718fb1-47f0-49a0-bad0-559c3d3dae32","workItemId":"REJECTED","action":"state-transition","timestamp":"2026-11-20T09:39:07.244Z","from":"BASELINING","to":"SOLUTION_DESIGN","reason":null}
+      {"schemaVersion":1,"id":"a57591e6-f264-4dc6-8d15-d62c5059d13b","workItemId":"REJECTED","action":"solution-completed","timestamp":"2026-11-20T09:39:07.249Z","document":"AGENTS.md","evidence":["fixture plan"]}
+      {"schemaVersion":1,"id":"e1dbb3b4-f7f0-493c-81ab-563e6e1e8256","workItemId":"REJECTED","action":"database-decision","timestamp":"2026-11-20T09:39:07.254Z","impact":"none","status":"not-applicable","document":null,"evidence":["files only"]}
+      {"schemaVersion":1,"id":"f4d79262-7987-4c7a-ae3d-a57c06eaa283","workItemId":"REJECTED","action":"plan-initialized","timestamp":"2026-11-20T09:39:07.259Z","mode":"single","rationale":"fixture"}
+      {"schemaVersion":1,"id":"7453e9c4-7bd4-4c53-9412-3fbf2e6ee38e","workItemId":"REJECTED","action":"review-batch-added","timestamp":"2026-11-20T09:39:07.264Z","batchId":"R1"}
+      
+  operator: 'deepStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///D:/Projects/my-harness/.ai-harness/tests/workflow.test.mjs:352:14)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+# Subtest: review fixes: archived workflow reports missing required logs and non-ENOENT errors on optional files
+ok 8 - review fixes: archived workflow reports missing required logs and non-ENOENT errors on optional files
+  ---
+  duration_ms: 3127.2712
+  type: 'test'
+  ...
+1..8
+# tests 8
+# suites 0
+# pass 6
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 3266.2495

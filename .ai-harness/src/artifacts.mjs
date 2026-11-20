@@ -47,10 +47,10 @@ export async function captureArtifacts(root, id, paths, source) {
   return candidates.map(entry => entry.reference);
 }
 
-export async function assertArtifacts(root, id, references) {
+export async function assertArtifacts(root, id, references, config) {
   if (references === undefined) return;
   invariant(Array.isArray(references) && references.length > 0 && references.length <= 8, "ARTIFACT_INVALID", "产物引用数组无效。" );
-  const config = await readJson(path.join(root, ".ai-harness/config.json"));
+  config ??= await readJson(path.join(root, ".ai-harness/config.json"));
   const prefix = `${normalizeRelativePath(config.workItemsDirectory).replace(/\/+$/, "")}/${id}/artifacts/`;
   for (const reference of references) {
     invariant(reference?.version === 1 && typeof reference.path === "string" && normalizeRelativePath(reference.path).startsWith(prefix) && /^[0-9a-f]{64}$/.test(reference.sha256 || "") && Number.isSafeInteger(reference.bytes) && reference.bytes >= 0 && typeof reference.source === "string" && reference.source.trim(), "ARTIFACT_INVALID", "产物必须归属当前工作项并具有有效版本、哈希、大小和来源。" );
@@ -59,8 +59,8 @@ export async function assertArtifacts(root, id, references) {
   }
 }
 
-export async function assertEvidenceArtifacts(root, id, event) {
-  await assertArtifacts(root, id, event.artifacts);
+export async function assertEvidenceArtifacts(root, id, event, config) {
+  await assertArtifacts(root, id, event.artifacts, config);
   if (event.kind !== "command") return;
   let directory;
   for (const name of ["stdout", "stderr"]) {
@@ -75,7 +75,7 @@ export async function assertEvidenceArtifacts(root, id, event) {
         (event.status === "fail" && stream.saveError?.code), "OUTPUT_ARTIFACT_INVALID", `截断的 ${name} 缺少归档引用。`);
       continue;
     }
-    directory ??= normalizeRelativePath((await readJson(path.join(root, ".ai-harness/config.json"))).workItemsDirectory);
+    directory ??= normalizeRelativePath((config ?? await readJson(path.join(root, ".ai-harness/config.json"))).workItemsDirectory);
     const expected = path.posix.join(directory, id, "outputs", `${event.id}-${name}.txt`);
     invariant(/^[a-zA-Z0-9-]+$/.test(event.id) && stream.artifact === expected && /^[0-9a-f]{64}$/.test(stream.artifactSha256 || ""),
       "OUTPUT_ARTIFACT_INVALID", `${name} 的归档路径或摘要与本工作项、命令或输出流不匹配。`);

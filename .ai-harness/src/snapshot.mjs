@@ -21,8 +21,8 @@ function gitQuotedPath(file) {
   return '"' + file.replace(/[\x00-\x1f\x7f"\\]/g, (char) => char === '"' || char === "\\" ? `\\${char}` : `\\${char.charCodeAt(0).toString(8).padStart(3, "0")}`) + '"';
 }
 
-export async function sourceSnapshot(root) {
-  const config = await readJson(path.join(root, ".ai-harness/config.json"));
+export async function sourceSnapshot(root, config) {
+  config ??= await readJson(path.join(root, ".ai-harness/config.json"));
   const index = gitResult(root, ["ls-files", "--stage", "-z"]).stdout.split("\0").filter(Boolean);
   const files = Object.create(null);
   for (const entry of index) {
@@ -59,9 +59,9 @@ export async function sourceSnapshot(root) {
   return makeSnapshot(files);
 }
 
-export async function commitSnapshot(root, commit) {
+export async function commitSnapshot(root, commit, config) {
   invariant(/^[0-9a-f]{40,64}$/.test(commit || ""), "INVALID_SNAPSHOT_COMMIT", "代码快照需要完整提交标识。" );
-  const config = await readJson(path.join(root, ".ai-harness/config.json"));
+  config ??= await readJson(path.join(root, ".ai-harness/config.json"));
   const files = Object.create(null);
   for (const entry of gitResult(root, ["ls-tree", "-r", "-z", commit]).stdout.split("\0").filter(Boolean)) {
     const match = /^(\d+) (blob|commit) ([0-9a-f]+)\t([\s\S]+)$/.exec(entry);

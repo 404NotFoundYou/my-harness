@@ -5,9 +5,9 @@ import { spawnSync } from "node:child_process";
 import { lstat, mkdir, mkdtemp, readFile, readdir, readlink, realpath, rm, writeFile } from "node:fs/promises";
 import { installRuntime, initializeProject } from "../.ai-harness/src/installer.mjs";
 import { checkProject } from "../.ai-harness/src/checker.mjs";
-import { loadPlan, loadWorkItem } from "../.ai-harness/src/workflow.mjs";
+import { workItemPaths } from "../.ai-harness/src/workflow.mjs";
 import { redact } from "../.ai-harness/src/evidence.mjs";
-import { atomicWriteJson } from "../.ai-harness/src/filesystem.mjs";
+import { atomicWriteJson, resolveProjectPath } from "../.ai-harness/src/filesystem.mjs";
 import { sourceSnapshot } from "../.ai-harness/src/snapshot.mjs";
 import { hasCompleteUsage, trialStatistics } from "./statistics.mjs";
 import { projectWorkflowContract, taskManifest, writableFilesFor } from "./task-contract.mjs";
@@ -184,6 +184,31 @@ export function participantPrompt(task, group, runBudget = budget, suite = "core
     (group.harness ? `本组已安装并初始化Harness。${beginSpecPath}已预填公开写入范围和公共验证命令，不要编辑该JSON；根据实际方案判断risk(low/medium)与approach后，通过node .ai-harness/bin/harness.mjs begin --spec ${beginSpecPath} --risk <low或medium> --approach "<实际方案>" --json提交。创建后用guide --id ${task.id}-iteration --task T1 --brief --json查看缺失事项；先完成实现和必要额外测试，最后用run --id ${task.id}-iteration --all --json执行全部计划检查。检查通过后不要再修改产品文件，立即按guide的finish模板收尾并执行check --ci；两者均通过后返回结构化最终结果，未完成如实报告。\n` : "按当前项目规范直接实施与验证。\n");
 }
 
+async function archiveWorkItem(root, id, output, errors) {
+  const paths = await workItemPaths(root, id);
+  const directory = path.join(output, "work-items", id);
+  await mkdir(directory, { recursive: true });
+  const record = { state: null, plan: null };
+  for (const key of ["state", "plan", "events", "evidence"]) {
+    const name = path.basename(paths[key]);
+    const terminal = ["DONE", "ANSWERED"].includes(record.state?.status);
+    const optional = key === "plan" ? !record.state?.plan?.approved && (!terminal || record.state.type === "ANALYSIS") : key === "evidence" && !terminal;
+    let content;
+    try {
+      const file = await resolveProjectPath(root, path.relative(root, paths[key]), { forWrite: true });
+      content = await readFile(file, "utf8");
+    } catch (error) {
+      if (!(optional && error.code === "ENOENT")) errors.push(redact(`${id}/${name}: ${error.code}: ${error.message}`));
+      continue;
+    }
+    await writeFile(path.join(directory, name), redact(content));
+    if (key === "state" || key === "plan") {
+      try { record[key] = JSON.parse(content); } catch (error) { errors.push(redact(`${id}/${name}: ${error.message}`)); }
+    } else if (!optional && !content.trim()) errors.push(`${id}/${name}: 日志为空`);
+  }
+  return record;
+}
+
 export async function runCase({ task, group, sourceRoot, outputDirectory, driver, runBudget = budget, trial = 1, execution = null, beforePublish = null, suite = "core" }) {
   await mkdir(outputDirectory);
   const participant = await createParticipant(task, { sourceRoot, harness: group.harness, suite });
@@ -223,19 +248,14 @@ export async function runCase({ task, group, sourceRoot, outputDirectory, driver
       try {
         const checked = await checkProject(participant.root, { ci: true });
         workflow = { ok: checked.ok && checked.details.workItems.length > 0, errors: checked.errors, workItems: checked.details.workItems };
-        if (task.writableFiles !== undefined && checked.ok) {
-          const records=[];
-          for (const id of checked.details.workItems) records.push({state:await loadWorkItem(participant.root,id),plan:await loadPlan(participant.root,id,{optional:true})});
+        const records = [];
+        for (const id of workflow.workItems) records.push(await archiveWorkItem(participant.root, id, outputDirectory, workflow.errors));
+        if (workflow.errors.length) workflow.ok = false;
+        if (task.writableFiles !== undefined && checked.ok && !workflow.errors.length) {
           workflow.contract=projectWorkflowContract(task,records);
           if (!workflow.contract.ok) {
             workflow.ok=false;
             workflow.errors.push(`Project workflow requires ${task.type} development items covering all writable files`);
-          }
-        }
-        for (const id of checked.details.workItems) {
-          for (const file of ["state.json", "plan.json", "evidence.jsonl", "events.jsonl"]) {
-            const content = await readFile(path.join(participant.root, ".ai-harness/work-items", id, file), "utf8").catch(() => null);
-            if (content !== null) { await mkdir(path.join(outputDirectory, "work-items", id), { recursive: true }); await writeFile(path.join(outputDirectory, "work-items", id, file), redact(content)); }
           }
         }
       } catch (error) { workflow = { ok: false, errors: [redact(error.message)] }; }

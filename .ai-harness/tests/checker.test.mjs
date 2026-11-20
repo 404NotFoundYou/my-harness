@@ -2,6 +2,8 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
 import { mkdir, mkdtemp, readFile, writeFile } from "node:fs/promises";
+import fsPromises from "node:fs/promises";
+import { syncBuiltinESMExports } from "node:module";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { checkProject, doctorProject } from "../src/checker.mjs";
@@ -274,4 +276,21 @@ test("blank required documentation cannot establish a new project baseline", asy
     await writeFile(path.join(root, "README.md"), "  \n");
     await assert.rejects(() => completeBaseline(root, "BLANK-DOC", { evidence: ["first version"] }), /README\.md/);
   } finally { await cleanup(root); }
+});
+
+test("review fixes: check reads one configuration per invocation, and honors changes between invocations", async t => {
+  const root = await createInstalledProject(), file = path.join(root, ".ai-harness/config.json");
+  try {
+    for (const id of ["FIRST", "SECOND"]) await createWorkItemState(root, { id, type: "ANALYSIS", title: id, references: ["request"], acceptance: ["answer"], authorizationMode: "autonomous", authorizationSource: "fixture" });
+    const config = JSON.parse(await readFile(file));
+    const original = fsPromises.readFile;
+    let reads = 0;
+    t.mock.method(fsPromises, "readFile", (name, ...args) => { if (path.resolve(String(name)) === file) reads++; return original(name, ...args); });
+    syncBuiltinESMExports();
+    assert.deepEqual((await checkProject(root)).details.workItems, ["FIRST", "SECOND"]);
+    assert.equal(reads, 1);
+    await writeFile(file, JSON.stringify({ ...config, projectFile: "ignored-legacy-field", workItemsDirectory: "other-items" }));
+    assert.deepEqual((await checkProject(root)).details.workItems, []);
+    assert.equal(reads, 2);
+  } finally { t.mock.restoreAll(); syncBuiltinESMExports(); await cleanup(root); }
 });

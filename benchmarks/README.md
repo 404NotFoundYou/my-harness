@@ -117,7 +117,7 @@ Windows文件探测仅复用已初始化的CLI sandbox；已有deny-read状态�
 
 题目要求协同修复 `src/repository.mjs` 的归档筛选、稳定排序和输入不可变，以及 `src/pagination.mjs` 的排他游标、分页大小和末页游标。固定 `src/caller.mjs`、`src/limits.mjs`、原公共测试与规格只读；另可新增 `test/extra.test.mjs`。共有12个隐藏验收，覆盖调用方及两个模块的直接契约，完整参考修复通过、只修任一模块均不足。Harness组使用BUGFIX，保留复现、根因及static/sandbox/reproduction/regression阶段，复现和回归引用真实命令。
 
-project组的完整交付还要求：至少一个开发工作项，所有开发项均为题目冻结的BUGFIX且已DONE，已完成任务的写入范围并集覆盖全部可写实现文件。可以保留已ANSWERED分析项；普通ITERATION或无关BUGFIX不能代替。Runtime原有CI继续校验状态、阶段、当前源码和证据，评分保存类型/范围契约；v3审计再与归档state.json、plan.json交叉核对。此映射不证明模型在每一步作出了正确的业务判断，也不代替隐藏功能验收。
+project组的完整交付还要求：至少一个开发工作项，所有开发项均为题目冻结的BUGFIX且已DONE，已完成任务的写入范围并集覆盖全部可写实现文件。可以保留已ANSWERED分析项；普通ITERATION或无关BUGFIX不能代替。Runtime原有CI继续校验状态、阶段、当前源码和证据，评分保存类型/范围契约，v3 起的项目审计会与归档的状态和计划交叉核对。工作流通过还须能够归档并读取每个工作项的 `events.jsonl` 和 `evidence.jsonl`。分析项可省略开发计划，早期工作项可尚未产生证据日志。其他读取错误会列出工作项、文件及原因，并将工作流判为失败。此映射不证明模型在每一步作出了正确的业务判断，也不代替隐藏功能验收。
 
 ```powershell
 # 仅预览一个project题、同模型两组、重复一次，共2次拟调用；不启动客户端

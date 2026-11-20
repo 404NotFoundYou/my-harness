@@ -225,6 +225,13 @@ test("a simulated project experiment completes real BUGFIX gates and audits ever
     const protocolPath=path.join(outputDirectory,"protocol.json");
     const originalProtocol=await readFile(protocolPath,"utf8");
     const protocol=JSON.parse(originalProtocol);
+    for (const name of ["events.jsonl", "evidence.jsonl"]) {
+      const file = path.join(outputDirectory, harnessFolder, "work-items/PAGING", name);
+      const bytes = await readFile(file);
+      await fsPromises.unlink(file);
+      await assert.rejects(() => auditExperiment(outputDirectory), error => error.code === "ENOENT" && error.message.includes(name));
+      await writeFile(file, bytes);
+    }
     assert.deepEqual(protocol.tasks[0].writableFiles,[...task.writableFiles].sort());
     const candidatePath=path.join(outputDirectory,plan.schedule[0].directory,"candidate-files.json");
     const originalCandidate=await readFile(candidatePath,"utf8");
@@ -268,4 +275,23 @@ test("a simulated project experiment completes real BUGFIX gates and audits ever
     await writeFile(path.join(outputDirectory,plan.schedule[0].directory,"events.jsonl"),"");
     await assert.rejects(()=>auditExperiment(outputDirectory),/raw protocol/);
   }finally{await cleanup(directory);}
+});
+
+test("review fixes: archived workflow reports missing required logs and non-ENOENT errors on optional files",async()=>{
+  const directory=await mkdtemp(path.join(tmpdir(),"ai-harness-multifile-archive-"));
+  try {
+    for (const [file, code] of [["events.jsonl","ENOENT"],["plan.json","EIO"]]) {
+      const result=await runCase({task,group:{...group,harness:true},sourceRoot,outputDirectory:path.join(directory,code),driver:async({root})=>{
+        const { createWorkItemState }=await import("../../.ai-harness/src/workflow.mjs");
+        await createWorkItemState(root,{id:"PARTIAL",type:"ANALYSIS",title:"fixture",references:["TASK.md"],acceptance:["answer"],authorizationMode:"autonomous",authorizationSource:"fixture"});
+        const target=path.join(root,".ai-harness/work-items/PARTIAL",file);
+        if(code==="ENOENT") await fsPromises.unlink(target);
+        else await mkdir(target);
+        return synthetic();
+      }});
+      assert.equal(result.workflow.ok,false);
+      assert.ok(result.workflow.errors.some(message=>message.includes(file) && message.includes(code==="ENOENT"?code:"EISDIR")),JSON.stringify(result.workflow));
+      assert.ok((await readdir(path.join(directory,code,"work-items/PARTIAL"))).includes("state.json"),"retain readable evidence");
+    }
+  } finally { await cleanup(directory); }
 });

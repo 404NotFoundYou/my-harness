@@ -984,3 +984,66 @@ test("upgrade uses receipt ownership to replace and retire unmodified payload", 
     await cleanup(target);
   }
 });
+
+test("review fixes: default init retries a failed metadata publication and preserves concurrent edits", async context => {
+  const options = { mode: "new", docsMode: "default" };
+  for (const edited of [false, true]) {
+    const target = await temporaryTarget("ai-harness-init-retry-");
+    const project = path.join(target, ".ai-harness/project.json"), doc = path.join(target, "docs/README.md");
+    try {
+      await installRuntime(sourceRoot, target);
+      git(target, ["init"]);
+      for (const operation of ["rename", "link"]) {
+        const original = fsPromises[operation];
+        context.mock.method(fsPromises, operation, async (from, to) => {
+          if (to === project) {
+            if (edited) await writeFile(doc, "user edit during init");
+            throw Object.assign(new Error("metadata failure"), { code: "EIO" });
+          }
+          return original(from, to);
+        });
+      }
+      syncBuiltinESMExports();
+      await assert.rejects(() => initializeProject(target, options), { code: "EIO" });
+      assert.equal(await exists(project), false);
+      context.mock.restoreAll(); syncBuiltinESMExports();
+      if (edited) {
+        await assert.rejects(() => initializeProject(target, options));
+        assert.equal(await readFile(doc, "utf8"), "user edit during init");
+        assert.equal(await exists(project), false);
+      } else {
+        assert.equal((await initializeProject(target, options)).docsMode, "default");
+        assert.equal(await readFile(doc, "utf8"), await readFile(path.join(target, ".ai-harness/templates/new-project/docs/README.md"), "utf8"));
+        assert.equal(await exists(project), true);
+      }
+    } finally { context.mock.restoreAll(); syncBuiltinESMExports(); await cleanup(target); }
+  }
+});
+
+test("review fixes: retry finishes witness cleanup after project metadata has committed", async t => {
+  const target = await temporaryTarget("ai-harness-init-committed-");
+  const options = { mode: "new", docsMode: "default" };
+  try {
+    await installRuntime(sourceRoot, target);
+    git(target, ["init"]);
+    const unlink = fsPromises.unlink;
+    t.mock.method(fsPromises, "unlink", async file => {
+      if (file.endsWith(".pending")) throw Object.assign(new Error("witness cleanup failed"), { code: "EIO" });
+      return unlink(file);
+    });
+    syncBuiltinESMExports();
+    await assert.rejects(() => initializeProject(target, options), { code: "EIO" });
+    t.mock.restoreAll(); syncBuiltinESMExports();
+    const project = path.join(target, ".ai-harness/project.json"), before = await readFile(project, "utf8");
+    const userMetadata = JSON.stringify({ ...JSON.parse(before), initializedAt: "user-edited" });
+    await writeFile(project, userMetadata);
+    await assert.rejects(() => initializeProject(target, options), { code: "PROJECT_INITIALIZED" });
+    assert.equal(await readFile(project, "utf8"), userMetadata);
+    await writeFile(project, before);
+    assert.deepEqual(await initializeProject(target, options), JSON.parse(before));
+    assert.equal(await readFile(project, "utf8"), before, "cleanup preserves the committed metadata and timestamp");
+    const backups = path.join(target, ".ai-harness/backups");
+    assert.deepEqual(await exists(backups) ? await readdir(backups) : [], []);
+    await assert.rejects(() => initializeProject(target, options), { code: "PROJECT_INITIALIZED" });
+  } finally { t.mock.restoreAll(); syncBuiltinESMExports(); await cleanup(target); }
+});

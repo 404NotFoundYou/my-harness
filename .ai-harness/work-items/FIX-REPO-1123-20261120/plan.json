@@ -1,0 +1,143 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "FIX-REPO-1123-20261120",
+  "mode": "single",
+  "rationale": "单作者统一修复并验证，上述并发及恢复改动设独立高风险审查。",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "修复和回归验证",
+      "module": "runtime-and-benchmark",
+      "status": "COMPLETED",
+      "attempt": 2,
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        ".ai-harness/src/validator.mjs",
+        ".ai-harness/src/scope.mjs",
+        ".ai-harness/src/workflow.mjs",
+        ".ai-harness/src/locking.mjs",
+        ".ai-harness/src/installer.mjs",
+        ".ai-harness/src/checker.mjs",
+        ".ai-harness/src/context.mjs",
+        ".ai-harness/src/verification.mjs",
+        ".ai-harness/src/artifacts.mjs",
+        ".ai-harness/src/snapshot.mjs",
+        ".ai-harness/config.json",
+        ".ai-harness/manifest.json",
+        ".ai-harness/tests/validator.test.mjs",
+        ".ai-harness/tests/workflow.test.mjs",
+        ".ai-harness/tests/locking.test.mjs",
+        ".ai-harness/tests/installer.test.mjs",
+        ".ai-harness/tests/context-delta.test.mjs",
+        ".ai-harness/tests/checker.test.mjs",
+        "benchmarks/runner.mjs",
+        "benchmarks/audit-trial.mjs",
+        "benchmarks/tests/multifile.test.mjs",
+        "benchmarks/tests/runner.test.mjs"
+      ],
+      "verification": [
+        "{\"command\":\"node\",\"args\":[\"--test\",\"--test-name-pattern=review fixes\",\".ai-harness/tests/validator.test.mjs\",\".ai-harness/tests/workflow.test.mjs\",\".ai-harness/tests/locking.test.mjs\",\".ai-harness/tests/installer.test.mjs\",\".ai-harness/tests/checker.test.mjs\",\".ai-harness/tests/context-delta.test.mjs\",\"benchmarks/tests/multifile.test.mjs\"],\"timeoutMs\":600000}",
+        "{\"command\":\"node\",\"args\":[\".ai-harness/tests/run.mjs\"],\"timeoutMs\":600000}",
+        "{\"command\":\"node\",\"timeoutMs\":600000,\"args\":[\"--test\",\"benchmarks/tests/ci-matrix.test.mjs\",\"benchmarks/tests/container-driver.test.mjs\",\"benchmarks/tests/driver-diagnostics.test.mjs\",\"benchmarks/tests/driver-process.test.mjs\",\"benchmarks/tests/driver-timing.test.mjs\",\"benchmarks/tests/memory-control.test.mjs\",\"benchmarks/tests/multifile.test.mjs\",\"benchmarks/tests/preflight.test.mjs\",\"benchmarks/tests/project-v2.test.mjs\",\"benchmarks/tests/report.test.mjs\",\"benchmarks/tests/resume.test.mjs\",\"benchmarks/tests/runner.test.mjs\",\"benchmarks/tests/spec-guidance.test.mjs\",\"benchmarks/tests/status.test.mjs\"]}",
+        "{\"command\":\"node\",\"timeoutMs\":600000,\"args\":[\"--test\",\"benchmarks/tests/installed-runtime.mjs\"]}"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            "--test",
+            "--test-name-pattern=review fixes",
+            ".ai-harness/tests/validator.test.mjs",
+            ".ai-harness/tests/workflow.test.mjs",
+            ".ai-harness/tests/locking.test.mjs",
+            ".ai-harness/tests/installer.test.mjs",
+            ".ai-harness/tests/checker.test.mjs",
+            ".ai-harness/tests/context-delta.test.mjs",
+            "benchmarks/tests/multifile.test.mjs"
+          ],
+          "timeoutMs": 600000
+        },
+        {
+          "id": "V2",
+          "command": "node",
+          "args": [
+            ".ai-harness/tests/run.mjs"
+          ],
+          "timeoutMs": 600000
+        },
+        {
+          "id": "V3",
+          "command": "node",
+          "args": [
+            "--test",
+            "benchmarks/tests/ci-matrix.test.mjs",
+            "benchmarks/tests/container-driver.test.mjs",
+            "benchmarks/tests/driver-diagnostics.test.mjs",
+            "benchmarks/tests/driver-process.test.mjs",
+            "benchmarks/tests/driver-timing.test.mjs",
+            "benchmarks/tests/memory-control.test.mjs",
+            "benchmarks/tests/multifile.test.mjs",
+            "benchmarks/tests/preflight.test.mjs",
+            "benchmarks/tests/project-v2.test.mjs",
+            "benchmarks/tests/report.test.mjs",
+            "benchmarks/tests/resume.test.mjs",
+            "benchmarks/tests/runner.test.mjs",
+            "benchmarks/tests/spec-guidance.test.mjs",
+            "benchmarks/tests/status.test.mjs"
+          ],
+          "timeoutMs": 600000
+        },
+        {
+          "id": "V4",
+          "command": "node",
+          "args": [
+            "--test",
+            "benchmarks/tests/installed-runtime.mjs"
+          ],
+          "timeoutMs": 600000
+        }
+      ],
+      "docsImpact": [
+        "README.md",
+        "docs/versions/history.md",
+        "docs/guides/usage.md",
+        "docs/guides/model-guidance.md",
+        "benchmarks/README.md"
+      ],
+      "reviewBatch": "R1",
+      "risk": "high",
+      "owner": "primary-ai",
+      "verificationStatus": "pass",
+      "reviewStatus": "pass",
+      "evidence": [
+        "51016dd2-387c-4f14-91c1-57e0b6ddf84a",
+        "b26dfd54-2c7c-4ce9-92e9-642e0cbe9624"
+      ],
+      "deferralApproval": null,
+      "verificationSource": {
+        "digest": "2316a891af10fc546fc78f82f2017b85c098c73701b1a6ac54f0488e18e68e63",
+        "document": ".ai-harness/work-items/FIX-REPO-1123-20261120/snapshots/2316a891af10fc546fc78f82f2017b85c098c73701b1a6ac54f0488e18e68e63.json"
+      },
+      "reviewSource": {
+        "digest": "2316a891af10fc546fc78f82f2017b85c098c73701b1a6ac54f0488e18e68e63",
+        "document": ".ai-harness/work-items/FIX-REPO-1123-20261120/snapshots/2316a891af10fc546fc78f82f2017b85c098c73701b1a6ac54f0488e18e68e63.json"
+      }
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "并发、持久化与归档完整性",
+      "risk": "high",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": true
+    }
+  ],
+  "createdAt": "2026-11-20T08:39:45.674Z",
+  "updatedAt": "2026-11-20T09:51:30.532Z",
+  "revision": 4
+}

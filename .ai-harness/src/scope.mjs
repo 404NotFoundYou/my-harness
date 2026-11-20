@@ -6,12 +6,12 @@ import { readdir } from "node:fs/promises";
 import { readJson } from "./filesystem.mjs";
 import { commitSnapshot, controlPath, loadSnapshot, makeSnapshot, snapshotChanges, sourceSnapshot } from "./snapshot.mjs";
 import { fileFingerprint, gitResult } from "./git.mjs";
-import { fileMatchesScope } from "./validator.mjs";
+import { fileMatchesScope, taskWriteScopes } from "./validator.mjs";
 import { planDigest } from "./verification.mjs";
 import { invariant } from "./errors.mjs";
 
 export function plannedScopes(item, plan) {
-  return [...new Set((plan?.tasks || []).flatMap((task) => [...task.writeScopes, ...task.docsImpact.filter((entry) => !/^N\/A\s*:/i.test(entry))]))];
+  return [...new Set((plan?.tasks || []).flatMap(taskWriteScopes))];
 }
 
 function ownedChanges(baseline, source, scopes) {
@@ -21,7 +21,7 @@ function ownedChanges(baseline, source, scopes) {
 
 async function baselineSnapshot(root, item, current, config) {
   if (item.baseline.repository?.source) return loadSnapshot(root, item.baseline.repository.source);
-  const baseline = await commitSnapshot(root, item.baseline.repository.commit);
+  const baseline = await commitSnapshot(root, item.baseline.repository.commit, config);
   for (const [file, fingerprint] of Object.entries(item.baseline.repository.fingerprints || {})) {
     if (controlPath(file, config.workItemsDirectory)) continue;
     if (await fileFingerprint(root, file) === fingerprint) {
@@ -46,7 +46,7 @@ async function legacyArchive(root, item, config) {
     const { updatedAt: ignoredCurrent, ...currentBody } = item;
     const { updatedAt: ignoredHistorical, ...historicalBody } = historical;
     invariant(JSON.stringify(currentBody) === JSON.stringify(historicalBody), "LEGACY_ARCHIVE_CHANGED", `历史终态记录 ${item.id} 已改变，不能当作原提交归档。`);
-    return { source: await commitSnapshot(root, commit), at: item.history.at(-1).at, legacy: true, anchor: commit };
+    return { source: await commitSnapshot(root, commit, config), at: item.history.at(-1).at, legacy: true, anchor: commit };
   }
   invariant(false, "LEGACY_ARCHIVE_REQUIRED", `旧终态工作项 ${item.id} 缺少已提交的归档依据。`);
 }
@@ -83,18 +83,18 @@ function installBlobs(root, entries) {
 }
 
 // Replay only the first install from committed bytes; a later work item may then build on it.
-async function applyInitialInstall(root, base, files) {
+async function applyInitialInstall(root, base, files, config) {
   const projectPath = ".ai-harness/project.json", receiptPath = ".ai-harness/install-receipt.json", manifestPath = ".ai-harness/manifest.json";
   if (files[projectPath] || files[receiptPath] || files[manifestPath]) return;
   const introduction = gitResult(root, ["log", "--reverse", "--diff-filter=A", "--format=%H", `${base}..HEAD`, "--", projectPath]).stdout.split(/\r?\n/)[0];
   if (!introduction || gitResult(root, ["log", "--full-history", "-1", "--format=%H", base, "--", projectPath]).stdout.trim()) return;
-  const installed = (await commitSnapshot(root, introduction)).files;
+  const installed = (await commitSnapshot(root, introduction, config)).files;
   if (![receiptPath, projectPath, manifestPath].every(file => installed[file]?.startsWith("100644:"))) return;
   const metadata = installBlobs(root, [installed[receiptPath], installed[projectPath], installed[manifestPath]]);
   const { initialInstall, ...project } = JSON.parse(metadata(installed[projectPath]));
   const parent = gitResult(root, ["rev-parse", `${introduction}^`]).stdout.trim();
   if (!initialInstall || project.mode !== "existing" || project.repository?.commit !== parent) return;
-  const prior = (await commitSnapshot(root, parent)).files;
+  const prior = (await commitSnapshot(root, parent, config)).files;
   if ([projectPath, receiptPath, manifestPath].some(file => prior[file])) return;
   const receipt = validateInstallReceipt(JSON.parse(metadata(installed[receiptPath])));
   const manifest = JSON.parse(metadata(installed[manifestPath]));
@@ -127,12 +127,12 @@ async function compareCommitRange(root, config, base, current, ordered) {
   "INVALID_CI_BASE", "CI 基准必须是当前 HEAD 的可用祖先提交，使用完整提交标识。");
   invariant(gitResult(root, ["rev-parse", "--is-shallow-repository"]).stdout.trim() === "false",
     "CI_HISTORY_REQUIRED", "CI 基准检查需要完整 Git 历史以核对过去的工作项归属。");
-  const ancestor = await commitSnapshot(root, base);
+  const ancestor = await commitSnapshot(root, base, config);
   const directory = config.workItemsDirectory;
   const existing = new Set(gitResult(root, ["--literal-pathspecs", "ls-tree", "-r", "-z", "--name-only", base, "--", directory]).stdout.split("\0"));
   const touched = new Set(gitResult(root, ["--literal-pathspecs", "diff", "--name-only", "--no-renames", "-z", base, "--", directory]).stdout.split("\0"));
   const files = Object.assign(Object.create(null), ancestor.files);
-  await applyInitialInstall(root, base, files);
+  await applyInitialInstall(root, base, files, config);
   for (const archive of ordered) {
     if (archive.legacy) continue;
     const state = `${directory}/${archive.item.id}/state.json`;
@@ -155,9 +155,9 @@ async function compareCommitRange(root, config, base, current, ordered) {
   return { changedFiles: unexplained.filter(file => file !== trivialDoc), trivialDoc };
 }
 
-export async function collectScopeErrors(root, records, items, { base = null } = {}) {
-  const config = await readJson(path.join(root, ".ai-harness/config.json"));
-  const current = await sourceSnapshot(root);
+export async function collectScopeErrors(root, records, items, { base = null, config } = {}) {
+  config ??= await readJson(path.join(root, ".ai-harness/config.json"));
+  const current = await sourceSnapshot(root, config);
   const errors = [];
   const warnings = [];
   const active = records.filter(({ item }) => item.status !== "DONE");
@@ -190,7 +190,7 @@ export async function collectScopeErrors(root, records, items, { base = null } =
   const latest = ordered.at(-1);
   let frontier = first ? await baselineSnapshot(root, first.item, current, config)
     : latest ? (latest.legacy ? latest.source : latest.baseline)
-      : await commitSnapshot(root, gitResult(root, ["rev-parse", "HEAD"]).stdout.trim());
+      : await commitSnapshot(root, gitResult(root, ["rev-parse", "HEAD"]).stdout.trim(), config);
   const baselineAt = first?.item.baseline.completedAt ?? (latest?.legacy ? latest.at : latest?.baselineAt) ?? new Date().toISOString();
   const files = Object.assign(Object.create(null), frontier.files);
   for (const archive of ordered.filter((entry) => !entry.legacy && entry.at >= baselineAt)) {
@@ -219,7 +219,7 @@ export async function prepareDelivery(root, item, plan, current) {
     if (!["IMPLEMENTING", "VERIFYING", "CODE_REVIEW", "READY_FOR_ACCEPTANCE", "DONE"].includes(other.status)) continue;
     records.push({ item: other, plan: other.id === item.id ? plan : await readJson(path.join(directory, entry.name, "plan.json")) });
   }
-  const scope = await collectScopeErrors(root, records, items);
+  const scope = await collectScopeErrors(root, records, items, { config });
   invariant(scope.errors.length === 0, "CHECK_FAILED", "交付前范围检查失败，未写入终态。", { errors: scope.errors });
   return { baseline: scope.frontier, baselineAt: scope.baselineAt, ownedChanges: ownedChanges(scope.frontier, current, plannedScopes(item, plan)) };
 }

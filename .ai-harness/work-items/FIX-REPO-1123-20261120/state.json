@@ -1,0 +1,442 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 4,
+  "id": "FIX-REPO-1123-20261120",
+  "type": "BUGFIX",
+  "title": "修复并行范围、失败事件、创建和初始化恢复、评测归档并减少检查开销",
+  "status": "DONE",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/bugfix.md",
+    ".ai-harness/policies/verification.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户明确请求修复上轮报告全部问题"
+  },
+  "input": {
+    "references": [
+      "ANALYSIS-REPO-1122-20261120 及用户请求修复"
+    ],
+    "acceptance": [
+      "重合的并行写入被阻止，独立扩展名允许并行，失败计划操作不增加成功事件",
+      "无初始状态的失活创建锁和默认项目初始化均可安全恢复，保留用户文件",
+      "评测归档错误可诊断，配置读取按调用复用，guide 去重并有准确补读提示，删除无效默认配置及恒真条件"
+    ],
+    "nonGoals": [],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": {
+    "actual": "1.12.2 的并行计划判断不一致，部分中断无法恢复并存在忽略归档错误和重复读取",
+    "expected": "范围与交付一致，失败与恢复可追溯，校验与归档可复查",
+    "reproduction": "上轮四组纯函数计划、逐步文件状态和归档读取路径及本轮故障回归"
+  },
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "main@1831ec8，doctor 通过且产品工作树干净。阅读 Runtime、两套测试、安装和评测的直接调用方及前三轮修复记录。"
+    ],
+    "completedAt": "2026-11-20T08:39:45.205Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "1831ec8e167a28997efa5ba5e021be271643354d",
+      "dirty": false,
+      "changedFiles": [],
+      "fingerprints": {},
+      "source": {
+        "digest": "af11bc37a18edc98c318279a7baf0ee0933b6694c3f47015d256215054c85b27",
+        "document": ".ai-harness/work-items/FIX-REPO-1123-20261120/snapshots/af11bc37a18edc98c318279a7baf0ee0933b6694c3f47015d256215054c85b27.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": ".ai-harness/work-items/FIX-REPO-1123-20261120/solution.md",
+    "evidence": [
+      "按当前调用点复用范围判断与锁认领，增设中断和错误路径回归。"
+    ],
+    "completedAt": "2026-11-20T08:39:45.497Z"
+  },
+  "database": {
+    "impact": "none",
+    "status": "not-applicable",
+    "document": null,
+    "evidence": [
+      "仓库本地 JSON 与文件归档，无数据库、查询或迁移。"
+    ],
+    "completedAt": "2026-11-20T08:39:45.586Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/FIX-REPO-1123-20261120/plan.json",
+    "approved": true,
+    "approvalRef": "用户授权修复、全套评测及下游实装，使用原生测试入口"
+  },
+  "verification": {
+    "status": "pass",
+    "evidence": [
+      "44d6865a-cd6e-42c0-9881-b23c42ee6708",
+      "7a7f3afc-f903-44f4-8e7e-3268d7a0fc3a",
+      "0d2f6d75-66a6-4f4e-993a-5080f8cd9f4b",
+      "79520fba-8d01-4f3f-8c57-287bb7beebf4"
+    ],
+    "stages": [
+      {
+        "stage": "static",
+        "status": "pass",
+        "evidence": [
+          "44d6865a-cd6e-42c0-9881-b23c42ee6708"
+        ],
+        "command": null,
+        "revision": 4,
+        "source": {
+          "digest": "2316a891af10fc546fc78f82f2017b85c098c73701b1a6ac54f0488e18e68e63",
+          "document": ".ai-harness/work-items/FIX-REPO-1123-20261120/snapshots/2316a891af10fc546fc78f82f2017b85c098c73701b1a6ac54f0488e18e68e63.json"
+        },
+        "planDigest": "500b63afb1834a84641ff01761fbe71ea209e41a165bd74fb30ff71acfc35fd5"
+      },
+      {
+        "stage": "sandbox",
+        "status": "pass",
+        "evidence": [
+          "7a7f3afc-f903-44f4-8e7e-3268d7a0fc3a"
+        ],
+        "command": null,
+        "revision": 4,
+        "source": {
+          "digest": "2316a891af10fc546fc78f82f2017b85c098c73701b1a6ac54f0488e18e68e63",
+          "document": ".ai-harness/work-items/FIX-REPO-1123-20261120/snapshots/2316a891af10fc546fc78f82f2017b85c098c73701b1a6ac54f0488e18e68e63.json"
+        },
+        "planDigest": "500b63afb1834a84641ff01761fbe71ea209e41a165bd74fb30ff71acfc35fd5"
+      },
+      {
+        "stage": "reproduction",
+        "status": "pass",
+        "evidence": [
+          "0d2f6d75-66a6-4f4e-993a-5080f8cd9f4b"
+        ],
+        "command": "3a4345ff-6d42-47cb-b641-adab8fd8693a",
+        "revision": 4,
+        "source": {
+          "digest": "2316a891af10fc546fc78f82f2017b85c098c73701b1a6ac54f0488e18e68e63",
+          "document": ".ai-harness/work-items/FIX-REPO-1123-20261120/snapshots/2316a891af10fc546fc78f82f2017b85c098c73701b1a6ac54f0488e18e68e63.json"
+        },
+        "planDigest": "500b63afb1834a84641ff01761fbe71ea209e41a165bd74fb30ff71acfc35fd5"
+      },
+      {
+        "stage": "regression",
+        "status": "pass",
+        "evidence": [
+          "79520fba-8d01-4f3f-8c57-287bb7beebf4"
+        ],
+        "command": "01a53a39-593b-4da5-be92-18bc8be085e1",
+        "revision": 4,
+        "source": {
+          "digest": "2316a891af10fc546fc78f82f2017b85c098c73701b1a6ac54f0488e18e68e63",
+          "document": ".ai-harness/work-items/FIX-REPO-1123-20261120/snapshots/2316a891af10fc546fc78f82f2017b85c098c73701b1a6ac54f0488e18e68e63.json"
+        },
+        "planDigest": "500b63afb1834a84641ff01761fbe71ea209e41a165bd74fb30ff71acfc35fd5"
+      }
+    ],
+    "source": {
+      "digest": "2316a891af10fc546fc78f82f2017b85c098c73701b1a6ac54f0488e18e68e63",
+      "document": ".ai-harness/work-items/FIX-REPO-1123-20261120/snapshots/2316a891af10fc546fc78f82f2017b85c098c73701b1a6ac54f0488e18e68e63.json"
+    }
+  },
+  "review": {
+    "status": "pass",
+    "evidence": [
+      "87c31002-140c-4dbb-a111-d6ebc54c133d"
+    ],
+    "independent": true,
+    "source": {
+      "digest": "2316a891af10fc546fc78f82f2017b85c098c73701b1a6ac54f0488e18e68e63",
+      "document": ".ai-harness/work-items/FIX-REPO-1123-20261120/snapshots/2316a891af10fc546fc78f82f2017b85c098c73701b1a6ac54f0488e18e68e63.json"
+    }
+  },
+  "acceptance": {
+    "status": "pass",
+    "evidence": [
+      "9bdddf51-5c1a-4542-864d-ab6655e81cca"
+    ],
+    "source": {
+      "digest": "2316a891af10fc546fc78f82f2017b85c098c73701b1a6ac54f0488e18e68e63",
+      "document": ".ai-harness/work-items/FIX-REPO-1123-20261120/snapshots/2316a891af10fc546fc78f82f2017b85c098c73701b1a6ac54f0488e18e68e63.json"
+    }
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "pass",
+    "evidence": [
+      "64982478-8410-48c7-b71e-d1db8ed2f98c"
+    ]
+  },
+  "blocked": null,
+  "delivery": {
+    "source": {
+      "digest": "2316a891af10fc546fc78f82f2017b85c098c73701b1a6ac54f0488e18e68e63",
+      "document": ".ai-harness/work-items/FIX-REPO-1123-20261120/snapshots/2316a891af10fc546fc78f82f2017b85c098c73701b1a6ac54f0488e18e68e63.json"
+    },
+    "baseline": {
+      "digest": "af11bc37a18edc98c318279a7baf0ee0933b6694c3f47015d256215054c85b27",
+      "document": ".ai-harness/work-items/FIX-REPO-1123-20261120/snapshots/af11bc37a18edc98c318279a7baf0ee0933b6694c3f47015d256215054c85b27.json"
+    },
+    "baselineAt": "2026-11-20T08:39:45.205Z",
+    "ownedChanges": [
+      {
+        "path": ".ai-harness/config.json",
+        "before": "100644:608e630a63e7d9644d3540c00afd168991b26c5d",
+        "after": "100644:7148c433b09f315f18203d876c779e3c714e8f66"
+      },
+      {
+        "path": ".ai-harness/manifest.json",
+        "before": "100644:f6ff78ab1c4cbecdfbfc60babd029a08fec06062",
+        "after": "100644:4ca05fbf761dd41683026f7e0b3ddd2062df09e2"
+      },
+      {
+        "path": ".ai-harness/src/artifacts.mjs",
+        "before": "100644:287802a317fd3eec4097918f32498ac9e8bf3b3b",
+        "after": "100644:17a5f419279b1f325a2c91cb70177dd19c61f705"
+      },
+      {
+        "path": ".ai-harness/src/checker.mjs",
+        "before": "100644:c83f400cbeea9c359786564bdbcfd24f4ee7b381",
+        "after": "100644:d4c11b95adee98d8a78697b76edf5440e30785ca"
+      },
+      {
+        "path": ".ai-harness/src/context.mjs",
+        "before": "100644:f3a5e307ec48fbbae657001062b9837574977490",
+        "after": "100644:4b3a2af28da9f2aaabfab015e4d37eb8e2aaa134"
+      },
+      {
+        "path": ".ai-harness/src/installer.mjs",
+        "before": "100644:033b9abcae1ceb13a46e496d0d704fe756d692b9",
+        "after": "100644:1280e3b4b980419ab17e0aa61cdc20f5c3cbe314"
+      },
+      {
+        "path": ".ai-harness/src/scope.mjs",
+        "before": "100644:df7cd08187806029b7b6747b59d07ae0eacc08e3",
+        "after": "100644:cd2220dc94a6ae4add67072374dbe163e4deadfa"
+      },
+      {
+        "path": ".ai-harness/src/snapshot.mjs",
+        "before": "100644:e8776db886f4455233da8675e9502d53bd5c48d7",
+        "after": "100644:0e68dbf02cdc02bb8d05ce75639ad6ff79653284"
+      },
+      {
+        "path": ".ai-harness/src/validator.mjs",
+        "before": "100644:bebe8b5999428db1f38d9e50043132c366b83a74",
+        "after": "100644:2c7a00d776673448bedf9be5ae517013519e3353"
+      },
+      {
+        "path": ".ai-harness/src/verification.mjs",
+        "before": "100644:2a01abe27f1c50ba744dad512ac0d8f118cb2ae5",
+        "after": "100644:aaf7f79fd3c61059db8557487566d07b194c02c0"
+      },
+      {
+        "path": ".ai-harness/src/workflow.mjs",
+        "before": "100644:cfd2d35f6a34bdc493faffa2c37c69fad5c0fac2",
+        "after": "100644:116c591a31b32688533372551bcfcf5635b1e315"
+      },
+      {
+        "path": ".ai-harness/tests/checker.test.mjs",
+        "before": "100644:513f14b9c077f0af76c3e5fda662457f48a09f95",
+        "after": "100644:8d3c6cd895105d6f766da660413e5930feaa04de"
+      },
+      {
+        "path": ".ai-harness/tests/context-delta.test.mjs",
+        "before": "100644:0a49fb045999a61c791bf0539f5698470419b497",
+        "after": "100644:a455f1f8b23bc2a12065726c81edfa02db899246"
+      },
+      {
+        "path": ".ai-harness/tests/installer.test.mjs",
+        "before": "100644:98569b7136222efada207f6aaf4fa2c6ed5a9322",
+        "after": "100644:b5b8b22d8b0cbd6c137ae3d7ea637831a7490119"
+      },
+      {
+        "path": ".ai-harness/tests/locking.test.mjs",
+        "before": "100644:2be6d425f82bb5d9b81d407452880d58d33f9cbc",
+        "after": "100644:5df3da5d89ce7a5718e68ce967b05bb8c9290c7e"
+      },
+      {
+        "path": ".ai-harness/tests/validator.test.mjs",
+        "before": "100644:f562d2330ee229ba84cbd8db7d5c6e48df77b311",
+        "after": "100644:408b1e71886dd530f888420069a4fb9d7e90e88b"
+      },
+      {
+        "path": ".ai-harness/tests/workflow.test.mjs",
+        "before": "100644:db8e8af245f8a0dc362f798469e7e83d485a40cd",
+        "after": "100644:99f6e9e6b342cbbc1342c0a685149e69df01936a"
+      },
+      {
+        "path": "README.md",
+        "before": "100644:b348fd2ec3277383c24b9da58c6fee0e60e086d8",
+        "after": "100644:10193742a47c772657d48b280555d97b5266f147"
+      },
+      {
+        "path": "benchmarks/README.md",
+        "before": "100644:4f4449d51c8145aaaeec1c0b78b7159a588f8455",
+        "after": "100644:858364236364984654477b6386edc44d868618b0"
+      },
+      {
+        "path": "benchmarks/audit-trial.mjs",
+        "before": "100644:bc6538e9fca465b1ae6f77b3e68c337679975079",
+        "after": "100644:c57dca35a53abd0c19e9c40d39775691d5270209"
+      },
+      {
+        "path": "benchmarks/runner.mjs",
+        "before": "100644:b0f172e2d4a34b54aae4cc28bff793637386343b",
+        "after": "100644:eaa82f3a717b9e74dfc407ac4168153c9397aaa1"
+      },
+      {
+        "path": "benchmarks/tests/multifile.test.mjs",
+        "before": "100644:24193131b36785a1497d2a1e3795d65870cbdc4b",
+        "after": "100644:d9d9f580f381a8cbcaf479c4ed332e495cb7d5ff"
+      },
+      {
+        "path": "benchmarks/tests/runner.test.mjs",
+        "before": "100644:7eed59a4aee0b607e322ce275dd9a80eb478c9af",
+        "after": "100644:4bc159f131a768794947596d1f5bc6826a346153"
+      },
+      {
+        "path": "docs/guides/model-guidance.md",
+        "before": "100644:dd5ec855573bead05866094d184f661bd5310016",
+        "after": "100644:a514cb66959e2caa5df8ca31fdb67cfdb3353918"
+      },
+      {
+        "path": "docs/guides/usage.md",
+        "before": "100644:c8cd26d04e251435e97ce6336c59191cd6a384dd",
+        "after": "100644:fd4a4d08062bbb0d248da5ac6b3f58b4f6875774"
+      },
+      {
+        "path": "docs/versions/history.md",
+        "before": "100644:de8665766fc5d7d85765ea135b0e185e63a8fcee",
+        "after": "100644:eb2ea62e942f1d86301c293172666dcdf7de8a4c"
+      }
+    ],
+    "planDigest": "500b63afb1834a84641ff01761fbe71ea209e41a165bd74fb30ff71acfc35fd5",
+    "at": "2026-11-20T09:51:37.517Z",
+    "head": "1831ec8e167a28997efa5ba5e021be271643354d"
+  },
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-11-20T08:39:44.881Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-11-20T08:39:44.978Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-11-20T08:39:45.406Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-11-20T08:39:46.036Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-11-20T08:39:46.124Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-11-20T09:03:38.266Z",
+      "reason": "归档审计需分别读取工作项日志和试验运行日志，扩大既有历史试验计数回归的写入范围。",
+      "action": "replan",
+      "revision": 2
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-11-20T09:03:38.693Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-11-20T09:03:38.782Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-11-20T09:13:05.254Z",
+      "reason": "两个评测脚本入口需询问，改用已允许的原生 Node 测试入口，显式列出评测启动器原有的全部测试文件和实装测试。",
+      "action": "replan",
+      "revision": 3
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-11-20T09:13:05.696Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-11-20T09:13:05.789Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "IMPLEMENTING",
+      "at": "2026-11-20T09:36:22.960Z",
+      "reason": "按 R1 独立故障注入结论修复计划多文件写入失败及初始化收尾重试。",
+      "action": "reopen",
+      "revision": 4
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "VERIFYING",
+      "at": "2026-11-20T09:51:30.622Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "VERIFYING",
+      "to": "CODE_REVIEW",
+      "at": "2026-11-20T09:51:32.989Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "CODE_REVIEW",
+      "to": "READY_FOR_ACCEPTANCE",
+      "at": "2026-11-20T09:51:34.101Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "READY_FOR_ACCEPTANCE",
+      "to": "DONE",
+      "at": "2026-11-20T09:51:37.777Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-11-20T08:39:44.881Z",
+  "updatedAt": "2026-11-20T09:51:37.777Z"
+}

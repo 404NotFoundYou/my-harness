@@ -41,3 +41,16 @@ test("explicit multilingual files are readable and every excluded or excess path
     assert.deepEqual(result.notReturned, []);
   } finally { await cleanup(root); }
 });
+
+test("review fixes: repeated explicit Runtime files have one actionable omission, controls stay excluded", async () => {
+  const root = await createInstalledProject();
+  try {
+    const code = ".ai-harness/src/workflow.mjs", testFile = ".ai-harness/tests/workflow.test.mjs", control = ".ai-harness/work-items/PRIVATE/state.json";
+    const item = { input: { references: [code, testFile, control, code, control] } };
+    const result = await taskContext(root, item, { writeScopes: [code], verification: ["node --test " + testFile] });
+    assert.deepEqual(result.omitted.map(entry => entry.path), [code, testFile, control]);
+    assert.ok(result.omitted.slice(0, 2).every(entry => /补读/.test(entry.reason)));
+    assert.match(result.omitted[2].reason, /排除/);
+    assert.deepEqual(result.files, []);
+  } finally { await cleanup(root); }
+});

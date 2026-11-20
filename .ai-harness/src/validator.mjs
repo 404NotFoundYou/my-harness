@@ -151,10 +151,36 @@ function scopeValid(scope) {
   return scopePrefix(normalized).length > 0;
 }
 
+export function taskWriteScopes(task) {
+  return [...task.writeScopes, ...task.docsImpact.filter(entry => !/^N\/A\s*:/i.test(entry))];
+}
+
+const scopeTokens = scope => scope.replaceAll("\\", "/").replace(/^\.\//, "").match(/\*\*|[\s\S]/g) || [];
+const star = token => token === "*" || token === "**";
+function accepts(token, literal) {
+  if (token === "**") return !/[\r\n\u2028\u2029]/.test(literal);
+  return token === "*" || token === "?" ? literal !== "/" : token === literal;
+}
+
 function scopesOverlap(left, right) {
-  const a = scopePrefix(left);
-  const b = scopePrefix(right);
-  return a === b || a.startsWith(`${b}/`) || b.startsWith(`${a}/`);
+  if (!/[?*]/.test(left)) return fileMatchesScope(left, right);
+  if (!/[?*]/.test(right)) return fileMatchesScope(right, left);
+  const a = scopeTokens(left), b = scopeTokens(right);
+  const pending = [[0, 0]], seen = new Set();
+  // Follow both patterns over the same path. A star may end here or consume another character.
+  while (pending.length) {
+    const [i, j] = pending.pop(), key = i * (b.length + 1) + j;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    if (i === a.length && j === b.length) return true;
+    const x = a[i], y = b[j];
+    if (star(x)) pending.push([i + 1, j]);
+    if (star(y)) pending.push([i, j + 1]);
+    if (x !== undefined && y !== undefined && (accepts(x, y) || accepts(y, x))) {
+      pending.push([star(x) ? i : i + 1, star(y) ? j : j + 1]);
+    }
+  }
+  return false;
 }
 
 function dependencyReachable(tasksById, from, target, seen = new Set()) {
@@ -201,6 +227,7 @@ export function collectPlanErrors(plan, workItemId = null, { requireComplete = t
     if (task.attempt !== undefined && (!Number.isInteger(task.attempt) || task.attempt < 0)) errors.push(`${task.id} attempt 无效。`);
     for (const name of ["verificationSource", "reviewSource"]) if (task[name] !== undefined && !validSource(task[name])) errors.push(`${task.id}.${name} 无效。`);
     if (!nonEmptyStrings(task.docsImpact)) errors.push(`${task.id} 必须记录文档影响或 N/A: 理由。`);
+    else if (task.docsImpact.some(entry => !/^N\/A\s*:/i.test(entry) && !scopeValid(entry))) errors.push(`${task.id} 包含过宽或越界文档范围。`);
     if (!task.reviewBatch?.trim()) errors.push(`${task.id} 必须属于 Review Batch。`);
     if (!['low', 'medium', 'high'].includes(task.risk)) errors.push(`${task.id} 风险等级无效。`);
     if (!task.owner?.trim()) errors.push(`${task.id} owner 不能为空。`);
@@ -237,10 +264,7 @@ export function collectPlanErrors(plan, workItemId = null, { requireComplete = t
   }
 
   for (const task of plan.tasks) {
-    if (dependencyReachable(tasksById, task.id, task.id, new Set(["__start__"]))) {
-      const actualCycle = task.blocks.some((next) => dependencyReachable(tasksById, next, task.id));
-      if (actualCycle) errors.push(`任务依赖存在环：${task.id}`);
-    }
+    if (task.blocks.some(next => dependencyReachable(tasksById, next, task.id))) errors.push(`任务依赖存在环：${task.id}`);
   }
 
   const batchesById = new Map();
@@ -275,12 +299,13 @@ export function collectPlanErrors(plan, workItemId = null, { requireComplete = t
   if (plan.mode === "multi") {
     if (requireComplete && plan.tasks.length < 2) errors.push("multi 计划至少需要两个任务。" );
     if (requireComplete && new Set(plan.tasks.map((task) => task.owner)).size < 2) errors.push("multi 计划至少需要两个不同所有者。" );
+    const scopes = plan.tasks.map(task => nonEmptyStrings(task.writeScopes) && nonEmptyStrings(task.docsImpact) ? taskWriteScopes(task) : []);
     for (let leftIndex = 0; leftIndex < plan.tasks.length; leftIndex += 1) {
       for (let rightIndex = leftIndex + 1; rightIndex < plan.tasks.length; rightIndex += 1) {
         const left = plan.tasks[leftIndex];
         const right = plan.tasks[rightIndex];
         const ordered = dependencyReachable(tasksById, left.id, right.id) || dependencyReachable(tasksById, right.id, left.id);
-        if (!ordered && left.writeScopes.some((a) => right.writeScopes.some((b) => scopesOverlap(a, b)))) {
+        if (!ordered && scopes[leftIndex].some(a => scopes[rightIndex].some(b => scopesOverlap(a, b)))) {
           errors.push(`并行任务写入范围重叠：${left.id} 与 ${right.id}`);
         }
       }
@@ -304,14 +329,10 @@ export function assertValidPlan(plan, workItemId = null, { requireContent = fals
 
 export function fileMatchesScope(file, scope) {
   const normalizedFile = file.replaceAll("\\", "/").replace(/^\.\//, "");
-  const normalizedScope = scope.replaceAll("\\", "/").replace(/^\.\//, "");
   let pattern = "^";
-  for (let index = 0; index < normalizedScope.length; index += 1) {
-    const character = normalizedScope[index];
-    if (character === "*" && normalizedScope[index + 1] === "*") {
-      pattern += ".*";
-      index += 1;
-    } else if (character === "*") pattern += "[^/]*";
+  for (const character of scopeTokens(scope)) {
+    if (character === "**") pattern += ".*";
+    else if (character === "*") pattern += "[^/]*";
     else if (character === "?") pattern += "[^/]";
     else pattern += character.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   }
@@ -350,7 +371,7 @@ async function assertEvidenceDocument(root, gate, name, { documentRequired = fal
   }
 }
 
-function gateChecks(root, item, plan, evidence = null) {
+function gateChecks(root, item, plan, evidence = null, config) {
   const snapshots = new Map();
   const readSnapshot = (reference) => {
     const key = JSON.stringify([reference?.digest, reference?.document]);
@@ -360,13 +381,13 @@ function gateChecks(root, item, plan, evidence = null) {
   const readEvents = async () => evidence ??= await readEvidence(root, item.id);
   let verified;
   return {
-    readEvents,
+    readEvents, config,
     verifiedSnapshot: () => verified ??= (async () => {
-      const snapshot = item.status === "DONE" ? await readSnapshot(item.delivery?.source) : await sourceSnapshot(root);
-      await assertVerification(root, item, plan, { snapshot, events: await readEvents(), readSnapshot });
+      const snapshot = item.status === "DONE" ? await readSnapshot(item.delivery?.source) : await sourceSnapshot(root, config);
+      await assertVerification(root, item, plan, { snapshot, events: await readEvents(), readSnapshot, config });
       return snapshot;
     })(),
-    assertStages: async (snapshot) => assertVerificationStages(root, item, plan, snapshot, { events: await readEvents(), readSnapshot }),
+    assertStages: async (snapshot) => assertVerificationStages(root, item, plan, snapshot, { events: await readEvents(), readSnapshot, config }),
   };
 }
 
@@ -472,7 +493,7 @@ export async function assertTransitionGates(root, item, plan, target, checks = g
     const commands = item.analysis.conclusions.flatMap((conclusion) => conclusion.commands || []);
     if (commands.length) {
       const events = await checks.readEvents();
-      for (const commandId of commands) await assertAnalysisCommandEvidence(root, item, commandId, { events });
+      for (const commandId of commands) await assertAnalysisCommandEvidence(root, item, commandId, { events, config: checks.config });
     }
   }
 }
@@ -500,10 +521,10 @@ export function collectHistoryErrors(item) {
   return errors;
 }
 
-export async function collectProgressErrors(root, item, plan, { allowStale = false, events = null } = {}) {
+export async function collectProgressErrors(root, item, plan, { allowStale = false, events = null, config } = {}) {
   const errors = [...collectWorkItemShapeErrors(item), ...collectHistoryErrors(item)];
   if (item.status === "BLOCKED") return [...new Set(errors)];
-  const checks = gateChecks(root, item, plan, events);
+  const checks = gateChecks(root, item, plan, events, config);
   const addGateError = async (target) => {
     try {
       await assertTransitionGates(root, item, plan, target, checks);

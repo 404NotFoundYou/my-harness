@@ -47,21 +47,29 @@ export async function auditTrial(directory, protocol, task, group, trial, result
       assert.equal(row.grade.complete,false,"invalid candidate cannot complete grading");
       assert.equal(row.scope.ok,false,"invalid candidate cannot pass scope checks");
     }
-    if (group.harness && (row.workflow?.contract || row.workflow?.ok)) {
-      assert.ok(Array.isArray(row.workflow.workItems),"project workflow work items missing");
-      assert.equal(new Set(row.workflow.workItems).size,row.workflow.workItems.length,"duplicate project workflow work item");
-      const records=[];
-      for (const id of row.workflow.workItems) {
-        assert.ok(typeof id === "string" && WORK_ID_PATTERN.test(id),"invalid project workflow work item");
-        const state=await read(`${folder}/work-items/${id}/state.json`);
-        assert.equal(state.id,id,"project workflow state owner differs");
-        records.push({state,plan:state.type === "ANALYSIS" ? null : await read(`${folder}/work-items/${id}/plan.json`)});
+  } else assert.equal(row.candidateDigest, hash(await raw(`${folder}/candidate.mjs`)));
+  if (group.harness && (row.workflow?.ok || (project && row.workflow?.contract))) {
+    assert.ok(Array.isArray(row.workflow.workItems) && (!row.workflow.ok || row.workflow.workItems.length > 0), "workflow work items missing");
+    assert.equal(new Set(row.workflow.workItems).size, row.workflow.workItems.length, "duplicate workflow work item");
+    const records = [];
+    for (const id of row.workflow.workItems) {
+      assert.ok(typeof id === "string" && WORK_ID_PATTERN.test(id), "invalid workflow work item");
+      const prefix = `${folder}/work-items/${id}`;
+      const state = await read(`${prefix}/state.json`);
+      assert.equal(state.id, id, "project workflow state owner differs");
+      records.push({ state, plan: state.type === "ANALYSIS" ? null : await read(`${prefix}/plan.json`) });
+      if (row.workflow.ok) for (const name of ["events.jsonl", "evidence.jsonl"]) {
+        const file = `${prefix}/${name}`;
+        const text = (await raw(file)).toString("utf8").trim();
+        assert.ok(text && text.split(/\r?\n/).every(line => JSON.parse(line).workItemId === id), `${file}: missing or foreign work item evidence`);
       }
+    }
+    if (project) {
       const contract=projectWorkflowContract(task,records);
       assert.deepEqual(row.workflow.contract,contract,"project workflow differs from archived state and plan");
       if (row.workflow.ok) assert.equal(contract.ok,true,"project workflow contract failed");
     }
-  } else assert.equal(row.candidateDigest, hash(await raw(`${folder}/candidate.mjs`)));
+  }
   assert.deepEqual(row.budget, protocol.budget);
   if (row.grade.complete) assert.deepEqual(row.grade.cases.map(entry=>entry.id), task.cases.map(([id])=>id));
   assert.equal(row.grade.ok, row.grade.complete && row.grade.exitCode===0 && row.grade.cases.every(entry=>entry.pass));

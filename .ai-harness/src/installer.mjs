@@ -916,15 +916,42 @@ export async function uninstallRuntime(sourceRoot, target, { dryRun = false, con
   };
 }
 
+async function initDocsWitness(root, docs) {
+  const { dev, ino } = await lstat(docs, { bigint: true });
+  return resolveProjectPath(root, `.ai-harness/backups/init-docs-${dev}-${ino}.pending`, { forWrite: true });
+}
+
+async function verifyPendingDocs(root, docs, templateRoot, templateFiles, witness) {
+  invariant((await fileInfo(witness))?.isFile(), "DOCS_CONFLICT", "已有 docs 目录缺少本次初始化的发布记录。");
+  const pending = await readJson(witness);
+  const readme = await lstat(await resolveProjectPath(root, "docs/README.md", { forWrite: true }), { bigint: true });
+  invariant(readme.isFile() && readme.ino !== 0n && pending.readme === `${readme.dev}:${readme.ino}` &&
+    pending.project?.schemaVersion === 1 && pending.project.mode === "new" && pending.project.docsMode === "default",
+    "DOCS_CONFLICT", "现有 docs 与中断初始化的文档不匹配。");
+  const actual = (await listFiles(docs, "docs")).sort();
+  const expected = templateFiles.filter(file => file.startsWith("docs/")).sort();
+  invariant(JSON.stringify(actual) === JSON.stringify(expected), "DOCS_TARGET_CHANGED", "中断后默认文档清单已变化。");
+  for (const file of templateFiles) {
+    const target = await resolveProjectPath(root, file, { forWrite: true });
+    invariant((await fileInfo(target))?.isFile() && (await readFile(target)).equals(await readFile(path.join(templateRoot, file))),
+      "DOCS_TARGET_CHANGED", `中断后默认文档已变化：${file}`);
+  }
+  return pending.project;
+}
+
 export async function initializeProject(root, { mode, docsMode, force = false }) {
   root = await realpath(root);
   invariant(["new", "existing"].includes(mode), "INVALID_PROJECT_MODE", "项目模式必须是 new 或 existing。" );
   invariant(["default", "existing"].includes(docsMode), "INVALID_DOCS_MODE", "文档模式必须是 default 或 existing。" );
   const manifest = JSON.parse(await readFile(path.join(root, ".ai-harness", "manifest.json"), "utf8"));
-  const projectPath = path.join(root, ".ai-harness", "project.json");
-  invariant(force || !(await exists(projectPath)), "PROJECT_INITIALIZED", "项目已经初始化；如需重建必须显式使用 --force。" );
+  const projectPath = await resolveProjectPath(root, ".ai-harness/project.json", { forWrite: true });
+  const initialized = await exists(projectPath);
+  const docsPath = mode === "new" && docsMode === "default" ? await resolveProjectPath(root, "docs", { forWrite: true }) : null;
+  const existingDocs = docsPath && await fileInfo(docsPath);
+  let witness = existingDocs && await initDocsWitness(root, docsPath);
+  invariant(force || !initialized || (witness && await fileInfo(witness)), "PROJECT_INITIALIZED", "项目已经初始化；如需重建必须显式使用 --force。" );
   const repository = await getGitBaseline(root);
-  const project = {
+  let project = {
     schemaVersion: 1,
     harnessVersion: manifest.version,
     mode,
@@ -932,54 +959,68 @@ export async function initializeProject(root, { mode, docsMode, force = false })
     initializedAt: new Date().toISOString(),
     repository,
   };
-  if (mode === "existing" && repository.commit && !(await exists(projectPath))) {
+  if (mode === "existing" && repository.commit && !initialized) {
     const installed = await loadInstallReceipt(root);
     if (installed?.receipt.source) project.initialInstall = { receipt: installed.receipt.contentHash, metadata: hash(JSON.stringify(project)) };
   }
-  if (mode === "new" && docsMode === "default") {
+  await mkdir(await resolveProjectPath(root, ".ai-harness/work-items", { forWrite: true }), { recursive: true });
+  if (docsPath) {
     const templateRoot = path.join(root, ".ai-harness", "templates", "new-project");
     const templateFiles = await listFiles(templateRoot);
-    const docsPath = await resolveProjectPath(root, "docs", { forWrite: true });
-    invariant(!(await fileInfo(docsPath)), "DOCS_CONFLICT", "默认文档需要全新的 docs 目录；已有文档请使用 existing 模式。" );
     const stagingRelative = `.ai-harness/backups/init-${randomUUID()}`;
     const stagingRoot = await resolveProjectPath(root, stagingRelative, { forWrite: true });
     const backupsDirectoryExisted = await exists(path.dirname(stagingRoot));
-    const rootFiles = [];
     try {
-      for (const relative of templateFiles) {
-        const content = await readFile(path.join(templateRoot, relative));
-        if (relative.startsWith("docs/")) {
-          const staged = await resolveProjectPath(root, `${stagingRelative}/${relative}`, { forWrite: true });
-          await mkdir(path.dirname(staged), { recursive: true });
-          await writeFile(staged, content, { flag: "wx" });
-        } else {
-          const targetPath = await resolveProjectPath(root, relative, { forWrite: true });
+      if (existingDocs) {
+        project = await verifyPendingDocs(root, docsPath, templateRoot, templateFiles, witness);
+        invariant(project.harnessVersion === manifest.version, "DOCS_CONFLICT", "未完成的初始化属于其他 Runtime 版本。");
+        if (initialized && !force) {
+          invariant(JSON.stringify(await readJson(projectPath)) === JSON.stringify(project), "PROJECT_INITIALIZED", "现有项目元数据与中断初始化记录不同。");
+          await unlink(witness);
+          return project;
+        }
+      } else {
+        const rootFiles = [];
+        for (const relative of templateFiles) {
+          const content = await readFile(path.join(templateRoot, relative));
+          if (relative.startsWith("docs/")) {
+            const staged = await resolveProjectPath(root, `${stagingRelative}/${relative}`, { forWrite: true });
+            await mkdir(path.dirname(staged), { recursive: true });
+            await writeFile(staged, content, { flag: "wx" });
+          } else {
+            const targetPath = await resolveProjectPath(root, relative, { forWrite: true });
+            const info = await fileInfo(targetPath);
+            invariant(!info || (info.isFile() && !info.isSymbolicLink()), "DOCS_CONFLICT", `默认文档目标不是普通文件：${relative}`);
+            if (info) invariant(hash(await readFile(targetPath)) === hash(content), "DOCS_CONFLICT", `现有文档与模板冲突：${relative}`);
+            rootFiles.push({ targetPath, content, existed: Boolean(info) });
+          }
+        }
+        await resolveProjectPath(root, "docs", { forWrite: true });
+        invariant(!(await fileInfo(docsPath)), "DOCS_CONFLICT", "初始化期间 docs 目录已出现，未覆盖。" );
+        for (const { targetPath, content, existed } of rootFiles) {
           const info = await fileInfo(targetPath);
-          invariant(!info || (info.isFile() && !info.isSymbolicLink()), "DOCS_CONFLICT", `默认文档目标不是普通文件：${relative}`);
-          if (info) invariant(hash(await readFile(targetPath)) === hash(content), "DOCS_CONFLICT", `现有文档与模板冲突：${relative}`);
-          rootFiles.push({ targetPath, content, existed: Boolean(info) });
+          invariant(Boolean(info) === existed && (!info || (info.isFile() && !info.isSymbolicLink())),
+            "DOCS_TARGET_CHANGED", `默认文档目标类型在初始化期间变化：${targetPath}`);
+          if (info) invariant(hash(await readFile(targetPath)) === hash(content), "DOCS_TARGET_CHANGED", `默认文档内容在初始化期间变化：${targetPath}`);
+          else {
+            const staged = await resolveProjectPath(root, `${stagingRelative}/.root-${randomUUID()}.tmp`, { forWrite: true });
+            await publishExclusive(staged, targetPath, content);
+          }
         }
+        await resolveProjectPath(root, "docs", { forWrite: true });
+        invariant(!(await fileInfo(docsPath)), "DOCS_CONFLICT", "初始化期间 docs 目录已出现，未覆盖。" );
+        const stagedDocs = path.join(stagingRoot, "docs");
+        witness = await initDocsWitness(root, stagedDocs);
+        const readme = await lstat(path.join(stagedDocs, "README.md"), { bigint: true });
+        await publishExclusive(path.join(stagingRoot, "pending.json"), witness, JSON.stringify({ readme: `${readme.dev}:${readme.ino}`, project }));
+        try { await rename(stagedDocs, docsPath); } catch (error) { await unlink(witness); throw error; }
       }
-      await resolveProjectPath(root, "docs", { forWrite: true });
-      invariant(!(await fileInfo(docsPath)), "DOCS_CONFLICT", "初始化期间 docs 目录已出现，未覆盖。" );
-      for (const { targetPath, content, existed } of rootFiles) {
-        const info = await fileInfo(targetPath);
-        invariant(Boolean(info) === existed && (!info || (info.isFile() && !info.isSymbolicLink())),
-          "DOCS_TARGET_CHANGED", `默认文档目标类型在初始化期间变化：${targetPath}`);
-        if (info) invariant(hash(await readFile(targetPath)) === hash(content), "DOCS_TARGET_CHANGED", `默认文档内容在初始化期间变化：${targetPath}`);
-        else {
-          const staged = await resolveProjectPath(root, `${stagingRelative}/.root-${randomUUID()}.tmp`, { forWrite: true });
-          await publishExclusive(staged, targetPath, content);
-        }
-      }
-      await resolveProjectPath(root, "docs", { forWrite: true });
-      invariant(!(await fileInfo(docsPath)), "DOCS_CONFLICT", "初始化期间 docs 目录已出现，未覆盖。" );
-      await rename(path.join(stagingRoot, "docs"), docsPath);
+      if (force) await atomicWriteJson(projectPath, project);
+      else await publishExclusive(path.join(stagingRoot, "project.json"), projectPath, JSON.stringify(project, null, 2) + "\n");
+      await unlink(witness);
     } finally {
       await discardInstallBackup(root, stagingRoot, !backupsDirectoryExisted);
     }
-  }
-  await mkdir(path.join(root, ".ai-harness", "work-items"), { recursive: true });
-  await atomicWriteJson(projectPath, project);
+  } else await atomicWriteJson(projectPath, project);
   return project;
 }

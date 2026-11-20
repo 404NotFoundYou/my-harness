@@ -1,6 +1,6 @@
 import path from "node:path";
 import { randomUUID } from "node:crypto";
-import { readFile } from "node:fs/promises";
+import { readFile, readdir, stat, truncate } from "node:fs/promises";
 import {
   appendJsonLine,
   atomicWriteJson,
@@ -8,6 +8,7 @@ import {
   readJson,
   resolveProjectPath,
   withFileLock,
+  writeFileAtomic,
 } from "./filesystem.mjs";
 import { getGitBaseline } from "./git.mjs";
 import { inspectLock, recoverLock } from "./locking.mjs";
@@ -46,9 +47,9 @@ export async function loadConfig(root) {
   return readJson(path.join(root, ".ai-harness", "config.json"));
 }
 
-export async function workItemPaths(root, id) {
+export async function workItemPaths(root, id, config) {
   invariant(WORK_ID_PATTERN.test(id || ""), "INVALID_WORK_ID", "工作项 ID 格式无效。" );
-  const config = await loadConfig(root);
+  config ??= await loadConfig(root);
   const directory = await resolveProjectPath(root, `${config.workItemsDirectory}/${id}`, { forWrite: true });
   return {
     directory,
@@ -60,28 +61,32 @@ export async function workItemPaths(root, id) {
   };
 }
 
-export async function loadWorkItem(root, id) {
-  const paths = await workItemPaths(root, id);
+export async function loadWorkItem(root, id, paths) {
+  paths ??= await workItemPaths(root, id);
   const item = await readJson(paths.state);
   assertValidWorkItem(item);
   return item;
 }
 
-export async function loadPlan(root, id, { optional = false } = {}) {
-  const paths = await workItemPaths(root, id);
+export async function loadPlan(root, id, { optional = false, paths } = {}) {
+  paths ??= await workItemPaths(root, id);
   if (optional && !(await exists(paths.plan))) return null;
   return readJson(paths.plan);
 }
 
-async function appendEvent(paths, workItemId, action, details = {}) {
-  await appendJsonLine(paths.events, {
+function auditEvent(workItemId, action, details) {
+  return {
     schemaVersion: 1,
     id: randomUUID(),
     workItemId,
     action,
     timestamp: nowIso(),
     ...details,
-  });
+  };
+}
+
+async function appendEvent(paths, id, action, details = {}) {
+  await appendJsonLine(paths.events, auditEvent(id, action, details));
 }
 
 export async function createWorkItemState(root, options) {
@@ -149,13 +154,36 @@ async function mutatePlan(root, id, mutator) {
     const item = await readJson(paths.state);
     assertValidWorkItem(item);
     const plan = await readJson(paths.plan);
-    const result = await mutator(plan, item, paths);
+    const { action, details, result } = await mutator(plan, item);
     plan.updatedAt = nowIso();
     assertValidPlan(plan, id);
-    await atomicWriteJson(paths.plan, plan);
     item.updatedAt = nowIso();
     assertValidWorkItem(item);
-    await atomicWriteJson(paths.state, item);
+    const event = auditEvent(id, action, details);
+    const previousPlan = await readFile(paths.plan), previousState = await readFile(paths.state);
+    const logSize = (await stat(paths.events)).size;
+    let planWritten = false, stateWritten = false;
+    try {
+      await atomicWriteJson(paths.plan, plan);
+      planWritten = true;
+      await atomicWriteJson(paths.state, item);
+      stateWritten = true;
+      await appendJsonLine(paths.events, event);
+    } catch (failure) {
+      try {
+        if (stateWritten) {
+          const log = await readFile(paths.events);
+          const tail = log.subarray(logSize), line = Buffer.from(JSON.stringify(event) + "\n");
+          invariant(log.length >= logSize && line.subarray(0, tail.length).equals(tail), "EVENT_LOG_CHANGED", "事件日志在回退前已变化。");
+          if (tail.length) await truncate(paths.events, logSize);
+          await writeFileAtomic(paths.state, previousState);
+        }
+        if (planWritten) await writeFileAtomic(paths.plan, previousPlan);
+      } catch (rollback) {
+        throw new HarnessError("PLAN_ROLLBACK_FAILED", "计划写入和回退均遇到错误，请检查控制面。", { failure: failure.message, rollback: rollback.message });
+      }
+      throw failure;
+    }
     return result ?? plan;
   });
 }
@@ -258,16 +286,16 @@ export async function initializePlan(root, id, { mode, rationale }) {
 }
 
 export async function addReviewBatch(root, id, options) {
-  return mutatePlan(root, id, async (plan, item, paths) => {
+  return mutatePlan(root, id, (plan, item) => {
     invariant(!item.plan.approved, "PLAN_LOCKED", "已批准计划不能直接增加 Review Batch。" );
     invariant(!plan.reviewBatches.some((batch) => batch.id === options.id), "BATCH_EXISTS", `Review Batch 已存在：${options.id}`);
     plan.reviewBatches.push(createReviewBatch(options));
-    await appendEvent(paths, id, "review-batch-added", { batchId: options.id });
+    return { action: "review-batch-added", details: { batchId: options.id } };
   });
 }
 
 export async function addTask(root, id, options) {
-  return mutatePlan(root, id, async (plan, item, paths) => {
+  return mutatePlan(root, id, (plan, item) => {
     invariant(!item.plan.approved, "PLAN_LOCKED", "已批准计划不能直接增加任务。" );
     invariant(!plan.tasks.some((task) => task.id === options.id), "TASK_EXISTS", `任务已存在：${options.id}`);
     const batch = plan.reviewBatches.find((candidate) => candidate.id === options.reviewBatch);
@@ -282,19 +310,18 @@ export async function addTask(root, id, options) {
       const parent = plan.tasks.find((candidate) => candidate.id === dependency);
       parent.blocks.push(task.id);
     }
-    await appendEvent(paths, id, "task-added", { taskId: task.id, reviewBatch: task.reviewBatch });
-    return task;
+    return { action: "task-added", details: { taskId: task.id, reviewBatch: task.reviewBatch }, result: task };
   });
 }
 
 export async function approvePlan(root, id, approvalRef) {
   invariant(approvalRef?.trim(), "APPROVAL_REQUIRED", "批准计划必须提供授权引用。" );
-  return mutatePlan(root, id, async (plan, item, paths) => {
+  return mutatePlan(root, id, (plan, item) => {
     assertValidPlan(plan, id, { requireContent: true });
     assertAcceptanceCoverage(item, plan);
     item.plan.approved = true;
     item.plan.approvalRef = approvalRef;
-    await appendEvent(paths, id, "plan-approved", { approvalRef });
+    return { action: "plan-approved", details: { approvalRef } };
   });
 }
 
@@ -346,7 +373,7 @@ export async function transitionWorkItem(root, id, target, reason = null) {
 }
 
 export async function updateTaskStatus(root, id, taskId, target, { reason = null, approvalRef = null } = {}) {
-  return mutatePlan(root, id, async (plan, item, paths) => {
+  return mutatePlan(root, id, (plan, item) => {
     invariant(item.status === "IMPLEMENTING", "WRONG_STAGE", "任务状态只能在 IMPLEMENTING 阶段推进。" );
     const task = plan.tasks.find((candidate) => candidate.id === taskId);
     invariant(task, "TASK_NOT_FOUND", `任务不存在：${taskId}`);
@@ -370,8 +397,7 @@ export async function updateTaskStatus(root, id, taskId, target, { reason = null
       }
     }
     assertValidPlan(plan, id, { requireContent: true });
-    await appendEvent(paths, id, "task-transition", { taskId, from, to: target, reason, approvalRef });
-    return task;
+    return { action: "task-transition", details: { taskId, from, to: target, reason, approvalRef }, result: task };
   });
 }
 
@@ -582,15 +608,20 @@ export async function validateWorkItem(root, id) {
 
 export async function workItemLockStatus(root, id) {
   const paths = await workItemPaths(root, id);
-  invariant(await exists(paths.state), "WORK_ITEM_NOT_FOUND", "工作项不存在。" );
-  return { id, ...await inspectLock(paths.lock) };
+  const lock = await inspectLock(paths.lock);
+  invariant(lock.status !== "free" || await exists(paths.state), "WORK_ITEM_NOT_FOUND", "工作项不存在。" );
+  return { id, ...lock };
 }
 
 export async function recoverWorkItemLock(root, id, { token, reason }) {
   invariant(reason?.trim(), "RECOVERY_REASON_REQUIRED", "恢复必须说明实际中断原因。" );
   const paths = await workItemPaths(root, id);
-  invariant(await exists(paths.state), "WORK_ITEM_NOT_FOUND", "工作项不存在。" );
   const recovered = await recoverLock(paths.lock, token, async owner => {
+    if (!(await exists(paths.state))) {
+      const remaining = (await readdir(paths.directory)).filter(name => name !== ".lock");
+      invariant(!remaining.length, "LOCK_STATE_INCONSISTENT", "建项中断后存在未确认文件，已保留现场和认领锁。", { remaining });
+      return "retry-start";
+    }
     const errors = [];
     try {
       for (const file of [paths.events, paths.evidence]) {
@@ -609,7 +640,7 @@ export async function recoverWorkItemLock(root, id, { token, reason }) {
     invariant(errors.length === 0, "LOCK_STATE_INCONSISTENT", "控制面不完整，已保留原记录和恢复认领锁；没有追加事件或允许等待写入继续。", { errors });
     await appendEvent(paths, id, "lock-recovered", { reason, owner });
   });
-  return { id, recovered: recovered.recovered, owner: recovered.owner, ok: true, errors: [], note: "已恢复锁；未修改状态、计划或验证结论，仍需按 guide 核实当前源码和验证。" };
+  return { id, recovered: recovered.recovered, owner: recovered.owner, ok: true, errors: [], note: recovered.result === "retry-start" ? "首次建项中断，锁已释放，可用原参数重新建项。" : "已恢复锁；未修改状态、计划或验证结论，仍需按 guide 核实当前源码和验证。" };
 }
 
 export async function reopenWorkItem(root, id, { reason, replan = false, approvalRef = null }) {
@@ -662,7 +693,7 @@ export async function reopenWorkItem(root, id, { reason, replan = false, approva
 }
 
 export async function editTask(root, id, taskId, changes) {
-  return mutatePlan(root, id, async (plan, item, paths) => {
+  return mutatePlan(root, id, (plan, item) => {
     invariant(!item.plan.approved && ["SOLUTION_DESIGN", "DATABASE_DESIGN"].includes(item.status), "PLAN_LOCKED", "先通过 replan 保存旧计划并解除批准，再修改任务。" );
     const index = plan.tasks.findIndex((task) => task.id === taskId);
     invariant(index >= 0, "TASK_NOT_FOUND", `任务不存在：${taskId}`);
@@ -675,7 +706,6 @@ export async function editTask(root, id, taskId, changes) {
       parent.blocks.push(task.id);
     }
     for (const batch of plan.reviewBatches) batch.taskIds = plan.tasks.filter((task) => task.reviewBatch === batch.id).map((task) => task.id);
-    await appendEvent(paths, id, "task-definition-updated", { taskId, revision: item.revision });
-    return updated;
+    return { action: "task-definition-updated", details: { taskId, revision: item.revision }, result: updated };
   });
 }

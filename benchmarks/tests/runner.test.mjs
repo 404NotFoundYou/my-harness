@@ -379,7 +379,7 @@ test("archived experiments restore byte for byte and retain their original audit
       let protocolReads = 0;
       const result = await auditExperiment(directory, { readEvidence: file => {
         if (file === "protocol.json") protocolReads++;
-        if (file.endsWith("/events.jsonl")) eventReads.push(file);
+        if (/^[^/]+\/events\.jsonl$/.test(file)) eventReads.push(file);
         return readFile(path.join(directory, file));
       } });
       const protocol = JSON.parse(await readFile(path.join(directory, "protocol.json"), "utf8"));
@@ -388,7 +388,7 @@ test("archived experiments restore byte for byte and retain their original audit
         let inspectedTrial = false;
         await assert.rejects(() => auditExperiment(directory, { readEvidence: async file => {
           const bytes = await readFile(path.join(directory, file));
-          if (file.endsWith("/events.jsonl")) inspectedTrial = true;
+          if (/^[^/]+\/events\.jsonl$/.test(file)) inspectedTrial = true;
           return inspectedTrial && file === "protocol.json" ? Buffer.concat([bytes, Buffer.from(" ")]) : bytes;
         } }), /Protocol changed during trial audit/);
         const key = row => [row.taskId, row.group, row.trial];

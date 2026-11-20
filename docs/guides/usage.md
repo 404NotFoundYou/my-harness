@@ -16,7 +16,7 @@ node <HARNESS_REPO>/.ai-harness/bin/harness.mjs install --target <TARGET> --json
 - 升级可按旧收据哈希替换未修改的 Runtime/CI 文件。未修改的退役文件显示为 `remove-retired`，执行后保存在备份中。其他不同内容默认预检冲突。`--dry-run` 返回完整操作计划。
 - 托管块内容被改动时默认报 `MANAGED_BLOCK_MODIFIED`；`--force` 只修复该块。标记缺失一半、重复或不独占一行时报 `MANAGED_BLOCK_MALFORMED`，`--force` 也不覆盖。
 - `--force` 可在明确授权后备份并替换普通冲突文件。块外项目规则和已修改的退役文件仍受保护。
-- 新项目在不存在 `docs` 目录时使用 `init --mode new --docs default`；默认文档先在项目内完整准备，再发布 `docs`，已有目录（即使部分文件与模板相同）也会拒绝，需改用 `--docs existing` 并沿用既有文档。
+- 新项目在不存在 `docs` 目录时使用 `init --mode new --docs default`；默认文档先在项目内完整准备，再发布 `docs`，若已发布模板但元数据写入中断，可用原命令重试。Runtime 核对项目内的发布凭据和模板内容，遇到改动会保留现场并报告冲突。若元数据已提交但清理凭据失败，原命令会核对已提交的元数据并完成清理。项目原有文档请使用 `--docs existing`。
 - 已有项目首次初始化使用 `init --mode existing --docs existing`。已接入项目请在安装前用旧 Runtime 建立升级工作项，以预检列出的精确文件为范围，交付后对升级前提交执行 `check --ci --base`。见[升级步骤](getting-started.md#9-升级-harness)。
 - 运行开发工作项前，先建立包含 Harness、初始代码和文档的 Git 提交。
 
@@ -265,7 +265,7 @@ node .ai-harness/bin/harness.mjs record --id <ID> --task T1 --kind review --stat
 node .ai-harness/bin/harness.mjs task-update --id <ID> --task T1 --status COMPLETED --json
 ```
 
-`--json` 必须位于命令分隔符 `--` 之前。高风险 Review Batch 创建时添加 `--independent-required`，最终工作项 Review 使用 `--independent` 记录独立复核。
+`--json` 必须位于命令分隔符 `--` 之前。无依赖的并行任务按实际可写文件检查冲突，包括 `--docs` 声明的路径。不同扩展名的互斥通配范围可并行，同一文件应指定依赖顺序。高风险 Review Batch 创建时添加 `--independent-required`，最终工作项 Review 使用 `--independent` 记录独立复核。
 
 ### 工作项完成
 
@@ -357,7 +357,7 @@ node .ai-harness/bin/harness.mjs lock-status --id ITER-001 --json
 node .ai-harness/bin/harness.mjs lock-recover --id ITER-001 --token '<owner.token>' --reason '实际中断原因' --json
 ```
 
-新锁携带版本、主机、PID 和随机代次标识。恢复只针对本机进程已不存在且 token 匹配的锁；仅凭经过时间不回收，PID 已被复用也会保守拒绝。恢复先认领锁并保留排他性，验证状态、计划及事件/证据日志完整性，成功后才记录恢复事件并释放。正常释放先整体移走锁目录，清理中断留下的 `.tmp` 目录不阻塞后续工作。
+新锁携带版本、主机、PID 和随机代次标识。恢复只针对本机进程已不存在且 token 匹配的锁；仅凭经过时间不回收，PID 已被复用也会保守拒绝。恢复先认领锁并保留排他性，验证状态、计划及事件/证据日志完整性，成功后才记录恢复事件并释放。首次建项若在写入状态前中断，认领后工作项目录中只有锁时会释放锁，随后可用原参数重新建项。遇到其他残留会保留文件和认领锁供检查。正常释放先整体移走锁目录，清理中断留下的 `.tmp` 目录不阻塞后续工作。
 
 旧文件锁为 `legacy`；未知、存活和异地主机锁不能自动回收。本机制面向单机本地文件系统，不能据此证明共享盘或跨容器 PID 命名空间的所有权。遇 `LOCK_STATE_INCONSISTENT` 时保留原记录和认领锁，退出非零；不会拼接损坏日志、编造 pass 或自动修复部分写入。需先保留现场并从已验证备份/提交恢复完整控制面，再继续正常流程，不手工补造状态。恢复锁不等于业务操作、验证或验收已经完成。
 

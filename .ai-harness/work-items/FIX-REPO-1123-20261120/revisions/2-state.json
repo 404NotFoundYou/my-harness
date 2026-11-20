@@ -1,0 +1,165 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 2,
+  "id": "FIX-REPO-1123-20261120",
+  "type": "BUGFIX",
+  "title": "修复并行范围、失败事件、创建和初始化恢复、评测归档并减少检查开销",
+  "status": "IMPLEMENTING",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/bugfix.md",
+    ".ai-harness/policies/verification.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户明确请求修复上轮报告全部问题"
+  },
+  "input": {
+    "references": [
+      "ANALYSIS-REPO-1122-20261120 及用户请求修复"
+    ],
+    "acceptance": [
+      "重合的并行写入被阻止，独立扩展名允许并行，失败计划操作不增加成功事件",
+      "无初始状态的失活创建锁和默认项目初始化均可安全恢复，保留用户文件",
+      "评测归档错误可诊断，配置读取按调用复用，guide 去重并有准确补读提示，删除无效默认配置及恒真条件"
+    ],
+    "nonGoals": [],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": {
+    "actual": "1.12.2 的并行计划判断不一致，部分中断无法恢复并存在忽略归档错误和重复读取",
+    "expected": "范围与交付一致，失败与恢复可追溯，校验与归档可复查",
+    "reproduction": "上轮四组纯函数计划、逐步文件状态和归档读取路径及本轮故障回归"
+  },
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "main@1831ec8，doctor 通过且产品工作树干净。阅读 Runtime、两套测试、安装和评测的直接调用方及前三轮修复记录。"
+    ],
+    "completedAt": "2026-11-20T08:39:45.205Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "1831ec8e167a28997efa5ba5e021be271643354d",
+      "dirty": false,
+      "changedFiles": [],
+      "fingerprints": {},
+      "source": {
+        "digest": "af11bc37a18edc98c318279a7baf0ee0933b6694c3f47015d256215054c85b27",
+        "document": ".ai-harness/work-items/FIX-REPO-1123-20261120/snapshots/af11bc37a18edc98c318279a7baf0ee0933b6694c3f47015d256215054c85b27.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": ".ai-harness/work-items/FIX-REPO-1123-20261120/solution.md",
+    "evidence": [
+      "按当前调用点复用范围判断与锁认领，增设中断和错误路径回归。"
+    ],
+    "completedAt": "2026-11-20T08:39:45.497Z"
+  },
+  "database": {
+    "impact": "none",
+    "status": "not-applicable",
+    "document": null,
+    "evidence": [
+      "仓库本地 JSON 与文件归档，无数据库、查询或迁移。"
+    ],
+    "completedAt": "2026-11-20T08:39:45.586Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/FIX-REPO-1123-20261120/plan.json",
+    "approved": true,
+    "approvalRef": "用户授权修复及相应回归，单作者、独立审查批次 R1"
+  },
+  "verification": {
+    "status": "pending",
+    "evidence": [],
+    "stages": []
+  },
+  "review": {
+    "status": "pending",
+    "evidence": [],
+    "independent": false
+  },
+  "acceptance": {
+    "status": "pending",
+    "evidence": []
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "pending",
+    "evidence": []
+  },
+  "blocked": null,
+  "delivery": null,
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-11-20T08:39:44.881Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-11-20T08:39:44.978Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-11-20T08:39:45.406Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-11-20T08:39:46.036Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-11-20T08:39:46.124Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-11-20T09:03:38.266Z",
+      "reason": "归档审计需分别读取工作项日志和试验运行日志，扩大既有历史试验计数回归的写入范围。",
+      "action": "replan",
+      "revision": 2
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-11-20T09:03:38.693Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-11-20T09:03:38.782Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-11-20T08:39:44.881Z",
+  "updatedAt": "2026-11-20T09:03:38.885Z"
+}

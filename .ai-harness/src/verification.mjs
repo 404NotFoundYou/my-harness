@@ -78,14 +78,14 @@ export function hasFailedReview(events, item, task = null) {
     (!task || (event.taskAttempt || 1) === (task.attempt || 1)));
 }
 
-export async function assertAnalysisCommandEvidence(root, item, commandId, { snapshot = null, events = null } = {}) {
+export async function assertAnalysisCommandEvidence(root, item, commandId, { snapshot = null, events = null, config } = {}) {
   invariant(item.type === "ANALYSIS" && ["ANALYZING", "ANSWERED"].includes(item.status), "ANALYSIS_COMMAND_WRONG_STAGE", "分析命令证据只属于 ANALYZING 或 ANSWERED 工作项。" );
   const evidence = events || await readEvidence(root, item.id);
   const index = evidence.findIndex((candidate) => candidate.id === commandId);
   const event = evidence[index];
   const command = event?.command;
   const reference = item.analysis.source || (item.baseline.repository?.source?.digest === command?.source?.digest ? item.baseline.repository.source : command?.source);
-  const current = item.status === "ANSWERED" ? await loadSnapshot(root, reference) : snapshot || await sourceSnapshot(root);
+  const current = item.status === "ANSWERED" ? await loadSnapshot(root, reference) : snapshot || await sourceSnapshot(root, config);
   const subsequentFailure = command && evidence.slice(index + 1).some((later) => later.kind === "command" && later.status !== "pass" &&
     (later.revision || 1) === (item.revision || 1) && !later.taskId && later.command && commandEvidenceKey(later.command) === commandEvidenceKey(command));
   invariant(event?.kind === "command" && event.workItemId === item.id && !event.taskId && event.status === "pass" &&
@@ -95,7 +95,7 @@ export async function assertAnalysisCommandEvidence(root, item, commandId, { sna
   "ANALYSIS_COMMAND_EVIDENCE_INVALID", "分析命令证据必须属于当前修订、通过 allow 策略、未改变源码且没有同命令的随后失败。" );
   await loadSnapshot(root, command.source);
   await loadSnapshot(root, command.sourceAfter);
-  await assertEvidenceArtifacts(root, item.id, event);
+  await assertEvidenceArtifacts(root, item.id, event, config);
   return event;
 }
 
@@ -173,7 +173,7 @@ export async function assertVerification(root, item, plan, options = {}) {
     await readSnapshot(event.command.sourceAfter);
   }
   for (const event of evidence) {
-    if ((event.revision || 1) === (item.revision || 1) && event.status === "pass") await assertEvidenceArtifacts(root, item.id, event);
+    if ((event.revision || 1) === (item.revision || 1) && event.status === "pass") await assertEvidenceArtifacts(root, item.id, event, options.config);
   }
   return report;
 }
@@ -210,18 +210,18 @@ export async function assertCommandEvidence(root, item, plan, commandId, options
   }
   await readSnapshot(event.command.source);
   await readSnapshot(event.command.sourceAfter);
-  await assertEvidenceArtifacts(root, item.id, event);
+  await assertEvidenceArtifacts(root, item.id, event, options.config);
   return event;
 }
 
-export async function assertVerificationStages(root, item, plan, snapshot, { events = null, readSnapshot = (reference) => loadSnapshot(root, reference) } = {}) {
+export async function assertVerificationStages(root, item, plan, snapshot, { events = null, readSnapshot = (reference) => loadSnapshot(root, reference), config } = {}) {
   events ??= await readEvidence(root, item.id);
   const report = await verificationReport(root, item, plan, { snapshot, events });
   invariant(report.missingStages.length === 0, "STALE_VERIFICATION_STAGE", "验证阶段必须对应同一代码和计划版本。", { missing: report.missingStages });
   for (const stage of item.verification.stages || []) {
     if (!requiredVerificationStages(item).includes(stage.stage)) continue;
     await readSnapshot(stage.source);
-    if (isRunBackedStage(stage.stage)) await assertCommandEvidence(root, item, plan, stage.command, { snapshot, events, readSnapshot });
+    if (isRunBackedStage(stage.stage)) await assertCommandEvidence(root, item, plan, stage.command, { snapshot, events, readSnapshot, config });
   }
 }
 

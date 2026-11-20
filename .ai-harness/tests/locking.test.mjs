@@ -9,7 +9,7 @@ import fsPromises from "node:fs/promises";
 import { syncBuiltinESMExports } from "node:module";
 import path from "node:path";
 import { inspectLock, recoverLock, withFileLock } from "../src/locking.mjs";
-import { createWorkItemState, recoverWorkItemLock } from "../src/workflow.mjs";
+import { createWorkItemState, recoverWorkItemLock, workItemLockStatus } from "../src/workflow.mjs";
 import { cleanup, createInstalledProject } from "./helpers.mjs";
 
 test("competing CLI starts leave one owner and one creation event", async () => {
@@ -222,4 +222,31 @@ test("termination during release cleanup cannot leave an ownerless lock blocking
     assert.ok(path.basename(directory).startsWith("ai-harness-lock-test-"));
     await rm(directory, { recursive: true, force: true });
   }
+});
+
+test("review fixes: interrupted first creation is retryable only with an otherwise empty work item", async () => {
+  const root = await createInstalledProject();
+  try {
+    for (const id of ["EMPTY", "RESIDUE"]) {
+      const directory = path.join(root, ".ai-harness/work-items", id);
+      await fsPromises.mkdir(directory, { recursive: true });
+      await abandonedLock(directory);
+      await fsPromises.unlink(path.join(directory, "exit-with-lock.mjs"));
+      const { status, owner } = await workItemLockStatus(root, id);
+      assert.equal(status, "stale");
+      const recover = () => recoverWorkItemLock(root, id, { token: owner.token, reason: "first writer exited" });
+      if (id === "RESIDUE") {
+        const unknown = path.join(directory, "events.jsonl");
+        await writeFile(unknown, "existing partial event");
+        await assert.rejects(recover, { code: "LOCK_STATE_INCONSISTENT" });
+        assert.equal(await readFile(unknown, "utf8"), "existing partial event");
+        assert.notEqual((await workItemLockStatus(root, id)).status, "free");
+      } else {
+        await recover();
+        assert.deepEqual(await readdir(directory), [], "recovery must not fabricate a creation event");
+        await createWorkItemState(root, { id, type: "ANALYSIS", title: id, references: ["request"], acceptance: ["answer"], authorizationMode: "autonomous", authorizationSource: "fixture" });
+        assert.equal(JSON.parse(await readFile(path.join(directory, "events.jsonl"))).action, "work-item-created");
+      }
+    }
+  } finally { await cleanup(root); }
 });

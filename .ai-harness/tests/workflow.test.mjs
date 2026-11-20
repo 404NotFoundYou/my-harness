@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { writeFile } from "node:fs/promises";
+import fsPromises, { readFile, writeFile } from "node:fs/promises";
+import { syncBuiltinESMExports } from "node:module";
 import path from "node:path";
 import { cleanup, createInstalledProject } from "./helpers.mjs";
 import { checkProject } from "../src/checker.mjs";
@@ -19,6 +20,7 @@ import {
   setDatabaseDecision,
   transitionWorkItem,
   updateTaskStatus,
+  workItemPaths,
 } from "../src/workflow.mjs";
 
 test("iteration completes only through solution, database, plan, task, review and acceptance gates", async () => {
@@ -311,4 +313,45 @@ test("development baselines require an initial Git commit", async () => {
   } finally {
     await cleanup(root);
   }
+});
+
+test("review fixes: rejected and interrupted plan additions leave the plan and audit trail untouched", async t => {
+  const root = await createInstalledProject(), id = "REJECTED";
+  try {
+    await createWorkItemState(root, { id, type: "ITERATION", title: id, references: ["AGENTS.md"], acceptance: ["consistent audit"], authorizationMode: "autonomous", authorizationSource: "fixture" });
+    await transitionWorkItem(root, id, "BASELINING");
+    await completeBaseline(root, id, { evidence: ["fixture baseline"] });
+    await transitionWorkItem(root, id, "SOLUTION_DESIGN");
+    await completeSolution(root, id, { document: "AGENTS.md", evidence: ["fixture plan"] });
+    await setDatabaseDecision(root, id, { impact: "none", evidence: ["files only"] });
+    await initializePlan(root, id, { mode: "single", rationale: "fixture" });
+    await addReviewBatch(root, id, { id: "R1", title: id, risk: "low", independentRequired: false });
+    const paths = await workItemPaths(root, id);
+    const stored = () => Promise.all([paths.plan, paths.state, paths.events].map(file => readFile(file, "utf8")));
+    const before = await stored();
+    for (const rejected of [() => addReviewBatch(root, id, { id: "R2", title: id, risk: "other" }),
+      () => addTask(root, id, { id: "T1", title: id, module: "runtime", writeScopes: ["**"], verification: ["test"], docsImpact: ["N/A: fixture"], reviewBatch: "R1", risk: "low", owner: "fixture" })]) {
+      await assert.rejects(rejected, { code: "INVALID_PLAN" });
+      assert.deepEqual(await stored(), before);
+    }
+    const add = () => addReviewBatch(root, id, { id: "R2", title: id, risk: "low", independentRequired: false });
+    for (const operation of ["rename", "appendFile"]) {
+      const original = fsPromises[operation];
+      let injected = false;
+      t.mock.method(fsPromises, operation, async (...args) => {
+        if (!injected && (operation === "rename" ? args[1] === paths.state : args[0] === paths.events)) {
+          injected = true;
+          if (operation === "appendFile") await original(paths.events, String(args[1]).slice(0, 12));
+          throw Object.assign(new Error("injected plan write failure"), { code: "EIO" });
+        }
+        return original(...args);
+      });
+      syncBuiltinESMExports();
+      await assert.rejects(add, { code: "EIO" });
+      t.mock.restoreAll(); syncBuiltinESMExports();
+      assert.deepEqual(await stored(), before, "partial publication must not consume the batch ID or tear the log");
+    }
+    await add();
+    assert.equal((await readFile(paths.events, "utf8")).split('"batchId":"R2"').length - 1, 1);
+  } finally { t.mock.restoreAll(); syncBuiltinESMExports(); await cleanup(root); }
 });
