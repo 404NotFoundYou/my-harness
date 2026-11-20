@@ -10,9 +10,9 @@ export function initialExecution(protocol, protocolBytes) {
   return {schemaVersion:1,protocolSha256:hash(protocolBytes),trials:protocol.schedule.map(entry=>({directory:entry.directory,status:"pending"}))};
 }
 
-export async function readExecutionLedger(directory, protocol, {readEvidence=file=>readExperimentFile(directory,file)} = {}) {
+export async function readExecutionLedger(directory, protocol, {readEvidence=file=>readExperimentFile(directory,file), protocolBytes} = {}) {
   assert.equal(protocol.schemaVersion,4,"Only protocol v4 can resume");
-  const protocolBytes=await readEvidence("protocol.json");
+  protocolBytes ??= await readEvidence("protocol.json");
   assert.deepEqual(JSON.parse(protocolBytes.toString("utf8")),protocol,"Protocol changed while loading");
   const ledger=JSON.parse((await readEvidence("execution.json")).toString("utf8"));
   assert.deepEqual(Object.keys(ledger).sort(),["protocolSha256","schemaVersion","trials"],"Invalid execution ledger");
@@ -31,7 +31,7 @@ export async function readExecutionLedger(directory, protocol, {readEvidence=fil
   return ledger;
 }
 
-export async function reconcileTrial(directory, protocol, entry, state, readEvidence = file => readExperimentFile(directory, file)) {
+export async function reconcileTrial(directory, protocol, entry, state, protocolSha256, readEvidence = file => readExperimentFile(directory, file)) {
   const trialPath=await resolveProjectPath(directory,entry.directory,{forWrite:true});
   const info=await lstat(trialPath).catch(error=>{if(error.code === "ENOENT")return null;throw error;});
   if(state.status === "pending"){
@@ -54,19 +54,20 @@ export async function reconcileTrial(directory, protocol, entry, state, readEvid
   if(state.status === "completed")assert.equal(state.resultSha256,resultSha256,"Completed trial result hash differs");
   const task=tasksForSuite(protocol.suite).find(task=>task.id===entry.taskId);
   const group=protocol.groups.find(group=>group.id===entry.group);
-  const row=await auditTrial(directory,protocol,task,group,entry.trial,bytes.toString("utf8"),readEvidence);
+  const row=await auditTrial(directory,protocol,task,group,entry.trial,bytes.toString("utf8"),readEvidence,protocolSha256);
   state.status="completed";
   state.resultSha256=resultSha256;
   return row;
 }
 
-export async function readExecution(directory, protocol, {readEvidence=file=>readExperimentFile(directory,file)} = {}) {
-  const ledger=await readExecutionLedger(directory,protocol,{readEvidence});
+export async function readExecution(directory, protocol, {readEvidence=file=>readExperimentFile(directory,file), protocolBytes} = {}) {
+  const ledger=await readExecutionLedger(directory,protocol,{readEvidence,protocolBytes});
   const rows=[],before=JSON.stringify(ledger);
   for (const [index,state] of ledger.trials.entries()) {
-    const row=await reconcileTrial(directory,protocol,protocol.schedule[index],state,readEvidence);
+    const row=await reconcileTrial(directory,protocol,protocol.schedule[index],state,ledger.protocolSha256,readEvidence);
     if(row)rows.push(row);
   }
+  assert.equal(hash(await readEvidence("protocol.json")),ledger.protocolSha256,"Protocol changed during trial audit");
   return {ledger,rows,changed:before !== JSON.stringify(ledger)};
 }
 

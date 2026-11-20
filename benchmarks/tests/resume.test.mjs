@@ -12,6 +12,7 @@ import { cliIdentity, experimentPlan, runExperiment, validateExperimentProtocol 
 import { auditExperiment } from "../audit.mjs";
 import { executionSummary, readExecution } from "../execution.mjs";
 import { projectTasks } from "../project-tasks.mjs";
+import { sourceSnapshot } from "../../.ai-harness/src/snapshot.mjs";
 import { hash, saveJson } from "../runner.mjs";
 import { cleanup as cleanupSource, createInstalledProject } from "../../.ai-harness/tests/helpers.mjs";
 
@@ -27,6 +28,29 @@ async function fakeDriver({root,outputDirectory}){
   return {mode:"simulated",client:"codex",completed:true,final:{completed:true,summary:"fixture only",tests:[]},durationMs:1,usage:null};
 }
 const options=directory=>({plan:plan(),sourceRoot,outputDirectory:path.join(directory,"run"),mode:"simulated",driverIdentity:identity});
+
+test("experiment output is validated before creation and follows the configured work item directory",async()=>{
+  const root=await createInstalledProject();
+  try{
+    const configFile=path.join(root,".ai-harness/config.json"),config=await read(root,".ai-harness/config.json");
+    config.workItemsDirectory="records";
+    await writeFile(configFile,JSON.stringify(config));
+    await mkdir(path.join(root,"records","OWNER"),{recursive:true});
+    const opts={...options(root),sourceRoot:root,driver:fakeDriver};
+    const before=(await sourceSnapshot(root)).digest;
+    for(const relative of ["bench-out","records/not-an-item",".ai-harness/work-items/bench-out"]){
+      const outputDirectory=path.join(root,relative);
+      await assert.rejects(()=>runExperiment({...opts,outputDirectory}),/outside the source repository/);
+      await assert.rejects(()=>readdir(outputDirectory),{code:"ENOENT"});
+    }
+    const outputDirectory=path.join(root,"records/OWNER/run");
+    await assert.rejects(()=>runExperiment({...opts,outputDirectory,onProgress:event=>{
+      if(event.event==="ready")throw new Error("fixture stopped before first trial");
+    }}),/fixture stopped before first trial/);
+    assert.equal((await read(outputDirectory,"protocol.json")).source,before);
+    assert.equal((await sourceSnapshot(root)).digest,before);
+  }finally{await cleanupSource(root);}
+});
 
 test("completed trials including failed deliveries are audited and never called again",async()=>{
   const directory=await fixture();let calls=0;

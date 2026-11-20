@@ -221,22 +221,52 @@ node .ai-harness/bin/harness.mjs check --ci --json
 
 ## 9. 升级 Harness
 
-先更新安装源，再重新执行幂等安装：
+升级以目标项目当前提交为基准，由旧 Runtime 登记工作项，再由独立安装源执行安装。先选好要升级的版本，核对其发布说明、源码来源和项目工作树。以下 PowerShell 7.3+ 示例适用于已授权、支持 `begin` 的常规补丁升级。涉及权限或破坏性变更时，用完整计划和独立审查登记同一份路径清单。更早的 Runtime 请用该版本的完整工作流建立等价计划。
 
 ```powershell
-git -C D:\Tools\my-harness pull --ff-only
-
-node D:\Tools\my-harness\.ai-harness\bin\harness.mjs install `
-  --target D:\Projects\your-project --dry-run --json
-
-node D:\Tools\my-harness\.ai-harness\bin\harness.mjs install `
-  --target D:\Projects\your-project --json
-
+$Source = "D:\Tools\my-harness\.ai-harness\bin\harness.mjs"
 Set-Location D:\Projects\your-project
-node .ai-harness/bin/harness.mjs doctor --json
+$Local = '.ai-harness/bin/harness.mjs'
+$Base = git rev-parse --verify HEAD
+if ($LASTEXITCODE -ne 0 -or (git status --porcelain)) { throw '请从干净的已提交基准开始升级' }
+function Invoke-HarnessJson {
+  $outputLines = & node @args
+  if ($LASTEXITCODE -ne 0) { throw ($outputLines -join "`n") }
+  ($outputLines -join "`n") | ConvertFrom-Json
+}
+$preview = Invoke-HarnessJson $Source install --target $PWD.Path --dry-run --json
+$changes = @($preview.operations | Where-Object action -ne 'skip')
+$changes | Format-Table relative, action
+if ($changes.action -contains 'conflict') { throw '请先处理冲突，再重新预检' }
+if (!$changes.Count) { return } # 全部 skip 时没有升级差异需要交付
+$writes = foreach ($change in $changes) { '--writes'; $change.relative }
+$Id = 'UPGRADE-' + (Get-Date -Format yyyyMMddHHmmss)
+$authorization = Read-Host '本次升级的实际授权来源'
+Invoke-HarnessJson $Local begin --id $Id --type ITERATION --title '升级 Harness' `
+  --input '已核对的发行清单和安装预检' --acceptance '安装与预检一致，实装套件通过' `
+  --authorization-source $authorization --risk medium --approach '应用已核对的独立安装源' `
+  --database-evidence '本次标准载荷仅更新文件' @writes --docs 'N/A: 仅升级标准分发文件' `
+  --verify '{"command":"node","args":[".ai-harness/tests/run.mjs"],"timeoutMs":600000}' --json
+$installed = Invoke-HarnessJson $Source install --target $PWD.Path --json
+$installed.operations | Where-Object action -ne 'skip' | Format-Table relative, action
+Invoke-HarnessJson $Local doctor --json
+$run = Invoke-HarnessJson $Local run --id $Id --task T1 --check V1 --json
+$run.command.stdout.text
+git status --short
+git diff $Base --stat
 ```
 
-安装会根据旧收据的文件哈希更新原版文件。新版已退役且目标未修改的文件在预检中显示为 `remove-retired`，执行时移入备份。已修改的退役文件显示为冲突，必须先处理这些文件，`--force` 也无法覆盖。升级时不要再次运行 `init`。重复安装不会重复追加托管块，目标项目自己的规则也不会传播到其他项目。
+核对实际安装操作与预检、完整差异及测试输出。`remove-retired` 也属于交付，原件在安装返回的 `backup` 中。目标项目改过的退役文件会触发冲突，`--force` 仍会保留它。若带入业务改动，单独登记其工作项。工作项使用准确文件路径，避免目录通配符把额外修改纳入升级范围。升级时保留原有 `project.json`，无需再次 `init`。
+
+```powershell
+$review = Read-Host '对安装清单、项目规则及完整差异的实际审查结论'
+$acceptance = Read-Host '对本次升级的实际验收结论'
+Invoke-HarnessJson $Local finish --id $Id --command $run.id --verification '已在升级目标运行计划内实装套件' `
+  --review $review --documentation 'N/A: 仅升级标准分发文件' --acceptance $acceptance --json
+Invoke-HarnessJson $Local check --ci --base $Base --json
+```
+
+提交已审查的升级文件和该工作项的完整记录，保留忽略的本地备份以供回滚。提交后再对同一 `$Base` 执行最后一条命令，与合并门禁使用相同基准。版本、载荷和托管边界一致且已有收据记录来源提交时，重复安装会保留原收据。
 
 ## 10. 卸载 Harness
 
@@ -284,7 +314,7 @@ node "$HarnessRepo\.ai-harness\bin\harness.mjs" uninstall `
 | `MANAGED_BLOCK_BOUNDARY_MODIFIED` | 托管块相邻边界与安装收据不一致；停止卸载并审查非托管内容 |
 | `MANAGED_BLOCK_MALFORMED` | 标记缺失、重复或不独占一行；从 Git 或安装备份恢复，`--force` 不会猜测边界 |
 | `ROOT_INSTRUCTIONS_TOO_LARGE` | 精简根规则，将模块专属规则下沉到对应目录，之后重新安装 |
-| `PROJECT_INITIALIZED` | 项目已经初始化；升级只运行 `install`，不要重复运行 `init` |
+| `PROJECT_INITIALIZED` | 项目已经初始化。请按第 9 节登记和验证升级，保留原有 `project.json` |
 | `ROOT_NOT_FOUND` | 当前目录不是已安装项目；切换到包含 `.ai-harness/manifest.json` 的目标项目 |
 
 修改已有文件时，安装结果的 `backup` 字段会返回备份目录，例如 `.ai-harness/backups/<ID>/`。恢复前先对比目标文件和备份，避免覆盖安装后的其他修改。

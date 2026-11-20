@@ -14,6 +14,8 @@ node benchmarks/run.mjs --cli 'D:/Program Files/nodejs/node_global/node_modules/
 node benchmarks/audit.mjs .ai-harness/work-items/MODEL-EXAMPLE/run
 ```
 
+运行或恢复实验时，`--out` 可指向源码仓库外，或指向配置的 `workItemsDirectory` 下已有工作项的子目录。启动新实验前请准备好父目录。普通源码目录会在创建输出前被拒绝。
+
 `--cli` 为实际二进制或 Node CLI 入口，不使用 shell 拼接或 Windows `.cmd` 回退。`--client codex|claude|gemini` 选择驱动，默认codex。每次180秒、观察到80次工具调用时中断；不自动重试。按任务轮换三组顺序，共9次模型调用；CLI上报用量不等于货币费用。不修改全局凭据或模型配置。
 
 ### 恢复历史实验

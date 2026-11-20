@@ -97,12 +97,6 @@ export async function fileFingerprint(root, relativePath) {
 export async function changedFilesSince(root, commit) {
   if (!commit) return { files: [], warning: "基线没有提交 SHA，无法执行 Git 差异范围校验。" };
   const result = gitResult(root, ["diff", "--name-only", "-z", "--no-renames", `${commit}...HEAD`]);
-  if (result.status !== 0) {
-    return {
-      files: [],
-      warning: `无法读取 ${commit}...HEAD 差异：${(result.stderr || "").trim()}`,
-    };
-  }
   const status=worktreeStatus(root);
   const files = new Set(paths(result));
   for(const file of [...status.modified,...status.staged,...status.untracked])files.add(file.replaceAll("\\", "/"));

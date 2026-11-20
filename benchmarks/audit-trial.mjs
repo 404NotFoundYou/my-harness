@@ -15,7 +15,7 @@ export async function readExperimentFile(root, relative) {
   return readFile(absolute);
 }
 
-export async function auditTrial(directory, protocol, task, group, trial, resultText, readEvidence) {
+export async function auditTrial(directory, protocol, task, group, trial, resultText, readEvidence, protocolSha256) {
   const extended=protocol.schemaVersion>=2;
   const project=protocol.schemaVersion===3||(protocol.schemaVersion===4&&["project","project-v2"].includes(protocol.suite));
   const folder=`${task.id}-${group.id}${extended&&protocol.repetitions>1?`-trial-${trial}`:""}`;
@@ -75,7 +75,7 @@ export async function auditTrial(directory, protocol, task, group, trial, result
     assert.equal(row.run.completed, completedRun({ ...row.run, ...observed }, observed.final));
   }
   if(protocol.schemaVersion===4){
-    assert.deepEqual(row.execution,{protocolSha256:hash(await raw("protocol.json")),sourceBefore:protocol.source,sourceAfter:protocol.source},"Trial source or protocol differs");
+    assert.deepEqual(row.execution,{protocolSha256:protocolSha256 ?? hash(await raw("protocol.json")),sourceBefore:protocol.source,sourceAfter:protocol.source},"Trial source or protocol differs");
   }
   return row;
 }

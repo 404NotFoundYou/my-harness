@@ -358,11 +358,11 @@ function buildInstallReceipt(source, version, payloadOperations, instructionOper
   };
 }
 
-async function planInstallReceiptOperation(targetRoot, receipt) {
+async function planInstallReceiptOperation(targetRoot, receipt, current) {
   const targetPath = path.join(targetRoot, INSTALL_RECEIPT_RELATIVE);
   const content = Buffer.from(`${JSON.stringify(receipt, null, 2)}\n`);
   await assertWritableParents(targetRoot, INSTALL_RECEIPT_RELATIVE);
-  if (!(await exists(targetPath))) {
+  if (!current) {
     return {
       relative: INSTALL_RECEIPT_RELATIVE,
       targetPath,
@@ -371,11 +371,14 @@ async function planInstallReceiptOperation(targetRoot, receipt) {
       existing: false,
     };
   }
-  const current = await loadInstallReceipt(targetRoot);
+  const previous = current.receipt;
+  const sameInstallation = previous.source?.commit && previous.harnessVersion === receipt.harnessVersion &&
+    previous.source.payloadSha256 === receipt.source.payloadSha256 &&
+    JSON.stringify(previous.instructions) === JSON.stringify(receipt.instructions);
   return {
     relative: INSTALL_RECEIPT_RELATIVE,
     targetPath,
-    action: hash(current.content) === hash(content) ? "skip" : "update-receipt",
+    action: sameInstallation || current.content.equals(content) ? "skip" : "update-receipt",
     content,
     existing: true,
     snapshotHash: hash(current.content),
@@ -600,7 +603,7 @@ export async function installRuntime(sourceRoot, target, { dryRun = false, force
 
   const receipt = buildInstallReceipt(source, manifest.version, payloadOperations, instructionOperations,
     previousReceiptInfo?.receipt, originReceipt?.receipt, await exists(path.join(source, ".git")));
-  operations.push(await planInstallReceiptOperation(targetRoot, receipt));
+  operations.push(await planInstallReceiptOperation(targetRoot, receipt, previousReceiptInfo));
 
   const agentsOperation = operations.find((operation) => operation.relative === "AGENTS.md");
   const config = await readJson(path.join(source, ".ai-harness", "config.json"));

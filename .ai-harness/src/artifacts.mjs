@@ -1,6 +1,7 @@
 import path from "node:path";
 import { createHash } from "node:crypto";
-import { open } from "node:fs/promises";
+import { createReadStream } from "node:fs";
+import { lstat, open } from "node:fs/promises";
 import { exists, normalizeRelativePath, readJson, resolveProjectPath, writeFileAtomic } from "./filesystem.mjs";
 import { invariant } from "./errors.mjs";
 
@@ -55,5 +56,33 @@ export async function assertArtifacts(root, id, references) {
     invariant(reference?.version === 1 && typeof reference.path === "string" && normalizeRelativePath(reference.path).startsWith(prefix) && /^[0-9a-f]{64}$/.test(reference.sha256 || "") && Number.isSafeInteger(reference.bytes) && reference.bytes >= 0 && typeof reference.source === "string" && reference.source.trim(), "ARTIFACT_INVALID", "产物必须归属当前工作项并具有有效版本、哈希、大小和来源。" );
     const content = await contentAt(root, reference.path);
     invariant(content.length === reference.bytes && hash(content) === reference.sha256, "ARTIFACT_HASH_MISMATCH", "归档产物与证据哈希不一致。" );
+  }
+}
+
+export async function assertEvidenceArtifacts(root, id, event) {
+  await assertArtifacts(root, id, event.artifacts);
+  if (event.kind !== "command") return;
+  let directory;
+  for (const name of ["stdout", "stderr"]) {
+    const stream = event.command?.[name];
+    if (event.command?.outputLimitBytes !== undefined) {
+      invariant(typeof stream?.truncated === "boolean" && typeof stream.complete === "boolean",
+        "OUTPUT_ARTIFACT_INVALID", `命令缺少 ${name} 的输出捕获记录。`);
+    }
+    if (stream?.artifact === undefined && stream?.artifactSha256 === undefined) {
+      // Older runners stored only a preview. Modern truncated streams must account for the archive.
+      invariant(!stream?.truncated || (stream.complete === undefined && event.command.outputLimitBytes === undefined) ||
+        (event.status === "fail" && stream.saveError?.code), "OUTPUT_ARTIFACT_INVALID", `截断的 ${name} 缺少归档引用。`);
+      continue;
+    }
+    directory ??= normalizeRelativePath((await readJson(path.join(root, ".ai-harness/config.json"))).workItemsDirectory);
+    const expected = path.posix.join(directory, id, "outputs", `${event.id}-${name}.txt`);
+    invariant(/^[a-zA-Z0-9-]+$/.test(event.id) && stream.artifact === expected && /^[0-9a-f]{64}$/.test(stream.artifactSha256 || ""),
+      "OUTPUT_ARTIFACT_INVALID", `${name} 的归档路径或摘要与本工作项、命令或输出流不匹配。`);
+    const file = await resolveProjectPath(root, expected, { forWrite: true, mustExist: true });
+    invariant((await lstat(file)).isFile(), "OUTPUT_ARTIFACT_INVALID", `命令日志必须是普通文件：${expected}`);
+    const digest = createHash("sha256");
+    for await (const chunk of createReadStream(file)) digest.update(chunk);
+    invariant(digest.digest("hex") === stream.artifactSha256, "OUTPUT_ARTIFACT_HASH_MISMATCH", `命令日志内容与归档摘要不一致：${expected}`);
   }
 }

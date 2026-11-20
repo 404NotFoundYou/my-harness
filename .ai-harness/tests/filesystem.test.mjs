@@ -1,9 +1,37 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { mkdir, symlink } from "node:fs/promises";
+import fsPromises, { mkdir, mkdtemp, readFile, readdir, symlink, writeFile } from "node:fs/promises";
+import { syncBuiltinESMExports } from "node:module";
+import { tmpdir } from "node:os";
 import path from "node:path";
 import { cleanup, createInstalledProject } from "./helpers.mjs";
-import { resolveProjectPath } from "../src/filesystem.mjs";
+import { resolveProjectPath, writeFileAtomic } from "../src/filesystem.mjs";
+
+test("an interrupted write or publish preserves the original and removes only an owned temporary file", async (t) => {
+  const root = await mkdtemp(path.join(tmpdir(), "ai-harness-atomic-"));
+  const target = path.join(root, "state"), failure = new Error("injected storage failure");
+  try {
+    await writeFile(target, "original");
+    async function* partial() { yield "partial"; throw failure; }
+    await assert.rejects(() => writeFileAtomic(target, partial()), error => error === failure);
+    assert.deepEqual(await readdir(root), ["state"]);
+    t.mock.method(fsPromises, "rename", async () => { throw failure; });
+    syncBuiltinESMExports();
+    await assert.rejects(() => writeFileAtomic(target, "replacement"), error => error === failure);
+    assert.deepEqual(await readdir(root), ["state"]);
+    assert.equal(await readFile(target, "utf8"), "original");
+    const open = fsPromises.open;
+    let collision;
+    t.mock.method(fsPromises, "open", async (file, flags) => {
+      collision = file;
+      await writeFile(file, "another writer");
+      return open(file, flags);
+    });
+    syncBuiltinESMExports();
+    await assert.rejects(() => writeFileAtomic(target, "replacement"), { code: "EEXIST" });
+    assert.equal(await readFile(collision, "utf8"), "another writer");
+  } finally { t.mock.restoreAll(); syncBuiltinESMExports(); await cleanup(root); }
+});
 
 test("project paths reject absolute and parent traversal", async () => {
   const root = await createInstalledProject();

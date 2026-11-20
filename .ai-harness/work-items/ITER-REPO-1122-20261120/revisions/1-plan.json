@@ -1,0 +1,108 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "ITER-REPO-1122-20261120",
+  "mode": "single",
+  "rationale": "单人实施同一个补丁版本，高风险差异交由独立上下文审查。",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "修复八项并验证源仓、评测及安装目标",
+      "module": "Runtime",
+      "status": "IN_PROGRESS",
+      "attempt": 1,
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        ".ai-harness/manifest.json",
+        ".ai-harness/src/artifacts.mjs",
+        ".ai-harness/src/checker.mjs",
+        ".ai-harness/src/verification.mjs",
+        ".ai-harness/src/installer.mjs",
+        ".ai-harness/src/filesystem.mjs",
+        ".ai-harness/src/git.mjs",
+        ".ai-harness/tests/output.test.mjs",
+        ".ai-harness/tests/filesystem.test.mjs",
+        ".ai-harness/tests/snapshot.test.mjs",
+        ".ai-harness/tests/installer-checkout.test.mjs",
+        "benchmarks/experiment.mjs",
+        "benchmarks/execution.mjs",
+        "benchmarks/audit.mjs",
+        "benchmarks/audit-trial.mjs",
+        "benchmarks/run.mjs",
+        "benchmarks/tests/installed-runtime.mjs",
+        "benchmarks/tests/resume.test.mjs",
+        "benchmarks/tests/runner.test.mjs",
+        "benchmarks/tests/report.test.mjs"
+      ],
+      "verification": [
+        "{\"command\":\"node\",\"args\":[\".ai-harness/tests/run.mjs\"],\"timeoutMs\":600000,\"acceptance\":[\"A2\"]}",
+        "{\"command\":\"node\",\"args\":[\"benchmarks/tests/run.mjs\"],\"timeoutMs\":600000,\"acceptance\":[\"A3\"]}",
+        "{\"command\":\"node\",\"args\":[\"benchmarks/tests/installed-runtime.mjs\"],\"timeoutMs\":600000,\"acceptance\":[\"A1\",\"A2\"]}"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            ".ai-harness/tests/run.mjs"
+          ],
+          "acceptance": [
+            "A2"
+          ],
+          "timeoutMs": 600000
+        },
+        {
+          "id": "V2",
+          "command": "node",
+          "args": [
+            "benchmarks/tests/run.mjs"
+          ],
+          "acceptance": [
+            "A3"
+          ],
+          "timeoutMs": 600000
+        },
+        {
+          "id": "V3",
+          "command": "node",
+          "args": [
+            "benchmarks/tests/installed-runtime.mjs"
+          ],
+          "acceptance": [
+            "A1",
+            "A2"
+          ],
+          "timeoutMs": 600000
+        }
+      ],
+      "docsImpact": [
+        "CLAUDE.md",
+        "README.md",
+        "docs/versions/history.md",
+        "docs/guides/getting-started.md",
+        "docs/guides/usage.md",
+        "benchmarks/README.md"
+      ],
+      "reviewBatch": "R1",
+      "risk": "high",
+      "owner": "primary-ai",
+      "verificationStatus": "pending",
+      "reviewStatus": "pending",
+      "evidence": [],
+      "deferralApproval": null
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "升级与验证完整性",
+      "risk": "high",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": true
+    }
+  ],
+  "createdAt": "2026-11-20T07:25:34.014Z",
+  "updatedAt": "2026-11-20T07:25:34.555Z"
+}

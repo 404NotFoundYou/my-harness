@@ -17,8 +17,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## 常用命令
 
 ```bash
-# 运行全部测试（node --test 跑 .ai-harness/tests/*.test.mjs）
+# Runtime 测试（随安装分发）
 node .ai-harness/tests/run.mjs
+
+# 源仓库测试：评测框架、独立下游实装与升级
+node benchmarks/tests/run.mjs
+node benchmarks/tests/installed-runtime.mjs
 
 # 运行单个测试文件
 node --test .ai-harness/tests/workflow.test.mjs
@@ -33,7 +37,7 @@ node .ai-harness/bin/harness.mjs check --ci --json
 node .ai-harness/bin/harness.mjs help
 ```
 
-CI 由 `.github/workflows/ai-harness.yml` 触发，本质是跑上面的 `tests/run.mjs` + `doctor` + `check --ci`。改动源码后这三条是最小验证集。
+[Runtime 工作流](.github/workflows/ai-harness.yml) 执行 Runtime 测试、`doctor` 和带基准提交的 `check --ci --base`。[源仓库工作流](.github/workflows/source-tests.yml) 执行评测框架及独立下游测试。
 
 ## 代码架构
 

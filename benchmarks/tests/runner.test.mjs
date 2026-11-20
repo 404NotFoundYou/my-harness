@@ -376,12 +376,21 @@ test("archived experiments restore byte for byte and retain their original audit
       assert.equal(contents.reduce((total, bytes) => total + bytes.length, 0), entry.bytes, entry.directory);
       assert.equal(hash(JSON.stringify(filenames.map((file, index) => [file, hash(contents[index])]))), entry.sha256, entry.directory);
       const eventReads = [];
+      let protocolReads = 0;
       const result = await auditExperiment(directory, { readEvidence: file => {
+        if (file === "protocol.json") protocolReads++;
         if (file.endsWith("/events.jsonl")) eventReads.push(file);
         return readFile(path.join(directory, file));
       } });
       const protocol = JSON.parse(await readFile(path.join(directory, "protocol.json"), "utf8"));
       if (protocol.schemaVersion === 4) {
+        assert.equal(protocolReads, 2, "read the protocol once before the trials and once after the last trial");
+        let inspectedTrial = false;
+        await assert.rejects(() => auditExperiment(directory, { readEvidence: async file => {
+          const bytes = await readFile(path.join(directory, file));
+          if (file.endsWith("/events.jsonl")) inspectedTrial = true;
+          return inspectedTrial && file === "protocol.json" ? Buffer.concat([bytes, Buffer.from(" ")]) : bytes;
+        } }), /Protocol changed during trial audit/);
         const key = row => [row.taskId, row.group, row.trial];
         const expected = protocol.tasks.flatMap(task => protocol.groups.flatMap(group =>
           Array.from({ length: protocol.repetitions }, (_, i) => [task.id, group.id, i + 1])));

@@ -3,9 +3,9 @@ import { mkdir, readFile, realpath } from "node:fs/promises";
 import assert from "node:assert/strict";
 import { taskManifest, tasksForSuite } from "./task-contract.mjs";
 import { budget, groups, hash, runCase, saveJson } from "./runner.mjs";
-import { sourceSnapshot } from "../.ai-harness/src/snapshot.mjs";
+import { controlPath, sourceSnapshot } from "../.ai-harness/src/snapshot.mjs";
 import { redact } from "../.ai-harness/src/evidence.mjs";
-import { resolveProjectPath } from "../.ai-harness/src/filesystem.mjs";
+import { readJson, resolveProjectPath } from "../.ai-harness/src/filesystem.mjs";
 import { inspectLock, recoverLock, withFileLock } from "../.ai-harness/src/locking.mjs";
 import { readExperimentFile } from "./audit-trial.mjs";
 import { executionSummary, initialExecution, readExecution, readExecutionLedger, reconcileTrial } from "./execution.mjs";
@@ -73,14 +73,27 @@ export function validateExperimentProtocol(protocol) {
   assert.deepEqual(stored,{...plan,mode:protocol.mode,source:protocol.source,tasks:tasksForSuite(plan.suite).map(taskManifest),driverIdentity:checkedIdentity(protocol.mode,null,protocol.driverIdentity)},"Invalid frozen protocol");
 }
 
+export async function experimentOutputDirectory(sourceRoot, requested, resume) {
+  const output = path.resolve(requested);
+  const target = resume ? await realpath(output) : path.join(await realpath(path.dirname(output)), path.basename(output));
+  const root = await realpath(sourceRoot);
+  const relative = path.relative(root, target).split(path.sep).join("/");
+  if (relative !== ".." && !relative.startsWith("../") && !path.isAbsolute(relative)) {
+    const { workItemsDirectory } = await readJson(path.join(root, ".ai-harness/config.json"));
+    assert.ok(controlPath(path.posix.dirname(path.posix.dirname(relative)), workItemsDirectory),
+      "Place experiment output outside the source repository or inside an existing work item's directory");
+  }
+  return target;
+}
+
 export async function runExperiment({ plan, sourceRoot, outputDirectory, driver, mode = "real", onProgress = () => {}, resume = false, driverIdentity = null, readDriverIdentity = null }) {
   assert.ok(["real","simulated"].includes(mode),"Invalid experiment mode");
   assert.equal(typeof resume,"boolean","resume must be a boolean");
   const expected=experimentPlan({weak:plan.groups.find(group=>group.id==="weak-baseline")?.model,strong:plan.groups.find(group=>group.id==="strong-reference")?.model,client:plan.client,comparison:plan.comparison,repetitions:plan.repetitions,timeoutMs:plan.budget.timeoutMs,maxToolCalls:plan.budget.maxToolCalls,suite:plan.suite});
   assert.deepEqual(plan,expected,"Experiment plan differs from the declared task suite");
   plan=expected;
+  outputDirectory=await experimentOutputDirectory(sourceRoot,outputDirectory,resume);
   if(!resume)await mkdir(outputDirectory);
-  outputDirectory=await realpath(outputDirectory);
   const requestedIdentity=checkedIdentity(mode,driver,driverIdentity);
   const identity=await resumeCompatibleIdentity(outputDirectory,requestedIdentity,resume);
   const identityReader=mode !== "real" ? null : readDriverIdentity ?? (identity.kind === "cli" ? ()=>cliIdentity(identity.entry,{codexEnvironment:identity.environment !== undefined}) : null);
@@ -140,7 +153,7 @@ export async function runExperiment({ plan, sourceRoot, outputDirectory, driver,
         await runCase({task,group,trial:entry.trial,suite:protocol.suite,sourceRoot,outputDirectory:destination,driver,runBudget:{...protocol.budget},execution:{protocolSha256:ledger.protocolSha256,sourceBefore:source},beforePublish:assertSource});
         await assertSource();
         assert.deepEqual(await readExecutionLedger(outputDirectory,protocol),ledger,"Execution ledger changed while running a trial");
-        const result=await reconcileTrial(outputDirectory,protocol,entry,ledger.trials[index]);
+        const result=await reconcileTrial(outputDirectory,protocol,entry,ledger.trials[index],ledger.protocolSha256);
         assert.ok(result,"Published trial result is missing");
         const preceding=ledger.trials.slice(0,index).filter(state=>state.status === "completed").length;
         rows.splice(preceding,0,result);

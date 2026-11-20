@@ -20,6 +20,7 @@ test("source identity survives staging but detects edits, deletion and renamed U
     assert.equal((await sourceSnapshot(root)).digest, modified.digest);
     await rename(path.join(root, "中文 file.mjs"), path.join(root, "改名 file.mjs"));
     assert.deepEqual(snapshotChanges(modified, await sourceSnapshot(root)), ["中文 file.mjs", "改名 file.mjs"].sort());
+    await assert.rejects(() => changedFilesSince(root, "f".repeat(40)), { code: "GIT_COMMAND_FAILED" });
     const changes = await changedFilesSince(root, commit);
     assert.ok(changes.files.includes("中文 file.mjs"));
     assert.ok(changes.files.includes("改名 file.mjs"));

@@ -2,7 +2,7 @@
 
 可复制到新项目或已有项目的仓库内 AI 开发 Runtime。普通任务默认自主推进，流程随风险增加：模型负责方案判断，Runtime 负责状态、权限和验证证据。
 
-- 当前版本：`1.12.1`
+- 当前版本：`1.12.2`
 - 运行要求：Node.js 20+、Git
 - 依赖：仅 Node.js 标准库，不修改目标项目依赖清单
 - 用户使用指南：[docs/guides/getting-started.md](docs/guides/getting-started.md)
@@ -14,7 +14,7 @@
 
 ## 安装到目标项目
 
-首次接入先运行 `install`，再到目标项目完成[初始化](#初始化)。已有 Git 历史的项目请将安装和首次初始化生成的文件放在同一笔提交中，供 CI 核对。以后升级只运行 `install`。下例中的 `--dry-run` 是可选的只读预检。
+首次接入先运行 `install`，再到目标项目完成[初始化](#初始化)。已有 Git 历史的项目请将安装和首次初始化生成的文件放在同一笔提交中，供 CI 核对。以下命令用于首次安装，`--dry-run` 是可选预检。已有项目升级请先按预检清单建立交付工作项，再运行 `install`，详见[升级指南](docs/guides/getting-started.md#9-升级-harness)。
 
 ```powershell
 $HarnessRepo = "D:\Tools\my-harness"

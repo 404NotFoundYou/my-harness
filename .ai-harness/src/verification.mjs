@@ -6,7 +6,7 @@ import { readJson, resolveProjectPath } from "./filesystem.mjs";
 import { invariant } from "./errors.mjs";
 import { sourceSnapshot, loadSnapshot } from "./snapshot.mjs";
 import { isRunBackedStage, requiredVerificationStages } from "./constants.mjs";
-import { assertArtifacts } from "./artifacts.mjs";
+import { assertEvidenceArtifacts } from "./artifacts.mjs";
 
 export function checksFor(task) {
   return task.checks || compileChecks(task.verification);
@@ -95,6 +95,7 @@ export async function assertAnalysisCommandEvidence(root, item, commandId, { sna
   "ANALYSIS_COMMAND_EVIDENCE_INVALID", "分析命令证据必须属于当前修订、通过 allow 策略、未改变源码且没有同命令的随后失败。" );
   await loadSnapshot(root, command.source);
   await loadSnapshot(root, command.sourceAfter);
+  await assertEvidenceArtifacts(root, item.id, event);
   return event;
 }
 
@@ -172,7 +173,7 @@ export async function assertVerification(root, item, plan, options = {}) {
     await readSnapshot(event.command.sourceAfter);
   }
   for (const event of evidence) {
-    if ((event.revision || 1) === (item.revision || 1) && event.status === "pass") await assertArtifacts(root, item.id, event.artifacts);
+    if ((event.revision || 1) === (item.revision || 1) && event.status === "pass") await assertEvidenceArtifacts(root, item.id, event);
   }
   return report;
 }
@@ -209,6 +210,7 @@ export async function assertCommandEvidence(root, item, plan, commandId, options
   }
   await readSnapshot(event.command.source);
   await readSnapshot(event.command.sourceAfter);
+  await assertEvidenceArtifacts(root, item.id, event);
   return event;
 }
 

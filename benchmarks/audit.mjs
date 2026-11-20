@@ -10,7 +10,8 @@ import { executionSummary, readExecution } from "./execution.mjs";
 
 export async function auditExperiment(directory, { readEvidence } = {}) {
   const read = async file => JSON.parse(readEvidence ? (await readEvidence(file)).toString("utf8") : await readFile(path.join(directory, file), "utf8"));
-  const protocol = await read("protocol.json");
+  const protocolBytes = readEvidence ? await readEvidence("protocol.json") : await readFile(path.join(directory,"protocol.json"));
+  const protocol = JSON.parse(protocolBytes.toString("utf8"));
   const summary = await read("summary.json");
   assert.ok([1, 2, 3, 4].includes(protocol.schemaVersion));
   if(protocol.schemaVersion===4)validateExperimentProtocol(protocol);
@@ -37,7 +38,7 @@ export async function auditExperiment(directory, { readEvidence } = {}) {
     repetitions: protocol.repetitions, timeoutMs: protocol.budget.timeoutMs, maxToolCalls: protocol.budget.maxToolCalls, suite: project?protocol.suite:undefined }).schedule : null;
   if (project||resumable) assert.deepEqual(protocol.tasks,tasks.map(taskManifest));
   if (extended) { assert.deepEqual(protocol.schedule, schedule); assert.deepEqual(summary.notRun, []); }
-  const recovered = resumable ? await readExecution(directory, protocol, { readEvidence }) : null;
+  const recovered = resumable ? await readExecution(directory, protocol, { readEvidence, protocolBytes }) : null;
   const rows = [];
   const byTrial = new Map(recovered?.rows.map(row => [`${row.taskId}:${row.group}:${row.trial}`, row]));
   for (const task of tasks) {

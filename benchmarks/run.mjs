@@ -1,7 +1,7 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { clientDriver } from "./client-drivers.mjs";
-import { cliIdentity, experimentPlan, runExperiment } from "./experiment.mjs";
+import { cliIdentity, experimentOutputDirectory, experimentPlan, runExperiment } from "./experiment.mjs";
 import { loadContainerRuntime } from "./codex-container.mjs";
 import { readExperimentFile } from "./audit-trial.mjs";
 
@@ -50,9 +50,11 @@ export async function runBenchmark(options){
   timeoutMs:options["--timeout-ms"]===undefined?undefined:Number(options["--timeout-ms"]),
   maxToolCalls:options["--max-tools"]===undefined?undefined:Number(options["--max-tools"]) });
  if(options["--dry-run"]){console.log(JSON.stringify({...plan,codexRuntime,modelCalls:plan.schedule.length,dryRun:true},null,2));return;}
- const outputDirectory=path.resolve(options["--out"]),selected=await selectContainerRuntime({codexRuntime,manifest:options["--codex-container-manifest"],outputDirectory,resume:Boolean(options["--resume"])});
+ const sourceRoot=path.resolve(path.dirname(fileURLToPath(import.meta.url)),"..");
+ const outputDirectory=await experimentOutputDirectory(sourceRoot,options["--out"],Boolean(options["--resume"]));
+ const selected=await selectContainerRuntime({codexRuntime,manifest:options["--codex-container-manifest"],outputDirectory,resume:Boolean(options["--resume"])});
  const identity=selected?.identity??await cliIdentity(options["--cli"],{codexEnvironment:plan.client === "codex"});
- const result=await runExperiment({plan,sourceRoot:path.resolve(path.dirname(fileURLToPath(import.meta.url)),".."),outputDirectory,
+ const result=await runExperiment({plan,sourceRoot,outputDirectory,
   driver:clientDriver(plan.client,selected?.cli??identity.entry,selected?{runtime:selected.runtime}:{}),driverIdentity:identity,readDriverIdentity:selected?.readIdentity,
   resume:Boolean(options["--resume"]),onProgress:event=>console.log(JSON.stringify(event))});
  console.log(JSON.stringify({event:result.complete?"complete":"incomplete",groups:result.groups,progress:result.progress,interrupted:result.interrupted,notRun:result.notRun}));

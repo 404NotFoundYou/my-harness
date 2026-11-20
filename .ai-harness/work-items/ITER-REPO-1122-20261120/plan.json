@@ -1,0 +1,135 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "ITER-REPO-1122-20261120",
+  "mode": "single",
+  "rationale": "单人实施同一个补丁版本，高风险差异交由独立上下文审查。",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "修复八项并验证源仓、评测及安装目标",
+      "module": "Runtime",
+      "status": "COMPLETED",
+      "attempt": 1,
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        ".ai-harness/manifest.json",
+        ".ai-harness/src/artifacts.mjs",
+        ".ai-harness/src/checker.mjs",
+        ".ai-harness/src/verification.mjs",
+        ".ai-harness/src/installer.mjs",
+        ".ai-harness/src/filesystem.mjs",
+        ".ai-harness/src/git.mjs",
+        ".ai-harness/tests/output.test.mjs",
+        ".ai-harness/tests/filesystem.test.mjs",
+        ".ai-harness/tests/snapshot.test.mjs",
+        ".ai-harness/tests/installer-checkout.test.mjs",
+        "benchmarks/experiment.mjs",
+        "benchmarks/execution.mjs",
+        "benchmarks/audit.mjs",
+        "benchmarks/audit-trial.mjs",
+        "benchmarks/run.mjs",
+        "benchmarks/tests/installed-runtime.mjs",
+        "benchmarks/tests/resume.test.mjs",
+        "benchmarks/tests/runner.test.mjs",
+        "benchmarks/tests/report.test.mjs"
+      ],
+      "verification": [
+        "{\"command\":\"node\",\"args\":[\".ai-harness/tests/run.mjs\"],\"timeoutMs\":600000,\"acceptance\":[\"A2\"]}",
+        "{\"acceptance\":[\"A3\"],\"args\":[\"--test\",\"benchmarks/tests/ci-matrix.test.mjs\",\"benchmarks/tests/container-driver.test.mjs\",\"benchmarks/tests/driver-diagnostics.test.mjs\",\"benchmarks/tests/driver-process.test.mjs\",\"benchmarks/tests/driver-timing.test.mjs\",\"benchmarks/tests/memory-control.test.mjs\",\"benchmarks/tests/multifile.test.mjs\",\"benchmarks/tests/preflight.test.mjs\",\"benchmarks/tests/project-v2.test.mjs\",\"benchmarks/tests/report.test.mjs\",\"benchmarks/tests/resume.test.mjs\",\"benchmarks/tests/runner.test.mjs\",\"benchmarks/tests/spec-guidance.test.mjs\",\"benchmarks/tests/status.test.mjs\"],\"command\":\"node\",\"timeoutMs\":600000}",
+        "{\"command\":\"node\",\"args\":[\"--test\",\"benchmarks/tests/installed-runtime.mjs\"],\"timeoutMs\":750000,\"acceptance\":[\"A1\",\"A2\"]}"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            ".ai-harness/tests/run.mjs"
+          ],
+          "acceptance": [
+            "A2"
+          ],
+          "timeoutMs": 600000
+        },
+        {
+          "id": "V2",
+          "command": "node",
+          "args": [
+            "--test",
+            "benchmarks/tests/ci-matrix.test.mjs",
+            "benchmarks/tests/container-driver.test.mjs",
+            "benchmarks/tests/driver-diagnostics.test.mjs",
+            "benchmarks/tests/driver-process.test.mjs",
+            "benchmarks/tests/driver-timing.test.mjs",
+            "benchmarks/tests/memory-control.test.mjs",
+            "benchmarks/tests/multifile.test.mjs",
+            "benchmarks/tests/preflight.test.mjs",
+            "benchmarks/tests/project-v2.test.mjs",
+            "benchmarks/tests/report.test.mjs",
+            "benchmarks/tests/resume.test.mjs",
+            "benchmarks/tests/runner.test.mjs",
+            "benchmarks/tests/spec-guidance.test.mjs",
+            "benchmarks/tests/status.test.mjs"
+          ],
+          "acceptance": [
+            "A3"
+          ],
+          "timeoutMs": 600000
+        },
+        {
+          "id": "V3",
+          "command": "node",
+          "args": [
+            "--test",
+            "benchmarks/tests/installed-runtime.mjs"
+          ],
+          "acceptance": [
+            "A1",
+            "A2"
+          ],
+          "timeoutMs": 750000
+        }
+      ],
+      "docsImpact": [
+        "CLAUDE.md",
+        "README.md",
+        "docs/versions/history.md",
+        "docs/guides/getting-started.md",
+        "docs/guides/usage.md",
+        "benchmarks/README.md"
+      ],
+      "reviewBatch": "R1",
+      "risk": "high",
+      "owner": "primary-ai",
+      "verificationStatus": "pass",
+      "reviewStatus": "pass",
+      "evidence": [
+        "96ce0265-b61d-414b-9b5f-df37b7af8456",
+        "3b512f71-ff53-461b-8c1e-b215871973f9"
+      ],
+      "deferralApproval": null,
+      "verificationSource": {
+        "digest": "af11bc37a18edc98c318279a7baf0ee0933b6694c3f47015d256215054c85b27",
+        "document": ".ai-harness/work-items/ITER-REPO-1122-20261120/snapshots/af11bc37a18edc98c318279a7baf0ee0933b6694c3f47015d256215054c85b27.json"
+      },
+      "reviewSource": {
+        "digest": "af11bc37a18edc98c318279a7baf0ee0933b6694c3f47015d256215054c85b27",
+        "document": ".ai-harness/work-items/ITER-REPO-1122-20261120/snapshots/af11bc37a18edc98c318279a7baf0ee0933b6694c3f47015d256215054c85b27.json"
+      }
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "升级与验证完整性",
+      "risk": "high",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": true
+    }
+  ],
+  "createdAt": "2026-11-20T07:25:34.014Z",
+  "updatedAt": "2026-11-20T08:02:13.151Z",
+  "revision": 2
+}

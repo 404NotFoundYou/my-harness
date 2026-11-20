@@ -1,12 +1,16 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { readFile, writeFile } from "node:fs/promises";
+import { readFile, unlink, writeFile } from "node:fs/promises";
 import fsPromises from "node:fs/promises";
 import childProcess from "node:child_process";
 import { syncBuiltinESMExports } from "node:module";
 import path from "node:path";
 import { beginWorkItem } from "../src/compact.mjs";
 import { redact, runRecordedCommand } from "../src/evidence.mjs";
+import { assertEvidenceArtifacts } from "../src/artifacts.mjs";
+import { checkProject } from "../src/checker.mjs";
+import { assertVerification } from "../src/verification.mjs";
+import { loadPlan, loadWorkItem } from "../src/workflow.mjs";
 import { exists } from "../src/filesystem.mjs";
 import { cleanup, createInstalledProject } from "./helpers.mjs";
 
@@ -55,6 +59,30 @@ for (const exitCode of [0, 7]) {
     } finally { await cleanup(root); }
   });
 }
+
+test("CI and final verification require the exact archived redacted bytes for each command stream", async () => {
+  const root = await fixture('writeSync(1, "o".repeat(32768) + " TOKEN=fixture"); writeSync(2, "e".repeat(32768));');
+  try {
+    const event = await run(root);
+    const item = await loadWorkItem(root, "OUTPUT"), plan = await loadPlan(root, "OUTPUT");
+    const { stdout, stderr } = event.command;
+    assert.notEqual(stdout.artifactSha256, stdout.sha256, "redaction changes the archived bytes");
+    await assertVerification(root, item, plan);
+    assert.equal((await checkProject(root)).ok, true);
+    for (const changed of [undefined, { ...stdout, artifact: stderr.artifact }, { ...stdout, artifactSha256: undefined },
+      { ...stdout, artifact: stdout.artifact.replace("/OUTPUT/", "/OTHER/") }, { truncated: true, complete: true }]) {
+      const altered = { ...event, command: { ...event.command, stdout: changed } };
+      await assert.rejects(() => assertEvidenceArtifacts(root, item.id, altered), { code: "OUTPUT_ARTIFACT_INVALID" });
+    }
+    await assertEvidenceArtifacts(root, item.id, { ...event, command: { stdout: { truncated: true, text: "legacy preview" } } });
+    await writeFile(path.join(root, stdout.artifact), "changed");
+    await assert.rejects(() => assertVerification(root, item, plan), { code: "OUTPUT_ARTIFACT_HASH_MISMATCH" });
+    assert.ok((await checkProject(root, { ci: true })).errors.some(message => message.includes("OUTPUT_ARTIFACT_HASH_MISMATCH")));
+    await unlink(path.join(root, stdout.artifact));
+    await assert.rejects(() => assertVerification(root, item, plan), { code: "PATH_NOT_FOUND" });
+    assert.ok((await checkProject(root, { ci: true })).errors.some(message => message.includes("PATH_NOT_FOUND")));
+  } finally { await cleanup(root); }
+});
 
 test("the output budget is independent of preview size and applies across both streams", async () => {
   const root = await fixture('writeSync(1, "o".repeat(700000)); writeSync(2, "e".repeat(700000));', {
@@ -124,11 +152,11 @@ test("old configs get the new budget only when the field is absent", async () =>
 
 test("one failed artifact save does not discard the other stream's evidence", async (t) => {
   const root = await fixture('writeSync(1, "o".repeat(32768)); writeSync(2, "e".repeat(32768));');
-  const originalWrite = fsPromises.writeFile;
+  const originalOpen = fsPromises.open;
   try {
-    t.mock.method(fsPromises, "writeFile", async (target, ...args) => {
+    t.mock.method(fsPromises, "open", async (target, ...args) => {
       if (String(target).includes("-stderr.txt.")) throw Object.assign(new Error("synthetic disk write failure"), { code: "ENOSPC" });
-      return originalWrite(target, ...args);
+      return originalOpen(target, ...args);
     });
     syncBuiltinESMExports();
     const event = await run(root);

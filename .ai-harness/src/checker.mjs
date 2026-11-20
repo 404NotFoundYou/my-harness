@@ -13,7 +13,7 @@ import { inspectManagedBlock, normalizeManagedBody } from "./managed-block.mjs";
 import { collectPlanErrors, collectProgressErrors } from "./validator.mjs";
 import { collectScopeErrors } from "./scope.mjs";
 import { itemPolicyFiles } from "./policy-routing.mjs";
-import { assertArtifacts } from "./artifacts.mjs";
+import { assertEvidenceArtifacts } from "./artifacts.mjs";
 import { loadConfig, loadPlan, loadWorkItem, workItemPaths } from "./workflow.mjs";
 
 const CHANGED_FILES_PREVIEW_LIMIT = 50;
@@ -208,7 +208,7 @@ async function inspectEvidence(root, item, plan) {
       errors.push(`evidence.jsonl:${index + 1} 结果状态无效。`);
     }
     if (byId.has(event.id)) errors.push(`evidence.jsonl 包含重复 ID：${event.id}`);
-    try { await assertArtifacts(root, item.id, event.artifacts); } catch (error) { errors.push(`${event.id}: ${error.code || "ARTIFACT_INVALID"}: ${error.message}`); }
+    try { await assertEvidenceArtifacts(root, item.id, event); } catch (error) { errors.push(`${event.id}: ${error.code || "ARTIFACT_INVALID"}: ${error.message}`); }
     byId.set(event.id, event);
     events.push(event);
   }

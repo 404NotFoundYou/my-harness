@@ -2,12 +2,12 @@ import {
   appendFile,
   lstat,
   mkdir,
+  open,
   readFile,
   realpath,
   rename,
   rm,
   stat,
-  writeFile,
 } from "node:fs/promises";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
@@ -149,11 +149,14 @@ export async function copyFileAtomic(source, target) {
 export async function writeFileAtomic(target, content) {
   await mkdir(path.dirname(target), { recursive: true });
   const temporary = path.join(path.dirname(target), `.${path.basename(target)}.${randomUUID()}.tmp`);
-  await writeFile(temporary, content, { flag: "wx" });
+  const handle = await open(temporary, "wx");
   try {
+    await handle.writeFile(content);
+    await handle.close();
     await rename(temporary, target);
   } catch (error) {
-    await rm(temporary, { force: true });
+    await handle.close().catch(() => {});
+    await rm(temporary, { force: true }).catch(cleanupError => { error.cleanupError = cleanupError; });
     throw error;
   }
 }

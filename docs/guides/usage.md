@@ -17,7 +17,7 @@ node <HARNESS_REPO>/.ai-harness/bin/harness.mjs install --target <TARGET> --json
 - 托管块内容被改动时默认报 `MANAGED_BLOCK_MODIFIED`；`--force` 只修复该块。标记缺失一半、重复或不独占一行时报 `MANAGED_BLOCK_MALFORMED`，`--force` 也不覆盖。
 - `--force` 可在明确授权后备份并替换普通冲突文件。块外项目规则和已修改的退役文件仍受保护。
 - 新项目在不存在 `docs` 目录时使用 `init --mode new --docs default`；默认文档先在项目内完整准备，再发布 `docs`，已有目录（即使部分文件与模板相同）也会拒绝，需改用 `--docs existing` 并沿用既有文档。
-- 已有项目使用 `init --mode existing --docs existing`。
+- 已有项目首次初始化使用 `init --mode existing --docs existing`。已接入项目请在安装前用旧 Runtime 建立升级工作项，以预检列出的精确文件为范围，交付后对升级前提交执行 `check --ci --base`。见[升级步骤](getting-started.md#9-升级-harness)。
 - 运行开发工作项前，先建立包含 Harness、初始代码和文档的 Git 提交。
 
 从 `1.3.1` 起，`.ai-harness/.gitattributes` 将 Runtime 文本固定为 LF，`.github/workflows/.gitattributes` 只约束自身及标准 `ai-harness.yml`。这两个文件随安装进入收据、冲突预检、备份和卸载流程；已有不同属性文件默认拒绝覆盖，不修改项目根属性或其他 workflow 的规则。源仓库和安装目标都应保留这两个属性文件，避免不同 `core.autocrlf` 设置导致收据字节不一致。规则文件中的托管正文沿用既有规范化哈希，卸载仅适配生成分隔符的 LF/CRLF，保留检出后的用户正文；丢失边界仍失败。目标内容只有匹配原收据哈希时才能自动更新或退役。
@@ -328,6 +328,8 @@ node .ai-harness/bin/harness.mjs record --id ITER-001 --task T1 `
 工作项证据按原始字节计算哈希。随 Runtime 安装的 `.ai-harness/.gitattributes` 对默认 `work-items/**` 和 `backups/**` 禁用 Git 文本转换，使 LF、CRLF 和二进制产物在提交及跨平台检出后保持不变。使用自定义工作项目录时，应在该目录的 Git 属性中设置同等保护。已被换行转换破坏的旧工作副本应从可信提交重新检出，不修改证据哈希来迁就变化后的内容。
 
 ### 命令输出预算
+
+验证和 CI 会按工作项、命令 ID 和输出流定位已归档的日志，并以 `artifactSha256` 核对脱敏后的文件字节。`sha256` 对应捕获的原始输出。老版本仅有截断预览的记录继续按原格式读取，保留所有已引用的日志。
 
 `config.json` 的 `maxCapturedOutputBytes` 继续控制每流预览长度（默认 16 KiB，另加截断提示）。`maxCommandOutputBytes` 是独立的 `spawnSync` 输出预算，缺省为 16 MiB，允许 1 到 64 MiB 的整数；显式 null、字符串、零或超上限在启动前报错。stdout/stderr 合计可能触发该预算，读取块可能略越过阈值，因此它不是每流配额或严格内存上界。执行仍为同步、有界捕获，权限及超时机制不变。
 
