@@ -1,0 +1,202 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 1,
+  "id": "ITER-README-QUICKSTART-20261120",
+  "type": "ITERATION",
+  "title": "校正 README 首次接入和验证示例",
+  "status": "DONE",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/iteration.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户在 README 检查后要求提交并推送"
+  },
+  "input": {
+    "references": [
+      "用户要求提交并推送本轮 README 核对及前序修复"
+    ],
+    "acceptance": [
+      "首次安装、同笔提交和升级说明准确，codegen 示例与标志一致，复现与回归引用当前计划检查，README 本地链接可用"
+    ],
+    "nonGoals": [],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": null,
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "用户要求提交并推送本轮 README 核对及前序修复"
+    ],
+    "completedAt": "2026-11-20T06:52:48.288Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "eda600cf1c150cec9afc0783deb561533babdc42",
+      "dirty": false,
+      "changedFiles": [],
+      "fingerprints": {},
+      "source": {
+        "digest": "fa20c680feff3fd3ee2762f3fa664bed502aecc3247380bc92e491c7d53e3161",
+        "document": ".ai-harness/work-items/ITER-README-QUICKSTART-20261120/snapshots/fa20c680feff3fd3ee2762f3fa664bed502aecc3247380bc92e491c7d53e3161.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": ".ai-harness/work-items/ITER-README-QUICKSTART-20261120/solution.md",
+    "evidence": [
+      "只修改首页已有段落，对照入门指南、收据字段及验证流水线，保持示例为可替换的 PowerShell 命令"
+    ],
+    "completedAt": "2026-11-20T06:52:48.380Z"
+  },
+  "database": {
+    "impact": "none",
+    "status": "not-applicable",
+    "document": null,
+    "evidence": [
+      "只修改 README 文档，无数据库读写、结构或迁移变化"
+    ],
+    "completedAt": "2026-11-20T06:52:48.383Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/ITER-README-QUICKSTART-20261120/plan.json",
+    "approved": true,
+    "approvalRef": "用户在 README 检查后要求提交并推送"
+  },
+  "verification": {
+    "status": "pass",
+    "evidence": [
+      "b9c31b6e-c696-4d32-a3fd-a5b22620fdcd"
+    ],
+    "stages": [],
+    "source": {
+      "digest": "afc4a795f1bde7e7a4af12ec41168eb868b5410b9e7b3871f1cd16a6583ab755",
+      "document": ".ai-harness/work-items/ITER-README-QUICKSTART-20261120/snapshots/afc4a795f1bde7e7a4af12ec41168eb868b5410b9e7b3871f1cd16a6583ab755.json"
+    }
+  },
+  "review": {
+    "status": "pass",
+    "evidence": [
+      "0f53f185-dd19-41d8-9f91-9791849039cd"
+    ],
+    "independent": false,
+    "source": {
+      "digest": "afc4a795f1bde7e7a4af12ec41168eb868b5410b9e7b3871f1cd16a6583ab755",
+      "document": ".ai-harness/work-items/ITER-README-QUICKSTART-20261120/snapshots/afc4a795f1bde7e7a4af12ec41168eb868b5410b9e7b3871f1cd16a6583ab755.json"
+    }
+  },
+  "acceptance": {
+    "status": "pass",
+    "evidence": [
+      "e2eaab96-e820-4bbc-83a0-8f10b4079f5d"
+    ],
+    "source": {
+      "digest": "afc4a795f1bde7e7a4af12ec41168eb868b5410b9e7b3871f1cd16a6583ab755",
+      "document": ".ai-harness/work-items/ITER-README-QUICKSTART-20261120/snapshots/afc4a795f1bde7e7a4af12ec41168eb868b5410b9e7b3871f1cd16a6583ab755.json"
+    }
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "pass",
+    "evidence": [
+      "35871609-0b7e-4d41-ab8e-4c2ea04104bd"
+    ]
+  },
+  "blocked": null,
+  "delivery": {
+    "source": {
+      "digest": "afc4a795f1bde7e7a4af12ec41168eb868b5410b9e7b3871f1cd16a6583ab755",
+      "document": ".ai-harness/work-items/ITER-README-QUICKSTART-20261120/snapshots/afc4a795f1bde7e7a4af12ec41168eb868b5410b9e7b3871f1cd16a6583ab755.json"
+    },
+    "baseline": {
+      "digest": "fa20c680feff3fd3ee2762f3fa664bed502aecc3247380bc92e491c7d53e3161",
+      "document": ".ai-harness/work-items/ITER-README-QUICKSTART-20261120/snapshots/fa20c680feff3fd3ee2762f3fa664bed502aecc3247380bc92e491c7d53e3161.json"
+    },
+    "baselineAt": "2026-11-20T06:52:48.288Z",
+    "ownedChanges": [
+      {
+        "path": "README.md",
+        "before": "100644:c83c1c6eaa7634dcd18a9d6d0f57bf35850d0366",
+        "after": "100644:0f92eca15685b52584dff8c54fab47ae865055a8"
+      }
+    ],
+    "planDigest": "47666cd3ba825ba38f8204d973d9ffc27a88d75c0af49faefd983f23a39a0d9f",
+    "at": "2026-11-20T06:55:49.905Z",
+    "head": "eda600cf1c150cec9afc0783deb561533babdc42"
+  },
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-11-20T06:52:48.167Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-11-20T06:52:48.178Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-11-20T06:52:48.376Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-11-20T06:52:48.406Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-11-20T06:52:48.410Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "VERIFYING",
+      "at": "2026-11-20T06:55:47.353Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "VERIFYING",
+      "to": "CODE_REVIEW",
+      "at": "2026-11-20T06:55:47.801Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "CODE_REVIEW",
+      "to": "READY_FOR_ACCEPTANCE",
+      "at": "2026-11-20T06:55:48.252Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "READY_FOR_ACCEPTANCE",
+      "to": "DONE",
+      "at": "2026-11-20T06:55:50.005Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-11-20T06:52:48.167Z",
+  "updatedAt": "2026-11-20T06:55:50.005Z"
+}

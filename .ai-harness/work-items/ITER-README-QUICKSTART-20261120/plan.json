@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "ITER-README-QUICKSTART-20261120",
+  "mode": "single",
+  "rationale": "只修改首页已有段落，对照入门指南、收据字段及验证流水线，保持示例为可替换的 PowerShell 命令",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "校正 README 首次接入和验证示例",
+      "module": "compact",
+      "status": "COMPLETED",
+      "attempt": 1,
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        "README.md"
+      ],
+      "verification": [
+        "node .ai-harness/bin/harness.mjs policies --type ITERATION --flag api --flag codegen --json",
+        "node --test .ai-harness/tests/bugfix-pipeline.test.mjs .ai-harness/tests/verification-pipeline.test.mjs"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            ".ai-harness/bin/harness.mjs",
+            "policies",
+            "--type",
+            "ITERATION",
+            "--flag",
+            "api",
+            "--flag",
+            "codegen",
+            "--json"
+          ]
+        },
+        {
+          "id": "V2",
+          "command": "node",
+          "args": [
+            "--test",
+            ".ai-harness/tests/bugfix-pipeline.test.mjs",
+            ".ai-harness/tests/verification-pipeline.test.mjs"
+          ]
+        }
+      ],
+      "docsImpact": [
+        "README.md"
+      ],
+      "reviewBatch": "R1",
+      "risk": "low",
+      "owner": "primary-ai",
+      "verificationStatus": "pass",
+      "reviewStatus": "pass",
+      "evidence": [
+        "7433e77e-ef30-4064-b134-5ec9c084b8e3",
+        "d99041ee-b89c-4e8b-a0a0-6e87b3871008"
+      ],
+      "deferralApproval": null,
+      "verificationSource": {
+        "digest": "afc4a795f1bde7e7a4af12ec41168eb868b5410b9e7b3871f1cd16a6583ab755",
+        "document": ".ai-harness/work-items/ITER-README-QUICKSTART-20261120/snapshots/afc4a795f1bde7e7a4af12ec41168eb868b5410b9e7b3871f1cd16a6583ab755.json"
+      },
+      "reviewSource": {
+        "digest": "afc4a795f1bde7e7a4af12ec41168eb868b5410b9e7b3871f1cd16a6583ab755",
+        "document": ".ai-harness/work-items/ITER-README-QUICKSTART-20261120/snapshots/afc4a795f1bde7e7a4af12ec41168eb868b5410b9e7b3871f1cd16a6583ab755.json"
+      }
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "校正 README 首次接入和验证示例",
+      "risk": "low",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": false
+    }
+  ],
+  "createdAt": "2026-11-20T06:52:48.388Z",
+  "updatedAt": "2026-11-20T06:55:47.347Z"
+}

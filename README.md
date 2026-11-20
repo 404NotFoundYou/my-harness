@@ -14,7 +14,7 @@
 
 ## 安装到目标项目
 
-实际接入只需一条 `install` 命令；`--dry-run` 是可选的只读预检：
+首次接入先运行 `install`，再到目标项目完成[初始化](#初始化)。已有 Git 历史的项目请将安装和首次初始化生成的文件放在同一笔提交中，供 CI 核对。以后升级只运行 `install`。下例中的 `--dry-run` 是可选的只读预检。
 
 ```powershell
 $HarnessRepo = "D:\Tools\my-harness"
@@ -38,7 +38,7 @@ node "$HarnessRepo\.ai-harness\bin\harness.mjs" uninstall --target $TargetProjec
 node "$HarnessRepo\.ai-harness\bin\harness.mjs" uninstall --target $TargetProject --confirm --json
 ```
 
-命令必须从独立 Harness 源仓库执行，不能使用目标项目内的 Runtime 自卸载；卸载源版本必须与目标版本一致。
+从与目标版本一致的独立 Harness 源仓库运行卸载命令。安装收据的 `source.commit` 有值时可据此找到源提交。如果只有 `source.payloadSha256`，请保留安装时使用的源目录副本或 ZIP 包。
 
 安装会生成 `.ai-harness/install-receipt.json`，记录实际 payload 路径、哈希和托管规则边界。卸载只按该收据逐项核验和移除，并在备份后、每次变更前复核目标快照；源或目标漂移时停止。
 
@@ -72,7 +72,7 @@ git commit -m "initialize project and AI harness"
 node .ai-harness/bin/harness.mjs doctor --json
 ```
 
-已有项目沿用现有文档结构。`install` 已完成 Runtime 与规则接入；`init` 只记录项目模式，不再要求人工合并规则：
+已有项目沿用现有文档结构。首次 `init` 会把项目模式和 Git 基线写入 `.ai-harness/project.json`。
 
 ```powershell
 node .ai-harness/bin/harness.mjs init --mode existing --docs existing --json
@@ -90,12 +90,12 @@ node .ai-harness/bin/harness.mjs doctor --json
 新项目、复杂依赖、重要架构、数据库、公共 API、安全/权限、支付、并发、全局 UI/路由、跨端和高风险变更使用完整流程。分析使用 ANALYSIS 工作项。先解析适用策略，完整流程创建示例：
 
 ```powershell
-node .ai-harness/bin/harness.mjs policies --type ITERATION --flag api --json
+node .ai-harness/bin/harness.mjs policies --type ITERATION --flag api --flag codegen --json
 node .ai-harness/bin/harness.mjs start `
   --id ITER-001 --type ITERATION --title "实现批准需求" `
   --input "docs/requirements/approved.md" --acceptance "验收场景通过" `
   --authorization autonomous --authorization-source "用户端到端授权" `
-  --flag api --json
+  --flag api --flag codegen --json
 ```
 
 普通任务的可复制命令及完整流程见[使用指南](docs/guides/usage.md#普通任务默认路径)。`begin` 内置环境检查；`finish` 必须引用真实成功命令，且缺少审查、文档或验收结论时拒绝完成。旧命令与工作项格式继续兼容。
@@ -111,6 +111,7 @@ node .ai-harness/bin/harness.mjs record --id ITER-001 --kind verification --stag
 node .ai-harness/bin/harness.mjs record --id ITER-001 --kind verification --stage sandbox  --status pass --evidence "隔离环境编译+执行，退出码 0"
 node .ai-harness/bin/harness.mjs record --id ITER-001 --kind verification --stage contract --status pass --evidence "功能与接口契约断言全通过"
 node .ai-harness/bin/harness.mjs record --id ITER-001 --kind verification --stage eval     --status pass --evidence "LLM Judge 语义与回归判定通过（附理由/引用）"
+# 同时声明 frontend 并完成浏览器验证时记录以下阶段
 node .ai-harness/bin/harness.mjs record --id ITER-001 --kind verification --stage browser  --status pass --evidence "浏览器实体探针跑通核心用户流"
 ```
 
@@ -118,19 +119,18 @@ node .ai-harness/bin/harness.mjs record --id ITER-001 --kind verification --stag
 
 ## BUG 修复复现流水线
 
-所有 `BUGFIX` 工作项的 `VERIFYING` 必须逐段通过 `static → sandbox → reproduction → regression`（`browser` 在带 `frontend` 时必需）。精简入口可以通过 `finish --stage-evidence stage=说明 --stage-command stage=命令ID` 一次提交真实阶段证据，由 Runtime 按序登记；参数见[使用指南](docs/guides/usage.md#普通任务默认路径)。其中 `reproduction`（同一复现路径转绿）与 `regression`（既有测试全绿）**必须由一次真实的 `harness run` 命令证据支撑**：
+所有 `BUGFIX` 工作项的 `VERIFYING` 必须逐段通过 `static → sandbox → reproduction → regression`（`browser` 在带 `frontend` 时必需）。精简入口可以通过 `finish --stage-evidence stage=说明 --stage-command stage=命令ID` 一次提交真实阶段证据，由 Runtime 按序登记；参数见[使用指南](docs/guides/usage.md#普通任务默认路径)。其中 `reproduction`（同一复现路径转绿）与 `regression`（既有测试全绿）**必须引用成功的 `harness run` 命令证据**。下例假定已在 `VERIFYING` 通过 `static` 和 `sandbox`，批准计划中任务 `T1` 的 `V1` 是复现检查，`V2` 是回归检查。
 
 ```powershell
-# 真跑复现测试，得到命令证据 ID
-node .ai-harness/bin/harness.mjs run --id BUG-001 -- node --test tests/repro-bug-001.test.mjs
-# 用 --command 引用该通过证据登记子阶段
-node .ai-harness/bin/harness.mjs record --id BUG-001 --kind verification --stage reproduction --status pass --evidence "复现路径已转绿" --command <上一步证据ID>
-# 回归同理：真跑全量测试后引用
-node .ai-harness/bin/harness.mjs run --id BUG-001 -- npm test
-node .ai-harness/bin/harness.mjs record --id BUG-001 --kind verification --stage regression --status pass --evidence "既有测试全绿" --command <证据ID>
+# 运行计划中的复现检查，成功后引用返回的 id
+node .ai-harness/bin/harness.mjs run --id BUG-001 --task T1 --check V1 --json
+node .ai-harness/bin/harness.mjs record --id BUG-001 --kind verification --stage reproduction --status pass --evidence "复现路径已转绿" --command "<V1 返回的 id>"
+# 对计划中的回归检查执行同样操作
+node .ai-harness/bin/harness.mjs run --id BUG-001 --task T1 --check V2 --json
+node .ai-harness/bin/harness.mjs record --id BUG-001 --kind verification --stage regression --status pass --evidence "既有测试全绿" --command "<V2 返回的 id>"
 ```
 
-阶段记为 `pass` 时被引用命令必须真实通过（退出码 0），否则确定性拒绝——比代码生成流水线的「只留证」更强。建议在 `IMPLEMENTING` 先用 `harness run` 记录一次失败复现（红）再实施修复。详见 `.ai-harness/policies/bugfix.md` 与 `docs/architecture/decisions/0005-bugfix-verification-pipeline.md`。
+阶段记为 `pass` 时，运行结果须匹配当前计划和代码快照。修复前可在 `IMPLEMENTING` 阶段用 `run --id BUG-001 --task T1 --check V1` 记录同一复现路径的失败结果。这个阶段必须用 `--task` 指定实施中的任务。详见 `.ai-harness/policies/bugfix.md` 与 `docs/architecture/decisions/0005-bugfix-verification-pipeline.md`。
 
 ## 强制边界
 
