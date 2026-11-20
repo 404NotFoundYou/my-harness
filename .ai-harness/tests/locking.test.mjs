@@ -3,11 +3,70 @@ import assert from "node:assert/strict";
 import { mkdtemp, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { randomUUID } from "node:crypto";
-import { spawnSync } from "node:child_process";
+import { execFile, spawnSync } from "node:child_process";
+import { promisify } from "node:util";
+import fsPromises from "node:fs/promises";
+import { syncBuiltinESMExports } from "node:module";
 import path from "node:path";
 import { inspectLock, recoverLock, withFileLock } from "../src/locking.mjs";
 import { createWorkItemState, recoverWorkItemLock } from "../src/workflow.mjs";
 import { cleanup, createInstalledProject } from "./helpers.mjs";
+
+test("competing CLI starts leave one owner and one creation event", async () => {
+  const root = await createInstalledProject();
+  const directory = path.join(root, ".ai-harness/work-items/SAME-ID");
+  let pending;
+  try {
+    await withFileLock(path.join(directory, ".lock"), async () => {
+      pending = Promise.allSettled(["first", "second", "third"].map(title => promisify(execFile)(process.execPath,
+        [".ai-harness/bin/harness.mjs", "start", "--id", "SAME-ID", "--type", "ANALYSIS", "--title", title, "--input", "question", "--acceptance", "answer", "--authorization-source", "fixture", "--json"],
+        { cwd: root, windowsHide: true, timeout: 15000 })));
+      const deadline = Date.now() + 10000;
+      while (true) {
+        const entries = await readdir(directory);
+        assert.ok(!entries.includes("state.json"), "creation cannot write while another owner holds the lock");
+        if (entries.filter(name => name.startsWith("..lock.") && name.endsWith(".tmp")).length === 3) break;
+        assert.ok(Date.now() < deadline, "all three contenders must reach the lock before the first write");
+        await new Promise(resolve => setTimeout(resolve, 15));
+      }
+    });
+    const results = await pending;
+    const winners = results.filter(row => row.status === "fulfilled");
+    const errors = results.filter(row => row.status === "rejected").map(row => JSON.parse(row.reason.stderr));
+    assert.equal(winners.length, 1, JSON.stringify(errors));
+    assert.deepEqual(errors.map(error => error.code), ["WORK_ITEM_EXISTS", "WORK_ITEM_EXISTS"], JSON.stringify(errors));
+    assert.equal(JSON.parse(await readFile(path.join(directory, "state.json"))).title, JSON.parse(winners[0].value.stdout).title);
+    const events = (await readFile(path.join(directory, "events.jsonl"), "utf8")).trim().split("\n").map(line => JSON.parse(line));
+    assert.deepEqual(events.map(row => row.action), ["work-item-created"]);
+  } finally { await pending; await cleanup(root); }
+});
+
+test("Windows sharing violations retry release only for the same lock owner", { skip: process.platform !== "win32" }, async t => {
+  const directory = await mkdtemp(path.join(tmpdir(), "ai-harness-lock-sharing-"));
+  const lock = path.join(directory, ".lock"), rename = fsPromises.rename;
+  let attempts = 0, replaceOwner = false;
+  try {
+    t.mock.method(fsPromises, "rename", async (from, to) => {
+      if (from === lock && ++attempts === 1) {
+        if (replaceOwner) {
+          await rename(lock, path.join(directory, "original"));
+          await fsPromises.mkdir(lock);
+        }
+        throw Object.assign(new Error("temporary sharing violation"), { code: "EPERM" });
+      }
+      return rename(from, to);
+    });
+    syncBuiltinESMExports();
+    await withFileLock(lock, async () => {});
+    assert.equal(attempts, 2);
+    assert.equal((await inspectLock(lock)).status, "free");
+    attempts = 0;
+    replaceOwner = true;
+    await assert.rejects(() => withFileLock(lock, async () => {}), { code: "EPERM" });
+    assert.equal(attempts, 1);
+    assert.deepEqual(await readdir(lock), [], "a replacement directory must stay in place");
+  } finally { t.mock.restoreAll(); syncBuiltinESMExports(); await cleanup(directory); }
+});
 
 async function abandonedLock(directory, afterAcquire = "") {
   const lock = path.join(directory, ".lock");

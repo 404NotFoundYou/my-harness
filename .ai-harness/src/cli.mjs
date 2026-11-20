@@ -92,6 +92,15 @@ function flag(parsed, key) {
   return selected === true || selected === "true" || selected === "1";
 }
 
+function validateOptions(parsed, command, valueOption, flags) {
+  for (const [option, value] of Object.entries(parsed.options)) {
+    invariant(option === valueOption || flags.includes(option), "UNKNOWN_OPTION", `${command} 不支持 --${option}。`);
+    invariant(option === valueOption ? typeof value === "string" && value.trim() : [true, "true", "false", "1", "0"].includes(value),
+      "INVALID_OPTION", `${command} 的 --${option} 参数无效或重复。`);
+  }
+  invariant(parsed.positional.length === 1 && !parsed.passthrough.length, "INVALID_OPTION", `${command} 不接收额外参数。`);
+}
+
 function formatHuman(value) {
   if (typeof value === "string") return value;
   return JSON.stringify(value, null, 2);
@@ -219,6 +228,7 @@ export async function runCli(argv, io = { stdout: console.log, stderr: console.e
     return 0;
   }
   if (command === "install") {
+    validateOptions(parsed, command, "target", ["dry-run", "force", "json"]);
     const target = one(parsed, "target", { required: true });
     const result = await installRuntime(sourceRoot, resolve(target), {
       dryRun: flag(parsed, "dry-run"),
@@ -228,6 +238,7 @@ export async function runCli(argv, io = { stdout: console.log, stderr: console.e
     return 0;
   }
   if (command === "uninstall") {
+    validateOptions(parsed, command, "target", ["dry-run", "confirm", "json"]);
     const target = one(parsed, "target", { required: true });
     const result = await uninstallRuntime(sourceRoot, resolve(target), {
       dryRun: flag(parsed, "dry-run"),
@@ -253,14 +264,7 @@ export async function runCli(argv, io = { stdout: console.log, stderr: console.e
     return result.ok ? 0 : 1;
   }
   if (command === "check") {
-    const allowed = ["ci", "base", "json"];
-    for (const option of Object.keys(parsed.options)) {
-      invariant(allowed.includes(option), "UNKNOWN_OPTION", `check 不支持 --${option}。`);
-      const value = parsed.options[option];
-      invariant(option === "base" ? typeof value === "string" : [true, "true", "false", "1", "0"].includes(value),
-        "INVALID_OPTION", `check 的 --${option} 参数无效或重复。`);
-    }
-    invariant(parsed.positional.length === 1 && parsed.passthrough.length === 0, "INVALID_OPTION", "check 不接收额外参数。");
+    validateOptions(parsed, command, "base", ["ci", "json"]);
     const ci = flag(parsed, "ci");
     const base = one(parsed, "base");
     invariant(base === null || (ci && /^(?:[0-9a-f]{40}|[0-9a-f]{64})$/.test(base)), "INVALID_OPTION", "--base 需与 --ci 一起使用并提供完整提交标识。");

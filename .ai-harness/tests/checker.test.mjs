@@ -14,7 +14,7 @@ import {
   transitionWorkItem,
   workItemPaths,
 } from "../src/workflow.mjs";
-import { cleanup, createInstalledProject, git, sourceRoot } from "./helpers.mjs";
+import { cleanup, createInstalledProject, git, sourceRoot, useLegacyReceipt } from "./helpers.mjs";
 
 test("doctor reports a concise Git summary without baseline fingerprints", async () => {
   const root = await createInstalledProject();
@@ -48,6 +48,45 @@ test("doctor bounds dirty path output while retaining exact totals", async () =>
   } finally {
     await cleanup(root);
   }
+});
+
+for (const legacy of [false, true]) test(legacy ? "legacy receipts cannot claim an initial installation delivery" :
+  "first adoption owns only the committed installation, including the managed part of existing rules", async () => {
+  const root = await mkdtemp(path.join(tmpdir(), "ai-harness-first-install-"));
+  try {
+    git(root, ["init"]);
+    git(root, ["config", "user.name", "Harness Test"]);
+    git(root, ["config", "user.email", "harness-test@example.invalid"]);
+    await writeFile(path.join(root, "AGENTS.md"), "# Project rules\n");
+    await writeFile(path.join(root, "CLAUDE.md"), "@AGENTS.md\n");
+    await writeFile(path.join(root, "product.txt"), "existing feature\n");
+    const commit = (message, ...flags) => { git(root, ["add", "."]); git(root, ["commit", ...flags, "-m", message]); };
+    commit("existing application");
+    const base = git(root, ["rev-parse", "HEAD"]).stdout.trim();
+    await installRuntime(sourceRoot, root);
+    if (legacy) await useLegacyReceipt(root);
+    const project = await initializeProject(root, { mode: "existing", docsMode: "existing" });
+    commit("install and initialize runtime");
+    const clean = await checkProject(root, { ci: true, base });
+    if (legacy) {
+      assert.equal(project.initialInstall, undefined);
+      assert.equal(clean.ok, false);
+      assert.ok(clean.details.changedFiles.includes(".ai-harness/manifest.json"));
+      return;
+    }
+    assert.equal(clean.ok, true, JSON.stringify(clean.errors));
+    await writeFile(path.join(root, "product.txt"), "unrelated product change\n");
+    const installedRules = await readFile(path.join(root, "AGENTS.md"), "utf8");
+    await writeFile(path.join(root, "AGENTS.md"), installedRules.replace("# Project rules", "# Changed project rules"));
+    await writeFile(path.join(root, ".ai-harness/project.json"), JSON.stringify({ ...project, extra: "unrelated metadata" }));
+    commit("install with unrelated edits", "--amend");
+    const mixed = await checkProject(root, { ci: true, base });
+    assert.equal(mixed.ok, false);
+    assert.deepEqual(mixed.details.changedFiles, [".ai-harness/project.json", "AGENTS.md", "product.txt"]);
+    await writeFile(path.join(root, ".ai-harness/src/evidence.mjs"), "// not from installer\n");
+    commit("change installed file");
+    assert.ok((await checkProject(root, { ci: true, base })).details.changedFiles.includes(".ai-harness/src/evidence.mjs"));
+  } finally { await cleanup(root); }
 });
 
 test("doctor accepts managed AGENTS with byte-preserved compatible adapters", async () => {

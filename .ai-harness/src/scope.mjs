@@ -1,4 +1,7 @@
 import path from "node:path";
+import { createHash } from "node:crypto";
+import { distributionPaths, INSTRUCTION_FILES, validateInstallReceipt } from "./installer.mjs";
+import { mergeManagedFile } from "./managed-block.mjs";
 import { readdir } from "node:fs/promises";
 import { readJson } from "./filesystem.mjs";
 import { commitSnapshot, controlPath, loadSnapshot, makeSnapshot, snapshotChanges, sourceSnapshot } from "./snapshot.mjs";
@@ -62,6 +65,61 @@ function declaredTrivialDoc(root, base, ancestor, current) {
   return current.files[file] === `100644:${blob}` ? file : null;
 }
 
+function installBlobs(root, entries) {
+  const ids = [...new Set(entries.filter(Boolean).map(entry => entry.split(":")[1]))];
+  const bytes = gitResult(root, ["cat-file", "--batch"], { input: ids.join("\n") + "\n", encoding: null }).stdout;
+  const blobs = new Map();
+  let offset = 0;
+  for (const id of ids) {
+    const end = bytes.indexOf(10, offset);
+    const [oid, type, size] = bytes.toString("ascii", offset, end).split(" ");
+    invariant(end >= offset && oid === id && type === "blob" && /^\d+$/.test(size), "INVALID_INITIAL_INSTALL", "首次接入缺少 Git 文件内容。");
+    offset = end + 1 + Number(size);
+    invariant(bytes[offset] === 10, "INVALID_INITIAL_INSTALL", "首次接入的 Git 文件内容不完整。");
+    blobs.set(id, bytes.subarray(end + 1, offset));
+    offset += 1;
+  }
+  return entry => blobs.get(entry.split(":")[1]);
+}
+
+// Replay only the first install from committed bytes; a later work item may then build on it.
+async function applyInitialInstall(root, base, files) {
+  const projectPath = ".ai-harness/project.json", receiptPath = ".ai-harness/install-receipt.json", manifestPath = ".ai-harness/manifest.json";
+  if (files[projectPath] || files[receiptPath] || files[manifestPath]) return;
+  const introduction = gitResult(root, ["log", "--reverse", "--diff-filter=A", "--format=%H", `${base}..HEAD`, "--", projectPath]).stdout.split(/\r?\n/)[0];
+  if (!introduction || gitResult(root, ["log", "--full-history", "-1", "--format=%H", base, "--", projectPath]).stdout.trim()) return;
+  const installed = (await commitSnapshot(root, introduction)).files;
+  if (![receiptPath, projectPath, manifestPath].every(file => installed[file]?.startsWith("100644:"))) return;
+  const metadata = installBlobs(root, [installed[receiptPath], installed[projectPath], installed[manifestPath]]);
+  const { initialInstall, ...project } = JSON.parse(metadata(installed[projectPath]));
+  const parent = gitResult(root, ["rev-parse", `${introduction}^`]).stdout.trim();
+  if (!initialInstall || project.mode !== "existing" || project.repository?.commit !== parent) return;
+  const prior = (await commitSnapshot(root, parent)).files;
+  if ([projectPath, receiptPath, manifestPath].some(file => prior[file])) return;
+  const receipt = validateInstallReceipt(JSON.parse(metadata(installed[receiptPath])));
+  const manifest = JSON.parse(metadata(installed[manifestPath]));
+  const paths = distributionPaths(manifest);
+  invariant(receipt.source && receipt.contentHash === initialInstall.receipt && receipt.harnessVersion === manifest.version && project.harnessVersion === manifest.version &&
+    JSON.stringify(receipt.files.map(entry => entry.relative).sort()) === JSON.stringify(paths), "INVALID_INITIAL_INSTALL", "首次接入的收据、版本或发行清单不一致。");
+  const blob = installBlobs(root, [...paths.map(file => installed[file]),
+    ...INSTRUCTION_FILES.flatMap(({ relative }) => [installed[relative], prior[relative]]).filter(entry => entry?.startsWith("100644:"))]);
+  for (const { relative, sha256 } of receipt.files) {
+    const entry = installed[relative];
+    invariant(entry?.startsWith("100644:") && createHash("sha256").update(blob(entry)).digest("hex") === sha256,
+      "INVALID_INITIAL_INSTALL", `首次接入文件与收据不符：${relative}`);
+    if (!prior[relative] && !files[relative]) files[relative] = entry;
+  }
+  for (const { relative, compatibleImport } of INSTRUCTION_FILES) {
+    if (prior[relative] !== files[relative] || !installed[relative]?.startsWith("100644:") || (prior[relative] && !prior[relative].startsWith("100644:"))) continue;
+    const existing = prior[relative] ? blob(prior[relative]).toString("utf8") : "";
+    const body = blob(installed[`.ai-harness/templates/instructions/${relative}`]).toString("utf8");
+    const merged = mergeManagedFile({ existing, relative, version: manifest.version, body, compatibleImport });
+    if (blob(installed[relative]).equals(Buffer.from(merged.content))) files[relative] = installed[relative];
+  }
+  files[receiptPath] = installed[receiptPath];
+  if (createHash("sha256").update(JSON.stringify(project)).digest("hex") === initialInstall.metadata) files[projectPath] = installed[projectPath];
+}
+
 async function compareCommitRange(root, config, base, current, ordered) {
   invariant(/^(?:[0-9a-f]{40}|[0-9a-f]{64})$/.test(base) &&
     gitResult(root, ["rev-parse", "--verify", `${base}^{commit}`], { allowFailure: true }).stdout.trim() === base &&
@@ -74,6 +132,7 @@ async function compareCommitRange(root, config, base, current, ordered) {
   const existing = new Set(gitResult(root, ["--literal-pathspecs", "ls-tree", "-r", "-z", "--name-only", base, "--", directory]).stdout.split("\0"));
   const touched = new Set(gitResult(root, ["--literal-pathspecs", "diff", "--name-only", "--no-renames", "-z", base, "--", directory]).stdout.split("\0"));
   const files = Object.assign(Object.create(null), ancestor.files);
+  await applyInitialInstall(root, base, files);
   for (const archive of ordered) {
     if (archive.legacy) continue;
     const state = `${directory}/${archive.item.id}/state.json`;

@@ -15,11 +15,11 @@ import {
 } from "node:fs/promises";
 import path from "node:path";
 import { atomicWriteJson, copyFileAtomic, exists, readJson, resolveProjectPath, writeFileAtomic } from "./filesystem.mjs";
-import { getGitBaseline } from "./git.mjs";
+import { getGitBaseline, gitResult } from "./git.mjs";
 import { HarnessError, invariant } from "./errors.mjs";
 import { inspectManagedBlock, mergeManagedFile, removeManagedBlock } from "./managed-block.mjs";
 
-const INSTRUCTION_FILES = Object.freeze([
+export const INSTRUCTION_FILES = Object.freeze([
   { relative: "AGENTS.md", compatibleImport: null },
   { relative: "CLAUDE.md", compatibleImport: "@AGENTS.md" },
   { relative: "GEMINI.md", compatibleImport: "@./AGENTS.md" },
@@ -53,6 +53,7 @@ function canonicalReceiptBody(receipt) {
   return {
     schemaVersion: receipt.schemaVersion,
     harnessVersion: receipt.harnessVersion,
+    ...(receipt.source ? { source: receipt.source } : {}),
     files: receipt.files.map(({ relative, sha256 }) => ({ relative, sha256 })),
     instructions: receipt.instructions.map((entry) => ({
       relative: entry.relative,
@@ -64,7 +65,7 @@ function canonicalReceiptBody(receipt) {
   };
 }
 
-function validateInstallReceipt(receipt, code) {
+export function validateInstallReceipt(receipt, code = "INSTALL_RECEIPT_INVALID") {
   invariant(receipt && typeof receipt === "object" && !Array.isArray(receipt), code, "Harness 安装收据结构无效。" );
   invariant(receipt.schemaVersion === 1 && typeof receipt.harnessVersion === "string", code, "Harness 安装收据版本无效。" );
   invariant(Array.isArray(receipt.files) && Array.isArray(receipt.instructions), code, "Harness 安装收据清单无效。" );
@@ -110,6 +111,11 @@ function validateInstallReceipt(receipt, code) {
     instructionPaths.add(entry.relative);
   }
 
+  if (receipt.source !== undefined) {
+    invariant(receipt.source && (receipt.source.commit === null || /^(?:[a-f0-9]{40}|[a-f0-9]{64})$/.test(receipt.source.commit)) &&
+      receipt.source.payloadSha256 === hash(JSON.stringify(receipt.files.map(({ relative, sha256 }) => ({ relative, sha256 })))),
+      code, "安装来源与载荷摘要不匹配。");
+  }
   const canonical = canonicalReceiptBody(receipt);
   invariant(
     receipt.contentHash === hash(Buffer.from(JSON.stringify(canonical))),
@@ -212,25 +218,20 @@ async function assertSourceFile(sourceRoot, relative) {
   invariant(info?.isFile(), "SOURCE_TYPE_CONFLICT", `安装源不是普通文件：${relative}`);
 }
 
+export function distributionPaths(manifest) {
+  const files = manifest.payload;
+  invariant(Array.isArray(files) && files.every(file => typeof file === "string" && receiptPayloadPathAllowed(file) && !file.split("/").some(part => part.startsWith("..") || part.includes(":"))) &&
+    new Set(files).size === files.length && [".ai-harness/manifest.json", ".ai-harness/config.json", STANDARD_WORKFLOW_RELATIVE, WORKFLOW_ATTRIBUTES_RELATIVE,
+      ...INSTRUCTION_FILES.map(({ relative }) => `.ai-harness/templates/instructions/${relative}`)].every(file => files.includes(file)),
+  "INVALID_DISTRIBUTION", "发行清单缺少必要文件或包含无效路径。");
+  return [...files].sort();
+}
+
 export async function installationFiles(sourceRoot) {
-  const files = [];
-  const runtimeRoot = path.join(sourceRoot, ".ai-harness");
-  const runtimeInfo = await lstat(runtimeRoot);
-  invariant(
-    runtimeInfo.isDirectory() && !runtimeInfo.isSymbolicLink(),
-    "SOURCE_SYMLINK",
-    "安装源 .ai-harness 必须是普通目录，不能是符号链接或联接。",
-  );
-  const excluded = new Set(["project.json", "install-receipt.json", "work-items", "backups"]);
-  const payload = await listFiles(runtimeRoot, "", (relative) => excluded.has(relative));
-  files.push(...payload.map(relative => `.ai-harness/${relative}`));
-  for (const relative of [STANDARD_WORKFLOW_RELATIVE, WORKFLOW_ATTRIBUTES_RELATIVE]) {
-    if (await exists(path.join(sourceRoot, relative))) {
-      await assertSourceFile(sourceRoot, relative);
-      files.push(relative);
-    }
-  }
-  return files.sort();
+  await assertSourceFile(sourceRoot, ".ai-harness/manifest.json");
+  const files = distributionPaths(await readJson(path.join(sourceRoot, ".ai-harness/manifest.json")));
+  for (const relative of files) await assertSourceFile(sourceRoot, relative);
+  return files;
 }
 
 async function planInstructionOperations(source, targetRoot, version, force) {
@@ -319,13 +320,33 @@ function instructionReceipt(operation, previousReceipt) {
   };
 }
 
-function buildInstallReceipt(version, payloadOperations, instructionOperations, previousReceipt) {
+function buildInstallReceipt(source, version, payloadOperations, instructionOperations, previousReceipt, originReceipt, hasGit) {
+  const files = payloadOperations.map(({ relative, sourceContent }) => ({ relative, sha256: hash(sourceContent) }));
+  const payloadSha256 = hash(JSON.stringify(files));
+  let commit = null;
+  if (originReceipt) {
+    const original = new Map(originReceipt.files.map(entry => [entry.relative, entry.sha256]));
+    invariant(files.every(file => file.sha256 === original.get(file.relative)), "INSTALL_SOURCE_MISMATCH", "再分发源的标准载荷与原收据不符。");
+    commit = originReceipt.source?.commit ?? null;
+  } else if (hasGit) {
+    const head = gitResult(source, ["rev-parse", "--verify", "HEAD"], { allowFailure: true });
+    if (head.status === 0) {
+      const revision = head.stdout.trim();
+      const tree = gitResult(source, ["--literal-pathspecs", "ls-tree", "-r", "-z", revision, "--", ...files.map(file => file.relative)]);
+      const blobs = new Map(tree.stdout.split("\0").filter(Boolean).map(line => {
+        const [metadata, relative] = line.split("\t");
+        return [relative, metadata.split(" ")[2]];
+      }));
+      const algorithm = revision.length === 64 ? "sha256" : "sha1";
+      if (payloadOperations.every(({ relative, sourceContent }) => blobs.get(relative) === createHash(algorithm)
+        .update(`blob ${sourceContent.length}\0`).update(sourceContent).digest("hex"))) commit = revision;
+    }
+  }
   const body = {
     schemaVersion: 1,
     harnessVersion: version,
-    files: payloadOperations
-      .map((operation) => ({ relative: operation.relative, sha256: hash(operation.sourceContent) }))
-      .sort((left, right) => left.relative.localeCompare(right.relative)),
+    source: { commit, payloadSha256 },
+    files,
     instructions: instructionOperations
       .map((operation) => instructionReceipt(operation, previousReceipt))
       .filter(Boolean)
@@ -510,8 +531,9 @@ export async function installRuntime(sourceRoot, target, { dryRun = false, force
   const source = await realpath(sourceRoot);
   const targetRoot = await realpath(target);
   invariant((await stat(targetRoot)).isDirectory(), "TARGET_NOT_DIRECTORY", "安装目标必须是目录。" );
-  const manifest = await readJson(path.join(source, ".ai-harness", "manifest.json"));
   const files = await installationFiles(source);
+  const manifest = await readJson(path.join(source, ".ai-harness", "manifest.json"));
+  const originReceipt = await loadInstallReceipt(source);
   const previousReceiptInfo = await loadInstallReceipt(targetRoot);
   const previouslyInstalled = new Map(previousReceiptInfo?.receipt.files.map(({ relative, sha256 }) => [relative, sha256]));
   const operations = await planInstructionOperations(source, targetRoot, manifest.version, force);
@@ -576,12 +598,8 @@ export async function installRuntime(sourceRoot, target, { dryRun = false, force
       action: snapshotHash === installedHash ? "remove-retired" : "conflict" });
   }
 
-  const receipt = buildInstallReceipt(
-    manifest.version,
-    payloadOperations,
-    instructionOperations,
-    previousReceiptInfo?.receipt,
-  );
+  const receipt = buildInstallReceipt(source, manifest.version, payloadOperations, instructionOperations,
+    previousReceiptInfo?.receipt, originReceipt?.receipt, await exists(path.join(source, ".git")));
   operations.push(await planInstallReceiptOperation(targetRoot, receipt));
 
   const agentsOperation = operations.find((operation) => operation.relative === "AGENTS.md");
@@ -911,6 +929,10 @@ export async function initializeProject(root, { mode, docsMode, force = false })
     initializedAt: new Date().toISOString(),
     repository,
   };
+  if (mode === "existing" && repository.commit && !(await exists(projectPath))) {
+    const installed = await loadInstallReceipt(root);
+    if (installed?.receipt.source) project.initialInstall = { receipt: installed.receipt.contentHash, metadata: hash(JSON.stringify(project)) };
+  }
   if (mode === "new" && docsMode === "default") {
     const templateRoot = path.join(root, ".ai-harness", "templates", "new-project");
     const templateFiles = await listFiles(templateRoot);

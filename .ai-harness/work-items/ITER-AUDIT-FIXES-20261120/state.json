@@ -1,0 +1,363 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 3,
+  "id": "ITER-AUDIT-FIXES-20261120",
+  "type": "ITERATION",
+  "title": "修复安装交付、并发与重复审计并落实全局资源清理规则",
+  "status": "DONE",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/iteration.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户明确要求修复这些问题和新增全局清理规则"
+  },
+  "input": {
+    "references": [
+      "用户修复要求及 ANALYSIS-REPO-FOLLOWUP-20261120 结论"
+    ],
+    "acceptance": [
+      "实际下游全套通过，首次接入可精确归属，夹带改动失败，预览参数错误零写入，仅传递标准载荷，安装来源可定位，兼容旧收据。",
+      "并发建项仅一次成功，未变快照复用，v4 日志单读且归档兼容，首页精简，三级清理规则一致。"
+    ],
+    "nonGoals": [
+      "不发布、不更改已有归档或部署"
+    ],
+    "version": "1.12.1"
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": null,
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "main@d90227f4684001055cffd16e6138508737bc2ccc，doctor 已通过，产品树干净，5 个既有未跟踪分析项保留。上轮记录含安装、范围、快照、审计及版本证据。"
+    ],
+    "completedAt": "2026-11-20T05:54:54.466Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "d90227f4684001055cffd16e6138508737bc2ccc",
+      "dirty": false,
+      "changedFiles": [],
+      "fingerprints": {},
+      "source": {
+        "digest": "f5c95d6e3b98612e2a8b494a5cc7cacf5792bc634907a9db94cc885f29e62fd8",
+        "document": ".ai-harness/work-items/ITER-AUDIT-FIXES-20261120/snapshots/f5c95d6e3b98612e2a8b494a5cc7cacf5792bc634907a9db94cc885f29e62fd8.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": ".ai-harness/work-items/ANALYSIS-REPO-FOLLOWUP-20261120/state.json",
+    "evidence": [
+      "标准发布路径列入清单，安装收据加来源信息。首次安装按受限路径和基准内容重建归属并按内容比较。严格解析参数、复用建项锁和相同快照引用、v4 单次核验并保持排序。全局与项目模板同步。"
+    ],
+    "completedAt": "2026-11-20T05:54:54.763Z"
+  },
+  "database": {
+    "impact": "none",
+    "status": "not-applicable",
+    "document": null,
+    "evidence": [
+      "只涉及本地文件、Git、测试与运行时收据，不涉及数据库。"
+    ],
+    "completedAt": "2026-11-20T05:54:54.858Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/ITER-AUDIT-FIXES-20261120/plan.json",
+    "approved": true,
+    "approvalRef": "沿用用户授权和原计划范围，调整真实验证命令"
+  },
+  "verification": {
+    "status": "pass",
+    "evidence": [
+      "35c4fb91-4c41-488e-a3e3-2ff34903ac43"
+    ],
+    "stages": [],
+    "source": {
+      "digest": "fa20c680feff3fd3ee2762f3fa664bed502aecc3247380bc92e491c7d53e3161",
+      "document": ".ai-harness/work-items/ITER-AUDIT-FIXES-20261120/snapshots/fa20c680feff3fd3ee2762f3fa664bed502aecc3247380bc92e491c7d53e3161.json"
+    }
+  },
+  "review": {
+    "status": "pass",
+    "evidence": [
+      "aa559fe9-d201-45fe-9ad9-367830bafcd0"
+    ],
+    "independent": true,
+    "source": {
+      "digest": "fa20c680feff3fd3ee2762f3fa664bed502aecc3247380bc92e491c7d53e3161",
+      "document": ".ai-harness/work-items/ITER-AUDIT-FIXES-20261120/snapshots/fa20c680feff3fd3ee2762f3fa664bed502aecc3247380bc92e491c7d53e3161.json"
+    }
+  },
+  "acceptance": {
+    "status": "pass",
+    "evidence": [
+      "da8a07f6-b8e1-43bb-a118-256924a7d648"
+    ],
+    "source": {
+      "digest": "fa20c680feff3fd3ee2762f3fa664bed502aecc3247380bc92e491c7d53e3161",
+      "document": ".ai-harness/work-items/ITER-AUDIT-FIXES-20261120/snapshots/fa20c680feff3fd3ee2762f3fa664bed502aecc3247380bc92e491c7d53e3161.json"
+    }
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "pass",
+    "evidence": [
+      "478b0204-fb43-4aba-81d9-5e8eb8281041"
+    ]
+  },
+  "blocked": null,
+  "delivery": {
+    "source": {
+      "digest": "fa20c680feff3fd3ee2762f3fa664bed502aecc3247380bc92e491c7d53e3161",
+      "document": ".ai-harness/work-items/ITER-AUDIT-FIXES-20261120/snapshots/fa20c680feff3fd3ee2762f3fa664bed502aecc3247380bc92e491c7d53e3161.json"
+    },
+    "baseline": {
+      "digest": "f5c95d6e3b98612e2a8b494a5cc7cacf5792bc634907a9db94cc885f29e62fd8",
+      "document": ".ai-harness/work-items/ITER-AUDIT-FIXES-20261120/snapshots/f5c95d6e3b98612e2a8b494a5cc7cacf5792bc634907a9db94cc885f29e62fd8.json"
+    },
+    "baselineAt": "2026-11-20T05:54:54.466Z",
+    "ownedChanges": [
+      {
+        "path": ".ai-harness/manifest.json",
+        "before": "100644:9c603d38a03912726b8beeb755328f0350644863",
+        "after": "100644:2a7a27e8ceb30f62235146cb7b60c186feecd50b"
+      },
+      {
+        "path": ".ai-harness/src/cli.mjs",
+        "before": "100644:1baff1a9b636165e29177640d43ff0518d6628aa",
+        "after": "100644:a4ff4b376c82486f0dd0fbb27d2ff1b6c8a6ee57"
+      },
+      {
+        "path": ".ai-harness/src/evidence.mjs",
+        "before": "100644:a191041c803bafdfd794df51cdc776e81b683a9e",
+        "after": "100644:6b3124b1a56bf248d812fdb44b6ca9bd5bfff0ff"
+      },
+      {
+        "path": ".ai-harness/src/git.mjs",
+        "before": "100644:72eda1206fb65b97d50786427417854ab754fd56",
+        "after": "100644:63968abebe38794f252adac0fad2215229468158"
+      },
+      {
+        "path": ".ai-harness/src/installer.mjs",
+        "before": "100644:83f8815218949dd5a824c3012435b951f8d994ae",
+        "after": "100644:d8c356609ebf53701dd52f9abdd1932e90e4b9d4"
+      },
+      {
+        "path": ".ai-harness/src/locking.mjs",
+        "before": "100644:7701661489e68de2922137553882c27d740cb2de",
+        "after": "100644:53f3fc9da853a5336f4d25527ae3515fc9306d44"
+      },
+      {
+        "path": ".ai-harness/src/scope.mjs",
+        "before": "100644:e7a131ad2090fd3a4d1af358e57710d6e3e50838",
+        "after": "100644:df7cd08187806029b7b6747b59d07ae0eacc08e3"
+      },
+      {
+        "path": ".ai-harness/src/workflow.mjs",
+        "before": "100644:6767a13e3d21861d8ec452f1ffaf2004f4bc0a66",
+        "after": "100644:cfd2d35f6a34bdc493faffa2c37c69fad5c0fac2"
+      },
+      {
+        "path": ".ai-harness/templates/instructions/AGENTS.md",
+        "before": "100644:8db3ea6b0a7f042a4b3d80468c1f38ecd93ed80d",
+        "after": "100644:63c27432c01a5b0ebef9f8b1a4fc61ee35f1155a"
+      },
+      {
+        "path": ".ai-harness/tests/checker.test.mjs",
+        "before": "100644:5dd39b9a5e39e25ca32b69242cf6c07da7929ec0",
+        "after": "100644:513f14b9c077f0af76c3e5fda662457f48a09f95"
+      },
+      {
+        "path": ".ai-harness/tests/ci-matrix.test.mjs",
+        "before": "100644:21fa95f9ac2ca744f70427762f6aacca773e15fe",
+        "after": null
+      },
+      {
+        "path": ".ai-harness/tests/cli.test.mjs",
+        "before": "100644:b4ca5321feeeba27d57c50f493b34f59a096e866",
+        "after": "100644:fc6b9714c873411fb0a0d4c0780a6ee6ed41faba"
+      },
+      {
+        "path": ".ai-harness/tests/helpers.mjs",
+        "before": "100644:00f2ad6f22a84f0268c2f49d11f632272c59b485",
+        "after": "100644:80efcca084304ca0d4bf7bdf1db03b435a33a63b"
+      },
+      {
+        "path": ".ai-harness/tests/installer-checkout.test.mjs",
+        "before": "100644:84abfa68bf14f65eb9044483c00c87f8b169f283",
+        "after": "100644:7a8f06e53f21efa5e43a6be47cda75812dde7862"
+      },
+      {
+        "path": ".ai-harness/tests/installer.test.mjs",
+        "before": "100644:e61893053603f464531c291fa1dee84eb04d5b3f",
+        "after": "100644:98569b7136222efada207f6aaf4fa2c6ed5a9322"
+      },
+      {
+        "path": ".ai-harness/tests/locking.test.mjs",
+        "before": "100644:bd925cc992702864a83468ec05ee759909dc211b",
+        "after": "100644:2be6d425f82bb5d9b81d407452880d58d33f9cbc"
+      },
+      {
+        "path": ".ai-harness/tests/reliability.test.mjs",
+        "before": "100644:1874e769c2699b9d565b1d3577011f37b930b222",
+        "after": "100644:9bca1b00c586126cb3720d2a3a555c601868293e"
+      },
+      {
+        "path": ".github/workflows/source-tests.yml",
+        "before": "100644:eef7b65194028af26398d2c9547e6f5a25c5a5fc",
+        "after": "100644:b070c691f9184ba04651a9144a1d3ee8990eddf3"
+      },
+      {
+        "path": "AGENTS.md",
+        "before": "100644:8a0a8b876010b6cf997b1bebcffeefcf66b93fbb",
+        "after": "100644:1c64f24fa664e4f2abc3811fbb8cfaa57f91b1a7"
+      },
+      {
+        "path": "README.md",
+        "before": "100644:09a0a57d1de70fd55ed79357b4383f9333dddb43",
+        "after": "100644:c83c1c6eaa7634dcd18a9d6d0f57bf35850d0366"
+      },
+      {
+        "path": "benchmarks/audit.mjs",
+        "before": "100644:395b6771c3942fc5f9204686290339e1bcf0710d",
+        "after": "100644:c4d3163bc112bdf0981fd6f7d7f19cd8c850c22f"
+      },
+      {
+        "path": "benchmarks/tests/ci-matrix.test.mjs",
+        "before": null,
+        "after": "100644:fea39120751aae669cc368dbcd5c1309604e59bd"
+      },
+      {
+        "path": "benchmarks/tests/installed-runtime.mjs",
+        "before": null,
+        "after": "100644:11b7ea58c3ef07cec3809f1e0efcee229db0ff8d"
+      },
+      {
+        "path": "benchmarks/tests/runner.test.mjs",
+        "before": "100644:03331b1c10a2b2d409affa7abf9a7ca14e238e6a",
+        "after": "100644:be1ec15e1f188db12764ba06e4d00d34981b945d"
+      },
+      {
+        "path": "docs/guides/getting-started.md",
+        "before": "100644:eeaa05c6b55a0d1bbf45cd4ac00cafcf992798e6",
+        "after": "100644:d66ffb0124d03686dcfaca4f4e6a6ea1fc4d416c"
+      },
+      {
+        "path": "docs/guides/usage.md",
+        "before": "100644:48c8ebdacb30bad00e1bebaefddb7b700c621bd3",
+        "after": "100644:4633a71b84d3de8d6feb5f478f9578320fea46ba"
+      },
+      {
+        "path": "docs/versions/history.md",
+        "before": null,
+        "after": "100644:5f9b3e1f3d189693f7af1c99caddfa1729658130"
+      }
+    ],
+    "planDigest": "bf744f8157672b90cab2f3bfc057c063cf5e9adf509c685005b8339a7b3f0c0e",
+    "at": "2026-11-20T06:40:05.725Z",
+    "head": "d90227f4684001055cffd16e6138508737bc2ccc"
+  },
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-11-20T05:54:54.123Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-11-20T05:54:54.275Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-11-20T05:54:54.657Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-11-20T05:54:55.287Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-11-20T05:54:55.380Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-11-20T06:08:59.990Z",
+      "reason": "V2 默认守卫不接受直接运行 benchmark 脚本。使用同套件按文件排序枚举的 node --test，复用原生测试入口，不修改命令策略。为完整套件明确给出 5 分钟时限。",
+      "action": "replan",
+      "revision": 2
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-11-20T06:09:00.347Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-11-20T06:09:00.424Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "IMPLEMENTING",
+      "at": "2026-11-20T06:21:04.407Z",
+      "reason": "按独立审查补四个定向回归和修订 CI 说明，并在最终源码快照复验",
+      "action": "reopen",
+      "revision": 3
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "VERIFYING",
+      "at": "2026-11-20T06:40:02.230Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "VERIFYING",
+      "to": "CODE_REVIEW",
+      "at": "2026-11-20T06:40:03.051Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "CODE_REVIEW",
+      "to": "READY_FOR_ACCEPTANCE",
+      "at": "2026-11-20T06:40:03.754Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "READY_FOR_ACCEPTANCE",
+      "to": "DONE",
+      "at": "2026-11-20T06:40:05.831Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-11-20T05:54:54.123Z",
+  "updatedAt": "2026-11-20T06:40:05.831Z"
+}

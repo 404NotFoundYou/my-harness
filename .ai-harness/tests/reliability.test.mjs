@@ -2,6 +2,8 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
+import fsPromises from "node:fs/promises";
+import { syncBuiltinESMExports } from "node:module";
 import { beginWorkItem, finishWorkItem } from "../src/compact.mjs";
 import { runRecordedCommand } from "../src/evidence.mjs";
 import { checkProject, collectEvidenceErrors } from "../src/checker.mjs";
@@ -32,6 +34,30 @@ async function verifying(root, id, command, { aggregate = true } = {}) {
   if (aggregate) await recordResult(root, id, { kind: "verification", status: "pass", summary: `command ${command.id}` });
   await recordResult(root, id, { kind: "documentation", status: "not-applicable", summary: "unchanged contract" });
 }
+
+test("commands sample both ends but store unchanged evidence only once", async t => {
+  const root = await createInstalledProject();
+  const rename = fsPromises.rename;
+  try {
+    await beginWorkItem(root, options("SNAPSHOTS"));
+    const saved = [];
+    t.mock.method(fsPromises, "rename", async (from, to) => {
+      if (path.basename(path.dirname(to)) === "snapshots") saved.push(path.basename(to));
+      return rename(from, to);
+    });
+    syncBuiltinESMExports();
+    const execute = args => runRecordedCommand(root, { id: "SNAPSHOTS", taskId: "T1", command: process.execPath, args });
+    const stable = await execute(["--version"]);
+    assert.equal(stable.status, "pass");
+    assert.deepEqual(stable.command.source, stable.command.sourceAfter);
+    assert.deepEqual(saved.splice(0), [stable.command.source.digest + ".json"]);
+    await writeFile(path.join(root, "change.test.mjs"), 'import { writeFileSync } from "node:fs"; writeFileSync("sample.mjs", "export default 1");');
+    const changed = await execute(["--test", "change.test.mjs"]);
+    assert.equal(changed.command.failureReason, "source-changed");
+    assert.notEqual(changed.command.source.digest, changed.command.sourceAfter.digest);
+    assert.deepEqual(saved, [changed.command.source.digest + ".json", changed.command.sourceAfter.digest + ".json"]);
+  } finally { t.mock.restoreAll(); syncBuiltinESMExports(); await cleanup(root); }
+});
 
 test("stale code and unrelated commands cannot support a completion claim", async () => {
   const root = await createInstalledProject();

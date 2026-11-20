@@ -1,0 +1,235 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 1,
+  "id": "ANALYSIS-REPO-FOLLOWUP-20261120",
+  "type": "ANALYSIS",
+  "title": "修复提交后的全仓复审与精简排序",
+  "status": "ANSWERED",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/analysis.md"
+  ],
+  "authorization": {
+    "mode": "approval-required",
+    "source": "用户授权只读全项目分析"
+  },
+  "input": {
+    "references": [
+      "用户要求继续分析整个项目的不合理、臃肿和优化机会"
+    ],
+    "acceptance": [
+      "对照上一轮修复后的现行源码和测试，给出具备具体影响、定位和最小改法的优先清单，说明证据边界"
+    ],
+    "nonGoals": [],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": null,
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "main@d90227f，doctor 成功，建项前无产品路径修改，四组既有分析控制面未跟踪。对照上轮 ANALYSIS-REPO-AUDIT-20261120 与相应修复提交，读取 Runtime、评测、测试、CI 与文档。"
+    ],
+    "completedAt": "2026-11-20T05:38:11.929Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "d90227f4684001055cffd16e6138508737bc2ccc",
+      "dirty": false,
+      "changedFiles": [],
+      "fingerprints": {},
+      "source": {
+        "digest": "f5c95d6e3b98612e2a8b494a5cc7cacf5792bc634907a9db94cc885f29e62fd8",
+        "document": ".ai-harness/work-items/ANALYSIS-REPO-FOLLOWUP-20261120/snapshots/f5c95d6e3b98612e2a8b494a5cc7cacf5792bc634907a9db94cc885f29e62fd8.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "pending",
+    "document": null,
+    "evidence": [],
+    "completedAt": null
+  },
+  "database": {
+    "status": "pending",
+    "document": null,
+    "evidence": [],
+    "completedAt": null,
+    "impact": "unknown"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/ANALYSIS-REPO-FOLLOWUP-20261120/plan.json",
+    "approved": false,
+    "approvalRef": null
+  },
+  "verification": {
+    "status": "pending",
+    "evidence": [],
+    "stages": []
+  },
+  "review": {
+    "status": "pending",
+    "evidence": [],
+    "independent": false
+  },
+  "acceptance": {
+    "status": "pending",
+    "evidence": []
+  },
+  "analysis": {
+    "status": "pass",
+    "evidence": [
+      "02407c4f-e1c2-4e66-bdcd-d178a0bf7508"
+    ],
+    "conclusions": [
+      {
+        "id": "dbdbcca4-0402-48ef-b62a-b215f4305b60",
+        "status": "PROVEN",
+        "text": "安装清单含 ci-matrix.test.mjs 与会执行全部 Runtime 测试的工作流，但不含这个测试的两个用例都读取的 source-tests.yml。普通目标项目缺少源仓库专用工作流，测试会因文件缺失而失败。将源仓库矩阵约束移到已有的源仓库测试套件，并从仅含安装载荷的目标运行回归。",
+        "evidence": [
+          "直接调用只读 installationFiles，得到 92 个文件、29 个 *.test.mjs。标准工作流和 ci-matrix.test.mjs 均在清单，source-tests.yml 不在清单。",
+          ".ai-harness/src/installer.mjs:224-232，.ai-harness/tests/ci-matrix.test.mjs:9-25，.ai-harness/tests/run.mjs:6-13，.github/workflows/ai-harness.yml:31-32，docs/guides/usage.md:389"
+        ]
+      },
+      {
+        "id": "24b45934-93b5-4db7-9d78-e0df33273ca2",
+        "status": "INFERRED",
+        "text": "已有 Git 历史的业务仓库按指南首次接入时，install/init 后直接提交没有对应开发交付。CI 使用安装前的事件基准，多个新增 Runtime 文件无法由交付或单文件文档例外解释。需要一个受审且仅覆盖实际安装差异的首次接入基线，同时断言同一提交中额外的业务差异仍被拒绝。",
+        "evidence": [
+          "docs/guides/getting-started.md:97-106，.github/workflows/ai-harness.yml:35-43，.ai-harness/src/installer.mjs:957-959，.ai-harness/src/scope.mjs:72-96,125-128",
+          ".ai-harness/tests/checker.test.mjs:177-186 使用起点已安装的 fixture；本次没有新建接入 PR。"
+        ]
+      },
+      {
+        "id": "492d60d3-80c2-4ca9-b9f2-c77915b44fc0",
+        "status": "INFERRED",
+        "text": "check 已拒绝多余选项和错误布尔值，install 仍静默忽略未知选项并把无效预览值当成 false。目标有效、无冲突时，想预览的用户可能触发正式写入。把同样的严格校验放在安装、卸载分派前，并校验错误输入之后目标内容不变。",
+        "evidence": [
+          ".ai-harness/src/cli.mjs:46-92,221-236,255-266，.ai-harness/src/installer.mjs:596-613",
+          "对比命令分支和落盘路径，没有用错误参数执行安装。"
+        ]
+      },
+      {
+        "id": "d1d18dba-e938-4b23-a12b-962a4c02084b",
+        "status": "INFERRED",
+        "text": "从已接入项目再次分发时，安装器递归收集 .ai-harness 下的普通文件，只排除四个固定名字。项目本地备注或改名后仍放在该树内的工作记录都可能随下次安装复制。用可信标准载荷路径限制再分发，并补额外本地文件不被分发的断言。",
+        "evidence": [
+          ".ai-harness/src/installer.mjs:142-151,215-233,521-531，.ai-harness/src/workflow.mjs:49-53，.ai-harness/config.json:3，docs/architecture/overview.md:55-58",
+          "当前源仓库实际载荷 92 项，这里说的是目标项目自定义路径时的条件性后果。"
+        ]
+      },
+      {
+        "id": "5ed60355-053d-405c-baea-2390e6487224",
+        "status": "INFERRED",
+        "text": "初次创建只检查状态文件是否存在，随后通过可覆盖的原子替换写入，普通更新才取工作项锁。两个进程同时创建相同 ID 时可能都报告成功、留下两条创建事件而最终状态只保留一份。用已有工作项锁包住存在性检查、首次写入和创建事件；并发用例应只有一个成功。",
+        "evidence": [
+          ".ai-harness/src/workflow.mjs:100-111,131-140，.ai-harness/src/filesystem.mjs:149-157，.ai-harness/src/locking.mjs:86-114",
+          "调用顺序审查，未在工作树执行并发写入。"
+        ]
+      },
+      {
+        "id": "00f95d7e-b8ee-409b-ade0-84b41aee11a6",
+        "status": "PROVEN",
+        "text": "22787ff 与 d90227f 的 manifest 完全一致，都声明 1.12.0，两个检出之间却有 14 个可安装文件不同。卸载严格核对源和收据的逐文件哈希，所以选择相同版本号仍可能被拒绝。对外分发时区分补丁版本并提供可定位的安装源提交。",
+        "evidence": [
+          "git show 两端的 .ai-harness/manifest.json；git diff --name-only 22787ff HEAD 与安装清单交集为 14 个文件。",
+          ".ai-harness/manifest.json:3，.ai-harness/src/installer.mjs:709-740，docs/guides/getting-started.md:275-277"
+        ]
+      },
+      {
+        "id": "ab460726-f20a-431c-bcdc-132bb40a1823",
+        "status": "PROVEN",
+        "text": "v4 的独立终审先手动逐样本 auditTrial，再通过 readExecution 再次审计所有试次。用归档 Git 对象只读供给一组 6 试次的证据，审计成功，每份 events.jsonl 被读两遍，共 12 次。v4 应复用一次账本核验后的 rows，保留旧版本路径和 report 的读完重验。",
+        "evidence": [
+          "benchmarks/audit.mjs:40-60，benchmarks/execution.mjs:53-68，benchmarks/audit-trial.mjs:70-78，benchmarks/report.mjs:172-180",
+          "benchmarks/archive-manifest.json 中 experiment-retry 对应 22787ff，使用 auditExperiment 的 readEvidence 钩子计数。只读 Git blob，没有运行候选或模型。"
+        ]
+      },
+      {
+        "id": "884939cc-985b-4655-9c17-a0208fb7f8e7",
+        "status": "PROVEN",
+        "text": "受控命令执行前后均重新计算且无条件写入源码快照。77 份已跟踪 evidence.jsonl 有 517 条命令，其中带双快照的 487 条全部引用同一摘要和同一路径。保留执行后的重新采样，摘要相同时复用已保存的前置引用，可少一次文件替换。",
+        "evidence": [
+          ".ai-harness/src/evidence.mjs:87-88,105-107，.ai-harness/src/snapshot.mjs:78-87，.ai-harness/src/filesystem.mjs:135-136,149-157",
+          "git ls-files 与逐行读取已跟踪证据，统计 command.source 和 sourceAfter 的 digest 及 document 相等数。"
+        ]
+      },
+      {
+        "id": "92223bff-3a10-446d-b7f6-9258b26c2234",
+        "status": "PROVEN",
+        "text": "HEAD 的 1,365 个已跟踪文件按路径累计 20,937,165 字节，工作项的 1,208 个文件占 19,670,726 字节即 93.95%。相同 Git blob 的快照副本有 74 个，其重复部分是工作树展开后 1,010,821 字节。主 README 安装入口在第39行，前面有11段版本说明。优先简化首页并量化重复工作，再决定是否继续冷归档。",
+        "evidence": [
+          "git ls-tree -r -l HEAD，按路径分类及快照 blob 去重计数。该数字不是 .git 数据库或安装包占比。",
+          "README.md:13-39，benchmarks/archive-manifest.json:1-9，.ai-harness/src/installer.mjs:224-232"
+        ]
+      },
+      {
+        "id": "e2e75ebf-f73d-43e4-b47b-938d1e333ba7",
+        "status": "PROVEN",
+        "text": "当前 Windows 工作树的只读 check 检查 82 个工作项，退出 0，错误与警告均为 0。本次命令执行段 1781 毫秒，输出 13108 字节。计数包含未跟踪分析项且不构成跨平台性能或下游安装验收。",
+        "evidence": [
+          "本次受控 check --json 输出的 details.workItems、details.repository 和命令计时。"
+        ],
+        "commands": [
+          "c5d1d360-3030-4390-bf33-e0897605a1ed"
+        ]
+      },
+      {
+        "id": "d33f2d1d-6cee-4fab-8cad-9c5f12ae8dbd",
+        "status": "UNKNOWN",
+        "text": "首次下游安装、真实 PR、安装误参、并发写入和其他操作系统没有在本轮端到端运行。两套完整测试和实时模型均未执行。",
+        "evidence": []
+      }
+    ],
+    "unknowns": [
+      "本项范围为只读分析，直接证据是安装清单、Git 历史、既有实验归档的读取计数、当前代码、现有测试与本机 Runtime 检查。"
+    ],
+    "source": {
+      "digest": "f5c95d6e3b98612e2a8b494a5cc7cacf5792bc634907a9db94cc885f29e62fd8",
+      "document": ".ai-harness/work-items/ANALYSIS-REPO-FOLLOWUP-20261120/snapshots/f5c95d6e3b98612e2a8b494a5cc7cacf5792bc634907a9db94cc885f29e62fd8.json"
+    }
+  },
+  "documentation": {
+    "status": "pending",
+    "evidence": []
+  },
+  "blocked": null,
+  "delivery": null,
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-11-20T05:38:11.657Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-11-20T05:38:11.747Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "ANALYZING",
+      "at": "2026-11-20T05:38:12.103Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "ANALYZING",
+      "to": "ANSWERED",
+      "at": "2026-11-20T05:48:11.332Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-11-20T05:38:11.657Z",
+  "updatedAt": "2026-11-20T05:48:11.332Z"
+}

@@ -98,7 +98,6 @@ export async function createWorkItemState(root, options) {
     invariant(options.bug?.actual?.trim() && options.bug?.expected?.trim() && options.bug?.reproduction?.trim(), "BUG_BASELINE_REQUIRED", "BUGFIX 必须提供实际行为、期望行为和复现路径。" );
   }
   const paths = await workItemPaths(root, options.id);
-  invariant(!(await exists(paths.state)), "WORK_ITEM_EXISTS", `工作项已存在：${options.id}`);
   const normalizedOptions = {
     ...options,
     version: options.version || (options.type === "NEW_PROJECT" ? "v1.0" : null),
@@ -107,9 +106,12 @@ export async function createWorkItemState(root, options) {
   };
   const item = createWorkItem(normalizedOptions);
   assertValidWorkItem(item);
-  await atomicWriteJson(paths.state, item);
-  await appendEvent(paths, item.id, "work-item-created", { status: item.status, type: item.type });
-  return item;
+  return withFileLock(paths.lock, async () => {
+    invariant(!(await exists(paths.state)), "WORK_ITEM_EXISTS", `工作项已存在：${options.id}`);
+    await atomicWriteJson(paths.state, item);
+    await appendEvent(paths, item.id, "work-item-created", { status: item.status, type: item.type });
+    return item;
+  });
 }
 
 async function assertNewProjectDocs(root, version) {

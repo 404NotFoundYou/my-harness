@@ -17,7 +17,7 @@ test("CI keeps every supported Node line in Ubuntu and Windows coverage", async 
   assert.match(runtime, /node \.ai-harness\/bin\/harness\.mjs check --ci --base "\$HARNESS_BASE" --json/);
   assert.match(runtime, /github\.event\.pull_request\.base\.sha \|\| github\.event\.before \|\| inputs\.base/);
   assert.match(source, /run: node benchmarks\/tests\/run\.mjs/);
-  assert.match(source, /run: node \.ai-harness\/tests\/run\.mjs/);
+  assert.match(source, /run: node benchmarks\/tests\/installed-runtime\.mjs/);
 });
 
 test("CI actions use a supported runtime without implicit dependency caching", async () => {

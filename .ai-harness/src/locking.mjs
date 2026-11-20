@@ -47,7 +47,14 @@ export async function inspectLock(lockPath) {
 async function releaseOwner(lockPath, file, token) {
   // 活所有者先整体移走目录。清理中断只留下不参与互斥的临时目录。
   const retired = path.join(path.dirname(lockPath), `.${path.basename(lockPath)}.${token}.${randomUUID()}.tmp`);
-  await rename(lockPath, retired);
+  for (let retry = 0; ; retry += 1) {
+    try { await rename(lockPath, retired); break; } catch (error) {
+      // Windows readers may briefly keep a sharing handle on this directory.
+      if (process.platform !== "win32" || !["EPERM", "EACCES", "EBUSY"].includes(error.code) || retry === 5) throw error;
+      await new Promise(resolve => setTimeout(resolve, 20 * (retry + 1)));
+      if ((await inspectLock(lockPath)).file !== file) throw error;
+    }
+  }
   await unlink(path.join(retired, file));
   await rmdir(retired);
 }

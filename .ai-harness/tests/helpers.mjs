@@ -1,5 +1,6 @@
 import { realpathSync, rmSync } from "node:fs";
-import { cp, mkdtemp, realpath, rm } from "node:fs/promises";
+import { cp, mkdtemp, readFile, realpath, rm, writeFile } from "node:fs/promises";
+import { createHash } from "node:crypto";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -78,6 +79,13 @@ export async function createInstalledProject({ mode = "existing", docsMode = "ex
     await rm(root, { recursive: true, force: true });
     throw error;
   }
+}
+
+export async function useLegacyReceipt(root) {
+  const file = path.join(root, ".ai-harness/install-receipt.json");
+  const { source, contentHash, ...legacy } = JSON.parse(await readFile(file, "utf8"));
+  await writeFile(file, JSON.stringify({ ...legacy, contentHash: createHash("sha256").update(JSON.stringify(legacy)).digest("hex") }));
+  return source;
 }
 
 export async function cleanup(root) {

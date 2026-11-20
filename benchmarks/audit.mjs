@@ -37,13 +37,19 @@ export async function auditExperiment(directory, { readEvidence } = {}) {
     repetitions: protocol.repetitions, timeoutMs: protocol.budget.timeoutMs, maxToolCalls: protocol.budget.maxToolCalls, suite: project?protocol.suite:undefined }).schedule : null;
   if (project||resumable) assert.deepEqual(protocol.tasks,tasks.map(taskManifest));
   if (extended) { assert.deepEqual(protocol.schedule, schedule); assert.deepEqual(summary.notRun, []); }
+  const recovered = resumable ? await readExecution(directory, protocol, { readEvidence }) : null;
   const rows = [];
+  const byTrial = new Map(recovered?.rows.map(row => [`${row.taskId}:${row.group}:${row.trial}`, row]));
   for (const task of tasks) {
     const definition = protocol.tasks.find(entry=>entry.id===task.id);
     assert.equal(definition?.taskDigest, hash(JSON.stringify(task.files)));
     assert.equal(definition?.judgeDigest, hash(JSON.stringify(task.cases)));
     for (const group of protocol.groups) for (let trial = 1; trial <= (extended ? protocol.repetitions : 1); trial++) {
-      rows.push(await auditTrial(directory,protocol,task,group,trial,undefined,readEvidence));
+      if (recovered) {
+        const row = byTrial.get(`${task.id}:${group.id}:${trial}`);
+        assert.ok(row, "Execution ledger is missing a completed trial");
+        rows.push(row);
+      } else rows.push(await auditTrial(directory,protocol,task,group,trial,undefined,readEvidence));
     }
   }
   assert.equal(summary.results.length, rows.length);
@@ -54,8 +60,7 @@ export async function auditExperiment(directory, { readEvidence } = {}) {
   }
   const expected = summarize(rows, { extended, legacyDuration:protocol.summaryVersion===undefined }).sort((a,b)=>a.group.localeCompare(b.group));
   assert.deepEqual([...summary.groups].sort((a,b)=>a.group.localeCompare(b.group)), expected);
-  if(resumable){
-    const recovered=await readExecution(directory,protocol,{readEvidence});
+  if(recovered){
     assert.equal(recovered.changed,false,"Execution ledger needs resume reconciliation");
     assert.deepEqual(summary,executionSummary(protocol,recovered.ledger,recovered.rows,protocol.source),"Summary differs from execution ledger");
   }

@@ -41,6 +41,7 @@ node <HARNESS_REPO>/.ai-harness/bin/harness.mjs uninstall --target <TARGET> --co
 
 - `--dry-run` 不写入，返回托管块、安装收据、Runtime、CI 和 `project.json` 的完整操作计划。
 - 命令必须从独立 Harness 源仓库执行；目标项目不能使用自身 Runtime 自卸载。
+- 安装与再次分发只读取 `.ai-harness/manifest.json` 的 `payload` 文件清单。新收据的 `source.payloadSha256` 标识确切载荷，`source.commit` 在载荷与 Git 提交字节一致时记录提交号。预检和正式执行使用相同的严格参数校验。
 - 卸载清单来自安装时生成的 `.ai-harness/install-receipt.json`；独立源和目标文件都必须与收据哈希一致，当前源中的额外文件不会进入删除清单。
 - 正式卸载必须提供 `--confirm`；所有待变更文件会先备份到结果中的 `.ai-harness/backups/<ID>/`。
 - 备份后和每项变更前都会复核目标快照；内容漂移、冲突、版本不一致、篡改或路径异常会显式失败。
@@ -382,11 +383,13 @@ node .ai-harness/bin/harness.mjs doctor --json
 node .ai-harness/bin/harness.mjs check --ci --base <完整基准提交 SHA> --json
 ```
 
+已有 Git 历史的项目首次执行 `install` 和 `init --mode existing --docs existing` 后，将两者的结果一并提交。CI 使用初始化记下的父提交、安装收据和发行清单核对实际内容，并重建原有项目规则的托管合并。首次接入的业务改动仍需工作项交付。
+
 `--base` 必须是当前 `HEAD` 的可用祖先。示例工作流使用 PR 目标分支基准或 push 前提交，新分支首次 push 使用与默认分支的共同祖先。手动运行时提供明确基准。合并门禁只认可本次范围内新增或更新、且内容与变更基准相符的交付。已出现在基准历史中的工作项编号不能重新作为新交付使用。CI 平台需要检出完整 Git 历史并传入实际事件基准。本机收尾继续使用 `check --ci --json` 检查交付快照。
 
 如果整个变更范围只包含对一个现有 `README.md` 或 `docs/` 下普通 Markdown 文件的机械编辑，可在该提交的尾注声明 `Harness-Trivial-Doc: README.md`，把示例路径替换为实际路径。Runtime 核对路径、文件类型和提交内容，人工审查整个范围是否属于机械编辑。新建文件、删除文件、指令文件和多文件变更须按实际任务路径处理。CI 门禁与客户端权限、分支保护和人工独立复核配合使用。
 
-Harness 源仓库另有 `source-tests.yml`：Windows/Linux 执行评测框架测试，Windows 执行 Runtime 回归；Linux Runtime 仍由标准工作流覆盖。源仓库专用工作流不会复制到目标项目，测试不会调用真实模型。
+源仓库的 `source-tests.yml` 在 Windows 和 Linux 的 Node.js 20、22、24 矩阵上执行评测框架测试，并在临时目标中安装 Runtime 后运行其随附测试。目标项目通过标准工作流执行 Runtime 测试及交付门禁。
 
 CI 检出需保留完整 Git 历史（GitHub Actions 示例使用 `fetch-depth: 0`），以确定旧终态记录的真实归档提交。新工作项保存交付内容快照；历史范围不再授权新的修改，合法分析控制面单独处理。
 

@@ -6,7 +6,7 @@ import { tmpdir } from "node:os";
 import os from "node:os";
 import path from "node:path";
 import { syncBuiltinESMExports } from "node:module";
-import { cleanup, git, sourceRoot } from "./helpers.mjs";
+import { cleanup, git, sourceRoot, useLegacyReceipt } from "./helpers.mjs";
 import { installationFiles, installRuntime, initializeProject, uninstallRuntime } from "../src/installer.mjs";
 import { exists } from "../src/filesystem.mjs";
 import { inspectManagedBlock } from "../src/managed-block.mjs";
@@ -648,11 +648,26 @@ test("redistribution uses canonical payload and never propagates source-project 
     await installRuntime(sourceRoot, first);
     await writeFile(path.join(second, "AGENTS.md"), secondRules, "utf8");
 
+    const extras = [".ai-harness/local-notes.md", ".ai-harness/src/private.mjs", ".ai-harness/templates/new-project/local.md", ".ai-harness/old-items/W1/state.json"];
+    for (const relative of extras) {
+      await mkdir(path.dirname(path.join(first, relative)), { recursive: true });
+      await writeFile(path.join(first, relative), "project only");
+    }
     await installRuntime(first, second);
+    for (const relative of extras) assert.equal(await exists(path.join(second, relative)), false);
+    const receipt = async root => JSON.parse(await readFile(path.join(root, ".ai-harness/install-receipt.json"), "utf8"));
+    assert.deepEqual((await receipt(first)).source, (await receipt(second)).source);
     const installed = await readFile(path.join(second, "AGENTS.md"), "utf8");
     assert.ok(installed.startsWith(secondRules));
     assert.equal(installed.includes(firstRules.trim()), false);
     assert.equal(inspectManagedBlock(installed, "AGENTS.md").hashValid, true);
+    const owned = ".ai-harness/src/evidence.mjs";
+    const original = await readFile(path.join(second, owned));
+    const before = await receipt(second);
+    await writeFile(path.join(first, owned), "// local change to distributed runtime\n");
+    await assert.rejects(() => installRuntime(first, second), { code: "INSTALL_SOURCE_MISMATCH" });
+    assert.deepEqual(await receipt(second), before);
+    assert.deepEqual(await readFile(path.join(second, owned)), original);
   } finally {
     await cleanup(first);
     await cleanup(second);
@@ -934,16 +949,21 @@ test("upgrade uses receipt ownership to replace and retire unmodified payload", 
   const source = await temporaryTarget("ai-harness-upgrade-source-");
   const target = await temporaryTarget("ai-harness-upgrade-target-");
   try {
-    await cp(path.join(sourceRoot, ".ai-harness/templates"), path.join(source, ".ai-harness/templates"), { recursive: true });
-    for (const file of ["manifest.json", "config.json"]) {
-      await cp(path.join(sourceRoot, ".ai-harness", file), path.join(source, ".ai-harness", file));
-    }
+    for (const file of await installationFiles(sourceRoot)) await cp(path.join(sourceRoot, file), path.join(source, file));
     const managed = ".ai-harness/templates/new-project/README.md";
     const retired = ".ai-harness/templates/new-project/retired.md";
+    const manifestPath = path.join(source, ".ai-harness/manifest.json");
+    const manifest = JSON.parse(await readFile(manifestPath, "utf8"));
+    manifest.payload.push(retired);
+    await writeFile(manifestPath, JSON.stringify(manifest));
     const original = await readFile(path.join(source, managed), "utf8");
     await writeFile(path.join(source, retired), "old template\n");
     await installRuntime(source, target);
     await writeFile(path.join(source, managed), "new README template\n");
+    const provenance = await useLegacyReceipt(target);
+    assert.equal(provenance.commit, null, "a source archive has no known Git revision");
+    manifest.payload.pop();
+    await writeFile(manifestPath, JSON.stringify(manifest));
     await rm(path.join(source, retired));
     await writeFile(path.join(target, retired), "user customization\n");
     await assert.rejects(() => installRuntime(source, target, { force: true }), { code: "INSTALL_CONFLICT" });

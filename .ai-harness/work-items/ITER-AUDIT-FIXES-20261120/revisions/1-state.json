@@ -1,0 +1,141 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 1,
+  "id": "ITER-AUDIT-FIXES-20261120",
+  "type": "ITERATION",
+  "title": "修复安装交付、并发与重复审计并落实全局资源清理规则",
+  "status": "IMPLEMENTING",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/iteration.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户明确要求修复这些问题和新增全局清理规则"
+  },
+  "input": {
+    "references": [
+      "用户修复要求及 ANALYSIS-REPO-FOLLOWUP-20261120 结论"
+    ],
+    "acceptance": [
+      "实际下游全套通过，首次接入可精确归属，夹带改动失败，预览参数错误零写入，仅传递标准载荷，安装来源可定位，兼容旧收据。",
+      "并发建项仅一次成功，未变快照复用，v4 日志单读且归档兼容，首页精简，三级清理规则一致。"
+    ],
+    "nonGoals": [
+      "不发布、不更改已有归档或部署"
+    ],
+    "version": "1.12.1"
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": null,
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "main@d90227f4684001055cffd16e6138508737bc2ccc，doctor 已通过，产品树干净，5 个既有未跟踪分析项保留。上轮记录含安装、范围、快照、审计及版本证据。"
+    ],
+    "completedAt": "2026-11-20T05:54:54.466Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "d90227f4684001055cffd16e6138508737bc2ccc",
+      "dirty": false,
+      "changedFiles": [],
+      "fingerprints": {},
+      "source": {
+        "digest": "f5c95d6e3b98612e2a8b494a5cc7cacf5792bc634907a9db94cc885f29e62fd8",
+        "document": ".ai-harness/work-items/ITER-AUDIT-FIXES-20261120/snapshots/f5c95d6e3b98612e2a8b494a5cc7cacf5792bc634907a9db94cc885f29e62fd8.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": ".ai-harness/work-items/ANALYSIS-REPO-FOLLOWUP-20261120/state.json",
+    "evidence": [
+      "标准发布路径列入清单，安装收据加来源信息。首次安装按受限路径和基准内容重建归属并按内容比较。严格解析参数、复用建项锁和相同快照引用、v4 单次核验并保持排序。全局与项目模板同步。"
+    ],
+    "completedAt": "2026-11-20T05:54:54.763Z"
+  },
+  "database": {
+    "impact": "none",
+    "status": "not-applicable",
+    "document": null,
+    "evidence": [
+      "只涉及本地文件、Git、测试与运行时收据，不涉及数据库。"
+    ],
+    "completedAt": "2026-11-20T05:54:54.858Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/ITER-AUDIT-FIXES-20261120/plan.json",
+    "approved": true,
+    "approvalRef": "用户本次明确授权按审查修复及验收"
+  },
+  "verification": {
+    "status": "pending",
+    "evidence": [],
+    "stages": []
+  },
+  "review": {
+    "status": "pending",
+    "evidence": [],
+    "independent": false
+  },
+  "acceptance": {
+    "status": "pending",
+    "evidence": []
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "pending",
+    "evidence": []
+  },
+  "blocked": null,
+  "delivery": null,
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-11-20T05:54:54.123Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-11-20T05:54:54.275Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-11-20T05:54:54.657Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-11-20T05:54:55.287Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-11-20T05:54:55.380Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-11-20T05:54:54.123Z",
+  "updatedAt": "2026-11-20T05:54:55.495Z"
+}

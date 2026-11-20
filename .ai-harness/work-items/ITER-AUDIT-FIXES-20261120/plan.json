@@ -1,0 +1,101 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "ITER-AUDIT-FIXES-20261120",
+  "mode": "single",
+  "rationale": "单一实现人维护安装协议、证据和校验，独立复核高风险改动。",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "修复八项并同步规则、文档和分发版本",
+      "module": "Runtime 安装与验证",
+      "status": "COMPLETED",
+      "attempt": 2,
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        ".ai-harness/src/**",
+        ".ai-harness/tests/**",
+        ".ai-harness/templates/instructions/AGENTS.md",
+        ".ai-harness/manifest.json",
+        "benchmarks/audit.mjs",
+        "benchmarks/tests/**",
+        ".github/workflows/source-tests.yml",
+        "AGENTS.md"
+      ],
+      "verification": [
+        "{\"command\":\"node\",\"args\":[\".ai-harness/tests/run.mjs\"],\"timeoutMs\":300000}",
+        "{\"command\":\"node\",\"args\":[\"--test\",\"benchmarks/tests/ci-matrix.test.mjs\",\"benchmarks/tests/container-driver.test.mjs\",\"benchmarks/tests/driver-diagnostics.test.mjs\",\"benchmarks/tests/driver-process.test.mjs\",\"benchmarks/tests/driver-timing.test.mjs\",\"benchmarks/tests/memory-control.test.mjs\",\"benchmarks/tests/multifile.test.mjs\",\"benchmarks/tests/preflight.test.mjs\",\"benchmarks/tests/project-v2.test.mjs\",\"benchmarks/tests/report.test.mjs\",\"benchmarks/tests/resume.test.mjs\",\"benchmarks/tests/runner.test.mjs\",\"benchmarks/tests/spec-guidance.test.mjs\",\"benchmarks/tests/status.test.mjs\"],\"timeoutMs\":300000}"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            ".ai-harness/tests/run.mjs"
+          ],
+          "timeoutMs": 300000
+        },
+        {
+          "id": "V2",
+          "command": "node",
+          "args": [
+            "--test",
+            "benchmarks/tests/ci-matrix.test.mjs",
+            "benchmarks/tests/container-driver.test.mjs",
+            "benchmarks/tests/driver-diagnostics.test.mjs",
+            "benchmarks/tests/driver-process.test.mjs",
+            "benchmarks/tests/driver-timing.test.mjs",
+            "benchmarks/tests/memory-control.test.mjs",
+            "benchmarks/tests/multifile.test.mjs",
+            "benchmarks/tests/preflight.test.mjs",
+            "benchmarks/tests/project-v2.test.mjs",
+            "benchmarks/tests/report.test.mjs",
+            "benchmarks/tests/resume.test.mjs",
+            "benchmarks/tests/runner.test.mjs",
+            "benchmarks/tests/spec-guidance.test.mjs",
+            "benchmarks/tests/status.test.mjs"
+          ],
+          "timeoutMs": 300000
+        }
+      ],
+      "docsImpact": [
+        "README.md",
+        "docs/guides/getting-started.md",
+        "docs/guides/usage.md",
+        "docs/versions/**"
+      ],
+      "reviewBatch": "R1",
+      "risk": "high",
+      "owner": "primary-ai",
+      "verificationStatus": "pass",
+      "reviewStatus": "pass",
+      "evidence": [
+        "24067540-fbaf-4fe9-bbf9-dab8229adacb",
+        "0e302b5e-43be-4001-ba3c-b7492167f2a2"
+      ],
+      "deferralApproval": null,
+      "verificationSource": {
+        "digest": "fa20c680feff3fd3ee2762f3fa664bed502aecc3247380bc92e491c7d53e3161",
+        "document": ".ai-harness/work-items/ITER-AUDIT-FIXES-20261120/snapshots/fa20c680feff3fd3ee2762f3fa664bed502aecc3247380bc92e491c7d53e3161.json"
+      },
+      "reviewSource": {
+        "digest": "fa20c680feff3fd3ee2762f3fa664bed502aecc3247380bc92e491c7d53e3161",
+        "document": ".ai-harness/work-items/ITER-AUDIT-FIXES-20261120/snapshots/fa20c680feff3fd3ee2762f3fa664bed502aecc3247380bc92e491c7d53e3161.json"
+      }
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "安装归属和并发及交付审查",
+      "risk": "high",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": true
+    }
+  ],
+  "createdAt": "2026-11-20T05:54:54.944Z",
+  "updatedAt": "2026-11-20T06:40:02.147Z",
+  "revision": 3
+}

@@ -4,17 +4,17 @@ import { lstat, readFile, readlink } from "node:fs/promises";
 import { exists } from "./filesystem.mjs";
 import { HarnessError, invariant } from "./errors.mjs";
 
-export function gitResult(root, args, { input = undefined, allowFailure = false } = {}) {
+export function gitResult(root, args, { input = undefined, allowFailure = false, encoding = "utf8" } = {}) {
   const result = spawnSync("git", args, {
     cwd: root,
-    encoding: "utf8",
+    encoding,
     shell: false,
     windowsHide: true,
     timeout: 15000,
     maxBuffer: 32 * 1024 * 1024,
     input,
   });
-  if (!allowFailure && result.status !== 0) throw new HarnessError("GIT_COMMAND_FAILED", `Git ${args[0]} 失败。`, { exitCode: result.status, error: result.error?.message || result.stderr?.trim() });
+  if (!allowFailure && result.status !== 0) throw new HarnessError("GIT_COMMAND_FAILED", `Git ${args[0]} 失败。`, { exitCode: result.status, error: result.error?.message || result.stderr?.toString().trim() });
   return result;
 }
 

@@ -38,6 +38,8 @@ test("source and installed Git checkouts keep receipt bytes across autocrlf sett
     await installRuntime(sources[0], target);
     assert.equal(await readFile(path.join(target, ".gitattributes"), "utf8"), rootAttributes);
     const receipt = JSON.parse(await readFile(path.join(target, ".ai-harness/install-receipt.json"), "utf8"));
+    assert.equal(receipt.source.commit, git(source, ["rev-parse", "HEAD"]).stdout.trim());
+    assert.match(receipt.source.payloadSha256, /^[a-f0-9]{64}$/);
     git(target, ["init"]);
     const unmanaged = [".github/workflows/custom.yml", ".github/workflows/custom/ai-harness.yml", ".github/workflows/custom/.gitattributes"];
     const attributes = git(target, ["check-attr", "text", "eol", "--", ...unmanaged]).stdout.trim().split(/\r?\n/);

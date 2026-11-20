@@ -37,6 +37,8 @@ git clone https://github.com/404NotFoundYou/my-harness.git $HarnessRepo
 git -C $HarnessRepo pull --ff-only
 ```
 
+从 1.12.1 起，目标项目的 `.ai-harness/install-receipt.json` 记录安装载荷的 SHA-256。若标准文件与 Git 提交逐字节一致，`source.commit` 还会记录完整提交号。ZIP 或本地修改版可能只有摘要，此时应保留原安装包，升级和卸载仍会逐文件核对。
+
 也可以从 GitHub 下载 ZIP 并解压，然后把 `$HarnessRepo` 指向解压目录。ZIP 方式不能使用 `git pull`，升级时需要重新下载。
 
 ## 4. 接入已有项目
@@ -103,7 +105,7 @@ node .ai-harness/bin/harness.mjs init `
 node .ai-harness/bin/harness.mjs doctor --json
 ```
 
-`existing` 文档模式会沿用项目现有目录和命名，不会生成另一套默认文档结构。初始化后按项目原有 Git 流程提交 Harness 和项目基线；存在其他未提交修改时不要直接使用无范围的 `git add .`。
+`existing` 文档模式沿用项目现有目录和命名。已有提交的仓库请将安装和首次初始化文件放在同一笔提交中，保留安装前的 HEAD 作为父提交。审查收据、发行文件和项目规则的托管块。CI 会从该提交重建首次接入差异，业务文件、已有规则正文和后续改动仍需各自的交付依据。
 
 ## 5. 接入新项目
 

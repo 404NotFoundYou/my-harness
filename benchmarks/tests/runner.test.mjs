@@ -375,7 +375,21 @@ test("archived experiments restore byte for byte and retain their original audit
       assert.equal(filenames.length, entry.files, entry.directory);
       assert.equal(contents.reduce((total, bytes) => total + bytes.length, 0), entry.bytes, entry.directory);
       assert.equal(hash(JSON.stringify(filenames.map((file, index) => [file, hash(contents[index])]))), entry.sha256, entry.directory);
-      const result = await auditExperiment(directory);
+      const eventReads = [];
+      const result = await auditExperiment(directory, { readEvidence: file => {
+        if (file.endsWith("/events.jsonl")) eventReads.push(file);
+        return readFile(path.join(directory, file));
+      } });
+      const protocol = JSON.parse(await readFile(path.join(directory, "protocol.json"), "utf8"));
+      if (protocol.schemaVersion === 4) {
+        const key = row => [row.taskId, row.group, row.trial];
+        const expected = protocol.tasks.flatMap(task => protocol.groups.flatMap(group =>
+          Array.from({ length: protocol.repetitions }, (_, i) => [task.id, group.id, i + 1])));
+        assert.notDeepEqual(protocol.schedule.map(key), expected, "the archive must exercise rotated execution order");
+        assert.deepEqual(result.rows.map(key), expected, "audit consumers expect task, group, trial order");
+        assert.equal(eventReads.length, result.samples);
+        assert.equal(new Set(eventReads).size, result.samples, "each frozen trial must have its own single audit");
+      }
       assert.equal(result.valid, true);
       assert.equal(result.mode, "real");
       if (entry.directory.includes("/MODEL-BENCHMARK-001/")) {

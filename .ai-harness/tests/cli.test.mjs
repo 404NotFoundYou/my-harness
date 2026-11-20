@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { mkdir, mkdtemp, readdir, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, readdir, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
@@ -148,6 +148,22 @@ test("installed CLI records and binds ANALYSIS command evidence", async () => {
     runCli(entrypoint, root, ["transition", "--id", id, "--to", "ANSWERED", "--json"]);
     assert.equal(jsonOutput(runCli(entrypoint, root, ["check", "--ci", "--json"])).ok, true);
   } finally { await cleanup(root); }
+});
+
+test("invalid preview, confirmation and target options fail before touching the target", async () => {
+  const target = await mkdtemp(path.join(tmpdir(), "ai-harness-cli-options-"));
+  try {
+    await writeFile(path.join(target, "AGENTS.md"), "project rules");
+    for (const command of ["install", "uninstall"]) {
+      const base = [command, "--target", target, "--json", ...(command === "uninstall" ? ["--confirm"] : [])];
+      for (const args of [["--dryrun"], ["--dry-run=treu"], ["--dry-run", "--dry-run"], ["--target", target], ["extra"], ["--", "extra"]]) {
+        const error = jsonOutput(runCli(sourceEntrypoint, sourceRoot, [...base, ...args], 1), "stderr");
+        assert.ok(["INVALID_OPTION", "UNKNOWN_OPTION"].includes(error.code), error.code);
+      }
+    }
+    assert.deepEqual(await readdir(target), ["AGENTS.md"]);
+    assert.equal(await readFile(path.join(target, "AGENTS.md"), "utf8"), "project rules");
+  } finally { await cleanup(target); }
 });
 
 test("CLI requires confirmation and uninstalls only from an independent source", async () => {

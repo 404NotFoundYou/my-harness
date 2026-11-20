@@ -104,7 +104,7 @@ export async function runRecordedCommand(root, { id, taskId = null, command, arg
   } catch (error) { result = { status: null, error, stdout: null, stderr: null }; }
   const endedAt = Date.now();
   const after = await sourceSnapshot(root);
-  const sourceAfter = await saveSnapshot(root, paths.directory, after);
+  const sourceAfter = after.digest === before.digest ? source : await saveSnapshot(root, paths.directory, after);
   const timedOut = result.error?.code === "ETIMEDOUT";
   const outputLimitExceeded = result.error?.code === "ENOBUFS";
   const complete = !result.error && !result.signal && typeof result.status === "number";

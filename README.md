@@ -2,7 +2,7 @@
 
 可复制到新项目或已有项目的仓库内 AI 开发 Runtime。普通任务默认自主推进，流程随风险增加：模型负责方案判断，Runtime 负责状态、权限和验证证据。
 
-- 当前版本：`1.12.0`
+- 当前版本：`1.12.1`
 - 运行要求：Node.js 20+、Git
 - 依赖：仅 Node.js 标准库，不修改目标项目依赖清单
 - 用户使用指南：[docs/guides/getting-started.md](docs/guides/getting-started.md)
@@ -10,31 +10,7 @@
 - 设计与版本记录：[docs/README.md](docs/README.md)
 - 固定任务模型对照：[benchmarks/README.md](benchmarks/README.md)
 
-`1.1.0` 将验证绑定到计划命令、任务修订和代码快照，修复删除漏检、历史范围误用和分析控制面误报；新增 `reopen` / `replan` / `task-edit`，并适配 Windows 包管理器启动。旧已完成记录从实际 Git 提交归档，不补造过去未运行的测试。
-
-需要辅助时可使用 `guide --context` 获取有界源码上下文，使用 `run --all --task T1` 执行计划内检查；普通已验证迭代可从 `guide.shortcuts` 获得带证据ID的收尾建议。它们不新增门禁，也不代替实际审查和验收。
-
-`1.2.0` 新增 `begin --spec` 结构化任务输入；普通已验证迭代的 `guide.next` 直接建议收尾，`finish` 可从合法中间状态继续。新工作项按已记录的数据库影响加载策略，`guide --context-since` 可省略相同且完整的已知内容；旧终态记录保持原路由语义。客户端驱动覆盖 Codex、Claude、Gemini，实际可用性与验证范围按运行记录报告。
-
-`1.6.1` 合并 Git 工作区状态查询，并跳过快照中无需使用的文件模式查询，减少验证流程的重复 Git 调用。暂存、未暂存、删除、子模块和源码哈希规则保持；每次验证重新读取，不跨阶段缓存状态。`1.6.0` 的实验续跑、原子保存、多文件题集及历史审计继续兼容，框架模拟结果不代表真实模型收益。
-
-`1.7.0` 新增 `node benchmarks/status.mjs --out <实验目录>`，只读展示实验进度、恢复预览和阻塞原因。显式提供 `--cli <CLI实际文件路径>` 后可核对身份；只有证据、源码、身份和锁检查均满足条件，才提供剩余调用数。状态检查不启动模型、不修改实验记录，详见[实验状态预览](benchmarks/README.md#只读实验状态与续跑预览)。
-
-`1.8.0` 新增 `node benchmarks/report.mjs --out <已完成v4实验目录> [--format json|markdown]`，只读比较同题同轮次的 baseline 与 Harness 结果、耗时及已知用量，保留失败和未知值；不调用模型。详见[实验收益对照](benchmarks/README.md#只读实验收益对照)。
-
-`1.9.0` 为固定core评测中的Harness组准备结构化 `begin --spec` 输入，公开范围和验证命令由代码准确填写，风险及实施方案仍由参试模型判断。历史题目、判定器、预算与旧实验审计保持，详见[评测任务入口](benchmarks/README.md#core-harness任务入口)。模拟回归不代表真实模型收益。
-
-`1.9.1` 在core Harness组的固定基线规则中明确结构化输入的项目相对路径、只填写判断字段及完成后的终态时序。上一轮真实对照中三题功能通过但完整交付均超时；本次只验证提示边界，未运行新模型实验。
-
-`1.9.2` 修复基准测试清理临时Git仓库时的瞬时`ENOTEMPTY`：仅对已验证归属的沙箱根做有界重试，持续失败仍保留错误。模型调用、证据审计与交付评分不变。
-
-`1.10.0` 为 `ANALYSIS` 增加无开发计划的只读命令记录及 `analysis-add --command` 当前源码证据绑定；只允许当前 Node 版本查询、`node --check` 和精确标准入口的 Runtime 只读子命令，测试、构建、格式化、伪装脚本与配置追加 executable 明确拒绝。Git 基线不再指纹化工作项控制面，`doctor`/`check` 保留精确变更总数、优先预览产品路径并单列控制面数量，避免长期工作项放大输出。
-
-`1.11.0` 减少普通任务的确定性交互开销：`begin --spec` 可用 `--risk` / `--approach` 只填充空 judgment，`run --all` 在唯一可执行任务时省略 `--task`，`finish --help` 与 `help finish` 提供无副作用参数说明；过期验证返回可复制的参数数组恢复命令，guide 强调最后一次修改后再验证。固定 core Harness 题改用该路径并在最终计划检查后立即收尾；未运行新的真实模型实验。
-
-`1.12.0` 修复 benchmark runtime 的新旧 Codex 身份兼容、Docker bind mount 用户选择、容器 identity 重验重复启动和 v4 审计协议校验，并同步容器 runtime 文档。Docker 仍固定无网络、无宿主凭据和无真实 provider 验收；这些边界不因本版本改变。
-
-新格式锁使用所有者目录，升级时应确保旧 CLI 已结束。旧文件锁、未知或异地主机锁保持拒绝自动回收；损坏状态或日志会保留现场并明确失败。恢复范围见[使用指南](docs/guides/usage.md#锁诊断与恢复)。
+[版本变更与升级注意事项](docs/versions/history.md)
 
 ## 安装到目标项目
 
