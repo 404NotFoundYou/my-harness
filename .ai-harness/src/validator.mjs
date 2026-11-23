@@ -17,7 +17,7 @@ import {
 import { HarnessError, invariant } from "./errors.mjs";
 import { resolveProjectPath } from "./filesystem.mjs";
 import { assertAnalysisCommandEvidence, assertVerification, assertVerificationStages, readEvidence } from "./verification.mjs";
-import { loadSnapshot, sourceSnapshot } from "./snapshot.mjs";
+import { snapshotReader, sourceSnapshot } from "./snapshot.mjs";
 import { compileChecks } from "./commands.mjs";
 
 function isObject(value) {
@@ -51,6 +51,9 @@ export function collectWorkItemShapeErrors(item) {
   if (!isObject(item)) return ["工作项必须是 JSON 对象。"];
   if (item.schemaVersion !== 1) errors.push("工作项 schemaVersion 必须为 1。");
   if (item.policyRoutingVersion !== undefined && ![1, 2].includes(item.policyRoutingVersion)) errors.push("policyRoutingVersion 无效。");
+  if (item.integrityVersion === undefined && (item.revision !== undefined || item.policyRoutingVersion !== undefined || item.delivery !== undefined || item.baseline?.repository?.source || item.analysis?.source)) {
+    errors.push("工作项包含新协议字段但缺少 integrityVersion。");
+  }
   if (item.integrityVersion !== undefined && item.integrityVersion !== 1) errors.push("integrityVersion 无效。");
   if (item.revision !== undefined && (!Number.isInteger(item.revision) || item.revision < 1)) errors.push("revision 必须是正整数。");
   if (item.delivery !== undefined && item.delivery !== null && (!isObject(item.delivery) || !validSource(item.delivery.source) || !validSource(item.delivery.baseline) || !/^[0-9a-f]{64}$/.test(item.delivery.planDigest || "") || typeof item.delivery.at !== "string" || !/^[0-9a-f]{40,64}$/.test(item.delivery.head || ""))) errors.push("delivery 结构无效。");
@@ -371,17 +374,11 @@ async function assertEvidenceDocument(root, gate, name, { documentRequired = fal
   }
 }
 
-function gateChecks(root, item, plan, evidence = null, config) {
-  const snapshots = new Map();
-  const readSnapshot = (reference) => {
-    const key = JSON.stringify([reference?.digest, reference?.document]);
-    if (!snapshots.has(key)) snapshots.set(key, loadSnapshot(root, reference));
-    return snapshots.get(key);
-  };
+function gateChecks(root, item, plan, evidence = null, config, readSnapshot = snapshotReader(root)) {
   const readEvents = async () => evidence ??= await readEvidence(root, item.id);
   let verified;
   return {
-    readEvents, config,
+    readEvents, readSnapshot, config,
     verifiedSnapshot: () => verified ??= (async () => {
       const snapshot = item.status === "DONE" ? await readSnapshot(item.delivery?.source) : await sourceSnapshot(root, config);
       await assertVerification(root, item, plan, { snapshot, events: await readEvents(), readSnapshot, config });
@@ -493,7 +490,7 @@ export async function assertTransitionGates(root, item, plan, target, checks = g
     const commands = item.analysis.conclusions.flatMap((conclusion) => conclusion.commands || []);
     if (commands.length) {
       const events = await checks.readEvents();
-      for (const commandId of commands) await assertAnalysisCommandEvidence(root, item, commandId, { events, config: checks.config });
+      for (const commandId of commands) await assertAnalysisCommandEvidence(root, item, commandId, { events, readSnapshot: checks.readSnapshot, config: checks.config });
     }
   }
 }
@@ -521,10 +518,10 @@ export function collectHistoryErrors(item) {
   return errors;
 }
 
-export async function collectProgressErrors(root, item, plan, { allowStale = false, events = null, config } = {}) {
+export async function collectProgressErrors(root, item, plan, { allowStale = false, events = null, config, readSnapshot } = {}) {
   const errors = [...collectWorkItemShapeErrors(item), ...collectHistoryErrors(item)];
   if (item.status === "BLOCKED") return [...new Set(errors)];
-  const checks = gateChecks(root, item, plan, events, config);
+  const checks = gateChecks(root, item, plan, events, config, readSnapshot);
   const addGateError = async (target) => {
     try {
       await assertTransitionGates(root, item, plan, target, checks);

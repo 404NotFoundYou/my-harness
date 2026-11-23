@@ -3,7 +3,8 @@ import assert from "node:assert/strict";
 import { mkdir, mkdtemp, readFile, readdir, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import { spawnSync } from "node:child_process";
+import { execFile, spawnSync } from "node:child_process";
+import { promisify } from "node:util";
 import { cleanup, createInstalledProject, git, sourceRoot } from "./helpers.mjs";
 import { exists } from "../src/filesystem.mjs";
 
@@ -289,4 +290,31 @@ test("installed CLI completes an iteration and passes its CI gate", async () => 
   } finally {
     await cleanup(root);
   }
+});
+
+test("1124: invalid init options leave a first-time project untouched", async () => {
+  const root = await mkdtemp(path.join(tmpdir(), "ai-harness-init-options-"));
+  try {
+    runCli(sourceEntrypoint, sourceRoot, ["install", "--target", root, "--json"]);
+    const entry = path.join(root, ".ai-harness/bin/harness.mjs");
+    for (const invalid of [["--dry-run"], ["--mod", "new"], ["--force=treu"], ["--mode", "existing"], ["--docs"], ["--force", "--force"], ["extra"], ["--"], ["--", "extra"]]) {
+      const result = runCli(entry, root, ["init", "--mode", "new", "--docs", "default", "--json", ...invalid], 1);
+      assert.ok(["UNKNOWN_OPTION", "INVALID_OPTION"].includes(jsonOutput(result, "stderr").code));
+      assert.equal(await exists(path.join(root, ".ai-harness/project.json")), false);
+      assert.equal(await exists(path.join(root, "docs")), false);
+    }
+  } finally { await cleanup(root); }
+});
+
+test("1124: concurrent installed CLI initializers leave the winner's exact metadata", async () => {
+  const root = await mkdtemp(path.join(tmpdir(), "ai-harness-init-processes-"));
+  try {
+    runCli(sourceEntrypoint, sourceRoot, ["install", "--target", root]);
+    const results = await Promise.allSettled(["existing", "new"].map(mode => promisify(execFile)(process.execPath,
+      [".ai-harness/bin/harness.mjs", "init", "--mode", mode, "--docs", "existing", "--json"], { cwd: root, windowsHide: true, timeout: 30000 })));
+    const winners = results.filter(result => result.status === "fulfilled");
+    assert.equal(winners.length, 1);
+    assert.equal(JSON.parse(results.find(result => result.status === "rejected").reason.stderr).code, "PROJECT_INITIALIZED");
+    assert.deepEqual(JSON.parse(await readFile(path.join(root, ".ai-harness/project.json"))), JSON.parse(winners[0].value.stdout));
+  } finally { await cleanup(root); }
 });

@@ -1,6 +1,6 @@
 import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
-import { readdir, readFile } from "node:fs/promises";
+import { readFile } from "node:fs/promises";
 import { checkProject, doctorProject } from "./checker.mjs";
 import { beginWorkItem, finishWorkItem } from "./compact.mjs";
 import { getWorkGuide } from "./guide.mjs";
@@ -22,6 +22,7 @@ import {
   editTask,
   createWorkItemState,
   initializePlan,
+  listWorkItems,
   loadConfig,
   loadPlan,
   loadWorkItem,
@@ -69,7 +70,7 @@ export function parseArgs(argv) {
       index += 1;
     } else addOption(options, key, true);
   }
-  return { positional, options, passthrough };
+  return { positional, options, passthrough, hasSeparator: argv.includes("--") };
 }
 
 function one(parsed, key, { required = false, defaultValue = null } = {}) {
@@ -92,13 +93,13 @@ function flag(parsed, key) {
   return selected === true || selected === "true" || selected === "1";
 }
 
-function validateOptions(parsed, command, valueOption, flags) {
+function validateOptions(parsed, command, valueOptions, flags) {
   for (const [option, value] of Object.entries(parsed.options)) {
-    invariant(option === valueOption || flags.includes(option), "UNKNOWN_OPTION", `${command} 不支持 --${option}。`);
-    invariant(option === valueOption ? typeof value === "string" && value.trim() : [true, "true", "false", "1", "0"].includes(value),
+    invariant(valueOptions.includes(option) || flags.includes(option), "UNKNOWN_OPTION", `${command} 不支持 --${option}。`);
+    invariant(valueOptions.includes(option) ? typeof value === "string" && value.trim() : [true, "true", "false", "1", "0"].includes(value),
       "INVALID_OPTION", `${command} 的 --${option} 参数无效或重复。`);
   }
-  invariant(parsed.positional.length === 1 && !parsed.passthrough.length, "INVALID_OPTION", `${command} 不接收额外参数。`);
+  invariant(parsed.positional.length === 1 && !parsed.hasSeparator, "INVALID_OPTION", `${command} 不接收额外参数。`);
 }
 
 function formatHuman(value) {
@@ -196,17 +197,6 @@ async function projectRoot() {
   return findProjectRoot(process.cwd());
 }
 
-async function listWorkItems(root) {
-  const config = await loadConfig(root);
-  try {
-    const entries = await readdir(resolve(root, config.workItemsDirectory), { withFileTypes: true });
-    return entries.filter((entry) => entry.isDirectory()).map((entry) => entry.name).sort();
-  } catch (error) {
-    if (error.code === "ENOENT") return [];
-    throw error;
-  }
-}
-
 export async function runCli(argv, io = { stdout: console.log, stderr: console.error }) {
   const parsed = parseArgs(argv);
   const command = parsed.positional[0] || "help";
@@ -228,7 +218,7 @@ export async function runCli(argv, io = { stdout: console.log, stderr: console.e
     return 0;
   }
   if (command === "install") {
-    validateOptions(parsed, command, "target", ["dry-run", "force", "json"]);
+    validateOptions(parsed, command, ["target"], ["dry-run", "force", "json"]);
     const target = one(parsed, "target", { required: true });
     const result = await installRuntime(sourceRoot, resolve(target), {
       dryRun: flag(parsed, "dry-run"),
@@ -238,7 +228,7 @@ export async function runCli(argv, io = { stdout: console.log, stderr: console.e
     return 0;
   }
   if (command === "uninstall") {
-    validateOptions(parsed, command, "target", ["dry-run", "confirm", "json"]);
+    validateOptions(parsed, command, ["target"], ["dry-run", "confirm", "json"]);
     const target = one(parsed, "target", { required: true });
     const result = await uninstallRuntime(sourceRoot, resolve(target), {
       dryRun: flag(parsed, "dry-run"),
@@ -250,6 +240,7 @@ export async function runCli(argv, io = { stdout: console.log, stderr: console.e
 
   const root = await projectRoot();
   if (command === "init") {
+    validateOptions(parsed, command, ["mode", "docs"], ["force", "json"]);
     const result = await initializeProject(root, {
       mode: one(parsed, "mode", { required: true }),
       docsMode: one(parsed, "docs", { required: true }),
@@ -264,7 +255,7 @@ export async function runCli(argv, io = { stdout: console.log, stderr: console.e
     return result.ok ? 0 : 1;
   }
   if (command === "check") {
-    validateOptions(parsed, command, "base", ["ci", "json"]);
+    validateOptions(parsed, command, ["base"], ["ci", "json"]);
     const ci = flag(parsed, "ci");
     const base = one(parsed, "base");
     invariant(base === null || (ci && /^(?:[0-9a-f]{40}|[0-9a-f]{64})$/.test(base)), "INVALID_OPTION", "--base 需与 --ci 一起使用并提供完整提交标识。");

@@ -6,12 +6,14 @@ import fsPromises from "node:fs/promises";
 import { syncBuiltinESMExports } from "node:module";
 import { tmpdir } from "node:os";
 import path from "node:path";
+import { runRecordedCommand } from "../src/evidence.mjs";
 import { checkProject, doctorProject } from "../src/checker.mjs";
 import { installRuntime, initializeProject } from "../src/installer.mjs";
 import {
   addAnalysisConclusion,
   completeBaseline,
   createWorkItemState,
+  loadWorkItem,
   recordResult,
   transitionWorkItem,
   workItemPaths,
@@ -293,4 +295,62 @@ test("review fixes: check reads one configuration per invocation, and honors cha
     assert.deepEqual((await checkProject(root)).details.workItems, []);
     assert.equal(reads, 2);
   } finally { t.mock.restoreAll(); syncBuiltinESMExports(); await cleanup(root); }
+});
+
+test("1124: CI requires an owned complete event history, and rechecks a shared snapshot on the next invocation", async t => {
+  const root = await createInstalledProject(), id = "Audit-1124";
+  try {
+    await createWorkItemState(root, { id, type: "ANALYSIS", title: "Audit", references: ["request"], acceptance: ["verified"], authorizationMode: "autonomous", authorizationSource: "fixture" });
+    await transitionWorkItem(root, id, "BASELINING");
+    await completeBaseline(root, id, { evidence: ["checkout"] });
+    await transitionWorkItem(root, id, "ANALYZING");
+    const command = await runRecordedCommand(root, { id, command: "node", args: ["--version"] });
+    await addAnalysisConclusion(root, id, { status: "PROVEN", text: "version", commandRefs: [command.id] });
+    await recordResult(root, id, { kind: "analysis", status: "pass", summary: "checked" });
+    const item = await transitionWorkItem(root, id, "ANSWERED");
+    const paths = await workItemPaths(root, id), text = await readFile(paths.events, "utf8");
+    const lines = text.trimEnd().split("\n"), last = JSON.parse(lines.at(-1));
+    const editLast = fields => [...lines.slice(0, -1), JSON.stringify({ ...last, ...fields })].join("\n") + "\n";
+    for (const bad of ["", lines.slice(0, -1).join("\n") + "\n", text.trimEnd(), text + "{broken\n", text + lines.at(-1) + "\n",
+      editLast({ workItemId: "Other" }), editLast({ action: "" }), editLast({ timestamp: "invalid" }), editLast({ to: "BLOCKED" }), editLast({ reason: "altered" })]) {
+      await writeFile(paths.events, bad);
+      const result = await checkProject(root, { ci: true });
+      assert.ok(result.errors.some(message => message.includes("events.jsonl")), JSON.stringify(result.errors));
+    }
+    await fsPromises.unlink(paths.events);
+    assert.ok((await checkProject(root, { ci: true })).errors.some(message => message.includes("events.jsonl")));
+    const { integrityVersion, ...damaged } = item;
+    await writeFile(paths.state, JSON.stringify(damaged));
+    assert.ok((await checkProject(root, { ci: true })).errors.some(message => message.includes("integrityVersion")));
+    await writeFile(paths.state, JSON.stringify(item));
+    await writeFile(paths.events, text);
+    const snapshot = path.join(root, item.analysis.source.document), original = fsPromises.readFile;
+    let calls = 0;
+    t.mock.method(fsPromises, "readFile", async (p,...args) => { if (p === snapshot) calls++; return original(p,...args); });
+    syncBuiltinESMExports();
+    assert.deepEqual((await checkProject(root, { ci: true })).errors, []);
+    assert.equal(calls, 1);
+    await writeFile(snapshot, "{}");
+    assert.equal((await checkProject(root, { ci: true })).ok, false);
+    assert.equal(calls, 2);
+  } finally { t.mock.restoreAll(); syncBuiltinESMExports(); await cleanup(root); }
+});
+
+test("1124: wrong work item identity cannot change records, including case aliases on Windows", async () => {
+  const root = await createInstalledProject(), id = "MixedCase";
+  try {
+    const item = await createWorkItemState(root, { id, type: "ANALYSIS", title: "Case", references: ["request"], acceptance: ["result"], authorizationMode: "autonomous", authorizationSource: "fixture" });
+    const paths = await workItemPaths(root, id), before = await readFile(paths.events);
+    if (await fsPromises.stat(path.join(path.dirname(paths.directory), id.toLowerCase())).then(()=>true, error=>{if(error.code==="ENOENT")return false;throw error;})) {
+      await assert.rejects(() => loadWorkItem(root, id.toLowerCase()), { code: "WORK_ITEM_ID_MISMATCH" });
+      await assert.rejects(() => transitionWorkItem(root, id.toLowerCase(), "BASELINING"), { code: "WORK_ITEM_ID_MISMATCH" });
+      await assert.rejects(() => runRecordedCommand(root, { id: id.toLowerCase(), command: "node", args: ["--version"] }), { code: "WORK_ITEM_ID_MISMATCH" });
+      assert.equal((await loadWorkItem(root, id)).status, "INTAKE");
+    }
+    await assert.rejects(() => transitionWorkItem(root, "Typo", "BASELINING"), { code: "FILE_NOT_FOUND" });
+    assert.ok(!(await fsPromises.readdir(path.dirname(paths.directory))).includes("Typo"));
+    await writeFile(paths.state, JSON.stringify({ ...item, id: "Elsewhere" }));
+    await assert.rejects(() => transitionWorkItem(root, id, "BASELINING"), { code: "WORK_ITEM_ID_MISMATCH" });
+    assert.deepEqual(await readFile(paths.events), before);
+  } finally { await cleanup(root); }
 });

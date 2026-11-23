@@ -4,7 +4,7 @@ import { distributionPaths, INSTRUCTION_FILES, validateInstallReceipt } from "./
 import { mergeManagedFile } from "./managed-block.mjs";
 import { readdir } from "node:fs/promises";
 import { readJson } from "./filesystem.mjs";
-import { commitSnapshot, controlPath, loadSnapshot, makeSnapshot, snapshotChanges, sourceSnapshot } from "./snapshot.mjs";
+import { commitSnapshot, controlPath, snapshotReader, makeSnapshot, snapshotChanges, sourceSnapshot } from "./snapshot.mjs";
 import { fileFingerprint, gitResult } from "./git.mjs";
 import { fileMatchesScope, taskWriteScopes } from "./validator.mjs";
 import { planDigest } from "./verification.mjs";
@@ -19,8 +19,8 @@ function ownedChanges(baseline, source, scopes) {
     .map((file) => ({ path: file, before: baseline.files[file] ?? null, after: source.files[file] ?? null }));
 }
 
-async function baselineSnapshot(root, item, current, config) {
-  if (item.baseline.repository?.source) return loadSnapshot(root, item.baseline.repository.source);
+async function baselineSnapshot(root, item, current, config, readSnapshot) {
+  if (item.baseline.repository?.source) return readSnapshot(item.baseline.repository.source);
   const baseline = await commitSnapshot(root, item.baseline.repository.commit, config);
   for (const [file, fingerprint] of Object.entries(item.baseline.repository.fingerprints || {})) {
     if (controlPath(file, config.workItemsDirectory)) continue;
@@ -155,7 +155,7 @@ async function compareCommitRange(root, config, base, current, ordered) {
   return { changedFiles: unexplained.filter(file => file !== trivialDoc), trivialDoc };
 }
 
-export async function collectScopeErrors(root, records, items, { base = null, config } = {}) {
+export async function collectScopeErrors(root, records, items, { base = null, config, readSnapshot = snapshotReader(root) } = {}) {
   config ??= await readJson(path.join(root, ".ai-harness/config.json"));
   const current = await sourceSnapshot(root, config);
   const errors = [];
@@ -171,8 +171,8 @@ export async function collectScopeErrors(root, records, items, { base = null, co
         continue;
       }
       invariant(item.delivery.planDigest === planDigest(item, plan), "DELIVERY_PLAN_CHANGED", `工作项 ${item.id} 的交付计划已改变。`);
-      const source = await loadSnapshot(root, item.delivery.source);
-      const baseline = await loadSnapshot(root, item.delivery.baseline);
+      const source = await readSnapshot(item.delivery.source);
+      const baseline = await readSnapshot(item.delivery.baseline);
       const scopes = plannedScopes(item, plan);
       const changes = ownedChanges(baseline, source, scopes);
       invariant(JSON.stringify(item.delivery.ownedChanges) === JSON.stringify(changes), "DELIVERY_OWNERSHIP_INVALID", `${item.id}: 交付归属与批准范围及快照不一致。`);
@@ -188,7 +188,7 @@ export async function collectScopeErrors(root, records, items, { base = null, co
   }
   const first = active.toSorted((left, right) => left.item.baseline.completedAt.localeCompare(right.item.baseline.completedAt))[0];
   const latest = ordered.at(-1);
-  let frontier = first ? await baselineSnapshot(root, first.item, current, config)
+  let frontier = first ? await baselineSnapshot(root, first.item, current, config, readSnapshot)
     : latest ? (latest.legacy ? latest.source : latest.baseline)
       : await commitSnapshot(root, gitResult(root, ["rev-parse", "HEAD"]).stdout.trim(), config);
   const baselineAt = first?.item.baseline.completedAt ?? (latest?.legacy ? latest.at : latest?.baselineAt) ?? new Date().toISOString();

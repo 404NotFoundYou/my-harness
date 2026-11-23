@@ -1,5 +1,7 @@
 import path from "node:path";
 import { tmpdir } from "node:os";
+import { isDeepStrictEqual } from "node:util";
+import { compileChecks } from "../.ai-harness/src/commands.mjs";
 import { createHash, randomUUID } from "node:crypto";
 import { spawnSync } from "node:child_process";
 import { lstat, mkdir, mkdtemp, readFile, readdir, readlink, realpath, rm, writeFile } from "node:fs/promises";
@@ -55,14 +57,15 @@ function git(root, args) {
   return result.stdout.trim();
 }
 
-async function filesAt(root, prefix = "") {
+async function filesAt(root, harness, prefix = "") {
   const files = Object.create(null);
   for (const entry of await readdir(path.join(root, prefix), { withFileTypes: true })) {
     if (!prefix && entry.name === ".git") continue;
     const relative = prefix ? `${prefix}/${entry.name}` : entry.name;
     const absolute = path.join(root, relative);
+    if (harness && relative === ".ai-harness/work-items" && entry.isDirectory()) continue;
     if (entry.isSymbolicLink()) files[relative] = `link:${await readlink(absolute)}`;
-    else if (entry.isDirectory()) Object.assign(files, await filesAt(root, relative));
+    else if (entry.isDirectory()) Object.assign(files, await filesAt(root, harness, relative));
     else files[relative] = hash(await readFile(absolute));
   }
   return files;
@@ -99,22 +102,25 @@ export async function createParticipant(task, { sourceRoot, harness, suite = "co
     }
     git(root, ["add", "."]);
     git(root, ["commit", "-m", "fixed benchmark baseline"]);
-    return { root, baseline: await filesAt(root), head: git(root, ["rev-parse", "HEAD"]) };
+    return { root, baseline: await filesAt(root, harness), head: git(root, ["rev-parse", "HEAD"]) };
   } catch (error) { await cleanupSandbox(root); throw error; }
 }
 
 export async function inspectChanges(participant, task, harness) {
-  const current = await filesAt(participant.root);
+  const current = await filesAt(participant.root, harness);
   const changes = [...new Set([...Object.keys(participant.baseline), ...Object.keys(current)])]
     .filter(file => participant.baseline[file] !== current[file])
     .map(file => ({ path: file, before: participant.baseline[file] ?? null, after: current[file] ?? null }));
   const writable = writableFilesFor(task);
-  const violations = changes.filter(change => !writable.includes(change.path) && change.path !== "test/extra.test.mjs" &&
-    !(harness && change.path.startsWith(".ai-harness/work-items/"))).map(change => change.path);
+  const violations = changes.filter(change => !writable.includes(change.path) && change.path !== "test/extra.test.mjs").map(change => change.path);
   if (participant.frozenBeginSpec) {
-    const absolute = path.join(participant.root, participant.frozenBeginSpec.path);
-    const info = await lstat(absolute).catch(() => null);
-    const currentHash = info?.isFile() && !info.isSymbolicLink() ? hash(await readFile(absolute)) : null;
+    let currentHash = null;
+    try {
+      const absolute = await resolveProjectPath(participant.root, participant.frozenBeginSpec.path, { forWrite: true });
+      if ((await lstat(absolute)).isFile()) currentHash = hash(await readFile(absolute));
+    } catch (error) {
+      if (!["ENOENT", "ENOTDIR", "SYMLINK_WRITE"].includes(error.code)) throw error;
+    }
     if (currentHash !== participant.frozenBeginSpec.sha256) violations.push(`${participant.frozenBeginSpec.path} changed`);
   }
   if (git(participant.root, ["rev-parse", "HEAD"]) !== participant.head) violations.push("Git HEAD changed");
@@ -209,6 +215,18 @@ async function archiveWorkItem(root, id, output, errors) {
   return record;
 }
 
+function frozenPlanMatches(spec, records) {
+  const record = records.find(entry => entry.state?.id === spec.id);
+  const state = record?.state, plan = record?.plan, task = plan?.tasks?.[0];
+  return state?.type === spec.type && state.title === spec.title && state.status === "DONE" &&
+    isDeepStrictEqual(state.input, { references: spec.references, acceptance: spec.acceptance, nonGoals: [], version: null }) &&
+    isDeepStrictEqual(state.authorization, { mode: "autonomous", source: spec.authorizationSource }) && !state.flags.length &&
+    state.database.impact === "none" && isDeepStrictEqual(state.database.evidence, [spec.databaseEvidence]) &&
+    plan?.mode === "single" && plan.tasks.length === 1 && task.id === "T1" && task.status === "COMPLETED" &&
+    ["low", "medium"].includes(task.risk) && isDeepStrictEqual(task.writeScopes, spec.writeScopes) &&
+    isDeepStrictEqual(task.checks, compileChecks(spec.verification)) && isDeepStrictEqual(task.docsImpact, spec.docsImpact);
+}
+
 export async function runCase({ task, group, sourceRoot, outputDirectory, driver, runBudget = budget, trial = 1, execution = null, beforePublish = null, suite = "core" }) {
   await mkdir(outputDirectory);
   const participant = await createParticipant(task, { sourceRoot, harness: group.harness, suite });
@@ -221,7 +239,7 @@ export async function runCase({ task, group, sourceRoot, outputDirectory, driver
         verification:[{command:"node",args:["--test","test/public.test.mjs"]}],docsImpact:["N/A: 固定公开规格与文档不变"]};
       const content=JSON.stringify(spec,null,2)+"\n";
       await writeFile(path.join(participant.root,beginSpecPath),content,{flag:"wx"});
-      participant.frozenBeginSpec={path:beginSpecPath,sha256:hash(content)};
+      participant.frozenBeginSpec={path:beginSpecPath,sha256:hash(content),spec};
     }
     const prompt = participantPrompt(task, group, runBudget, suite);
     await writeFile(path.join(outputDirectory, "prompt.txt"), prompt);
@@ -250,6 +268,9 @@ export async function runCase({ task, group, sourceRoot, outputDirectory, driver
         workflow = { ok: checked.ok && checked.details.workItems.length > 0, errors: checked.errors, workItems: checked.details.workItems };
         const records = [];
         for (const id of workflow.workItems) records.push(await archiveWorkItem(participant.root, id, outputDirectory, workflow.errors));
+        if (workflow.ok && participant.frozenBeginSpec && !frozenPlanMatches(participant.frozenBeginSpec.spec, records)) {
+          workflow.errors.push("实际工作项或执行计划与冻结的任务输入不一致。");
+        }
         if (workflow.errors.length) workflow.ok = false;
         if (task.writableFiles !== undefined && checked.ok && !workflow.errors.length) {
           workflow.contract=projectWorkflowContract(task,records);

@@ -17,6 +17,7 @@ node <HARNESS_REPO>/.ai-harness/bin/harness.mjs install --target <TARGET> --json
 - 托管块内容被改动时默认报 `MANAGED_BLOCK_MODIFIED`；`--force` 只修复该块。标记缺失一半、重复或不独占一行时报 `MANAGED_BLOCK_MALFORMED`，`--force` 也不覆盖。
 - `--force` 可在明确授权后备份并替换普通冲突文件。块外项目规则和已修改的退役文件仍受保护。
 - 新项目在不存在 `docs` 目录时使用 `init --mode new --docs default`；默认文档先在项目内完整准备，再发布 `docs`，若已发布模板但元数据写入中断，可用原命令重试。Runtime 核对项目内的发布凭据和模板内容，遇到改动会保留现场并报告冲突。若元数据已提交但清理凭据失败，原命令会核对已提交的元数据并完成清理。项目原有文档请使用 `--docs existing`。
+- `init` 只接受 `--mode`、`--docs`、`--force` 和 `--json`。参数有误会在写入前退出。所有模式在写入默认文档和元数据前共用初始化锁，同机进程中断后可用原命令恢复。并发首次初始化仅由获锁的一方创建文件，后续重建需显式使用 `--force`。
 - 已有项目首次初始化使用 `init --mode existing --docs existing`。已接入项目请在安装前用旧 Runtime 建立升级工作项，以预检列出的精确文件为范围，交付后对升级前提交执行 `check --ci --base`。见[升级步骤](getting-started.md#9-升级-harness)。
 - 运行开发工作项前，先建立包含 Harness、初始代码和文档的 Git 提交。
 
@@ -308,7 +309,7 @@ node .ai-harness/bin/harness.mjs transition --id <ID> --to ANSWERED --json
 {"command":"node","args":["--test","tests/validation.test.mjs"],"acceptance":["A1","A2"]}
 ```
 
-该对象可放入 `begin --spec` 的 `verification` 数组，或作为 `--verify` 的 JSON 字符串。启用映射后，建项预检/计划批准要求所有验收项有对应检查且编号有效。映射参与计划签名，修改后需要重新验证。未提供映射的旧工作项保持原行为；`guide.coverage` 展示对应关系。Runtime 只校验声明与证据归属，测试断言能否保护业务意图仍需审查。
+该对象可放入 `begin --spec` 的 `verification` 数组，或作为 `--verify` 的 JSON 字符串。启用映射后，建项预检/计划批准要求所有验收项有对应检查且编号有效。映射参与计划签名，修改后需要重新验证。未提供映射的旧工作项保持原行为；`guide.coverage.entries[].checks` 列出可执行的映射，`deferredChecks` 保留延期任务、检查及批准引用。仅由延期任务映射的验收项列入 `coverage.deferred`，完全未映射的项列入 `coverage.missing`。Runtime 只校验声明与证据归属，测试断言能否保护业务意图仍需审查。
 
 ### 验证产物
 
@@ -394,6 +395,8 @@ node .ai-harness/bin/harness.mjs check --ci --base <完整基准提交 SHA> --js
 源仓库的 `source-tests.yml` 在 Windows 和 Linux 的 Node.js 20、22、24 矩阵上执行评测框架测试，并在临时目标中安装 Runtime 后运行其随附测试。目标项目通过标准工作流执行 Runtime 测试及交付门禁。
 
 CI 检出需保留完整 Git 历史（GitHub Actions 示例使用 `fetch-depth: 0`），以确定旧终态记录的真实归档提交。新工作项保存交付内容快照；历史范围不再授权新的修改，合法分析控制面单独处理。
+
+工作项 ID 必须与目录名和状态中保存的大小写一致。`check` 与异常锁恢复都会对 `integrityVersion: 1` 工作项核对 `events.jsonl` 的归属、完整行与状态迁移顺序。早期归档沿用旧协议。带修订号、交付或新版快照等标记的记录缺少协议版本时会报错。单次 `check` 按文档路径和预期摘要复用已校验快照，下一次调用重新读取。
 
 代码快照基于 Git 跟踪及未忽略文件，包含删除、重命名、配置与测试，排除工作项控制面；暂存不会改变等价内容的标识。被忽略文件、外部服务和环境变化不属于代码快照，必要时应增加实际环境验证。未冻结的子模块变更会明确失败。
 

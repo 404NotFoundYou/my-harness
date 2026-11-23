@@ -1,5 +1,6 @@
 import {
   appendFile,
+  link,
   lstat,
   mkdir,
   open,
@@ -132,8 +133,8 @@ export async function readJson(target) {
   }
 }
 
-export async function atomicWriteJson(target, value) {
-  return writeFileAtomic(target, `${JSON.stringify(value, null, 2)}\n`);
+export async function atomicWriteJson(target, value, options) {
+  return writeFileAtomic(target, `${JSON.stringify(value, null, 2)}\n`, options);
 }
 
 export async function appendJsonLine(target, value) {
@@ -146,17 +147,28 @@ export async function copyFileAtomic(source, target) {
   return writeFileAtomic(target, content);
 }
 
-export async function writeFileAtomic(target, content) {
+export async function writeFileAtomic(target, content, { exclusive = false } = {}) {
   await mkdir(path.dirname(target), { recursive: true });
   const temporary = path.join(path.dirname(target), `.${path.basename(target)}.${randomUUID()}.tmp`);
   const handle = await open(temporary, "wx");
   try {
     await handle.writeFile(content);
     await handle.close();
-    await rename(temporary, target);
+    if (exclusive) await link(temporary, target);
+    else await rename(temporary, target);
   } catch (error) {
     await handle.close().catch(() => {});
     await rm(temporary, { force: true }).catch(cleanupError => { error.cleanupError = cleanupError; });
     throw error;
+  }
+  if (exclusive) {
+    for (let attempt = 0; ; attempt++) {
+      try { await rm(temporary, { force: true }); return; } catch (error) {
+        if (attempt >= 2 || !["EPERM", "EACCES", "EBUSY"].includes(error.code)) {
+          throw new HarnessError("PUBLISHED_CLEANUP_FAILED", `文件已发布，暂存文件清理失败：${temporary}`, { cause: error.code });
+        }
+        await new Promise(resolve => setTimeout(resolve, 20 * (attempt + 1)));
+      }
+    }
   }
 }

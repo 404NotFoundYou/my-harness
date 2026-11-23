@@ -15,6 +15,7 @@ import {
 } from "node:fs/promises";
 import path from "node:path";
 import { atomicWriteJson, copyFileAtomic, exists, readJson, resolveProjectPath, writeFileAtomic } from "./filesystem.mjs";
+import { inspectLock, recoverLock, withFileLock } from "./locking.mjs";
 import { getGitBaseline, gitResult } from "./git.mjs";
 import { HarnessError, invariant } from "./errors.mjs";
 import { inspectManagedBlock, mergeManagedFile, removeManagedBlock } from "./managed-block.mjs";
@@ -939,88 +940,156 @@ async function verifyPendingDocs(root, docs, templateRoot, templateFiles, witnes
   return pending.project;
 }
 
-export async function initializeProject(root, { mode, docsMode, force = false }) {
+export async function initializeProject(root, options) {
+  const { mode, docsMode } = options;
   root = await realpath(root);
   invariant(["new", "existing"].includes(mode), "INVALID_PROJECT_MODE", "项目模式必须是 new 或 existing。" );
   invariant(["default", "existing"].includes(docsMode), "INVALID_DOCS_MODE", "文档模式必须是 default 或 existing。" );
+  const lock = await resolveProjectPath(root, ".ai-harness/.init.lock", { forWrite: true });
+  const previous = await inspectLock(lock);
+  if (previous.status === "stale") {
+    try { await recoverLock(lock, previous.owner.token); } catch (error) {
+      if (!["LOCK_CHANGED", "LOCK_NOT_RECOVERABLE"].includes(error.code)) throw error;
+    }
+  }
+  return withFileLock(lock, () => initializeUnderLock(root, options));
+}
+
+async function initializeUnderLock(root, { mode, docsMode, force = false }) {
   const manifest = JSON.parse(await readFile(path.join(root, ".ai-harness", "manifest.json"), "utf8"));
   const projectPath = await resolveProjectPath(root, ".ai-harness/project.json", { forWrite: true });
+  const pendingPath = await resolveProjectPath(root, ".ai-harness/.init.pending", { forWrite: true });
+  const pendingInfo = await fileInfo(pendingPath);
+  let pending = pendingInfo ? await readJson(pendingPath) : null;
+  if (pending) {
+    invariant(pending.schemaVersion === 1 && pending.mode === "new" && pending.docsMode === "default" &&
+      typeof pending.stagingRelative === "string" && pending.project?.schemaVersion === 1,
+      "DOCS_CONFLICT", "初始化恢复记录结构无效。");
+    invariant(pending.project.harnessVersion === manifest.version, "DOCS_CONFLICT", "未完成的初始化属于其他 Runtime 版本。");
+    invariant(mode === pending.mode && docsMode === pending.docsMode, "PROJECT_INITIALIZATION_PENDING", "存在未完成的默认文档初始化，请使用原初始化参数恢复。");
+  }
   const initialized = await exists(projectPath);
   const docsPath = mode === "new" && docsMode === "default" ? await resolveProjectPath(root, "docs", { forWrite: true }) : null;
   const existingDocs = docsPath && await fileInfo(docsPath);
-  let witness = existingDocs && await initDocsWitness(root, docsPath);
-  invariant(force || !initialized || (witness && await fileInfo(witness)), "PROJECT_INITIALIZED", "项目已经初始化；如需重建必须显式使用 --force。" );
-  const repository = await getGitBaseline(root);
-  let project = {
-    schemaVersion: 1,
-    harnessVersion: manifest.version,
-    mode,
-    docsMode,
-    initializedAt: new Date().toISOString(),
-    repository,
-  };
-  if (mode === "existing" && repository.commit && !initialized) {
-    const installed = await loadInstallReceipt(root);
-    if (installed?.receipt.source) project.initialInstall = { receipt: installed.receipt.contentHash, metadata: hash(JSON.stringify(project)) };
+  const legacyWitness = existingDocs && await initDocsWitness(root, docsPath);
+  if (!docsPath && pending) {
+    throw new HarnessError("PROJECT_INITIALIZATION_PENDING", "存在未完成的默认文档初始化，请使用原初始化参数恢复。");
   }
+  invariant(force || !initialized || pending || (legacyWitness && await fileInfo(legacyWitness)),
+    "PROJECT_INITIALIZED", "项目已经初始化；如需重建必须显式使用 --force。");
+  if (!docsPath && !initialized) {
+    const docs = path.join(root, "docs");
+    if ((await fileInfo(docs))?.isDirectory()) {
+      invariant(!(await fileInfo(await initDocsWitness(root, docs))), "DOCS_CONFLICT", "默认文档初始化尚未完成，请使用原初始化参数恢复。");
+    }
+  }
+
+  let project = pending?.project;
+  let stagingRelative = pending?.stagingRelative || null;
+  if (!project) {
+    const repository = await getGitBaseline(root, {
+      excludePaths: [".ai-harness/.init.lock", ".ai-harness/backups"],
+    });
+    project = {
+      schemaVersion: 1,
+      harnessVersion: manifest.version,
+      mode,
+      docsMode,
+      initializedAt: new Date().toISOString(),
+      repository,
+    };
+    if (mode === "existing" && repository.commit && !initialized) {
+      const installed = await loadInstallReceipt(root);
+      if (installed?.receipt.source) project.initialInstall = { receipt: installed.receipt.contentHash, metadata: hash(JSON.stringify(project)) };
+    }
+  }
+
+  if (docsPath && !pending && !existingDocs) {
+    stagingRelative = ".ai-harness/backups/init-" + randomUUID();
+    pending = {
+      schemaVersion: 1,
+      harnessVersion: manifest.version,
+      mode: "new",
+      docsMode: "default",
+      stagingRelative,
+      project,
+    };
+    await atomicWriteJson(pendingPath, pending, { exclusive: true });
+  }
+
+  const stagingRoot = stagingRelative ? await resolveProjectPath(root, stagingRelative, { forWrite: true }) : null;
+  const backupsDirectoryExisted = stagingRoot ? await exists(path.dirname(stagingRoot)) : false;
   await mkdir(await resolveProjectPath(root, ".ai-harness/work-items", { forWrite: true }), { recursive: true });
+
+  async function publishProject() {
+    try { await atomicWriteJson(projectPath, project, { exclusive: !force }); } catch (error) {
+      if (!force && error.code === "EEXIST" && await exists(projectPath)) {
+        throw new HarnessError("PROJECT_INITIALIZED", "项目已经初始化；如需重建必须显式使用 --force。");
+      }
+      throw error;
+    }
+  }
+
   if (docsPath) {
     const templateRoot = path.join(root, ".ai-harness", "templates", "new-project");
     const templateFiles = await listFiles(templateRoot);
-    const stagingRelative = `.ai-harness/backups/init-${randomUUID()}`;
-    const stagingRoot = await resolveProjectPath(root, stagingRelative, { forWrite: true });
-    const backupsDirectoryExisted = await exists(path.dirname(stagingRoot));
+    const witness = pending ? pendingPath : legacyWitness;
+    let completedWithoutPublish = false;
     try {
       if (existingDocs) {
         project = await verifyPendingDocs(root, docsPath, templateRoot, templateFiles, witness);
         invariant(project.harnessVersion === manifest.version, "DOCS_CONFLICT", "未完成的初始化属于其他 Runtime 版本。");
         if (initialized && !force) {
           invariant(JSON.stringify(await readJson(projectPath)) === JSON.stringify(project), "PROJECT_INITIALIZED", "现有项目元数据与中断初始化记录不同。");
-          await unlink(witness);
-          return project;
+          completedWithoutPublish = true;
         }
       } else {
+        invariant(stagingRoot && pending, "DOCS_CONFLICT", "默认文档初始化缺少恢复记录。");
         const rootFiles = [];
         for (const relative of templateFiles) {
           const content = await readFile(path.join(templateRoot, relative));
           if (relative.startsWith("docs/")) {
-            const staged = await resolveProjectPath(root, `${stagingRelative}/${relative}`, { forWrite: true });
-            await mkdir(path.dirname(staged), { recursive: true });
-            await writeFile(staged, content, { flag: "wx" });
+            const staged = await resolveProjectPath(root, stagingRelative + "/" + relative, { forWrite: true });
+            const info = await fileInfo(staged);
+            if (info) {
+              invariant(info.isFile() && !info.isSymbolicLink() && hash(await readFile(staged)) === hash(content),
+                "DOCS_TARGET_CHANGED", "中断后的暂存文档已变化：" + relative);
+            } else {
+              await mkdir(path.dirname(staged), { recursive: true });
+              await writeFile(staged, content, { flag: "wx" });
+            }
           } else {
             const targetPath = await resolveProjectPath(root, relative, { forWrite: true });
             const info = await fileInfo(targetPath);
-            invariant(!info || (info.isFile() && !info.isSymbolicLink()), "DOCS_CONFLICT", `默认文档目标不是普通文件：${relative}`);
-            if (info) invariant(hash(await readFile(targetPath)) === hash(content), "DOCS_CONFLICT", `现有文档与模板冲突：${relative}`);
+            invariant(!info || (info.isFile() && !info.isSymbolicLink()), "DOCS_CONFLICT", "默认文档目标不是普通文件：" + relative);
+            if (info) invariant(hash(await readFile(targetPath)) === hash(content), "DOCS_CONFLICT", "现有文档与模板冲突：" + relative);
             rootFiles.push({ targetPath, content, existed: Boolean(info) });
           }
         }
-        await resolveProjectPath(root, "docs", { forWrite: true });
-        invariant(!(await fileInfo(docsPath)), "DOCS_CONFLICT", "初始化期间 docs 目录已出现，未覆盖。" );
+        await mkdir(stagingRoot, { recursive: true });
+        invariant(!(await fileInfo(docsPath)), "DOCS_CONFLICT", "初始化期间 docs 目录已出现，未覆盖。");
         for (const { targetPath, content, existed } of rootFiles) {
           const info = await fileInfo(targetPath);
           invariant(Boolean(info) === existed && (!info || (info.isFile() && !info.isSymbolicLink())),
-            "DOCS_TARGET_CHANGED", `默认文档目标类型在初始化期间变化：${targetPath}`);
-          if (info) invariant(hash(await readFile(targetPath)) === hash(content), "DOCS_TARGET_CHANGED", `默认文档内容在初始化期间变化：${targetPath}`);
+            "DOCS_TARGET_CHANGED", "默认文档目标类型在初始化期间变化：" + targetPath);
+          if (info) invariant(hash(await readFile(targetPath)) === hash(content), "DOCS_TARGET_CHANGED", "默认文档内容在初始化期间变化：" + targetPath);
           else {
-            const staged = await resolveProjectPath(root, `${stagingRelative}/.root-${randomUUID()}.tmp`, { forWrite: true });
+            const staged = await resolveProjectPath(root, stagingRelative + "/.root-" + randomUUID() + ".tmp", { forWrite: true });
             await publishExclusive(staged, targetPath, content);
           }
         }
-        await resolveProjectPath(root, "docs", { forWrite: true });
-        invariant(!(await fileInfo(docsPath)), "DOCS_CONFLICT", "初始化期间 docs 目录已出现，未覆盖。" );
         const stagedDocs = path.join(stagingRoot, "docs");
-        witness = await initDocsWitness(root, stagedDocs);
         const readme = await lstat(path.join(stagedDocs, "README.md"), { bigint: true });
-        await publishExclusive(path.join(stagingRoot, "pending.json"), witness, JSON.stringify({ readme: `${readme.dev}:${readme.ino}`, project }));
-        try { await rename(stagedDocs, docsPath); } catch (error) { await unlink(witness); throw error; }
+        pending.readme = readme.dev + ":" + readme.ino;
+        pending.project = project;
+        await atomicWriteJson(pendingPath, pending);
+        await rename(stagedDocs, docsPath);
       }
-      if (force) await atomicWriteJson(projectPath, project);
-      else await publishExclusive(path.join(stagingRoot, "project.json"), projectPath, JSON.stringify(project, null, 2) + "\n");
-      await unlink(witness);
+      if (!completedWithoutPublish) await publishProject();
     } finally {
-      await discardInstallBackup(root, stagingRoot, !backupsDirectoryExisted);
+      if (stagingRoot) await discardInstallBackup(root, stagingRoot, !backupsDirectoryExisted);
     }
-  } else await atomicWriteJson(projectPath, project);
+    await unlink(witness);
+  } else await publishProject();
   return project;
 }

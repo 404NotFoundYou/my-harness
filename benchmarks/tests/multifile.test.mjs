@@ -295,3 +295,57 @@ test("review fixes: archived workflow reports missing required logs and non-ENOE
     }
   } finally { await cleanup(directory); }
 });
+
+test("1124: scope skips Harness work records but still protects the frozen input and ordinary product files", async t => {
+  const participant = await createParticipant(task, { sourceRoot, harness: true });
+  try {
+    const relative = ".ai-harness/work-items", directory = path.join(participant.root, relative);
+    const spec = relative + "/benchmark-begin-spec.json";
+    await writeFile(path.join(participant.root, spec), "edited");
+    participant.frozenBeginSpec = { path: spec, sha256: hash("frozen") };
+    const original = fsPromises.readdir;
+    let scanned = 0;
+    t.mock.method(fsPromises, "readdir", async (p, ...args) => {
+      if (p === directory) scanned++;
+      return original(p, ...args);
+    });
+    syncBuiltinESMExports();
+    const result = await inspectChanges(participant, task, true);
+    assert.equal(scanned, 0);
+    assert.deepEqual(result.violations, [spec + " changed"]);
+    assert.ok(!result.changes.some(entry => entry.path.startsWith(relative + "/")));
+    delete participant.frozenBeginSpec;
+    assert.ok((await inspectChanges(participant, task, false)).violations.includes(spec));
+    await fsPromises.unlink(path.join(participant.root, spec));
+    await fsPromises.rmdir(directory);
+    await writeFile(directory, "replacement");
+    assert.ok((await inspectChanges(participant, task, true)).violations.includes(relative), "a file replacing the control directory is a product change");
+  } finally { t.mock.restoreAll(); syncBuiltinESMExports(); await cleanupSandbox(participant.root); }
+});
+
+test("1124: grading checks the approved verification even if the input file has been restored", async () => {
+  const directory = await mkdtemp(path.join(tmpdir(), "ai-harness-multifile-frozen-"));
+  try {
+    const result = await runCase({ task, suite: "project-v2", group: { ...group, harness: true }, sourceRoot,
+      outputDirectory: path.join(directory, "case"), driver: async ({ root }) => {
+        const file = path.join(root, ".ai-harness/work-items/benchmark-begin-spec.json");
+        const original = await readFile(file, "utf8"), spec = JSON.parse(original);
+        const differentCheck = ["node --version"];
+        await writeFile(file, JSON.stringify({ ...spec, verification: differentCheck }));
+        await beginWorkItem(root, { ...JSON.parse(await readFile(file)), authorizationMode: "autonomous", risk: "low", approach: "fixture",
+          bug: { actual: "public case fails", expected: "public case passes", reproduction: "public test" } });
+        await writeFile(file, original);
+        for (const [name, content] of Object.entries(task.reference)) await writeFile(path.join(root, name), content);
+        const command = await runRecordedCommand(root, { id: spec.id, taskId: "T1", checkId: "V1" });
+        await finishWorkItem(root, spec.id, { commandIds: [command.id], verification: "fixture", review: "fixture", documentation: spec.docsImpact[0], acceptance: "fixture",
+          stageEvidence: ["static=fixture", "sandbox=fixture", "reproduction=fixture", "regression=fixture"],
+          stageCommands: ["reproduction=" + command.id, "regression=" + command.id] });
+        return synthetic();
+      } });
+    assert.equal(result.grade.ok, true);
+    assert.equal(result.scope.ok, true);
+    assert.equal(result.workflow.ok, false);
+    assert.match(result.workflow.errors.join("\n"), /冻结/);
+    assert.equal(result.success, false);
+  } finally { await cleanup(directory); }
+});

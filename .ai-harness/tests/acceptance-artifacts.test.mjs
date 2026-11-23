@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import path from "node:path";
 import { readFile, writeFile } from "node:fs/promises";
+import { acceptanceCoverage } from "../src/verification.mjs";
 import { beginWorkItem, finishWorkItem } from "../src/compact.mjs";
 import { runRecordedCommand } from "../src/evidence.mjs";
 import { getWorkGuide } from "../src/guide.mjs";
@@ -48,4 +49,16 @@ test("archived evidence survives regeneration but tampering prevents completion"
     assert.ok((await checkProject(root)).errors.some(error => error.includes("ARTIFACT_HASH_MISMATCH")));
     await assert.rejects(() => finishWorkItem(root, "PROOF", { verification: "checked", review: "reviewed", documentation: "N/A: unchanged", acceptance: "fixture" }), { code: "ARTIFACT_HASH_MISMATCH" });
   } finally { await cleanup(root); }
+});
+
+test("1124: approved deferral remains visible without counting its checks as executable", () => {
+  const tasks = [
+    { id: "T1", status: "COMPLETED", checks: [{ id: "V1", acceptance: ["A1"] }] },
+    { id: "T2", status: "DEFERRED", deferralApproval: "release approval", checks: [{ id: "V1", acceptance: ["A1", "A2"] }] },
+  ];
+  const coverage = acceptanceCoverage({ input: { acceptance: ["ready", "later", "unmapped"] } }, { tasks });
+  assert.deepEqual(coverage.missing, ["A3"]);
+  assert.deepEqual(coverage.deferred, ["A2"]);
+  assert.deepEqual(coverage.entries.map(entry => entry.checks), [[{ taskId: "T1", checkId: "V1" }], [], []]);
+  assert.deepEqual(coverage.entries[1].deferredChecks, [{ taskId: "T2", checkId: "V1", approval: "release approval" }]);
 });

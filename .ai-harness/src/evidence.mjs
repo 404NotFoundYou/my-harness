@@ -163,7 +163,7 @@ export async function runRecordedCommand(root, { id, taskId = null, command, arg
     }
   }
   await withFileLock(paths.lock, async () => {
-    const latestItem = await readJson(paths.state);
+    const latestItem = await loadWorkItem(root, id, paths);
     const latestPlan = analysisMode ? null : await readJson(paths.plan);
     if ((latestItem.revision || 1) !== event.revision || (!analysisMode && planDigest(latestItem, latestPlan) !== definition) || latestItem.status !== item.status) {
       event.status = "fail";

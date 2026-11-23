@@ -1047,3 +1047,81 @@ test("review fixes: retry finishes witness cleanup after project metadata has co
     await assert.rejects(() => initializeProject(target, options), { code: "PROJECT_INITIALIZED" });
   } finally { t.mock.restoreAll(); syncBuiltinESMExports(); await cleanup(target); }
 });
+
+test("1124: two first initializers publish exactly one intact project, force can then replace it", async t => {
+  const root = await temporaryTarget("ai-harness-init-race-");
+  const project = path.join(root, ".ai-harness/project.json");
+  try {
+    await installRuntime(sourceRoot, root);
+    // Make both callers wait at the shared lock before either can publish docs or metadata.
+    const rename = fsPromises.rename, lock = path.join(root, ".ai-harness/.init.lock");
+    let arrivals = 0, release;
+    const both = new Promise(resolve => { release = resolve; });
+    t.mock.method(fsPromises, "rename", async (from, to) => {
+      if (to === lock && arrivals < 2) {
+        if (++arrivals === 2) release();
+        await both;
+      }
+      return rename(from, to);
+    });
+    syncBuiltinESMExports();
+    const outcomes = await Promise.allSettled([initializeProject(root, { mode: "existing", docsMode: "existing" }),
+      initializeProject(root, { mode: "new", docsMode: "default" })]);
+    assert.equal(arrivals, 2);
+    const winners = outcomes.filter(entry => entry.status === "fulfilled");
+    assert.equal(winners.length, 1);
+    assert.equal(outcomes.find(entry => entry.status === "rejected").reason.code, "PROJECT_INITIALIZED");
+    assert.deepEqual(JSON.parse(await readFile(project)), winners[0].value);
+    const hasDefaultDocs = winners[0].value.docsMode === "default";
+    assert.equal(await exists(path.join(root, "docs")), hasDefaultDocs);
+    assert.equal(await exists(path.join(root, "README.md")), hasDefaultDocs);
+    const forced = await initializeProject(root, { mode: "existing", docsMode: "existing", force: true });
+    assert.deepEqual(JSON.parse(await readFile(project)), forced);
+    assert.equal((await readdir(path.dirname(project))).some(name => name.endsWith(".tmp")), false);
+  } finally { t.mock.restoreAll(); syncBuiltinESMExports(); await cleanup(root); }
+});
+
+test("1124: a transient staging cleanup error after publication still returns the committed metadata", async t => {
+  const root = await temporaryTarget("ai-harness-init-cleanup-");
+  try {
+    await installRuntime(sourceRoot, root);
+    const remove = fsPromises.rm;
+    let attempts = 0;
+    t.mock.method(fsPromises, "rm", async (file, options) => {
+      if (path.basename(file).startsWith(".project.json.") && attempts++ === 0) throw Object.assign(new Error("busy"), { code: "EPERM" });
+      return remove(file, options);
+    });
+    syncBuiltinESMExports();
+    const project = await initializeProject(root, { mode: "existing", docsMode: "existing" });
+    assert.equal(attempts, 2);
+    assert.deepEqual(JSON.parse(await readFile(path.join(root, ".ai-harness/project.json"))), project);
+  } finally { t.mock.restoreAll(); syncBuiltinESMExports(); await cleanup(root); }
+});
+
+
+test("1124: incomplete default-doc initialization blocks another mode and resumes safely", async t => {
+  const root = await temporaryTarget("ai-harness-init-pending-");
+  try {
+    await installRuntime(sourceRoot, root);
+    const link = fsPromises.link;
+    let injected = false;
+    t.mock.method(fsPromises, "link", async (from, to) => {
+      const result = await link(from, to);
+      if (!injected && to === path.join(root, "README.md")) {
+        injected = true;
+        throw Object.assign(new Error("simulated interruption"), { code: "EIO" });
+      }
+      return result;
+    });
+    syncBuiltinESMExports();
+    await assert.rejects(() => initializeProject(root, { mode: "new", docsMode: "default" }), { code: "EIO" });
+    t.mock.restoreAll(); syncBuiltinESMExports();
+    assert.equal(await exists(path.join(root, "README.md")), true);
+    assert.equal(await exists(path.join(root, ".ai-harness/.init.pending")), true);
+    await assert.rejects(() => initializeProject(root, { mode: "existing", docsMode: "existing" }), { code: "PROJECT_INITIALIZATION_PENDING" });
+    const project = await initializeProject(root, { mode: "new", docsMode: "default" });
+    assert.equal(project.mode, "new");
+    assert.equal(await exists(path.join(root, "docs")), true);
+    assert.equal(await exists(path.join(root, ".ai-harness/.init.pending")), false);
+  } finally { t.mock.restoreAll(); syncBuiltinESMExports(); await cleanup(root); }
+});

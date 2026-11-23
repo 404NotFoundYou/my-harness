@@ -13,13 +13,25 @@ export function checksFor(task) {
 }
 
 export function acceptanceCoverage(item, plan) {
-  const checks = (plan?.tasks || []).flatMap(task => checksFor(task).map(check => ({ taskId: task.id, checkId: check.id, acceptance: check.acceptance || [] })));
-  const entries = item.input.acceptance.map((text, index) => ({ id: `A${index + 1}`, text,
-    checks: checks.filter(check => check.acceptance.includes(`A${index + 1}`)).map(({ taskId, checkId }) => ({ taskId, checkId })) }));
-  const mapped = checks.some(check => check.acceptance.length);
-  return { mode: mapped ? "explicit" : "unspecified", entries,
-    missing: mapped ? entries.filter(entry => !entry.checks.length).map(entry => entry.id) : [],
-    invalid: [...new Set(checks.flatMap(check => check.acceptance))].filter(id => !entries.some(entry => entry.id === id)),
+  const entries = item.input.acceptance.map((text, index) => ({ id: `A${index + 1}`, text, checks: [], deferredChecks: [] }));
+  const byId = new Map(entries.map(entry => [entry.id, entry]));
+  const mapped = new Set();
+  for (const task of plan?.tasks || []) {
+    for (const check of checksFor(task)) {
+      for (const id of check.acceptance || []) {
+        mapped.add(id);
+        const entry = byId.get(id);
+        if (!entry) continue;
+        const source = { taskId: task.id, checkId: check.id };
+        if (task.status === "DEFERRED") entry.deferredChecks.push({ ...source, approval: task.deferralApproval });
+        else entry.checks.push(source);
+      }
+    }
+  }
+  return { mode: mapped.size ? "explicit" : "unspecified", entries,
+    missing: mapped.size ? entries.filter(entry => !mapped.has(entry.id)).map(entry => entry.id) : [],
+    deferred: entries.filter(entry => !entry.checks.length && entry.deferredChecks.length).map(entry => entry.id),
+    invalid: [...mapped].filter(id => !byId.has(id)),
     note: "这是检查与验收的声明对应，不证明测试语义覆盖；仍需审查实际断言。" };
 }
 
@@ -78,14 +90,14 @@ export function hasFailedReview(events, item, task = null) {
     (!task || (event.taskAttempt || 1) === (task.attempt || 1)));
 }
 
-export async function assertAnalysisCommandEvidence(root, item, commandId, { snapshot = null, events = null, config } = {}) {
+export async function assertAnalysisCommandEvidence(root, item, commandId, { snapshot = null, events = null, config, readSnapshot = reference => loadSnapshot(root, reference) } = {}) {
   invariant(item.type === "ANALYSIS" && ["ANALYZING", "ANSWERED"].includes(item.status), "ANALYSIS_COMMAND_WRONG_STAGE", "分析命令证据只属于 ANALYZING 或 ANSWERED 工作项。" );
   const evidence = events || await readEvidence(root, item.id);
   const index = evidence.findIndex((candidate) => candidate.id === commandId);
   const event = evidence[index];
   const command = event?.command;
   const reference = item.analysis.source || (item.baseline.repository?.source?.digest === command?.source?.digest ? item.baseline.repository.source : command?.source);
-  const current = item.status === "ANSWERED" ? await loadSnapshot(root, reference) : snapshot || await sourceSnapshot(root, config);
+  const current = item.status === "ANSWERED" ? await readSnapshot(reference) : snapshot || await sourceSnapshot(root, config);
   const subsequentFailure = command && evidence.slice(index + 1).some((later) => later.kind === "command" && later.status !== "pass" &&
     (later.revision || 1) === (item.revision || 1) && !later.taskId && later.command && commandEvidenceKey(later.command) === commandEvidenceKey(command));
   invariant(event?.kind === "command" && event.workItemId === item.id && !event.taskId && event.status === "pass" &&
@@ -93,8 +105,8 @@ export async function assertAnalysisCommandEvidence(root, item, commandId, { sna
     command.policy?.decision === "allow" && command.policy?.rule === "analysis-read-only" && !command.timedOut && !command.spawnError && !command.signal &&
     command.source?.digest === current.digest && command.sourceAfter?.digest === current.digest && !subsequentFailure,
   "ANALYSIS_COMMAND_EVIDENCE_INVALID", "分析命令证据必须属于当前修订、通过 allow 策略、未改变源码且没有同命令的随后失败。" );
-  await loadSnapshot(root, command.source);
-  await loadSnapshot(root, command.sourceAfter);
+  await readSnapshot(command.source);
+  await readSnapshot(command.sourceAfter);
   await assertEvidenceArtifacts(root, item.id, event, config);
   return event;
 }

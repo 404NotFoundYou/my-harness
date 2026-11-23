@@ -1,0 +1,143 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 1,
+  "id": "FIX-REPO-1124-20261123",
+  "type": "BUGFIX",
+  "title": "修复初始化、事件完整性与验收覆盖并消除重复扫描",
+  "status": "IMPLEMENTING",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/bugfix.md",
+    ".ai-harness/policies/verification.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户要求修复上一轮全部问题"
+  },
+  "input": {
+    "references": [
+      ".ai-harness/work-items/ANALYSIS-REPO-1123-20261123/state.json"
+    ],
+    "acceptance": [
+      "初始化误参与竞争均不写坏文件，所有入口匹配正确工作项；迁移日志与状态一致并兼容历史；延期验收如实可见；一次校验复用快照，评测跳过控制子树，分发及下游安装通过。"
+    ],
+    "nonGoals": [],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": {
+    "actual": "1.12.3 忽略 init 预览参数、可能竞争覆盖；事件缺失未发现、大小写混用、延期验收含混；重复读取快照及评测控制目录。",
+    "expected": "输入和日志可核验，单一首建胜者，延期和可执行检查清楚区分，读量随唯一输入增长。",
+    "reproduction": "上轮 Windows 双拼法 CLI、89 项 I/O 计数与历史样本，加上隔离测试重现非法参数、交错初始化、丢事件及延期。"
+  },
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "main@57bb69f, 1.12.3；已有七个只读分析目录；历史 89 项事件迁移与内嵌历史序列均可对应。"
+    ],
+    "completedAt": "2026-11-23T01:18:39.108Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "57bb69f9676a2227935fb85b7b563ab2f09f475b",
+      "dirty": false,
+      "changedFiles": [],
+      "fingerprints": {},
+      "source": {
+        "digest": "2316a891af10fc546fc78f82f2017b85c098c73701b1a6ac54f0488e18e68e63",
+        "document": ".ai-harness/work-items/FIX-REPO-1124-20261123/snapshots/2316a891af10fc546fc78f82f2017b85c098c73701b1a6ac54f0488e18e68e63.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": ".ai-harness/work-items/FIX-REPO-1124-20261123/solution.md",
+    "evidence": [
+      "复用现有 CLI 校验、文件发布与快照摘要，见设计。"
+    ],
+    "completedAt": "2026-11-23T01:18:39.382Z"
+  },
+  "database": {
+    "impact": "none",
+    "status": "not-applicable",
+    "document": null,
+    "evidence": [
+      "仅文件、CLI、工作项证据和评测逻辑。"
+    ],
+    "completedAt": "2026-11-23T01:18:39.468Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/FIX-REPO-1124-20261123/plan.json",
+    "approved": true,
+    "approvalRef": "用户修复全部问题，范围按分析记录登记"
+  },
+  "verification": {
+    "status": "pending",
+    "evidence": [],
+    "stages": []
+  },
+  "review": {
+    "status": "pending",
+    "evidence": [],
+    "independent": false
+  },
+  "acceptance": {
+    "status": "pending",
+    "evidence": []
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "pending",
+    "evidence": []
+  },
+  "blocked": null,
+  "delivery": null,
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-11-23T01:18:38.800Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-11-23T01:18:38.894Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-11-23T01:18:39.295Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-11-23T01:18:39.909Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-11-23T01:18:39.996Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-11-23T01:18:38.800Z",
+  "updatedAt": "2026-11-23T01:18:40.084Z"
+}

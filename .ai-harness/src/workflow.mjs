@@ -1,6 +1,6 @@
 import path from "node:path";
 import { randomUUID } from "node:crypto";
-import { readFile, readdir, stat, truncate } from "node:fs/promises";
+import { readFile, readdir, realpath, stat, truncate } from "node:fs/promises";
 import {
   appendJsonLine,
   atomicWriteJson,
@@ -47,10 +47,32 @@ export async function loadConfig(root) {
   return readJson(path.join(root, ".ai-harness", "config.json"));
 }
 
+export async function listWorkItems(root, config) {
+  config ??= await loadConfig(root);
+  const directory = await resolveProjectPath(root, config.workItemsDirectory, { forWrite: true });
+  try {
+    const entries = await readdir(directory, { withFileTypes: true });
+    return entries.filter(entry => entry.isDirectory()).map(entry => entry.name).sort();
+  } catch (error) {
+    if (error.code === "ENOENT") return [];
+    throw error;
+  }
+}
+
+async function assertDirectoryId(directory, id) {
+  let actual;
+  try { actual = path.basename(await realpath(directory)); } catch (error) {
+    if (error.code === "ENOENT") return;
+    throw error;
+  }
+  invariant(actual === id, "WORK_ITEM_ID_MISMATCH", `工作项目录的准确 ID 是 ${actual}，收到 ${id}。`);
+}
+
 export async function workItemPaths(root, id, config) {
   invariant(WORK_ID_PATTERN.test(id || ""), "INVALID_WORK_ID", "工作项 ID 格式无效。" );
   config ??= await loadConfig(root);
   const directory = await resolveProjectPath(root, `${config.workItemsDirectory}/${id}`, { forWrite: true });
+  await assertDirectoryId(directory, id);
   return {
     directory,
     state: path.join(directory, "state.json"),
@@ -64,6 +86,9 @@ export async function workItemPaths(root, id, config) {
 export async function loadWorkItem(root, id, paths) {
   paths ??= await workItemPaths(root, id);
   const item = await readJson(paths.state);
+  if (typeof item?.id === "string" && item.id !== id) {
+    throw new HarnessError("WORK_ITEM_ID_MISMATCH", `工作项目录 ${id} 与状态中记录的 ID ${item.id} 不一致。`);
+  }
   assertValidWorkItem(item);
   return item;
 }
@@ -112,6 +137,7 @@ export async function createWorkItemState(root, options) {
   const item = createWorkItem(normalizedOptions);
   assertValidWorkItem(item);
   return withFileLock(paths.lock, async () => {
+    await assertDirectoryId(paths.directory, options.id);
     invariant(!(await exists(paths.state)), "WORK_ITEM_EXISTS", `工作项已存在：${options.id}`);
     await atomicWriteJson(paths.state, item);
     await appendEvent(paths, item.id, "work-item-created", { status: item.status, type: item.type });
@@ -135,11 +161,15 @@ async function assertNewProjectDocs(root, version) {
   }
 }
 
-async function mutateWorkItem(root, id, mutator) {
+async function withExistingWorkItem(root, id, action) {
   const paths = await workItemPaths(root, id);
-  return withFileLock(paths.lock, async () => {
-    const item = await readJson(paths.state);
-    assertValidWorkItem(item);
+  // Acquiring a lock creates its parent. A mistyped ID must not create an empty work item.
+  invariant(await exists(paths.state), "FILE_NOT_FOUND", `文件不存在：${paths.state}`);
+  return withFileLock(paths.lock, async () => action(await loadWorkItem(root, id, paths), paths));
+}
+
+async function mutateWorkItem(root, id, mutator) {
+  return withExistingWorkItem(root, id, async (item, paths) => {
     const result = await mutator(item, paths);
     item.updatedAt = nowIso();
     assertValidWorkItem(item);
@@ -149,10 +179,7 @@ async function mutateWorkItem(root, id, mutator) {
 }
 
 async function mutatePlan(root, id, mutator) {
-  const paths = await workItemPaths(root, id);
-  return withFileLock(paths.lock, async () => {
-    const item = await readJson(paths.state);
-    assertValidWorkItem(item);
+  return withExistingWorkItem(root, id, async (item, paths) => {
     const plan = await readJson(paths.plan);
     const { action, details, result } = await mutator(plan, item);
     plan.updatedAt = nowIso();
@@ -265,10 +292,7 @@ export async function setDatabaseDecision(root, id, { impact, document = null, e
 
 export async function initializePlan(root, id, { mode, rationale }) {
   invariant(["single", "multi"].includes(mode), "INVALID_PLAN_MODE", "计划模式必须是 single 或 multi。" );
-  const paths = await workItemPaths(root, id);
-  return withFileLock(paths.lock, async () => {
-    const item = await readJson(paths.state);
-    assertValidWorkItem(item);
+  return withExistingWorkItem(root, id, async (item, paths) => {
     invariant(item.type !== "ANALYSIS", "TYPE_MISMATCH", "ANALYSIS 不创建开发计划。" );
     invariant(mode !== "multi" || item.flags.includes("multi-agent"), "MULTI_AGENT_POLICY_REQUIRED", "multi 计划必须在工作项中启用 multi-agent 策略标志。" );
     invariant(["SOLUTION_DESIGN", "DATABASE_DESIGN"].includes(item.status), "WRONG_STAGE", "执行计划只能在技术/数据库设计完成后建立。" );
@@ -326,11 +350,8 @@ export async function approvePlan(root, id, approvalRef) {
 }
 
 export async function transitionWorkItem(root, id, target, reason = null) {
-  const paths = await workItemPaths(root, id);
-  return withFileLock(paths.lock, async () => {
-    const item = await readJson(paths.state);
+  return withExistingWorkItem(root, id, async (item, paths) => {
     const plan = (await exists(paths.plan)) ? await readJson(paths.plan) : null;
-    assertValidWorkItem(item);
     assertTransitionAllowed(item, target, reason);
     await assertTransitionGates(root, item, plan, target);
     const from = item.status;
@@ -461,11 +482,8 @@ export async function recordResult(root, id, { kind, status, summary, taskId = n
   } else {
     invariant(commandRef === null, "STAGE_COMMAND_NOT_ALLOWED", "--command 只能与验证子阶段一起使用。" );
   }
-  const paths = await workItemPaths(root, id);
-  return withFileLock(paths.lock, async () => {
-    const item = await readJson(paths.state);
+  return withExistingWorkItem(root, id, async (item, paths) => {
     const plan = (await exists(paths.plan)) ? await readJson(paths.plan) : null;
-    assertValidWorkItem(item);
     let task = null;
 
     if (taskId) {
@@ -624,7 +642,10 @@ export async function recoverWorkItemLock(root, id, { token, reason }) {
     }
     const errors = [];
     try {
-      for (const file of [paths.events, paths.evidence]) {
+      const item = await loadWorkItem(root, id, paths);
+      const plan = await loadPlan(root, id, { optional: true, paths });
+      // The shared evidence check verifies the full event history for versioned records.
+      for (const file of item.integrityVersion ? [paths.evidence] : [paths.events, paths.evidence]) {
         const raw = await readFile(file, "utf8").catch(error => { if (error.code === "ENOENT") return ""; throw error; });
         if (raw && !raw.endsWith("\n")) errors.push(`${path.basename(file)} 缺少完整行结束，保留原文件。`);
         for (const line of raw.split(/\r?\n/).filter(line => line.trim())) {
@@ -632,7 +653,6 @@ export async function recoverWorkItemLock(root, id, { token, reason }) {
           if (!entry || entry.workItemId !== id || typeof entry.id !== "string") errors.push(`${path.basename(file)} 存在归属或结构异常。`);
         }
       }
-      const item = await loadWorkItem(root, id), plan = await loadPlan(root, id, { optional: true });
       errors.push(...await collectProgressErrors(root, item, plan, { allowStale: true }));
       const { collectEvidenceErrors } = await import("./checker.mjs");
       errors.push(...await collectEvidenceErrors(root, item, plan));
@@ -645,11 +665,8 @@ export async function recoverWorkItemLock(root, id, { token, reason }) {
 
 export async function reopenWorkItem(root, id, { reason, replan = false, approvalRef = null }) {
   invariant(reason?.trim(), "REOPEN_REASON_REQUIRED", "返工必须说明原因。" );
-  const paths = await workItemPaths(root, id);
-  return withFileLock(paths.lock, async () => {
-    const item = await readJson(paths.state);
+  return withExistingWorkItem(root, id, async (item, paths) => {
     const plan = await readJson(paths.plan);
-    assertValidWorkItem(item);
     invariant(isDevelopmentType(item.type) && ["IMPLEMENTING", "VERIFYING", "CODE_REVIEW", "READY_FOR_ACCEPTANCE", "DONE"].includes(item.status), "WRONG_STAGE", "只能对已进入实施的开发工作返工。" );
     invariant(item.authorization.mode === "autonomous" || approvalRef?.trim(), "REOPEN_APPROVAL_REQUIRED", "此工作项返工需要实际批准引用。" );
     const revision = item.revision || 1;

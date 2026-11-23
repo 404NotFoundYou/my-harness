@@ -87,6 +87,15 @@ export async function saveSnapshot(root, directory, snapshot) {
   return { digest: snapshot.digest, document };
 }
 
+export function snapshotReader(root) {
+  const snapshots = new Map();
+  return reference => {
+    const key = JSON.stringify([reference?.digest, reference?.document]);
+    if (!snapshots.has(key)) snapshots.set(key, loadSnapshot(root, reference));
+    return snapshots.get(key);
+  };
+}
+
 export async function loadSnapshot(root, reference) {
   invariant(reference && /^[0-9a-f]{64}$/.test(reference.digest || "") && typeof reference.document === "string", "SNAPSHOT_REQUIRED", "缺少可验证的代码快照引用。" );
   const snapshot = await readJson(await resolveProjectPath(root, reference.document, { mustExist: true }));

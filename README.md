@@ -2,7 +2,7 @@
 
 可复制到新项目或已有项目的仓库内 AI 开发 Runtime。普通任务默认自主推进，流程随风险增加：模型负责方案判断，Runtime 负责状态、权限和验证证据。
 
-- 当前版本：`1.12.3`
+- 当前版本：`1.12.4`
 - 运行要求：Node.js 20+、Git
 - 依赖：仅 Node.js 标准库，不修改目标项目依赖清单
 - 用户使用指南：[docs/guides/getting-started.md](docs/guides/getting-started.md)

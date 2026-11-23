@@ -1,0 +1,115 @@
+TAP version 13
+# warning: in the working copy of 'AGENTS.md', LF will be replaced by CRLF the next time Git touches it
+# warning: in the working copy of 'CLAUDE.md', LF will be replaced by CRLF the next time Git touches it
+# warning: in the working copy of 'GEMINI.md', LF will be replaced by CRLF the next time Git touches it
+# Subtest: a downstream upgrade owns the previewed changes and passes its installed suite and merge gate
+not ok 1 - a downstream upgrade owns the previewed changes and passes its installed suite and merge gate
+  ---
+  duration_ms: 125904.908
+  type: 'test'
+  location: 'D:\\Projects\\my-harness\\benchmarks\\tests\\installed-runtime.mjs:14:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    {
+      "schemaVersion": 1,
+      "id": "61678283-28e1-4723-ab55-6da55a770b31",
+      "workItemId": "UPGRADE",
+      "taskId": "T1",
+      "revision": 1,
+      "taskAttempt": 1,
+      "kind": "command",
+      "status": "fail",
+      "summary": "node .ai-harness/tests/run.mjs",
+      "timestamp": "2026-11-23T01:35:52.961Z",
+      "command": {
+        "executable": "node",
+        "args": [
+          ".ai-harness/tests/run.mjs"
+        ],
+        "launch": {
+          "executable": "D:\\Program Files\\nodejs\\node.exe",
+          "args": [
+            ".ai-harness/tests/run.mjs"
+          ]
+        },
+        "checkIds": [
+          {
+            "taskId": "T1",
+            "checkId": "V1"
+          }
+        ],
+        "planDigest": "051e2a7293864bba87cf5069c0697da55ecc4641e1731add27da64dc76ebd132",
+        "source": {
+          "digest": "eb9ba7ac9b82c93e435e1cdde9984d2458325d228dbcd056f3e0ac78d873e14a",
+          "document": ".ai-harness/work-items/UPGRADE/snapshots/eb9ba7ac9b82c93e435e1cdde9984d2458325d228dbcd056f3e0ac78d873e14a.json"
+        },
+        "sourceAfter": {
+          "digest": "eb9ba7ac9b82c93e435e1cdde9984d2458325d228dbcd056f3e0ac78d873e14a",
+          "document": ".ai-harness/work-items/UPGRADE/snapshots/eb9ba7ac9b82c93e435e1cdde9984d2458325d228dbcd056f3e0ac78d873e14a.json"
+        },
+        "cwd": ".",
+        "policy": {
+          "decision": "allow",
+          "rule": "verified-command",
+          "reason": "命令属于允许的构建、检查或测试范围。"
+        },
+        "exitCode": 1,
+        "signal": null,
+        "timedOut": false,
+        "timeoutMs": 600000,
+        "checkTimeoutMs": 600000,
+        "outputLimitBytes": 16777216,
+        "outputLimitExceeded": false,
+        "failureReason": "exit-code",
+        "durationMs": 123103,
+        "stdout": {
+          "text": "TAP version 13\n# Subtest: explicit acceptance mappings reject missing intent before creating work and retain current command identity\nok 1 - explicit acceptance mappings reject missing intent before creating work and retain current command identity\n  ---\n  duration_ms: 7474.8492\n  type: 'test'\n  ...\n# Subtest: archived evidence survives regeneration but tampering prevents completion\nok 2 - archived evidence survives regeneration but tampering prevents completion\n  ---\n  duration_ms: 9999.1082\n  type: 'test'\n  ...\n# Subtest: 1124: approved deferral remains visible without counting its checks as executable\nok 3 - 1124: approved deferral remains visible without counting its checks as executable\n  ---\n  duration_ms: 0.8117\n  type: 'test'\n  ...\n# Subtest: ANALYSIS records an allow command and binds its current evidence without a plan\nok 4 - ANALYSIS records an allow command and binds its current evidence without a plan\n  ---\n  duration_ms: 6767.5652\n  type: 'test'\n  ...\n# Subtest: ANALYSIS rejects task/check bindings and commands outside the allow policy\nok 5 - ANALYSIS rejects task/check bindings and commands outside the allow policy\n  ---\n  duration_ms: 3319.2575\n  type: 'test'\n  ...\n# Subtest: ANALYSIS rejects write-capable test commands before they can change product source\nok 6 - ANALYSIS rejects write-capable test commands before they can change product source\n  ---\n  duration_ms: 3192.4793\n  type: 'test'\n  ...\n# Subtest: ANALYSIS command evidence becomes stale after a later product edit\nok 7 - ANALYSIS command evidence becomes stale after a later product edit\n  ---\n  duration_ms: 4141.2796\n  type: 'test'\n  ...\n# Subtest: ANSWERED analysis preserves its historical command after a later source commit but rejects tampering\nok 8 - ANSWERED analysis preserves its historical command after a later source commit but rejects tampering\n  ---\n  duration_ms: 6480.3464\n  type: 'test'\n  ...\n# Subtest: legacy ANSWERED analysis remains auditable when the baseline predates its cited command\nok 9 - legacy ANSWERED analysis remains auditable when the baseline predates its cited command\n  ---\n  duration_ms: 5356.3659\n  type: 'test'\n  ...\n# Subtest: BUGFIX 走 static→sandbox→reproduction→regression 真跑流水线并完成\nok 10 - BUGFIX 走 static→sandbox→reproduction→regression 真跑流水线并完成\n  ---\n  duration_ms: 20650.1434\n  type: 'test'\n  ...\n# Subtest: reproduction 缺 --command 被拒绝\nok 11 - reproduction 缺 --command 被拒绝\n  ---\n  duration_ms: 6193.658\n  type: 'test'\n  ...\n# Subtest: reproduction 引用失败命令而记为 pass 被拒绝\nok 12 - reproduction 引用失败命令而记为 pass 被拒绝\n  ---\n  duration_ms: 7387.9659\n  type: 'test'\n  ...\n# Subtest: BUGFIX 裸 verification 记录被拒绝\nok 13 - BUGFIX 裸 verification 记录被拒绝\n  ---\n  duration_ms: 4203.6248\n  type: 'test'\n  ...\n# Subtest: BUGFIX 缺 regression 段无法进入 CODE_REVIEW\nok 14 - BUGFIX 缺 regression 段无法进入 CODE_REVIEW\n  ---\n  duration_ms: 6888.0665\n  type: 'test'\n  ...\n# Subtest: BUGFIX + frontend 时 browser 段亦必需\nok 15 - BUGFIX + frontend 时 browser 段亦必需\n  ---\n  duration_ms: 8635.5497\n  type: 'test'\n  ...\n# Subtest: BUGFIX 类型确定性路由到 verification 策略\nok 16 - BUGFIX 类型确定性路由到 verification 策略\n  ---\n  duration_ms: 567.2042\n  type: 'test'\n  ...\n# Subtest: doctor reports a concise Git summary without baseline fingerprints\nok 17 - doctor reports a concise Git summary without baseline fingerprints\n  ---\n  duration_ms: 4083.7448\n  type: 'test'\n  ...\n# Subtest: doctor bounds dirty path output while retaining exact totals\nok 18 - doctor bounds dirty path output while retaining exact totals\n  ---\n  duration_ms: 1811.4006\n  type: 'test'\n  ...\n# Subtest: first adoption owns only the committed installation, including the managed part of existing rules\nok 19 - first adoption owns only the committed installation, including the managed part of existing rules\n  ---\n  duration_ms: 13274.2467\n  type: 'test'\n  ...\n# Subtest: legacy receipts cannot claim an initial installation delivery\nok 20 - legacy receipts cannot claim an initial installation delivery\n  ---\n  duration_ms: 4678.5628\n  type: 'test'\n  ...\n# Subtest: doctor accepts managed AGENTS with byte-preserved compatible adapters\nok 21 - doctor accepts managed AGENTS with byte-preserved compatible adapters\n  ---\n  duration_ms: 1871.566\n  type: 'test'\n  ...\n# Subtest: doctor fails when managed instruction content is modified\nok 22 - doctor fails when managed instruction content is modified\n  ---\n  duration_ms: 1233.7757\n  type: 'test'\n  ...\n# Subtest: CI rejects every non-terminal work item including BLOCKED\nok 23 - CI rejects every non-terminal work item including BLOCKED\n  ---\n  duration_ms: 1476.9775\n  type: 'test'\n  ...\n# Subtest: check rejects result references that do not exist in evidence JSONL\nok 24 - check rejects result references that do not exist in evidence JSONL\n  ---\n  duration_ms: 2484.2545\n  type: 'test'\n  ...\n# Subtest: check rejects policy files that do not match type and flags\nok 25 - check rejects policy files that do not match type and flags\n  ---\n  duration_ms: 1416.1671\n  type: 'test'\n  ...\n# Subtest: CI checks the selected commit range even when the checkout is clean\nok 26 - CI checks the selected commit range even when the checkout is clean\n  ---\n  duration_ms: 2193.6319\n  type: 'test'\n  ...\n# Subtest: CI accepts a declared existing-doc edit and binds it to the committed content\nok 27 - CI accepts a declared existing-doc edit and binds it to the committed content\n  ---\n  duration_ms: 6019.0179\n  type: 'test'\n  ...\n# Subtest: invalid check flags cannot silently select a less strict check\nok 28 - invalid check flags cannot silently select a less strict check\n  ---\n  duration_ms: 1250.3936\n  type: 'test'\n  ...\n# Subtest: blank required documentation cannot establish a new project baseline\nok 29 - blank required documentation cannot establish a new project baseline\n  ---\n  duration_ms: 2384.2994\n  type: 'test'\n  ...\n# Subtest: review fixes: check reads one configuration per invocation, and honors changes between invocations\nok 30 - review fixes: check reads one configuration per invocation, and honors changes between invocations\n  ---\n  duration_ms: 2182.9308\n  type: 'test'\n  ...\n# Subtest: 1124: CI requires an owned complete event history, and rechecks a shared snapshot on the next invocation\nok 31 - 1124: CI requires an owned complete event history, and rechecks a shared snapshot on the next invocation\n  ---\n  duration_ms: 11606.1467\n  type: 'test'\n  ...\n# Subtest: 1124: wrong work item identity cannot change records, including case aliases on Windows\nok 32 - 1124: wrong work item identity cannot change records, including case aliases on Windows\n  ---\n  duration_ms: 578.1585\n  type: 'test'\n  ...\n# Subtest: finish command help is side-effect free and does not require a project\nok 33 - finish command help is side-effect free and does not require a project\n  ---\n  duration_ms: 363.3956\n  type: 'test'\n  ...\n# Subtest: installed CLI supports compact ITERATION and preserves its CI gate\nok 34 - installed CLI supports compact ITERATION and preserves its CI gate\n  ---\n  duration_ms: 21177.7144\n  type: 'test'\n  ...\n# Subtest: installed CLI supports compact BUGFIX and preserves its CI gate\nok 35 - installed CLI supports compact BUGFIX and preserves its CI gate\n  ---\n  duration_ms: 17307.9171\n  type: 'test'\n  ...\n# Subtest: CLI guard uses stable allow, ask and deny exit codes\nok 36 - CLI guard uses stable allow, ask and deny exit codes\n  ---\n  duration_ms: 509.1933\n  type: 'test'\n  ...\n# Subtest: run --all infers one executable task but rejects zero or multiple candidates\nok 37 - run --all infers one executable task but rejects zero or multiple candidates\n  ---\n  duration_ms: 4703.5333\n  type: 'test'\n  ...\n# Subtest: installed CLI records and binds ANALYSIS command evidence\nok 38 - installed CLI records and binds ANALYSIS command evidence\n  ---\n  duration_ms: 4693.1546\n  type: 'test'\n  ...\n# Subtest: invalid preview, confirmation and target options fail before touching the target\nok 39 - invalid preview, confirmation and \n… output truncated …\nest: source identity survives staging but detects edits, deletion and renamed Unicode paths\nok 197 - source identity survives staging but detects edits, deletion and renamed Unicode paths\n  ---\n  duration_ms: 9065.464\n  type: 'test'\n  ...\n# Subtest: control records do not stale product verification and snapshot tampering fails\nok 198 - control records do not stale product verification and snapshot tampering fails\n  ---\n  duration_ms: 3454.5124\n  type: 'test'\n  ...\n# Subtest: structured input preserves arrays, Unicode and literal comma paths without creating partial work\nok 199 - structured input preserves arrays, Unicode and literal comma paths without creating partial work\n  ---\n  duration_ms: 7655.0792\n  type: 'test'\n  ...\n# Subtest: CLI judgment parameters fill only empty spec fields through literal Windows-safe arguments\nok 200 - CLI judgment parameters fill only empty spec fields through literal Windows-safe arguments\n  ---\n  duration_ms: 3917.2705\n  type: 'test'\n  ...\n# Subtest: spec and legacy definition options cannot silently override each other\nok 201 - spec and legacy definition options cannot silently override each other\n  ---\n  duration_ms: 1920.6424\n  type: 'test'\n  ...\n# Subtest: database policy follows confirmed impact while legacy routing and explicit flags remain intact\nok 202 - database policy follows confirmed impact while legacy routing and explicit flags remain intact\n  ---\n  duration_ms: 2.1066\n  type: 'test'\n  ...\n# Subtest: BUGFIX CLI judgments fill an immutable template without claiming completed verification\nok 203 - BUGFIX CLI judgments fill an immutable template without claiming completed verification\n  ---\n  duration_ms: 2516.4639\n  type: 'test'\n  ...\n# Subtest: missing or conflicting BUGFIX judgments are rejected before partial work is created\nok 204 - missing or conflicting BUGFIX judgments are rejected before partial work is created\n  ---\n  duration_ms: 4701.6965\n  type: 'test'\n  ...\n# Subtest: check budgets are bounded without adding fields to historical definitions\nok 205 - check budgets are bounded without adding fields to historical definitions\n  ---\n  duration_ms: 4.5048\n  type: 'test'\n  ...\n# Subtest: spec, run-all, guide and repeated finish preserve distinct approved budgets\nok 206 - spec, run-all, guide and repeated finish preserve distinct approved budgets\n  ---\n  duration_ms: 22750.3616\n  type: 'test'\n  ...\n# Subtest: a long planned check can finish while a direct command retains the short global limit\nok 207 - a long planned check can finish while a direct command retains the short global limit\n  ---\n  duration_ms: 7016.45\n  type: 'test'\n  ...\n# Subtest: a longer budget's success cannot hide a shorter budget's failure\nok 208 - a longer budget's success cannot hide a shorter budget's failure\n  ---\n  duration_ms: 5489.4695\n  type: 'test'\n  ...\n# Subtest: changing a budget requires new evidence and replan retains the prior revision\nok 209 - changing a budget requires new evidence and replan retains the prior revision\n  ---\n  duration_ms: 12311.7027\n  type: 'test'\n  ...\n# Subtest: explicit budget evidence must agree with the actual timeout while historical evidence stays valid\nok 210 - explicit budget evidence must agree with the actual timeout while historical evidence stays valid\n  ---\n  duration_ms: 4823.6502\n  type: 'test'\n  ...\n# Subtest: a stored legacy plan with an invalid budget is rejected before starting its command\nok 211 - a stored legacy plan with an invalid budget is rejected before starting its command\n  ---\n  duration_ms: 1301.0912\n  type: 'test'\n  ...\n# Subtest: state transition graph blocks skipped gates\nok 212 - state transition graph blocks skipped gates\n  ---\n  duration_ms: 15.303\n  type: 'test'\n  ...\n# Subtest: plan validator catches cycles and missing independent review\nok 213 - plan validator catches cycles and missing independent review\n  ---\n  duration_ms: 5.2196\n  type: 'test'\n  ...\n# Subtest: multi-agent plan rejects overlapping unordered write scopes\nok 214 - multi-agent plan rejects overlapping unordered write scopes\n  ---\n  duration_ms: 2.4997\n  type: 'test'\n  ...\n# Subtest: scope matching is deterministic\nok 215 - scope matching is deterministic\n  ---\n  duration_ms: 1.5614\n  type: 'test'\n  ...\n# Subtest: review fixes: only unordered tasks that can write the same file conflict\nok 216 - review fixes: only unordered tasks that can write the same file conflict\n  ---\n  duration_ms: 5.5134\n  type: 'test'\n  ...\n# Subtest: codegen+frontend 工作项只有五段流水线全部按序通过才能进入 CODE_REVIEW 并完成\nok 217 - codegen+frontend 工作项只有五段流水线全部按序通过才能进入 CODE_REVIEW 并完成\n  ---\n  duration_ms: 17708.6917\n  type: 'test'\n  ...\n# Subtest: codegen 但无 frontend 时 browser 子阶段可选，前四段通过即可聚合为 pass\nok 218 - codegen 但无 frontend 时 browser 子阶段可选，前四段通过即可聚合为 pass\n  ---\n  duration_ms: 6358.4427\n  type: 'test'\n  ...\n# Subtest: 乱序记录子阶段被确定性拒绝\nok 219 - 乱序记录子阶段被确定性拒绝\n  ---\n  duration_ms: 4632.5196\n  type: 'test'\n  ...\n# Subtest: codegen+frontend 缺 browser 段时无法进入 CODE_REVIEW\nok 220 - codegen+frontend 缺 browser 段时无法进入 CODE_REVIEW\n  ---\n  duration_ms: 6033.1499\n  type: 'test'\n  ...\n# Subtest: codegen 工作项禁止用裸 verification 记录绕过流水线\nok 221 - codegen 工作项禁止用裸 verification 记录绕过流水线\n  ---\n  duration_ms: 3778.3448\n  type: 'test'\n  ...\n# Subtest: check 拒绝子阶段状态与证据不一致的手改 state\nok 222 - check 拒绝子阶段状态与证据不一致的手改 state\n  ---\n  duration_ms: 4611.9249\n  type: 'test'\n  ...\n# Subtest: codegen 标志确定性路由到 verification 策略\nok 223 - codegen 标志确定性路由到 verification 策略\n  ---\n  duration_ms: 585.1016\n  type: 'test'\n  ...\n# Subtest: record 命令解析 --stage 参数\nok 224 - record 命令解析 --stage 参数\n  ---\n  duration_ms: 0.5686\n  type: 'test'\n  ...\n# Subtest: iteration completes only through solution, database, plan, task, review and acceptance gates\nok 225 - iteration completes only through solution, database, plan, task, review and acceptance gates\n  ---\n  duration_ms: 13716.6926\n  type: 'test'\n  ...\n# Subtest: analysis uses evidence statuses and ends at ANSWERED without development gates\nok 226 - analysis uses evidence statuses and ends at ANSWERED without development gates\n  ---\n  duration_ms: 1486.6359\n  type: 'test'\n  ...\n# Subtest: new projects require an approved architecture source\nok 227 - new projects require an approved architecture source\n  ---\n  duration_ms: 1865.2525\n  type: 'test'\n  ...\n# Subtest: bug fixes require actual, expected and reproduction details\nok 228 - bug fixes require actual, expected and reproduction details\n  ---\n  duration_ms: 749.0625\n  type: 'test'\n  ...\n# Subtest: flags deterministically select policy files\nok 229 - flags deterministically select policy files\n  ---\n  duration_ms: 680.9572\n  type: 'test'\n  ...\n# Subtest: required database impact cannot reach planning before design completes\nok 230 - required database impact cannot reach planning before design completes\n  ---\n  duration_ms: 1396.0333\n  type: 'test'\n  ...\n# Subtest: result evidence cannot be recorded before its workflow stage\nok 231 - result evidence cannot be recorded before its workflow stage\n  ---\n  duration_ms: 739.6532\n  type: 'test'\n  ...\n# Subtest: multi-agent plans require the multi-agent policy flag\nok 232 - multi-agent plans require the multi-agent policy flag\n  ---\n  duration_ms: 1254.2822\n  type: 'test'\n  ...\n# Subtest: development baselines require an initial Git commit\nok 233 - development baselines require an initial Git commit\n  ---\n  duration_ms: 1557.4727\n  type: 'test'\n  ...\n# Subtest: review fixes: rejected and interrupted plan additions leave the plan and audit trail untouched\nok 234 - review fixes: rejected and interrupted plan additions leave the plan and audit trail untouched\n  ---\n  duration_ms: 1371.8643\n  type: 'test'\n  ...\n1..234\n# tests 234\n# suites 0\n# pass 233\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 122998.0808\n",
+          "bytes": 52085,
+          "truncated": true,
+          "complete": true,
+          "sha256": "402b906461bf24b647cb6650ea236f640545f37761846d498ebabc9595b9e8de",
+          "artifact": ".ai-harness/work-items/UPGRADE/outputs/61678283-28e1-4723-ab55-6da55a770b31-stdout.txt",
+          "artifactSha256": "402b906461bf24b647cb6650ea236f640545f37761846d498ebabc9595b9e8de"
+        },
+        "stderr": {
+          "text": "",
+          "bytes": 0,
+          "truncated": false,
+          "complete": true,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "spawnError": null,
+        "timing": {
+          "preparationMs": 196,
+          "executionMs": 123103,
+          "evidencePreparationMs": 206,
+          "observedMs": 123505,
+          "through": "before-evidence-append",
+          "limitation": "不含进程启动、证据最终追加和状态保存；完整CLI区间由客户端事件计时。"
+        }
+      }
+    }
+    
+    
+    1 !== 0
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 0
+  actual: 1
+  operator: 'strictEqual'
+  stack: |-
+    cli (file:///D:/Projects/my-harness/benchmarks/tests/installed-runtime.mjs:22:12)
+    TestContext.<anonymous> (file:///D:/Projects/my-harness/benchmarks/tests/installed-runtime.mjs:50:19)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 0
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 125974.4566

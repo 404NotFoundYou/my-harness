@@ -1,4 +1,4 @@
-import { readdir, readFile, stat } from "node:fs/promises";
+import { readFile, stat } from "node:fs/promises";
 import path from "node:path";
 import {
   aggregateVerificationStatus,
@@ -11,10 +11,11 @@ import { getGitBaseline } from "./git.mjs";
 import { exists, readJson } from "./filesystem.mjs";
 import { inspectManagedBlock, normalizeManagedBody } from "./managed-block.mjs";
 import { collectPlanErrors, collectProgressErrors } from "./validator.mjs";
+import { snapshotReader } from "./snapshot.mjs";
 import { collectScopeErrors } from "./scope.mjs";
 import { itemPolicyFiles } from "./policy-routing.mjs";
 import { assertEvidenceArtifacts } from "./artifacts.mjs";
-import { loadConfig, loadPlan, loadWorkItem, workItemPaths } from "./workflow.mjs";
+import { listWorkItems, loadConfig, loadPlan, loadWorkItem, workItemPaths } from "./workflow.mjs";
 
 const CHANGED_FILES_PREVIEW_LIMIT = 50;
 
@@ -164,20 +165,60 @@ export async function doctorProject(root, { requireInitialized = true, config } 
   return { ok: errors.length === 0, errors, warnings, details };
 }
 
-async function workItemIds(root, config) {
-  const directory = path.join(root, config.workItemsDirectory);
-  if (!(await exists(directory))) return [];
-  const entries = await readdir(directory, { withFileTypes: true });
-  return entries.filter((entry) => entry.isDirectory()).map((entry) => entry.name).sort();
-}
-
 function stateRequiresCompletePlan(status) {
   return ["PLANNED", "IMPLEMENTING", "VERIFYING", "CODE_REVIEW", "READY_FOR_ACCEPTANCE", "DONE"].includes(status);
 }
 
+function eventTransition(event) {
+  switch (event.action) {
+    case "work-item-created":
+      return { from: null, to: event.status, reason: "work-item-created" };
+    case "state-transition":
+      return { from: event.from, to: event.to, reason: event.from === "BLOCKED" ? "unblocked" : event.reason || "gate-passed" };
+    case "work-item-reopened":
+    case "work-item-replanned":
+      return { from: event.from, to: event.to, reason: event.reason, revision: event.revision,
+        action: event.action === "work-item-reopened" ? "reopen" : "replan" };
+    default:
+      return null;
+  }
+}
+
+async function collectEventLogErrors(item, paths) {
+  if (!item.integrityVersion) return [];
+  let raw;
+  try { raw = await readFile(paths.events, "utf8"); } catch (error) {
+    return [`events.jsonl 无法读取：${error.message}`];
+  }
+  if (!raw.endsWith("\n")) return ["events.jsonl 为空或缺少完整行结束。"];
+  const ids = new Set();
+  let historyIndex = 0;
+  for (const [index, line] of raw.slice(0, -1).split(/\r?\n/).entries()) {
+    const location = `events.jsonl:${index + 1}`;
+    let event;
+    try { event = JSON.parse(line); } catch { return [`${location} 不是有效 JSON。`]; }
+    if (event?.schemaVersion !== 1 || event.workItemId !== item.id || typeof event.id !== "string" || !event.id.trim() ||
+        typeof event.action !== "string" || !event.action.trim() || typeof event.timestamp !== "string" || !Number.isFinite(Date.parse(event.timestamp))) {
+      return [`${location} 的事件标识、归属、动作或时间无效。`];
+    }
+    if (ids.has(event.id)) return [`${location} 包含重复事件 ID：${event.id}`];
+    ids.add(event.id);
+    if ((index === 0) !== (event.action === "work-item-created") || (index === 0 && event.type !== item.type)) {
+      return [`${location} 与工作项创建记录不一致。`];
+    }
+    const transition = eventTransition(event);
+    if (!transition) continue;
+    const history = item.history[historyIndex++];
+    if (!history || ["from", "to", "reason", "action", "revision"].some(key => history[key] !== transition[key])) {
+      return [`${location} 与 history[${historyIndex - 1}] 的状态迁移不一致。`];
+    }
+  }
+  return historyIndex === item.history.length ? [] : ["events.jsonl 缺少状态历史中的迁移。"];
+}
+
 async function inspectEvidence(root, item, plan, paths, config) {
-  const errors = [];
   paths ??= await workItemPaths(root, item.id, config);
+  const errors = await collectEventLogErrors(item, paths);
   let raw = "";
   try {
     raw = await readFile(paths.evidence, "utf8");
@@ -293,7 +334,8 @@ export async function checkProject(root, { ci = false, base = null } = {}) {
   const policyIndex = await readJson(path.join(root, ".ai-harness", "policies", "index.json"));
   const records = [];
   const items = [];
-  const ids = await workItemIds(root, config);
+  const readSnapshot = snapshotReader(root);
+  const ids = await listWorkItems(root, config);
   for (const id of ids) {
     try {
       const paths = await workItemPaths(root, id, config);
@@ -306,7 +348,7 @@ export async function checkProject(root, { ci = false, base = null } = {}) {
       const plan = await loadPlan(root, id, { optional: true, paths });
       const evidence = await inspectEvidence(root, item, plan, paths, config);
       errors.push(...evidence.errors.map((message) => `${id}: ${message}`));
-      const progressErrors = await collectProgressErrors(root, item, plan, { events: evidence.events, config });
+      const progressErrors = await collectProgressErrors(root, item, plan, { events: evidence.events, config, readSnapshot });
       errors.push(...progressErrors.map((message) => `${id}: ${message}`));
       if (plan) {
         const planErrors = collectPlanErrors(plan, id, { requireComplete: item.plan.approved || stateRequiresCompletePlan(item.status) });
@@ -320,7 +362,7 @@ export async function checkProject(root, { ci = false, base = null } = {}) {
       if (error.details?.errors) errors.push(...error.details.errors.map((message) => `${id}: ${message}`));
     }
   }
-  const scope = await collectScopeErrors(root, records, items, { base, config });
+  const scope = await collectScopeErrors(root, records, items, { base, config, readSnapshot });
   errors.push(...scope.errors);
   warnings.push(...scope.warnings);
   if (ci) {
