@@ -1,0 +1,163 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 2,
+  "id": "BUGFIX-QUALITY-20261127",
+  "type": "BUGFIX",
+  "title": "修复合并回放、晚到证据、评测自测与两个契约偏差",
+  "status": "IMPLEMENTING",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/bugfix.md",
+    ".ai-harness/policies/verification.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "当前用户明确要求修复上述五个问题，项目契约要求并发变更独立审查"
+  },
+  "input": {
+    "references": [
+      "ANALYSIS-QUALITY-1130-20261127"
+    ],
+    "acceptance": [
+      "基准检查覆盖历次已验收交付并拒绝无归属变更，过期命令可追溯且不推翻当前验收，核心评测执行并判定新增自测，轻量规则吻合CI，自定义工作项目录可读且兼容既有记录"
+    ],
+    "nonGoals": [],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": {
+    "actual": "已完成修订和晚到命令会破坏交付归属或有效性；固定公共测试代替新增自测；机械编辑说明和计划路径与实际不符",
+    "expected": "合并范围和命令证据只承认对应修订的有效交付和检查，评测及路径与公开契约一致",
+    "reproduction": "以历史变更基准及隔离Git/命令/评测/安装夹具还原五项分析记录"
+  },
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "main@27ffcc55，分发与受测源码初始干净，9个既有分析目录保留，五项既有证据见分析工作项。"
+    ],
+    "completedAt": "2026-11-27T03:02:36.125Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "27ffcc55b73b304e51b393c7f69c3312596970e8",
+      "dirty": false,
+      "changedFiles": [],
+      "fingerprints": {},
+      "source": {
+        "digest": "242baf9a791fc516b5c7ea61e08acea7d1e538a39eae2d82c39af1b39b8036af",
+        "document": ".ai-harness/work-items/BUGFIX-QUALITY-20261127/snapshots/242baf9a791fc516b5c7ea61e08acea7d1e538a39eae2d82c39af1b39b8036af.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": ".ai-harness/work-items/ANALYSIS-QUALITY-1130-20261127/state.json",
+    "evidence": [
+      "按基准及当前工作项历史验真并回放每个有效交付，命令落锁后检查所属上下文并保留过期事件，独立执行可选自测并冻结评分规则，收窄轻量规则，计划路径以配置解析并兼容旧记录。"
+    ],
+    "completedAt": "2026-11-27T03:02:36.421Z"
+  },
+  "database": {
+    "impact": "none",
+    "status": "not-applicable",
+    "document": null,
+    "evidence": [
+      "只涉及Git、JSON文件、命令证据和本地评测，无数据库、迁移或查询。"
+    ],
+    "completedAt": "2026-11-27T03:02:36.517Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/BUGFIX-QUALITY-20261127/plan.json",
+    "approved": true,
+    "approvalRef": "当前用户授权修复五项；评分统计与审计需一致"
+  },
+  "verification": {
+    "status": "pending",
+    "evidence": [],
+    "stages": []
+  },
+  "review": {
+    "status": "pending",
+    "evidence": [],
+    "independent": false
+  },
+  "acceptance": {
+    "status": "pending",
+    "evidence": []
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "pending",
+    "evidence": []
+  },
+  "blocked": null,
+  "delivery": null,
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-11-27T03:01:00.775Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-11-27T03:02:35.902Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-11-27T03:02:36.318Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-11-27T03:02:37.044Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-11-27T03:02:37.140Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-11-27T03:10:23.129Z",
+      "reason": "评测代码核对发现组间共同交付率在统计与配对报告中独立重算。按新的自测执行证据同步这两个入口，沿用原有专项与全量验证。",
+      "action": "replan",
+      "revision": 2
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-11-27T03:10:23.546Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-11-27T03:10:23.642Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-11-27T03:01:00.775Z",
+  "updatedAt": "2026-11-27T03:10:23.740Z"
+}

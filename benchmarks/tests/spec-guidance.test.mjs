@@ -64,7 +64,7 @@ test("core Harness group gets exact public paths/checks while risk and approach 
   }finally{await cleanup(directory);}
 });
 
-test("CLI judgments complete core Harness with one begin, run, finish and check without editing spec",async()=>{
+test("quality-contract: CLI judgments complete core Harness with one begin, run, finish and check without editing spec",async()=>{
   const directory=await temporary(),task=tasks[0],group=groups("fixture","reference")[1];
   try{
     const result=await runCase({task,group,sourceRoot,outputDirectory:path.join(directory,"run"),driver:async({root,outputDirectory})=>{
@@ -80,7 +80,8 @@ test("CLI judgments complete core Harness with one begin, run, finish and check 
       const guide=cli(root,["guide","--id",definition.id,"--task","T1","--brief","--json"]);
       assert.equal(guide.next.code,"implement-and-verify");
       await writeFile(path.join(root,task.entry),task.reference);
-      await writeFile(path.join(root,"test/extra.test.mjs"),'import assert from "node:assert/strict";\nassert.equal(2 + 2, 4);\n');
+      await writeFile(path.join(root,"test/extra.test.mjs"),'import assert from "node:assert/strict"; import {parseCsv} from "../src/csv.mjs"; assert.deepEqual(parseCsv("x,,"), [["x","",""]]);');
+      assert.equal(cli(root,["run","--id",definition.id,"--task","T1","--json","--","node","--test","test/extra.test.mjs"]).status,"pass");
       const verified=cli(root,["run","--id",definition.id,"--all","--json"]);
       assert.equal(verified.status,"pass");
       const completed=cli(root,["finish","--id",definition.id,"--verification","公共测试真实通过","--review","检查代码与公开契约","--documentation","N/A: 固定公开文档没有变化","--acceptance","公开测试和规格均已检查", "--cleanup", "none=隔离源码夹具未产生旧包","--json"]);
@@ -92,6 +93,7 @@ test("CLI judgments complete core Harness with one begin, run, finish and check 
       await writeFile(path.join(outputDirectory,"events.jsonl"),'{"type":"synthetic"}\n');
       return synthetic();
     }});
+    assert.equal(result.extraTest?.status,"passed");
     assert.equal(result.success,true);
     assert.equal(result.grade.ok,true);
     assert.equal(result.workflow.ok,true);
@@ -261,3 +263,20 @@ for (const mutation of ["edit", "delete", "linked-type"]) {
     } finally { context.mock.restoreAll(); syncBuiltinESMExports(); await cleanup(directory); }
   });
 }
+
+test("quality-contract: failing optional core tests prevent delivery while hidden scoring stays independent", async () => {
+  const directory = await temporary(), task = tasks[0], group = groups("fixture", "reference")[0];
+  try {
+    for (const added of [true, false]) {
+      const result = await runCase({ task, group, sourceRoot, outputDirectory: path.join(directory, String(added)), driver: async ({root}) => {
+        await writeFile(path.join(root, task.entry), task.reference);
+        if (added) await writeFile(path.join(root, "test/extra.test.mjs"), 'import {test} from "node:test"; test("optional", () => { throw Error("failed assertion"); });');
+        return synthetic();
+      }});
+      assert.equal(result.grade.ok, true);
+      assert.equal(result.success, !added);
+      assert.equal(result.extraTest.status, added ? "failed" : "not-added");
+      assert.equal(result.falseCompletion, added);
+    }
+  } finally { await cleanup(directory); }
+});

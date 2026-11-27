@@ -28,7 +28,7 @@ import {
   WORK_ID_PATTERN,
   WORK_TYPES,
 } from "./constants.mjs";
-import { createPlan, createReviewBatch, createTask, createWorkItem } from "./model.mjs";
+import { createPlan, createReviewBatch, createTask, createWorkItem, workItemPlanPath } from "./model.mjs";
 import { assertAcceptanceCoverage, assertAnalysisCommandEvidence, assertCommandEvidence, assertVerification, hasFailedReview, invalidateResults, planDigest, readEvidence } from "./verification.mjs";
 import { captureArtifacts } from "./artifacts.mjs";
 import { saveSnapshot, sourceSnapshot } from "./snapshot.mjs";
@@ -76,6 +76,7 @@ export async function workItemPaths(root, id, config) {
   await assertDirectoryId(directory, id);
   return {
     directory,
+    relativePlan: workItemPlanPath(id, config.workItemsDirectory),
     state: path.join(directory, "state.json"),
     plan: path.join(directory, "plan.json"),
     evidence: path.join(directory, "evidence.jsonl"),
@@ -90,7 +91,9 @@ export async function loadWorkItem(root, id, paths) {
   if (typeof item?.id === "string" && item.id !== id) {
     throw new HarnessError("WORK_ITEM_ID_MISMATCH", `工作项目录 ${id} 与状态中记录的 ID ${item.id} 不一致。`);
   }
-  assertValidWorkItem(item);
+  // Versions through 1.13 published the default path even in custom directories.
+  if (item.plan?.path === workItemPlanPath(id)) item.plan.path = paths.relativePlan;
+  assertValidWorkItem(item, paths.relativePlan);
   return item;
 }
 
@@ -168,6 +171,7 @@ export async function createWorkItemState(root, options) {
   const paths = await workItemPaths(root, options.id);
   const normalizedOptions = {
     ...options,
+    planPath: paths.relativePlan,
     version: options.version || (options.type === "NEW_PROJECT" ? "v1.0" : null),
     flags,
     policyFiles: policyFilesFor(policyIndex, options.type, flags),

@@ -5,6 +5,7 @@ import { resolveProjectPath } from "../.ai-harness/src/filesystem.mjs";
 import { WORK_ID_PATTERN } from "../.ai-harness/src/constants.mjs";
 import { projectWorkflowContract } from "./task-contract.mjs";
 import { candidateDigest, validateCandidate } from "./candidates.mjs";
+import { sharedDeliveryPassed } from "./statistics.mjs";
 import { hash } from "./runner.mjs";
 import { completedRun, parseFinal, validFinalOutput } from "./protocol.mjs";
 import { readProtocolTranscript } from "./client-drivers.mjs";
@@ -73,7 +74,22 @@ export async function auditTrial(directory, protocol, task, group, trial, result
   assert.deepEqual(row.budget, protocol.budget);
   if (row.grade.complete) assert.deepEqual(row.grade.cases.map(entry=>entry.id), task.cases.map(([id])=>id));
   assert.equal(row.grade.ok, row.grade.complete && row.grade.exitCode===0 && row.grade.cases.every(entry=>entry.pass));
-  assert.equal(row.success, Boolean(row.run.completed && row.scope.ok && row.grade.ok && (!group.harness || row.workflow?.ok)));
+  if (protocol.extraTestVersion === 1) {
+    const file = "test/extra.test.mjs", change = row.scope.changes.find(entry => entry.path === file);
+    if (!change) assert.deepEqual(row.extraTest, { status: "not-added" });
+    else if (!/^[0-9a-f]{64}$/.test(change.after)) assert.deepEqual(row.extraTest, { status: "invalid" });
+    else {
+      const test = row.extraTest;
+      assert.equal(test.entry, file);
+      assert.equal(test.sha256, change.after);
+      assert.equal(test.sha256, hash(await raw(`${folder}/extra.test.mjs`)), "Extra test differs from the executed file");
+      assert.ok(test.exitCode === null || Number.isInteger(test.exitCode));
+      assert.ok(test.signal === null || typeof test.signal === "string");
+      assert.ok(test.error === null || typeof test.error === "string");
+      assert.equal(test.status, test.exitCode === 0 && !test.signal && !test.error ? "passed" : "failed");
+    }
+  } else assert.equal(row.extraTest, undefined, "Unexpected extra test result in legacy or project protocol");
+  assert.equal(row.success, Boolean(sharedDeliveryPassed(row) && (!group.harness || row.workflow?.ok)));
   assert.equal(row.falseCompletion, Boolean(row.run.final?.completed && !row.success));
   const transcript = (await raw(`${folder}/events.jsonl`)).toString("utf8");
   if (extended && protocol.mode === "real") {

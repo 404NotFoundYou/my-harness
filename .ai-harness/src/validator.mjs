@@ -47,7 +47,7 @@ function validGate(gate) {
   );
 }
 
-export function collectWorkItemShapeErrors(item) {
+export function collectWorkItemShapeErrors(item, expectedPlanPath) {
   const errors = [];
   if (!isObject(item)) return ["工作项必须是 JSON 对象。"];
   if (item.schemaVersion !== 1) errors.push("工作项 schemaVersion 必须为 1。");
@@ -98,7 +98,10 @@ export function collectWorkItemShapeErrors(item) {
   if (!isObject(item.plan) || typeof item.plan.path !== "string" || typeof item.plan.approved !== "boolean") {
     errors.push("plan 结构无效。");
   }
-  if (item.plan?.path !== `.ai-harness/work-items/${item.id}/plan.json`) errors.push("plan.path 与工作项 ID 不一致。" );
+  const planPath = item.plan?.path;
+  if (typeof planPath !== "string" || !planPath.endsWith(`/${item.id}/plan.json`) || path.win32.isAbsolute(planPath) ||
+      planPath.startsWith("../") || path.posix.normalize(planPath) !== planPath || planPath.includes("\\") ||
+      (expectedPlanPath !== undefined && planPath !== expectedPlanPath)) errors.push("plan.path 与工作项目录或 ID 不一致。" );
   for (const [name, result] of Object.entries({
     verification: item.verification,
     review: item.review,
@@ -320,8 +323,8 @@ export function collectPlanErrors(plan, workItemId = null, { requireComplete = t
   return [...new Set(errors)];
 }
 
-export function assertValidWorkItem(item) {
-  const errors = collectWorkItemShapeErrors(item);
+export function assertValidWorkItem(item, expectedPlanPath) {
+  const errors = collectWorkItemShapeErrors(item, expectedPlanPath);
   if (errors.length > 0) throw new HarnessError("INVALID_WORK_ITEM", "工作项结构校验失败。", { errors });
 }
 

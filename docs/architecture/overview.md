@@ -66,7 +66,7 @@ CLAUDE.md / GEMINI.md        # 已有客户端规则/导入 + 可选托管块
 
 ## 状态设计
 
-状态机只服务于 `NON_TRIVIAL` 工作。`TRIVIAL_READONLY` 直接检查并回答，`TRIVIAL_EDIT` 直接完成单文件机械修改和一个最窄验证，两者都不产生控制面状态。边界与升级条件见 [ADR-0002](decisions/0002-trivial-task-fast-path.md)。
+状态机只服务于 `NON_TRIVIAL` 工作。`TRIVIAL_READONLY` 直接检查并回答，`TRIVIAL_EDIT` 限对已有根 `README.md` 或 `docs/` 下一个非指令 Markdown 做机械修改和最窄验证，提交须带匹配的 `Harness-Trivial-Doc` 尾注，两者都不产生控制面状态。边界与升级条件见 [ADR-0002](decisions/0002-trivial-task-fast-path.md)。
 
 普通非琐碎迭代/BUG 默认通过 `begin → run → finish → check --ci` 使用同一状态机，模型只提交需要判断的方案、风险、审查与验收结论，由代码完成机械状态推进。复杂或高风险任务继续使用完整命令，详见 [ADR-0008](decisions/0008-adaptive-execution.md)。
 

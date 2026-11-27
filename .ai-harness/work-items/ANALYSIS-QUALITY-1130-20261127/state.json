@@ -1,0 +1,186 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 1,
+  "id": "ANALYSIS-QUALITY-1130-20261127",
+  "type": "ANALYSIS",
+  "title": "审查 Runtime 1.13.0 和评测框架的当前实现",
+  "status": "ANSWERED",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/analysis.md"
+  ],
+  "authorization": {
+    "mode": "approval-required",
+    "source": "用户本次要求检查项目，产品只读"
+  },
+  "input": {
+    "references": [
+      "用户询问当前项目有哪些不合理设计或行为"
+    ],
+    "acceptance": [
+      "按影响排列可定位到当前源码的缺陷，给出触发条件、改法、验证边界"
+    ],
+    "nonGoals": [],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": null,
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "main@27ffcc55，产品文件无未提交修改。已有未跟踪控制面与本次调查分开。基于当前 Runtime、benchmarks、配置、规则和测试源码。"
+    ],
+    "completedAt": "2026-11-27T02:48:22.118Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "27ffcc55b73b304e51b393c7f69c3312596970e8",
+      "dirty": false,
+      "changedFiles": [],
+      "fingerprints": {},
+      "source": {
+        "digest": "242baf9a791fc516b5c7ea61e08acea7d1e538a39eae2d82c39af1b39b8036af",
+        "document": ".ai-harness/work-items/ANALYSIS-QUALITY-1130-20261127/snapshots/242baf9a791fc516b5c7ea61e08acea7d1e538a39eae2d82c39af1b39b8036af.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "pending",
+    "document": null,
+    "evidence": [],
+    "completedAt": null
+  },
+  "database": {
+    "status": "pending",
+    "document": null,
+    "evidence": [],
+    "completedAt": null,
+    "impact": "unknown"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/ANALYSIS-QUALITY-1130-20261127/plan.json",
+    "approved": false,
+    "approvalRef": null
+  },
+  "verification": {
+    "status": "pending",
+    "evidence": [],
+    "stages": []
+  },
+  "review": {
+    "status": "pending",
+    "evidence": [],
+    "independent": false
+  },
+  "acceptance": {
+    "status": "pending",
+    "evidence": []
+  },
+  "analysis": {
+    "status": "pass",
+    "evidence": [
+      "2d9464f2-f7a5-4a41-8770-e4ce7318cccb"
+    ],
+    "conclusions": [
+      {
+        "id": "930a7cc3-8073-434d-81e6-1a24a67a71ab",
+        "status": "PROVEN",
+        "text": "复查范围为 main@27ffcc55 的 Runtime 1.13.0、本机单仓多 CLI、评测框架与分发规则。doctor 通过且产品未改。",
+        "evidence": [
+          "以本次 doctor 的版本、提交和 productChangedFileCount 为准，未执行开发测试套件。"
+        ],
+        "commands": [
+          "c36f450a-51c1-4ae6-a66f-1c2fabf3edf4"
+        ]
+      },
+      {
+        "id": "54a54adb-a716-4371-a080-77725be83919",
+        "status": "PROVEN",
+        "text": "含同一工作项两版交付的合并范围会漏算第一版独有的变更。",
+        "evidence": [
+          "scope.mjs 第136至153、165至179行只重放当前终态的 ownedChanges。ITER-PROJECT-V2-20260928 的 revisions/1-state.json 第159行记录 benchmarks/project-tasks-v2.mjs，当前 state.json 第144行只列测试，git log 对前一个文件只有 ee14f32 一次提交。以 211fc5fcd1d4da7e4277e2927ee93279a0e5a128 为基准，当前 check --ci 明确将这个文件列为缺少交付。"
+        ]
+      },
+      {
+        "id": "99448c59-f329-413c-a4a6-b60dc6d4b9e6",
+        "status": "INFERRED",
+        "text": "并行运行的旧命令如果在工作项已到 DONE 后返回，可能把终态的审查、验收、交付引用清空。",
+        "evidence": [
+          "evidence.mjs 第166至184行在写锁中读取当前状态，把阶段或修订改变的命令标作 work-changed，然后让它触发 invalidateResults 并写回最新计划和状态。verification.mjs 第240至244行清空通过结果和交付。依据并发调用路径静态推导，本次未向真实工作项注入并发。"
+        ]
+      },
+      {
+        "id": "8d4ef7dd-598b-428e-846f-dfccb81dd3d8",
+        "status": "PROVEN",
+        "text": "core 题要求运行新增自测，评测的完整交付判定缺少这项依据。",
+        "evidence": [
+          "benchmarks/tasks.mjs 第8行写明要求。benchmarks/runner.mjs 第261至263行归档新增自测，第284至285行评分不读取自测执行结果。benchmarks/tests/spec-guidance.test.mjs 第78至95行的新自测不在实际运行的公共检查中，但示例对完整交付断言 true。此次检查读取了用例源码。"
+        ]
+      },
+      {
+        "id": "706b6cd0-7ec0-4bb9-bd05-c61a2f8fffe8",
+        "status": "PROVEN",
+        "text": "单文件机械编辑的免建项规则和合并门禁支持的路径范围不一致。",
+        "evidence": [
+          "AGENTS.md 第19、24行和分发模板允许单文件机械编辑不建项。scope.mjs 第54至65、153至155、185至186行只豁免已有 README.md 或 docs 下普通 Markdown，并要求匹配提交尾注。按前者仅修正 mjs 注释不能通过该比较。"
+        ]
+      },
+      {
+        "id": "157fe775-672a-40ac-912d-45b9f3680e03",
+        "status": "PROVEN",
+        "text": "自定义 workItemsDirectory 时，对外公开的 plan.path 仍指向默认目录。",
+        "evidence": [
+          "workflow.mjs 第75至80行按配置定位实际计划，model.mjs 第70行产生写死的默认路径，validator.mjs 第101行也要求该默认值。usage.md 第334行明确支持自定义目录。按文件路径的外部读取方无法定位实际计划。"
+        ]
+      }
+    ],
+    "unknowns": [],
+    "source": {
+      "digest": "242baf9a791fc516b5c7ea61e08acea7d1e538a39eae2d82c39af1b39b8036af",
+      "document": ".ai-harness/work-items/ANALYSIS-QUALITY-1130-20261127/snapshots/242baf9a791fc516b5c7ea61e08acea7d1e538a39eae2d82c39af1b39b8036af.json"
+    }
+  },
+  "documentation": {
+    "status": "pending",
+    "evidence": []
+  },
+  "blocked": null,
+  "delivery": null,
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-11-27T02:48:21.817Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-11-27T02:48:21.922Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "ANALYZING",
+      "at": "2026-11-27T02:48:22.299Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "ANALYZING",
+      "to": "ANSWERED",
+      "at": "2026-11-27T02:56:37.910Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-11-27T02:48:21.817Z",
+  "updatedAt": "2026-11-27T02:56:37.910Z"
+}

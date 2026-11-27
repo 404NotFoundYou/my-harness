@@ -66,7 +66,8 @@ export function validateExperimentProtocol(protocol) {
   assert.equal(protocol.schemaVersion,4,"Only protocol v4 can resume; historical experiments are read-only");
   assert.ok(["real","simulated"].includes(protocol.mode),"Invalid experiment mode");
   assert.match(protocol.source,/^[a-f0-9]{64}$/,"Invalid source digest");
-  const {createdAt,summaryVersion,...stored}=protocol;
+  const {createdAt,summaryVersion,extraTestVersion,...stored}=protocol;
+  assert.ok(extraTestVersion === undefined || (protocol.suite === "core" && extraTestVersion === 1), "Invalid extra test version");
   assert.ok(typeof createdAt === "string"&&Number.isFinite(Date.parse(createdAt)),"Invalid protocol creation time");
   assert.ok([undefined,2,3].includes(summaryVersion),"Invalid summary version");
   const plan=experimentPlan({weak:protocol.groups.find(group=>group.id==="weak-baseline")?.model,strong:protocol.groups.find(group=>group.id==="strong-reference")?.model,client:protocol.client,comparison:protocol.comparison,repetitions:protocol.repetitions,timeoutMs:protocol.budget.timeoutMs,maxToolCalls:protocol.budget.maxToolCalls,suite:protocol.suite});
@@ -100,7 +101,7 @@ export async function runExperiment({ plan, sourceRoot, outputDirectory, driver,
   if(mode === "real")assert.equal(typeof identityReader,"function","Container experiments need an explicit identity reader");
   const source=(await sourceSnapshot(sourceRoot)).digest;
   const tasks=tasksForSuite(plan.suite);
-  const frozen={...plan,mode,source,tasks:tasks.map(taskManifest),driverIdentity:identity};
+  const frozen={...plan,mode,source,tasks:tasks.map(taskManifest),driverIdentity:identity,...(plan.suite === "core" ? {extraTestVersion:1} : {})};
   const lock=await resolveProjectPath(outputDirectory,".experiment.lock",{forWrite:true});
   const save=async(file,value)=>saveJson(await resolveProjectPath(outputDirectory,file,{forWrite:true}),value);
   const assertSource=async()=>{

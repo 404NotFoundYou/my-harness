@@ -56,7 +56,7 @@ node <HARNESS_REPO>/.ai-harness/bin/harness.mjs uninstall --target <TARGET> --co
 | 规模 | 边界 | 执行方式 |
 | --- | --- | --- |
 | `TRIVIAL_READONLY` | 单一事实，可由直接读取或少量无副作用确定性命令回答 | 直接检查并报告；不运行 Runtime 命令，不创建工作项 |
-| `TRIVIAL_EDIT` | 单文件机械修改，且不改变行为、API、Schema、依赖、配置、安全或发布 | 读取上下文、修改、运行一个最窄验证并报告；不运行 Runtime 命令 |
+| `TRIVIAL_EDIT` | 整个变更范围只机械编辑一个已有的普通文档（根 `README.md` 或 `docs/` 下的非指令 Markdown） | 读取上下文、修改、做最窄验证，提交尾注须为 `Harness-Trivial-Doc: <实际路径>` |
 | `NON_TRIVIAL` | 其他工作，以及所有 BUG | 普通 ITERATION/BUGFIX 默认使用下述精简入口；复杂/高风险和其他类型使用完整流程 |
 
 先读相关代码判断风险；影响仍不清楚时使用完整流程。禁止将同一目标拆成多个轻量任务规避门禁。删除、覆盖、Git 历史修改、部署、发布、生产数据、费用、外部消息和凭据变更的授权要求不因规模分类而改变。
@@ -337,6 +337,8 @@ node .ai-harness/bin/harness.mjs record --id ITER-001 --task T1 `
 
 验证和 CI 会按工作项、命令 ID 和输出流定位已归档的日志，并以 `artifactSha256` 核对脱敏后的文件字节。`sha256` 对应捕获的原始输出。老版本仅有截断预览的记录继续按原格式读取，保留所有已引用的日志。
 
+同一检查并发运行时，Runtime 在启动前写入工作项检查点，按启动顺序判定有效结果。较早启动的命令晚返回时，其执行结果仍可追溯。工作项阶段、计划修订或任务尝试已变化的结果会标记为过期。旧记录沿用原证据顺序。
+
 `config.json` 的 `maxCapturedOutputBytes` 继续控制每流预览长度（默认 16 KiB，另加截断提示）。`maxCommandOutputBytes` 是独立的 `spawnSync` 输出预算，缺省为 16 MiB，允许 1 到 64 MiB 的整数；显式 null、字符串、零或超上限在启动前报错。stdout/stderr 合计可能触发该预算，读取块可能略越过阈值，因此它不是每流配额或严格内存上界。执行仍为同步、有界捕获，权限及超时机制不变。
 
 正常退出的长日志会整体脱敏，并把超出预览的内容保存为 artifact。`stdout/stderr.complete` 表示采集是否完整，`truncated` 仅表示预览截断；非零退出也可能采集完整。超时、输出超限、启动错误或信号终止的采集标记为不完整，artifact 只包含已捕获部分。`command.failureReason` 区分 `timeout`、`output-limit`、`spawn-error`、`signal`、`exit-code`、`source-changed`、`work-changed` 和 `output-save`；成功时为 null，另有 `outputLimitBytes`、`outputLimitExceeded`。同时发生保存失败时，各流的 `saveError` 保留原因，命令必定失败；只在保存成功后提供 artifact 路径和哈希。整个证据目录不可写时会显式抛错，不能保证持久化。常见带引号凭据在输出中途结束时仍脱敏，原始日志不写临时盘；这不构成任意敏感格式的完整检测。
@@ -395,7 +397,7 @@ node .ai-harness/bin/harness.mjs check --ci --base <完整基准提交 SHA> --js
 
 `--base` 必须是当前 `HEAD` 的可用祖先。示例工作流使用 PR 目标分支基准或 push 前提交，新分支首次 push 使用与默认分支的共同祖先。手动运行时提供明确基准。合并门禁只认可本次范围内新增或更新、且内容与变更基准相符的交付。已出现在基准历史中的工作项编号不能重新作为新交付使用。CI 平台需要检出完整 Git 历史并传入实际事件基准。本机收尾继续使用 `check --ci --json` 检查交付快照。
 
-如果整个变更范围只包含对一个现有 `README.md` 或 `docs/` 下普通 Markdown 文件的机械编辑，可在该提交的尾注声明 `Harness-Trivial-Doc: README.md`，把示例路径替换为实际路径。Runtime 核对路径、文件类型和提交内容，人工审查整个范围是否属于机械编辑。新建文件、删除文件、指令文件和多文件变更须按实际任务路径处理。CI 门禁与客户端权限、分支保护和人工独立复核配合使用。
+如果整个变更范围只包含对一个现有 `README.md` 或 `docs/` 下普通 Markdown 文件的机械编辑，须在该提交的尾注声明 `Harness-Trivial-Doc: README.md`，把示例路径替换为实际路径。Runtime 核对路径、文件类型和提交内容，人工审查整个范围是否属于机械编辑。新建文件、删除文件、指令文件和多文件变更须按实际任务路径处理。CI 门禁与客户端权限、分支保护和人工独立复核配合使用。
 
 源仓库的 `source-tests.yml` 在 Windows 和 Linux 的 Node.js 20、22、24 矩阵上执行评测框架测试，并在临时目标中安装 Runtime 后运行其随附测试。目标项目通过标准工作流执行 Runtime 测试及交付门禁。
 

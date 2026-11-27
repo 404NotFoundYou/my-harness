@@ -11,7 +11,7 @@ import { workItemPaths } from "../.ai-harness/src/workflow.mjs";
 import { redact } from "../.ai-harness/src/evidence.mjs";
 import { atomicWriteJson, resolveProjectPath } from "../.ai-harness/src/filesystem.mjs";
 import { sourceSnapshot } from "../.ai-harness/src/snapshot.mjs";
-import { hasCompleteUsage, trialStatistics } from "./statistics.mjs";
+import { hasCompleteUsage, sharedDeliveryPassed, trialStatistics } from "./statistics.mjs";
 import { projectWorkflowContract, taskManifest, writableFilesFor } from "./task-contract.mjs";
 import { candidateDigest, collectCandidate, validateCandidate } from "./candidates.mjs";
 
@@ -138,6 +138,29 @@ export function parseGrade(output, marker, expectedIds, exitCode) {
   return { complete, ok: exitCode === 0 && complete && cases.every(row => row.pass), cases, expectedCases: expectedIds.length };
 }
 
+const extraTestPath = "test/extra.test.mjs";
+
+function runGradingProcess(root, entry) {
+  const permissionFlag = process.allowedNodeEnvironmentFlags.has("--permission") ? "--permission" : "--experimental-permission";
+  return spawnSync(process.execPath, [permissionFlag, `--allow-fs-read=${root}`, path.join(root, entry)], {
+    cwd: root, shell: false, windowsHide: true, encoding: "utf8", timeout: 5000, maxBuffer: 1024 * 1024, env: {},
+  });
+}
+
+async function runCoreExtraTest(task, implementation, bytes) {
+  const root = await temporary("ai-harness-extra-test-");
+  try {
+    for (const [file, content] of Object.entries(task.files)) {
+      await mkdir(path.dirname(path.join(root, file)), { recursive: true });
+      await writeFile(path.join(root, file), file === task.entry ? implementation : content);
+    }
+    await writeFile(path.join(root, extraTestPath), bytes);
+    const run = runGradingProcess(root, extraTestPath);
+    return { status: run.status === 0 && !run.error && !run.signal ? "passed" : "failed", entry: extraTestPath,
+      sha256: hash(bytes), exitCode: run.status, signal: run.signal, error: run.error?.code ?? null };
+  } finally { await cleanupSandbox(root); }
+}
+
 export async function gradeCandidate(task, implementation) {
   if (task.writableFiles !== undefined) {
     taskManifest(task);
@@ -167,11 +190,7 @@ export async function gradeCandidate(task, implementation) {
       `const cases=[];for(const t of tests){try{await t.run();cases.push({id:t.id,pass:true});}catch{cases.push({id:t.id,pass:false,error:"Case failed"});}}\n` +
       `console.log(${JSON.stringify(marker)}+JSON.stringify({cases}));process.exitCode=cases.every(t=>t.pass)?0:1;\n`;
     await writeFile(path.join(root, "judge.mjs"), code);
-    const permissionFlag = process.allowedNodeEnvironmentFlags.has("--permission") ? "--permission" : "--experimental-permission";
-    const run = spawnSync(process.execPath, [permissionFlag, `--allow-fs-read=${root}`, path.join(root, "judge.mjs")], {
-      cwd: root, shell: false, windowsHide: true, encoding: "utf8", timeout: 5000, maxBuffer: 1024 * 1024,
-      env: {},
-    });
+    const run = runGradingProcess(root, "judge.mjs");
     return { ...parseGrade(run.stdout || "", marker, task.cases.map(([id]) => id), run.status), exitCode: run.status,
       timedOut: run.error?.code === "ETIMEDOUT", stderr: run.stderr ? "Judge stderr omitted" : "", error: run.error ? "Judge process failed" : null };
   } finally { await cleanupSandbox(root); }
@@ -185,7 +204,7 @@ export function participantPrompt(task, group, runBudget = budget, suite = "core
       (group.harness && suite === "project-v2" ? projectBeginGuidance(task) : group.harness ? "本组已安装并初始化Harness，按AGENTS使用BUGFIX路径，记录实际/期望、复现和根因，保留static/sandbox/reproduction/regression阶段；复现与回归引用真实run命令。guide可查看缺失证据，finish提交真实审查与验收，最终check --ci。\n" : "按项目规范保留复现、修复和回归证据。\n");
   }
   return `请在当前临时项目完成TASK.md中的迭代，先读规格、实现、src/caller.mjs和公共测试，然后实现并验证。\n` +
-    `只有${task.entry}和新增test/extra.test.mjs可写（Harness组另可通过CLI维护工作项控制面）。不要修改原有测试或规格，不安装依赖、不访问网络、不提交Git。无需询问已授权的实现选择。\n` +
+    `只有${task.entry}和新增test/extra.test.mjs可写（Harness组另可通过CLI维护工作项控制面）。如新增自测，实际运行node --test test/extra.test.mjs。不要修改原有测试或规格，不安装依赖、不访问网络、不提交Git。无需询问已授权的实现选择。\n` +
     `预算${runBudget.timeoutMs / 1000}秒、${runBudget.maxToolCalls}次工具调用；到期如实报告未完成。最终按结构化格式报告completed、summary和实际运行的tests。\n` +
     (group.harness ? `本组已安装并初始化Harness。${beginSpecPath}已预填公开写入范围和公共验证命令，不要编辑该JSON；根据实际方案判断risk(low/medium)与approach后，通过node .ai-harness/bin/harness.mjs begin --spec ${beginSpecPath} --risk <low或medium> --approach "<实际方案>" --json提交。创建后用guide --id ${task.id}-iteration --task T1 --brief --json查看缺失事项；先完成实现和必要额外测试，最后用run --id ${task.id}-iteration --all --json执行全部计划检查。检查通过后不要再修改产品文件，立即按guide的finish模板收尾并执行check --ci；两者均通过后返回结构化最终结果，未完成如实报告。\n` : "按当前项目规范直接实施与验证。\n");
 }
@@ -258,9 +277,15 @@ export async function runCase({ task, group, sourceRoot, outputDirectory, driver
       scope.violations=[...new Set([...scope.violations,...invalid])];
       scope.ok=scope.violations.length===0;
     }
-    const extraPath = path.join(participant.root, "test/extra.test.mjs");
-    const extraInfo = await lstat(extraPath).catch(() => null);
-    if (extraInfo?.isFile() && !extraInfo.isSymbolicLink()) await writeFile(path.join(outputDirectory, "extra.test.mjs"), await readFile(extraPath));
+    const extra = scope.changes.find(change => change.path === extraTestPath);
+    let extraTest = { status: extra ? "invalid" : "not-added" };
+    if (extra && /^[0-9a-f]{64}$/.test(extra.after)) {
+      const file = await resolveProjectPath(participant.root, extraTestPath, { forWrite: true, mustExist: true });
+      const bytes = await readFile(file);
+      if (hash(bytes) !== extra.after) throw new Error("Extra test changed during collection");
+      await writeFile(path.join(outputDirectory, "extra.test.mjs"), bytes);
+      if (task.writableFiles === undefined) extraTest = await runCoreExtraTest(task, implementation, bytes);
+    }
     let workflow = null;
     if (group.harness) {
       try {
@@ -282,10 +307,11 @@ export async function runCase({ task, group, sourceRoot, outputDirectory, driver
       } catch (error) { workflow = { ok: false, errors: [redact(error.message)] }; }
     }
     const grade = await gradeCandidate(task, implementation);
-    const success = Boolean(run.completed && scope.ok && grade.ok && (!group.harness || workflow?.ok));
+    const delivery = { run, scope, grade, ...(task.writableFiles === undefined ? { extraTest } : {}) };
+    const success = Boolean(sharedDeliveryPassed(delivery) && (!group.harness || workflow?.ok));
     const result = { schemaVersion: task.writableFiles === undefined ? 1 : 2, trial, mode: run.mode, client: run.client || "codex", taskId: task.id, split: task.split, group: group.id, model: group.model,
       taskDigest: hash(JSON.stringify(task.files)), judgeDigest: hash(JSON.stringify(task.cases)), candidateDigest: task.writableFiles === undefined ? hash(implementation) : candidateDigest(task,implementation), budget: runBudget,
-      run, scope, workflow, grade, success, falseCompletion: Boolean(run.final?.completed && !success),
+      ...delivery, workflow, success, falseCompletion: Boolean(run.final?.completed && !success),
       falseFunctionalCompletion: Boolean(run.final?.completed && !grade.ok) };
     if(execution)result.execution={...execution,sourceAfter:(await sourceSnapshot(sourceRoot)).digest};
     if(beforePublish)await beforePublish();

@@ -1,0 +1,459 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 5,
+  "id": "BUGFIX-QUALITY-20261127",
+  "type": "BUGFIX",
+  "title": "修复合并回放、晚到证据、评测自测与两个契约偏差",
+  "status": "DONE",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/bugfix.md",
+    ".ai-harness/policies/verification.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "当前用户明确要求修复上述五个问题，项目契约要求并发变更独立审查"
+  },
+  "input": {
+    "references": [
+      "ANALYSIS-QUALITY-1130-20261127"
+    ],
+    "acceptance": [
+      "基准检查覆盖历次已验收交付并拒绝无归属变更，过期命令可追溯且不推翻当前验收，核心评测执行并判定新增自测，轻量规则吻合CI，自定义工作项目录可读且兼容既有记录"
+    ],
+    "nonGoals": [],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": {
+    "actual": "已完成修订和晚到命令会破坏交付归属或有效性；固定公共测试代替新增自测；机械编辑说明和计划路径与实际不符",
+    "expected": "合并范围和命令证据只承认对应修订的有效交付和检查，评测及路径与公开契约一致",
+    "reproduction": "以历史变更基准及隔离Git/命令/评测/安装夹具还原五项分析记录"
+  },
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "main@27ffcc55，分发与受测源码初始干净，9个既有分析目录保留，五项既有证据见分析工作项。"
+    ],
+    "completedAt": "2026-11-27T03:02:36.125Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "27ffcc55b73b304e51b393c7f69c3312596970e8",
+      "dirty": false,
+      "changedFiles": [],
+      "fingerprints": {},
+      "source": {
+        "digest": "242baf9a791fc516b5c7ea61e08acea7d1e538a39eae2d82c39af1b39b8036af",
+        "document": ".ai-harness/work-items/BUGFIX-QUALITY-20261127/snapshots/242baf9a791fc516b5c7ea61e08acea7d1e538a39eae2d82c39af1b39b8036af.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": ".ai-harness/work-items/ANALYSIS-QUALITY-1130-20261127/state.json",
+    "evidence": [
+      "按基准及当前工作项历史验真并回放每个有效交付，命令落锁后检查所属上下文并保留过期事件，独立执行可选自测并冻结评分规则，收窄轻量规则，计划路径以配置解析并兼容旧记录。"
+    ],
+    "completedAt": "2026-11-27T03:02:36.421Z"
+  },
+  "database": {
+    "impact": "none",
+    "status": "not-applicable",
+    "document": null,
+    "evidence": [
+      "只涉及Git、JSON文件、命令证据和本地评测，无数据库、迁移或查询。"
+    ],
+    "completedAt": "2026-11-27T03:02:36.517Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/BUGFIX-QUALITY-20261127/plan.json",
+    "approved": true,
+    "approvalRef": "同一修复验收，兼容原历史证据并保留启动记录完整性检查"
+  },
+  "verification": {
+    "status": "pass",
+    "evidence": [
+      "20270258-aef7-46d7-91a9-4811eb62fc4f",
+      "008aa9db-cf24-4ebf-93a3-60b6938f30d2",
+      "3e8eec50-b925-4bef-bd5d-0300927848e7",
+      "ee88c341-e967-47b5-8883-ec7f1c329fc7"
+    ],
+    "stages": [
+      {
+        "stage": "static",
+        "status": "pass",
+        "evidence": [
+          "20270258-aef7-46d7-91a9-4811eb62fc4f"
+        ],
+        "command": null,
+        "revision": 5,
+        "source": {
+          "digest": "275cabb0b8129ebd25ea62978865d038539732e16ce34d66195896d046078f02",
+          "document": ".ai-harness/work-items/BUGFIX-QUALITY-20261127/snapshots/275cabb0b8129ebd25ea62978865d038539732e16ce34d66195896d046078f02.json"
+        },
+        "planDigest": "5d39f3a4451580ac4c169174ecf509e25a3bb79d81bb1ccea6236702e6bce053"
+      },
+      {
+        "stage": "sandbox",
+        "status": "pass",
+        "evidence": [
+          "008aa9db-cf24-4ebf-93a3-60b6938f30d2"
+        ],
+        "command": null,
+        "revision": 5,
+        "source": {
+          "digest": "275cabb0b8129ebd25ea62978865d038539732e16ce34d66195896d046078f02",
+          "document": ".ai-harness/work-items/BUGFIX-QUALITY-20261127/snapshots/275cabb0b8129ebd25ea62978865d038539732e16ce34d66195896d046078f02.json"
+        },
+        "planDigest": "5d39f3a4451580ac4c169174ecf509e25a3bb79d81bb1ccea6236702e6bce053"
+      },
+      {
+        "stage": "reproduction",
+        "status": "pass",
+        "evidence": [
+          "3e8eec50-b925-4bef-bd5d-0300927848e7"
+        ],
+        "command": "3b141eda-65a8-40c7-9097-bbed29860a26",
+        "revision": 5,
+        "source": {
+          "digest": "275cabb0b8129ebd25ea62978865d038539732e16ce34d66195896d046078f02",
+          "document": ".ai-harness/work-items/BUGFIX-QUALITY-20261127/snapshots/275cabb0b8129ebd25ea62978865d038539732e16ce34d66195896d046078f02.json"
+        },
+        "planDigest": "5d39f3a4451580ac4c169174ecf509e25a3bb79d81bb1ccea6236702e6bce053"
+      },
+      {
+        "stage": "regression",
+        "status": "pass",
+        "evidence": [
+          "ee88c341-e967-47b5-8883-ec7f1c329fc7"
+        ],
+        "command": "2efa738e-dd3d-41f9-8efe-2d4d6fb230bf",
+        "revision": 5,
+        "source": {
+          "digest": "275cabb0b8129ebd25ea62978865d038539732e16ce34d66195896d046078f02",
+          "document": ".ai-harness/work-items/BUGFIX-QUALITY-20261127/snapshots/275cabb0b8129ebd25ea62978865d038539732e16ce34d66195896d046078f02.json"
+        },
+        "planDigest": "5d39f3a4451580ac4c169174ecf509e25a3bb79d81bb1ccea6236702e6bce053"
+      }
+    ],
+    "source": {
+      "digest": "275cabb0b8129ebd25ea62978865d038539732e16ce34d66195896d046078f02",
+      "document": ".ai-harness/work-items/BUGFIX-QUALITY-20261127/snapshots/275cabb0b8129ebd25ea62978865d038539732e16ce34d66195896d046078f02.json"
+    }
+  },
+  "review": {
+    "status": "pass",
+    "evidence": [
+      "3a4fcba5-f4b5-4baa-926a-2df894a49d96"
+    ],
+    "independent": true,
+    "source": {
+      "digest": "275cabb0b8129ebd25ea62978865d038539732e16ce34d66195896d046078f02",
+      "document": ".ai-harness/work-items/BUGFIX-QUALITY-20261127/snapshots/275cabb0b8129ebd25ea62978865d038539732e16ce34d66195896d046078f02.json"
+    }
+  },
+  "acceptance": {
+    "status": "pass",
+    "evidence": [
+      "022eb2c8-8556-4700-90ad-62d57fa37f3e"
+    ],
+    "cleanup": [
+      "retained=工作项的历史计划、命令证据、输出与源码快照用于审计和合并回放，既有分析记录保持原状。测试的临时项目由其所属夹具回收。"
+    ],
+    "source": {
+      "digest": "275cabb0b8129ebd25ea62978865d038539732e16ce34d66195896d046078f02",
+      "document": ".ai-harness/work-items/BUGFIX-QUALITY-20261127/snapshots/275cabb0b8129ebd25ea62978865d038539732e16ce34d66195896d046078f02.json"
+    }
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "pass",
+    "evidence": [
+      "057d49cf-dade-429e-98a0-9b909f7008ac"
+    ]
+  },
+  "blocked": null,
+  "delivery": {
+    "cleanupVersion": 1,
+    "source": {
+      "digest": "275cabb0b8129ebd25ea62978865d038539732e16ce34d66195896d046078f02",
+      "document": ".ai-harness/work-items/BUGFIX-QUALITY-20261127/snapshots/275cabb0b8129ebd25ea62978865d038539732e16ce34d66195896d046078f02.json"
+    },
+    "baseline": {
+      "digest": "242baf9a791fc516b5c7ea61e08acea7d1e538a39eae2d82c39af1b39b8036af",
+      "document": ".ai-harness/work-items/BUGFIX-QUALITY-20261127/snapshots/242baf9a791fc516b5c7ea61e08acea7d1e538a39eae2d82c39af1b39b8036af.json"
+    },
+    "baselineAt": "2026-11-27T03:02:36.125Z",
+    "ownedChanges": [
+      {
+        "path": ".ai-harness/policies/core.md",
+        "before": "100644:bdacefd16d1d94153672a29824d128078ea7b6de",
+        "after": "100644:a72fb0796f0a48dcb854b1f282a917788694853a"
+      },
+      {
+        "path": ".ai-harness/src/evidence.mjs",
+        "before": "100644:c6dd41a744ad7c3df8a66cd98ab3e4aaed554f45",
+        "after": "100644:a1b31a855fe1ffd96759367f195e69f6a2eaafbd"
+      },
+      {
+        "path": ".ai-harness/src/model.mjs",
+        "before": "100644:b56a6e6d5c8683a94098138d86f9bd763c985dac",
+        "after": "100644:9b7f95d665999a3020145a4d4262a960da0d49d4"
+      },
+      {
+        "path": ".ai-harness/src/scope.mjs",
+        "before": "100644:7994df496084237e2dca0d2a3d87196b031ee831",
+        "after": "100644:6935296aa7ad52cc03dd6e807ffb5573848c3f35"
+      },
+      {
+        "path": ".ai-harness/src/validator.mjs",
+        "before": "100644:a69875064565916157359e63813723ca9537d2ea",
+        "after": "100644:6bac170ec66b0276176f005a9ac7440a1c21131d"
+      },
+      {
+        "path": ".ai-harness/src/verification.mjs",
+        "before": "100644:f3e53bf13677a5e6bec8782712c8869dd4e8d416",
+        "after": "100644:1ff0aaf452ee1ab2d7ac45a53dd989ed3ea941c7"
+      },
+      {
+        "path": ".ai-harness/src/workflow.mjs",
+        "before": "100644:9d0834564d2aaa7a46494ef6768f19e78bdaa010",
+        "after": "100644:a5a0f4b3431c00ec0d8139fa382c3be52f6759d5"
+      },
+      {
+        "path": ".ai-harness/templates/instructions/AGENTS.md",
+        "before": "100644:a6b322b5f70046e745387a01a88175f1e8ad2455",
+        "after": "100644:9949fdfa2e97e3ed63033f7236af1804f64c5b61"
+      },
+      {
+        "path": ".ai-harness/tests/installer.test.mjs",
+        "before": "100644:baea29a081863834401bf6ad8e3b01782ff281f5",
+        "after": "100644:90c0a31e219c2bbd114ff5fdeee8ac09c3c5683f"
+      },
+      {
+        "path": ".ai-harness/tests/reliability.test.mjs",
+        "before": "100644:04f22c6c46960fb0a01b8d4ecae7cd758de25f9b",
+        "after": "100644:76bafff3306d6d82dae82298cc841f6009c9c2ee"
+      },
+      {
+        "path": ".ai-harness/tests/timeout.test.mjs",
+        "before": "100644:d60ec2a5e2b1b27eeb114243fb1819794a9e28ec",
+        "after": "100644:bef0dc75323acae23b0247486f1f8061b188a54b"
+      },
+      {
+        "path": "AGENTS.md",
+        "before": "100644:a06955d0321186972dd49cd8c484c6997917f18d",
+        "after": "100644:fc14d8af860aa6e30c9c4d04c9e8909a80175213"
+      },
+      {
+        "path": "README.md",
+        "before": "100644:eceea60fc595a714cf78f08f65b53cbdb5a34f5a",
+        "after": "100644:da3acdcac5d987c89f2618f7758a35a1ae18f62f"
+      },
+      {
+        "path": "benchmarks/README.md",
+        "before": "100644:a98534d6128901e4ee4282057d7388459ff3dfd1",
+        "after": "100644:46f0b39c9bd8f36e741d9aba3728a037db32a532"
+      },
+      {
+        "path": "benchmarks/audit-trial.mjs",
+        "before": "100644:c57dca35a53abd0c19e9c40d39775691d5270209",
+        "after": "100644:44389ac94db2814d341ce0c43a5e723795e4611d"
+      },
+      {
+        "path": "benchmarks/experiment.mjs",
+        "before": "100644:33f0334a50a231b43bca2a42de1d098a2b8f0629",
+        "after": "100644:198387ea2f725c22ae4deeb70888b1b4eadfeb2c"
+      },
+      {
+        "path": "benchmarks/report.mjs",
+        "before": "100644:f517e5aa5c5fe21d0291dc68267978cd5419cb0d",
+        "after": "100644:6f676c7d2beff2b7b8f94fcf7575e0a0206cc0a7"
+      },
+      {
+        "path": "benchmarks/runner.mjs",
+        "before": "100644:e30d74c82a4c3df265e1841fce27bdcafeeeb145",
+        "after": "100644:e43d93703cfe5d0877e96f3ed77253093164a27d"
+      },
+      {
+        "path": "benchmarks/statistics.mjs",
+        "before": "100644:6a72508397828c2d5554e5dd41ee5dc7e1701ca1",
+        "after": "100644:d199cb1c3cfebbf8d4cab255cc56ae310065b25c"
+      },
+      {
+        "path": "benchmarks/tests/runner.test.mjs",
+        "before": "100644:4bc159f131a768794947596d1f5bc6826a346153",
+        "after": "100644:fc2810c9bce17f17cd0588941fd4591d32b95a68"
+      },
+      {
+        "path": "benchmarks/tests/spec-guidance.test.mjs",
+        "before": "100644:2ace724883a597bc917aeda1bd7cc391edca10c0",
+        "after": "100644:cb197e1b917c8afd4c65ad7d0e4b2ca6fd9d5c44"
+      },
+      {
+        "path": "docs/architecture/decisions/0002-trivial-task-fast-path.md",
+        "before": "100644:987a32e8051c48ffc044c964bf2d27f76be23517",
+        "after": "100644:32917f7fe3659edb80b1016e6947eb9ad22ab71d"
+      },
+      {
+        "path": "docs/architecture/overview.md",
+        "before": "100644:3d43a1cebb9b74dd585ed57c7a76958b2d23c475",
+        "after": "100644:fdccc034369d048a837652526813859b6fea8772"
+      },
+      {
+        "path": "docs/guides/getting-started.md",
+        "before": "100644:e8a090964da6766661d905e31d8c08662ed66040",
+        "after": "100644:5394d5ebac992d5652058c9e6848eef818dbb6a4"
+      },
+      {
+        "path": "docs/guides/usage.md",
+        "before": "100644:3b9d47f538cab24f666e4ff7bcb342541dd49435",
+        "after": "100644:4c37f53670857abb644fcee4f4a799822ffcdd7f"
+      }
+    ],
+    "planDigest": "5d39f3a4451580ac4c169174ecf509e25a3bb79d81bb1ccea6236702e6bce053",
+    "at": "2026-11-27T03:44:32.487Z",
+    "head": "27ffcc55b73b304e51b393c7f69c3312596970e8"
+  },
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-11-27T03:01:00.775Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-11-27T03:02:35.902Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-11-27T03:02:36.318Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-11-27T03:02:37.044Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-11-27T03:02:37.140Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-11-27T03:10:23.129Z",
+      "reason": "评测代码核对发现组间共同交付率在统计与配对报告中独立重算。按新的自测执行证据同步这两个入口，沿用原有专项与全量验证。",
+      "action": "replan",
+      "revision": 2
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-11-27T03:10:23.546Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-11-27T03:10:23.642Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-11-27T03:17:18.002Z",
+      "reason": "受控命令已拒绝直接调用 benchmark 的脚本入口。使用同一批测试文件的原生 node --test 入口以及下游安装测试入口，保留原权限策略。",
+      "action": "replan",
+      "revision": 3
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-11-27T03:17:18.480Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-11-27T03:17:18.577Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "IMPLEMENTING",
+      "at": "2026-11-27T03:28:12.285Z",
+      "reason": "独立复核确认同尝试命令乱序可能覆盖真实较新失败，补充回归及有效顺序处理。",
+      "action": "reopen",
+      "revision": 4
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-11-27T03:38:48.480Z",
+      "reason": "全量检查发现 timeout 历史证据夹具只传入现代命令的结果，遗漏启动记录，未触及其原本要验证的超时约束。按真实旧格式和当前完整证据更新夹具。",
+      "action": "replan",
+      "revision": 5
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-11-27T03:38:48.914Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-11-27T03:38:49.019Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "VERIFYING",
+      "at": "2026-11-27T03:43:28.309Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "VERIFYING",
+      "to": "CODE_REVIEW",
+      "at": "2026-11-27T03:43:30.234Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "CODE_REVIEW",
+      "to": "READY_FOR_ACCEPTANCE",
+      "at": "2026-11-27T03:44:30.205Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "READY_FOR_ACCEPTANCE",
+      "to": "DONE",
+      "at": "2026-11-27T03:44:32.663Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-11-27T03:01:00.775Z",
+  "updatedAt": "2026-11-27T03:44:32.663Z"
+}

@@ -7,7 +7,7 @@ import { syncBuiltinESMExports } from "node:module";
 import { beginWorkItem, finishWorkItem } from "../src/compact.mjs";
 import { runRecordedCommand } from "../src/evidence.mjs";
 import { checkProject, collectEvidenceErrors } from "../src/checker.mjs";
-import { invalidateResults } from "../src/verification.mjs";
+import { assertCommandEvidence, invalidateResults, readEvidence, verificationReport } from "../src/verification.mjs";
 import { getWorkGuide } from "../src/guide.mjs";
 import {
   addAnalysisConclusion, addTask, approvePlan, completeBaseline, createWorkItemState,
@@ -309,9 +309,10 @@ test("failed reviews require a new task attempt or work revision, even after a p
   } finally { await cleanup(root); }
 });
 
-test("parallel work items freeze only their own changes and both can finish", async () => {
+test("quality-contract: parallel work items freeze only their own changes and both can finish", async () => {
   const root = await createInstalledProject();
   try {
+    const base = git(root, ["rev-parse", "HEAD"]).stdout.trim();
     await beginWorkItem(root, options("A", "a.mjs"));
     await beginWorkItem(root, options("B", "b.mjs"));
     await writeFile(path.join(root, "a.mjs"), "const a = 1;\n");
@@ -324,6 +325,9 @@ test("parallel work items freeze only their own changes and both can finish", as
     assert.deepEqual((await checkProject(root, { ci: true })).errors, []);
     assert.deepEqual((await loadWorkItem(root, "A")).delivery.ownedChanges.map((change) => change.path), ["a.mjs"]);
     assert.deepEqual((await loadWorkItem(root, "B")).delivery.ownedChanges.map((change) => change.path), ["b.mjs"]);
+    git(root, ["add", "."]);
+    git(root, ["commit", "-m", "first deliveries"]);
+    const between = git(root, ["rev-parse", "HEAD"]).stdout.trim();
     await reopenWorkItem(root, "A", { reason: "extend delivery without reclaiming prior files", replan: true });
     await editTask(root, "A", "T1", { writeScopes: ["c.mjs"], verification: ["node --check c.mjs"] });
     await approvePlan(root, "A", "authorized follow-up");
@@ -335,6 +339,16 @@ test("parallel work items freeze only their own changes and both can finish", as
     await finishWorkItem(root, "A", verdict(c.id));
     assert.deepEqual((await checkProject(root, { ci: true })).errors, []);
     assert.deepEqual((await loadWorkItem(root, "A")).delivery.ownedChanges.map((change) => change.path), ["c.mjs"]);
+    assert.deepEqual((await checkProject(root, { ci: true, base })).errors, []);
+    assert.deepEqual((await checkProject(root, { ci: true, base: between })).errors, []);
+    await writeFile(path.join(root, "a.mjs"), "const a = 42;\n");
+    assert.deepEqual((await checkProject(root, { ci: true, base })).details.changedFiles, ["a.mjs"]);
+    const historicalFile = path.join(root, ".ai-harness/work-items/A/revisions/1-plan.json");
+    const historical = JSON.parse(await readFile(historicalFile));
+    historical.workItemId = "B";
+    await writeFile(historicalFile, JSON.stringify(historical));
+    const corrupted = await checkProject(root, { ci: true, base });
+    assert.ok(corrupted.errors.some(message => message.includes("修订")), corrupted.errors.join("\n"));
   } finally { await cleanup(root); }
 });
 
@@ -369,4 +383,99 @@ test("invalidated review stops carrying independence while current review still 
     assert.deepEqual(await collectEvidenceErrors(root, item, plan), [],
       "a pending verdict has no current review whose independence can be compared");
   } finally { await cleanup(root); }
+});
+
+test("quality-contract: late commands are recorded without overturning the completed delivery", async t => {
+  const root = await createInstalledProject(), id = "LATE";
+  try {
+    await beginWorkItem(root, options(id));
+    await writeFile(path.join(root, "sample.mjs"), "export default 1;\n");
+    const valid = await run(root, id);
+    // Finish after the second command exits but before it obtains its evidence-write lock.
+    const rename = fsPromises.rename;
+    let completed, locks = 0;
+    t.mock.method(fsPromises, "rename", async (from, to) => {
+      if (path.basename(to) === ".lock" && ++locks === 2) {
+        await finishWorkItem(root, id, verdict(valid.id));
+        completed = await loadWorkItem(root, id);
+        assert.ok(completed.delivery);
+      }
+      return rename(from, to);
+    });
+    syncBuiltinESMExports();
+    const late = await run(root, id);
+    assert.equal(late.status, "fail");
+    assert.equal((await readEvidence(root, id)).at(-1).id, late.id);
+    const item = await loadWorkItem(root, id), plan = await loadPlan(root, id);
+    assert.deepEqual(item.delivery, completed.delivery);
+    assert.deepEqual(item.acceptance, completed.acceptance);
+    assert.equal((await assertCommandEvidence(root, item, plan, valid.id)).id, valid.id);
+    assert.deepEqual((await verificationReport(root, item, plan)).missing, []);
+    assert.deepEqual((await checkProject(root, { ci: true })).errors, []);
+  } finally { t.mock.restoreAll(); syncBuiltinESMExports(); await cleanup(root); }
+});
+
+test("quality-contract: published plan path resolves in a custom work-item directory, including old records", async () => {
+  const root = await createInstalledProject(), id = "CUSTOM";
+  try {
+    const configPath = path.join(root, ".ai-harness/config.json");
+    const config = JSON.parse(await readFile(configPath));
+    config.workItemsDirectory = "tracking/items";
+    await writeFile(configPath, JSON.stringify(config));
+    await beginWorkItem(root, options(id));
+    const created = await loadWorkItem(root, id);
+    const actual = `tracking/items/${id}/plan.json`;
+    assert.equal(created.plan.path, actual);
+    assert.deepEqual(JSON.parse(await readFile(path.join(root, actual))), await loadPlan(root, id));
+    const file = path.join(root, `tracking/items/${id}/state.json`);
+    const legacy = JSON.parse(await readFile(file));
+    assert.equal(legacy.plan.path, actual);
+    legacy.plan.path = `.ai-harness/work-items/${id}/plan.json`;
+    await writeFile(file, JSON.stringify(legacy));
+    assert.equal((await loadWorkItem(root, id)).plan.path, actual);
+    assert.deepEqual((await checkProject(root)).errors, []);
+    legacy.plan.path = `another/place/${id}/plan.json`;
+    await writeFile(file, JSON.stringify(legacy));
+    await assert.rejects(() => loadWorkItem(root, id));
+  } finally { await cleanup(root); }
+});
+
+
+test("quality-contract: starting order decides overlapping checks even when the older output arrives last", async t => {
+  const root = await createInstalledProject(), id = "OVERLAP", file = "ordered.test.mjs";
+  try {
+    const configFile = path.join(root, ".ai-harness/config.json");
+    const config = JSON.parse(await readFile(configFile));
+    await writeFile(configFile, JSON.stringify({ ...config, maxCapturedOutputBytes: 16 }));
+    await beginWorkItem(root, { ...options(id, file), verification: [`node --test ${file}`] });
+    const flag = `.ai-harness/work-items/${id}/fail-fixture`;
+    await writeFile(path.join(root, file), `import {existsSync} from "node:fs"; if (existsSync("${flag}")) throw Error("fixture");`);
+    const execute = () => runRecordedCommand(root, { id, taskId: "T1", checkId: "V1" });
+    const switchResult = async fail => fail ? writeFile(path.join(root, flag), "fail") : rm(path.join(root, flag), { force: true });
+    for (const laterFails of [true, false]) {
+      await switchResult(!laterFails);
+      const rename = fsPromises.rename;
+      let nested = false, later;
+      // Delay the first result at output archival, after execution and before the evidence write.
+      const hook = t.mock.method(fsPromises, "rename", async (from, to) => {
+        if (!nested && path.basename(path.dirname(to)) === "outputs") {
+          nested = true;
+          await switchResult(laterFails);
+          later = await execute();
+        }
+        return rename(from, to);
+      });
+      syncBuiltinESMExports();
+      const older = await execute();
+      hook.mock.restore(); syncBuiltinESMExports();
+      assert.equal(later.status, laterFails ? "fail" : "pass");
+      const item = await loadWorkItem(root, id), plan = await loadPlan(root, id);
+      const report = await verificationReport(root, item, plan);
+      assert.equal(report.ok, !laterFails);
+      if (laterFails) {
+        await assert.rejects(() => assertCommandEvidence(root, item, plan, older.id), { code: "COMMAND_EVIDENCE_INVALID" });
+        await assert.rejects(() => finishWorkItem(root, id, verdict(older.id)), { code: "VERIFICATION_NOT_CURRENT" });
+      } else assert.equal((await finishWorkItem(root, id, verdict(later.id))).status, "DONE");
+    }
+  } finally { t.mock.restoreAll(); syncBuiltinESMExports(); await cleanup(root); }
 });

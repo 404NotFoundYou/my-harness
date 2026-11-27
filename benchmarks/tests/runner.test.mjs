@@ -278,6 +278,7 @@ test("repeated paired trials preserve independent outputs and remain explicitly 
       const specification = await readFile(path.join(root, "TASK.md"), "utf8");
       const task = tasks.find(task => task.files["TASK.md"] === specification);
       await writeFile(path.join(root, task.entry), task.reference);
+      if (calls === 1) await writeFile(path.join(root, "test/extra.test.mjs"), `import "../${task.entry}";`);
       await writeFile(path.join(outputDirectory, "events.jsonl"), '{"type":"synthetic"}\n');
       return { mode: "simulated", client: "codex", completed: true, final: { completed: true, summary: "synthetic", tests: [] }, durationMs: calls, usage: null };
     } });
@@ -289,6 +290,11 @@ test("repeated paired trials preserve independent outputs and remain explicitly 
     const audited = await auditExperiment(outputDirectory);
     assert.equal(audited.mode, "simulated");
     assert.equal(audited.samples, 12);
+    const archivedTest = path.join(outputDirectory, plan.schedule[0].directory, "extra.test.mjs");
+    const originalTest = await readFile(archivedTest);
+    await writeFile(archivedTest, "throw Error();");
+    await assert.rejects(() => auditExperiment(outputDirectory), /Extra test differs/);
+    await writeFile(archivedTest, originalTest);
     // 只在此临时单元夹具中构造 real 协议形状，验证审计不信任自报字段；没有模型调用。
     const protocolPath=path.join(outputDirectory,"protocol.json"),originalProtocolBytes=await readFile(protocolPath),protocol = JSON.parse(originalProtocolBytes);
     const brokenV4={...protocol,mode:"real"};delete brokenV4.driverIdentity;await writeFile(protocolPath,JSON.stringify(brokenV4));
@@ -296,6 +302,7 @@ test("repeated paired trials preserve independent outputs and remain explicitly 
     await writeFile(protocolPath,originalProtocolBytes);
     // Preserve explicit v2 compatibility coverage; v4 ledger checks have their own tests.
     protocol.schemaVersion=2;
+    delete protocol.extraTestVersion;
     delete protocol.summaryVersion;
     delete protocol.suite;
     delete protocol.driverIdentity;
@@ -309,6 +316,7 @@ test("repeated paired trials preserve independent outputs and remain explicitly 
       const folder = path.join(outputDirectory, entry.directory);
       const row = JSON.parse(await readFile(path.join(folder, "result.json"), "utf8"));
       row.mode = "real";
+      delete row.extraTest;
       Object.assign(row.run, { mode: "real", exitCode: 0, error: null, errors: [], warnings: [], unparsedLines: 0, turnCompleted: true, protocolSuccess: true });
       await writeFile(path.join(folder, "result.json"), JSON.stringify(row));
       await writeFile(path.join(folder, "final.json"), JSON.stringify(row.run.final));

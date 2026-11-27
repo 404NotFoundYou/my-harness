@@ -8,7 +8,7 @@ import { HarnessError, invariant } from "./errors.mjs";
 import { classifyAnalysisCommand, classifyCommand } from "./policy.mjs";
 import { isValidCheckTimeoutMs, resolveCommandLaunch } from "./commands.mjs";
 import { sourceSnapshot, saveSnapshot } from "./snapshot.mjs";
-import { checksFor, invalidateResults, matchingChecks, planDigest } from "./verification.mjs";
+import { checksFor, invalidateResults, laterMatchingCommands, matchingChecks, planDigest, readEvidence } from "./verification.mjs";
 import { loadConfig, loadPlan, loadWorkItem, workItemPaths } from "./workflow.mjs";
 
 const decoder = new TextDecoder("utf-8", { fatal: false });
@@ -64,8 +64,8 @@ export async function runRecordedCommand(root, { id, taskId = null, command, arg
   invariant(!analysisMode || (!taskId && !checkId), "ANALYSIS_COMMAND_SCOPE", "ANALYSIS 命令不能绑定开发任务或计划检查。" );
   invariant(typeof command === "string" && command.trim() && Array.isArray(args) && args.every((arg) => typeof arg === "string"), "INVALID_COMMAND", "命令和参数必须是字符串数组。" );
   invariant(item.status !== "IMPLEMENTING" || taskId, "TASK_REQUIRED", "IMPLEMENTING 阶段运行命令必须绑定任务。" );
+  const task = taskId ? plan.tasks.find(candidate => candidate.id === taskId) : null;
   if (taskId) {
-    const task = plan.tasks.find((candidate) => candidate.id === taskId);
     invariant(task, "TASK_NOT_FOUND", `任务不存在：${taskId}`);
     invariant(task.status === "IN_PROGRESS" || (item.status === "VERIFYING" && task.status === "COMPLETED"), "WRONG_TASK_STAGE", "受控命令需要实施中任务，或最终验证阶段已完成的任务。" );
   }
@@ -88,6 +88,11 @@ export async function runRecordedCommand(root, { id, taskId = null, command, arg
   const before = await sourceSnapshot(root);
   const source = await saveSnapshot(root, paths.directory, before);
   const definition = analysisMode ? null : planDigest(item, plan);
+  const commandId = randomUUID();
+  const start = { schemaVersion: 1, id: randomUUID(), workItemId: id, taskId, revision: item.revision || 1,
+    taskAttempt: task ? task.attempt || 1 : null, kind: "checkpoint", status: "pending", commandId,
+    summary: "启动受控命令", timestamp: new Date().toISOString() };
+  await withFileLock(paths.lock, () => appendJsonLine(paths.evidence, start));
   const startedAt = Date.now();
   let launch = null;
   let result;
@@ -116,16 +121,17 @@ export async function runRecordedCommand(root, { id, taskId = null, command, arg
     : result.signal ? "signal" : exitCode !== 0 ? "exit-code" : before.digest !== after.digest ? "source-changed" : null;
   const event = {
     schemaVersion: 1,
-    id: randomUUID(),
+    id: commandId,
     workItemId: id,
     taskId,
     revision: item.revision || 1,
-    taskAttempt: taskId ? plan.tasks.find((task) => task.id === taskId).attempt || 1 : null,
+    taskAttempt: task ? task.attempt || 1 : null,
     kind: "command",
     status: failureReason === null ? "pass" : "fail",
     summary: `${redact(command)} ${redactedArgs(args).join(" ")}`.trim(),
     timestamp: new Date(startedAt).toISOString(),
     command: {
+      startRef: start.id,
       executable: redact(command),
       args: redactedArgs(args),
       launch: launch ? { executable: redact(launch.command), args: redactedArgs(launch.args) } : null,
@@ -166,8 +172,13 @@ export async function runRecordedCommand(root, { id, taskId = null, command, arg
   await withFileLock(paths.lock, async () => {
     const latestItem = await loadWorkItem(root, id, paths);
     const latestPlan = analysisMode ? null : await readJson(paths.plan);
-    if ((latestItem.revision || 1) !== event.revision || (!analysisMode && planDigest(latestItem, latestPlan) !== definition) || latestItem.status !== item.status) {
+    const latestTask = taskId ? latestPlan.tasks.find(task => task.id === taskId) : null;
+    const workChanged = (latestItem.revision || 1) !== event.revision || latestItem.status !== item.status ||
+      (!analysisMode && planDigest(latestItem, latestPlan) !== definition) ||
+      (task && (latestTask?.status !== task.status || (latestTask?.attempt || 1) !== event.taskAttempt));
+    if (workChanged) {
       event.status = "fail";
+      event.command.obsolete = true;
       event.command.failureReason ||= "work-changed";
     }
     const observedAt = Date.now();
@@ -175,10 +186,13 @@ export async function runRecordedCommand(root, { id, taskId = null, command, arg
       evidencePreparationMs: observedAt - endedAt, observedMs: observedAt - enteredAt,
       through: "before-evidence-append", limitation: "不含进程启动、证据最终追加和状态保存；完整CLI区间由客户端事件计时。" };
     await appendJsonLine(paths.evidence, event);
-    const taskSource = taskId ? latestPlan.tasks.find((task) => task.id === taskId)?.verificationSource : null;
+    if (workChanged) return;
+    const taskSource = latestTask?.verificationSource;
     if (!analysisMode && (event.status !== "pass" || before.digest !== after.digest ||
       (latestItem.verification.source && latestItem.verification.source.digest !== before.digest) ||
       (taskSource && taskSource.digest !== before.digest))) {
+      const newer = laterMatchingCommands(await readEvidence(root, id), event);
+      if (newer.some(later => later.status === "pass" && later.command.source?.digest === after.digest && later.command.sourceAfter?.digest === after.digest)) return;
       invalidateResults(latestItem, latestPlan, taskId);
       await atomicWriteJson(paths.plan, latestPlan);
       await atomicWriteJson(paths.state, latestItem);

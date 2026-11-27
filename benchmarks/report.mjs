@@ -7,7 +7,7 @@ import { readExperimentFile } from "./audit-trial.mjs";
 import { readExecutionLedger } from "./execution.mjs";
 import { validateExperimentProtocol } from "./experiment.mjs";
 import { hash } from "./runner.mjs";
-import { trialStatistics } from "./statistics.mjs";
+import { sharedDeliveryPassed, trialStatistics } from "./statistics.mjs";
 import { redactProtocolValue, validFinalOutput } from "./protocol.mjs";
 import { inspectLock } from "../.ai-harness/src/locking.mjs";
 
@@ -77,6 +77,7 @@ function trial(row,entry){
   const failures=[];
   if(!row.grade.ok)failures.push("functional-failed");
   if(!row.scope.ok)failures.push("scope-failed");
+  if(["failed", "invalid"].includes(row.extraTest?.status))failures.push("extra-test-failed");
   if(row.run.timedOut)failures.push("timeout");
   if(row.run.toolLimit)failures.push("tool-limit");
   if(row.run.error||(row.run.exitCode!==undefined&&row.run.exitCode!==null&&row.run.exitCode!==0))failures.push("execution-failed");
@@ -85,7 +86,7 @@ function trial(row,entry){
   if(row.group==="weak-harness"&&!row.workflow?.ok)failures.push("workflow-incomplete");
   if(row.falseCompletion)failures.push("false-completion");
   const censored=row.run.timedOut===true||row.run.toolLimit===true;
-  return {resultFile:`${entry.directory}/result.json`,functional:row.grade.ok,sharedDelivery:Boolean(row.run.completed&&row.scope.ok&&row.grade.ok),fullDelivery:row.success,
+  return {resultFile:`${entry.directory}/result.json`,functional:row.grade.ok,sharedDelivery:sharedDeliveryPassed(row),fullDelivery:row.success,
     failures,censored,censorUnknown:!censored&&(row.run.timedOut==null||row.run.toolLimit==null),
     measurements:{durationMs:measurement(row.run.durationMs),toolCalls:measurement(row.run.toolCalls,true),inputTokens:measurement(usage?.input_tokens,true),outputTokens:measurement(usage?.output_tokens,true)},
     timing,finalOutput,terminalObserved:row.run.turnCompleted??null};

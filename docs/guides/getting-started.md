@@ -141,7 +141,7 @@ git commit -m "chore: initialize project with AI harness"
 | 路径 | 典型请求 | 实际流程 |
 | --- | --- | --- |
 | `TRIVIAL_READONLY` | “当前分支是什么”“读取这个版本号” | 直接运行必要的只读检查并回答，不调用 Runtime |
-| `TRIVIAL_EDIT` | “修正 README 中这一处错别字” | 读取目标文件、机械修改、运行一个最窄验证，不调用 Runtime |
+| `TRIVIAL_EDIT` | “修正 README 中这一处错别字” | 仅限已有根 `README.md` 或 `docs/` 下一个非指令 Markdown 的机械修改。完成最窄验证，提交尾注写 `Harness-Trivial-Doc: <实际路径>` |
 | 普通非琐碎工作 | 边界明确的功能迭代或 BUG，可涉及多个文件 | `begin → run → finish → check --ci`，一次填写方案，一次提交实际审查及验收结论 |
 | 复杂或高风险工作 | 新项目、数据库、公共 API、权限、并发、重要架构或跨端变化 | 使用完整工作项、专项设计和适用的独立审查 |
 | 持续分析 | 业务实现和技术方案调查 | ANALYSIS 工作项，产品文件只读 |

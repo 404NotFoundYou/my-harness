@@ -3,11 +3,11 @@ import { createHash } from "node:crypto";
 import { distributionPaths, INSTRUCTION_FILES, validateInstallReceipt } from "./installer.mjs";
 import { mergeManagedFile } from "./managed-block.mjs";
 import { readdir } from "node:fs/promises";
-import { readJson } from "./filesystem.mjs";
+import { readJson, resolveProjectPath } from "./filesystem.mjs";
 import { commitSnapshot, controlPath, snapshotReader, makeSnapshot, snapshotChanges, sourceSnapshot } from "./snapshot.mjs";
 import { fileFingerprint, gitResult } from "./git.mjs";
 import { fileMatchesScope, taskWriteScopes } from "./validator.mjs";
-import { planDigest } from "./verification.mjs";
+import { planDigest, readEvidence } from "./verification.mjs";
 import { invariant } from "./errors.mjs";
 
 export function plannedScopes(item, plan) {
@@ -120,6 +120,39 @@ async function applyInitialInstall(root, base, files, config) {
   if (createHash("sha256").update(JSON.stringify(project)).digest("hex") === initialInstall.metadata) files[projectPath] = installed[projectPath];
 }
 
+async function deliveryArchive(item, plan, readSnapshot) {
+  invariant(item.delivery.planDigest === planDigest(item, plan), "DELIVERY_PLAN_CHANGED", `工作项 ${item.id} 的交付计划已改变。`);
+  const source = await readSnapshot(item.delivery.source);
+  const baseline = await readSnapshot(item.delivery.baseline);
+  const changes = ownedChanges(baseline, source, plannedScopes(item, plan));
+  invariant(JSON.stringify(item.delivery.ownedChanges) === JSON.stringify(changes), "DELIVERY_OWNERSHIP_INVALID", `${item.id}: 交付归属与批准范围及快照不一致。`);
+  return { item, source, baseline, changes, baselineAt: item.delivery.baselineAt, at: item.delivery.at };
+}
+
+async function priorDeliveries(root, item, config, readSnapshot) {
+  const archives = [];
+  let evidence;
+  // Only a transition out of DONE freezes a delivery. Other rework snapshots are drafts.
+  for (const [index, step] of item.history.entries()) {
+    if (step.from !== "DONE" || !["reopen", "replan"].includes(step.action)) continue;
+    const revision = step.revision - 1;
+    const prefix = `${config.workItemsDirectory}/${item.id}/revisions/${revision}`;
+    const read = async suffix => readJson(await resolveProjectPath(root, `${prefix}-${suffix}.json`, { mustExist: true }));
+    const [saved, plan] = await Promise.all([read("state"), read("plan")]);
+    invariant(saved.id === item.id && saved.status === "DONE" && (saved.revision || 1) === revision &&
+      plan.workItemId === item.id && (plan.revision || 1) === revision && saved.plan?.approved &&
+      JSON.stringify(saved.history) === JSON.stringify(item.history.slice(0, index)),
+    "INVALID_ARCHIVED_REVISION", `${item.id}: 历史修订 ${revision} 与工作项或计划不一致。`);
+    evidence ??= await readEvidence(root, item.id);
+    const accepted = evidence.findLast(event => event.kind === "acceptance" && !event.taskId && (event.revision || 1) === revision);
+    invariant(accepted?.status === "pass" && saved.acceptance?.evidence?.includes(accepted.id) &&
+      accepted.source?.digest === saved.delivery?.source?.digest && accepted.planDigest === saved.delivery?.planDigest,
+    "INVALID_ARCHIVED_REVISION", `${item.id}: 历史修订 ${revision} 缺少对应的验收证据。`);
+    archives.push(await deliveryArchive(saved, plan, readSnapshot));
+  }
+  return archives;
+}
+
 async function compareCommitRange(root, config, base, current, ordered) {
   invariant(/^(?:[0-9a-f]{40}|[0-9a-f]{64})$/.test(base) &&
     gitResult(root, ["rev-parse", "--verify", `${base}^{commit}`], { allowFailure: true }).stdout.trim() === base &&
@@ -138,9 +171,9 @@ async function compareCommitRange(root, config, base, current, ordered) {
     const state = `${directory}/${archive.item.id}/state.json`;
     if (existing.has(state)) {
       if (!touched.has(state)) continue;
-      const previous = JSON.parse(gitResult(root, ["show", `${base}:${state}`]).stdout).delivery;
-      const delivery = archive.item.delivery;
-      if (previous?.source?.digest === delivery.source.digest && previous?.planDigest === delivery.planDigest) continue;
+      const previous = JSON.parse(gitResult(root, ["show", `${base}:${state}`]).stdout);
+      const revision = archive.item.revision || 1, baseRevision = previous.revision || 1;
+      if (revision < baseRevision || (revision === baseRevision && previous.status === "DONE")) continue;
     } else if (gitResult(root, ["--literal-pathspecs", "log", "--full-history", "-1", "--format=%H", base, "--", state]).stdout.trim()) {
       continue;
     }
@@ -170,13 +203,8 @@ export async function collectScopeErrors(root, records, items, { base = null, co
         archives.push({ item, scopes: [], ...await legacyArchive(root, item, config) });
         continue;
       }
-      invariant(item.delivery.planDigest === planDigest(item, plan), "DELIVERY_PLAN_CHANGED", `工作项 ${item.id} 的交付计划已改变。`);
-      const source = await readSnapshot(item.delivery.source);
-      const baseline = await readSnapshot(item.delivery.baseline);
-      const scopes = plannedScopes(item, plan);
-      const changes = ownedChanges(baseline, source, scopes);
-      invariant(JSON.stringify(item.delivery.ownedChanges) === JSON.stringify(changes), "DELIVERY_OWNERSHIP_INVALID", `${item.id}: 交付归属与批准范围及快照不一致。`);
-      archives.push({ item, source, baseline, changes, baselineAt: item.delivery.baselineAt, at: item.delivery.at, legacy: false });
+      if (base !== null) archives.push(...await priorDeliveries(root, item, config, readSnapshot));
+      archives.push(await deliveryArchive(item, plan, readSnapshot));
     } catch (error) { errors.push(error.message); }
   }
   const controls = items.map((item) => `${config.workItemsDirectory}/${item.id}/**`);

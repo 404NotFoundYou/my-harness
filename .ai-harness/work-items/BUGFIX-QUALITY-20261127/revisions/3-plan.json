@@ -1,0 +1,142 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "BUGFIX-QUALITY-20261127",
+  "mode": "single",
+  "rationale": "单个实施者维护相互影响的运行时、评测及安装契约，最终差异由不同上下文独立复核。",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "修复并验证五项交付契约",
+      "module": "Runtime 和 core 评测",
+      "status": "IN_REVIEW",
+      "attempt": 1,
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        ".ai-harness/src/scope.mjs",
+        ".ai-harness/src/evidence.mjs",
+        ".ai-harness/src/verification.mjs",
+        ".ai-harness/src/workflow.mjs",
+        ".ai-harness/src/validator.mjs",
+        ".ai-harness/src/model.mjs",
+        ".ai-harness/src/checker.mjs",
+        ".ai-harness/src/compact.mjs",
+        ".ai-harness/tests/reliability.test.mjs",
+        ".ai-harness/tests/workflow.test.mjs",
+        ".ai-harness/tests/installer.test.mjs",
+        ".ai-harness/tests/command-execution.test.mjs",
+        ".ai-harness/tests/validator.test.mjs",
+        "benchmarks/runner.mjs",
+        "benchmarks/audit-trial.mjs",
+        "benchmarks/experiment.mjs",
+        "benchmarks/protocol.mjs",
+        "benchmarks/execution.mjs",
+        "benchmarks/task-contract.mjs",
+        "benchmarks/tests/spec-guidance.test.mjs",
+        "benchmarks/tests/runner.test.mjs",
+        "benchmarks/tests/experiment.test.mjs",
+        "benchmarks/statistics.mjs",
+        "benchmarks/report.mjs"
+      ],
+      "verification": [
+        "{\"args\":[\"--test\",\"--test-name-pattern\",\"quality-contract\",\".ai-harness/tests/reliability.test.mjs\",\".ai-harness/tests/installer.test.mjs\",\"benchmarks/tests/spec-guidance.test.mjs\"],\"command\":\"node\",\"timeoutMs\":900000}",
+        "{\"args\":[\".ai-harness/tests/run.mjs\"],\"command\":\"node\",\"timeoutMs\":900000}",
+        "{\"args\":[\"--test\",\"benchmarks/tests/ci-matrix.test.mjs\",\"benchmarks/tests/container-driver.test.mjs\",\"benchmarks/tests/driver-diagnostics.test.mjs\",\"benchmarks/tests/driver-process.test.mjs\",\"benchmarks/tests/driver-timing.test.mjs\",\"benchmarks/tests/memory-control.test.mjs\",\"benchmarks/tests/multifile.test.mjs\",\"benchmarks/tests/preflight.test.mjs\",\"benchmarks/tests/project-v2.test.mjs\",\"benchmarks/tests/report.test.mjs\",\"benchmarks/tests/resume.test.mjs\",\"benchmarks/tests/runner.test.mjs\",\"benchmarks/tests/spec-guidance.test.mjs\",\"benchmarks/tests/status.test.mjs\"],\"command\":\"node\",\"timeoutMs\":900000}",
+        "{\"args\":[\"--test\",\"benchmarks/tests/installed-runtime.mjs\"],\"command\":\"node\",\"timeoutMs\":900000}"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            "--test",
+            "--test-name-pattern",
+            "quality-contract",
+            ".ai-harness/tests/reliability.test.mjs",
+            ".ai-harness/tests/installer.test.mjs",
+            "benchmarks/tests/spec-guidance.test.mjs"
+          ],
+          "timeoutMs": 900000
+        },
+        {
+          "id": "V2",
+          "command": "node",
+          "args": [
+            ".ai-harness/tests/run.mjs"
+          ],
+          "timeoutMs": 900000
+        },
+        {
+          "id": "V3",
+          "command": "node",
+          "args": [
+            "--test",
+            "benchmarks/tests/ci-matrix.test.mjs",
+            "benchmarks/tests/container-driver.test.mjs",
+            "benchmarks/tests/driver-diagnostics.test.mjs",
+            "benchmarks/tests/driver-process.test.mjs",
+            "benchmarks/tests/driver-timing.test.mjs",
+            "benchmarks/tests/memory-control.test.mjs",
+            "benchmarks/tests/multifile.test.mjs",
+            "benchmarks/tests/preflight.test.mjs",
+            "benchmarks/tests/project-v2.test.mjs",
+            "benchmarks/tests/report.test.mjs",
+            "benchmarks/tests/resume.test.mjs",
+            "benchmarks/tests/runner.test.mjs",
+            "benchmarks/tests/spec-guidance.test.mjs",
+            "benchmarks/tests/status.test.mjs"
+          ],
+          "timeoutMs": 900000
+        },
+        {
+          "id": "V4",
+          "command": "node",
+          "args": [
+            "--test",
+            "benchmarks/tests/installed-runtime.mjs"
+          ],
+          "timeoutMs": 900000
+        }
+      ],
+      "docsImpact": [
+        "AGENTS.md",
+        ".ai-harness/templates/instructions/AGENTS.md",
+        ".ai-harness/policies/core.md",
+        "README.md",
+        "docs/guides/usage.md",
+        "docs/guides/getting-started.md",
+        "docs/architecture/overview.md",
+        "docs/architecture/decisions/0002-trivial-task-fast-path.md",
+        "benchmarks/README.md"
+      ],
+      "reviewBatch": "R1",
+      "risk": "high",
+      "owner": "primary-ai",
+      "verificationStatus": "pass",
+      "reviewStatus": "fail",
+      "evidence": [
+        "41aa867b-5b59-460c-8195-76756784ec1e",
+        "9cad0ae8-ecf0-4950-8f7b-64c5914fda2f"
+      ],
+      "deferralApproval": null,
+      "verificationSource": {
+        "digest": "86bed3ff9d21d15b8512f8b996cf52684e715b2d120bb2db97a4d9749a118656",
+        "document": ".ai-harness/work-items/BUGFIX-QUALITY-20261127/snapshots/86bed3ff9d21d15b8512f8b996cf52684e715b2d120bb2db97a4d9749a118656.json"
+      }
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "交付证据、并发、评测和安装契约",
+      "risk": "high",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": true
+    }
+  ],
+  "createdAt": "2026-11-27T03:02:36.614Z",
+  "updatedAt": "2026-11-27T03:28:12.169Z",
+  "revision": 3
+}

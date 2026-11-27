@@ -17,12 +17,17 @@ function percentile(values, fraction) {
   return sorted[Math.floor(index)] + (sorted[Math.ceil(index)] - sorted[Math.floor(index)]) * (index % 1);
 }
 
+export function sharedDeliveryPassed({ run, scope, grade, extraTest }) {
+  return Boolean(run.completed && scope.ok && grade.ok &&
+    (extraTest === undefined || extraTest.status === "not-added" || extraTest.status === "passed"));
+}
+
 export function trialStatistics(rows) {
   const durations = rows.map(row => row.run.durationMs).filter(value => Number.isFinite(value) && value >= 0);
   const invalidFinal = row => row.run.protocolSuccess === true && !row.run.timedOut && !row.run.toolLimit && !row.run.error && parseFinal(row.run.final) === null;
   return {
     functional: rate(rows.filter(row => row.grade.ok).length, rows.length),
-    sharedDelivery: rate(rows.filter(row => row.run.completed && row.scope.ok && row.grade.ok).length, rows.length),
+    sharedDelivery: rate(rows.filter(sharedDeliveryPassed).length, rows.length),
     fullDelivery: rate(rows.filter(row => row.success).length, rows.length),
     protocolFailures: rows.filter(row => row.run.unparsedLines > 0 || row.run.errors?.length ||
       (row.run.protocolSuccess === false && !row.run.timedOut && !row.run.toolLimit && !row.run.error) || invalidFinal(row)).length,

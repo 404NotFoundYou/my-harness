@@ -72,6 +72,36 @@ export async function readEvidence(root, id) {
   });
 }
 
+function isCurrentCommand(event) {
+  return event.kind === "command" && !event.command?.obsolete && event.command?.failureReason !== "work-changed";
+}
+
+// A launched command takes its position before executing, even if its result is appended last.
+// Existing evidence has no launch checkpoint and keeps its original order.
+export function commandsInStartOrder(events) {
+  const starts = new Map(), ordered = [];
+  for (const [index, event] of events.entries()) {
+    if (event.kind === "checkpoint" && event.commandId) starts.set(event.commandId, { event, index });
+    if (!isCurrentCommand(event)) continue;
+    const start = starts.get(event.id);
+    invariant(event.command?.startRef === start?.event.id && (!start || (start.event.workItemId === event.workItemId &&
+      start.event.taskId === event.taskId && start.event.revision === event.revision && start.event.taskAttempt === event.taskAttempt)),
+    "INVALID_COMMAND_START", "命令证据与启动记录不一致。");
+    ordered.push({ index: start?.index ?? index, event });
+  }
+  return ordered.sort((a, b) => a.index - b.index).map(entry => entry.event);
+}
+
+// A taskless final check applies across tasks. Task-bound checks apply only to their attempt.
+export function laterMatchingCommands(events, event) {
+  const commands = commandsInStartOrder(events);
+  const index = commands.findIndex(candidate => candidate.id === event.id);
+  if (index < 0) return [];
+  return commands.slice(index + 1).filter(later => (later.revision || 1) === (event.revision || 1) &&
+    later.command.planDigest === event.command.planDigest && (!later.taskId || (later.taskId === event.taskId &&
+      (later.taskAttempt || 1) === (event.taskAttempt || 1))) && commandEvidenceKey(later.command) === commandEvidenceKey(event.command));
+}
+
 export function commandEvidenceKey(command) {
   invariant(command.checkTimeoutMs === undefined || (isValidCheckTimeoutMs(command.checkTimeoutMs) && command.timeoutMs === command.checkTimeoutMs),
     "INVALID_COMMAND_TIMEOUT_EVIDENCE", "命令实际超时预算必须与合法的计划预算一致。" );
@@ -93,14 +123,12 @@ export function hasFailedReview(events, item, task = null) {
 export async function assertAnalysisCommandEvidence(root, item, commandId, { snapshot = null, events = null, config, readSnapshot = reference => loadSnapshot(root, reference) } = {}) {
   invariant(item.type === "ANALYSIS" && ["ANALYZING", "ANSWERED"].includes(item.status), "ANALYSIS_COMMAND_WRONG_STAGE", "分析命令证据只属于 ANALYZING 或 ANSWERED 工作项。" );
   const evidence = events || await readEvidence(root, item.id);
-  const index = evidence.findIndex((candidate) => candidate.id === commandId);
-  const event = evidence[index];
+  const event = evidence.find(candidate => candidate.id === commandId);
   const command = event?.command;
   const reference = item.analysis.source || (item.baseline.repository?.source?.digest === command?.source?.digest ? item.baseline.repository.source : command?.source);
   const current = item.status === "ANSWERED" ? await readSnapshot(reference) : snapshot || await sourceSnapshot(root, config);
-  const subsequentFailure = command && evidence.slice(index + 1).some((later) => later.kind === "command" && later.status !== "pass" &&
-    (later.revision || 1) === (item.revision || 1) && !later.taskId && later.command && commandEvidenceKey(later.command) === commandEvidenceKey(command));
-  invariant(event?.kind === "command" && event.workItemId === item.id && !event.taskId && event.status === "pass" &&
+  const subsequentFailure = command && laterMatchingCommands(evidence, event).some(later => later.status !== "pass");
+  invariant(event && isCurrentCommand(event) && event.workItemId === item.id && !event.taskId && event.status === "pass" &&
     (event.revision || 1) === (item.revision || 1) && command?.exitCode === 0 && command.failureReason === null &&
     command.policy?.decision === "allow" && command.policy?.rule === "analysis-read-only" && !command.timedOut && !command.spawnError && !command.signal &&
     command.source?.digest === current.digest && command.sourceAfter?.digest === current.digest && !subsequentFailure,
@@ -126,8 +154,9 @@ export async function verificationReport(root, item, plan, { taskId = null, snap
   const evidence = events || await readEvidence(root, item.id);
   const digest = planDigest(item, plan);
   const latest = new Map();
-  for (const event of evidence) {
-    if (event.kind !== "command" || (event.revision || 1) !== (item.revision || 1) || !event.command || (taskId && event.taskId !== taskId)) continue;
+  const ordered = commandsInStartOrder(evidence);
+  for (const event of ordered) {
+    if ((event.revision || 1) !== (item.revision || 1) || !event.command || (taskId && event.taskId !== taskId)) continue;
     const task = plan.tasks.find((candidate) => candidate.id === event.taskId);
     if (task && (event.taskAttempt || 1) !== (task.attempt || 1)) continue;
     latest.set(JSON.stringify([event.taskId, commandEvidenceKey(event.command)]), event);
@@ -141,7 +170,7 @@ export async function verificationReport(root, item, plan, { taskId = null, snap
     event.command.planDigest === digest && event.command.source?.digest === current.digest && event.command.sourceAfter?.digest === current.digest);
   const required = plan.tasks.filter((task) => (!taskId || task.id === taskId) && task.status !== "DEFERRED")
     .flatMap((task) => checksFor(task).map((check) => ({ taskId: task.id, ...check })));
-  const positions = new Map(evidence.map((event, index) => [event.id, index]));
+  const positions = new Map(ordered.map((event, index) => [event.id, index]));
   failed = failed.filter((event) => !successful.some((later) => positions.get(later.id) > positions.get(event.id) &&
     commandEvidenceKey(later.command) === commandEvidenceKey(event.command) &&
     (!later.taskId || later.taskId === event.taskId)));
@@ -194,15 +223,11 @@ export async function assertCommandEvidence(root, item, plan, commandId, options
   const { readSnapshot = (reference) => loadSnapshot(root, reference) } = options;
   const events = options.events || await readEvidence(root, item.id);
   const current = options.snapshot || await sourceSnapshot(root);
-  const index = events.findIndex((candidate) => candidate.id === commandId);
-  const event = events[index];
+  const event = events.find(candidate => candidate.id === commandId);
   const task = plan.tasks.find((candidate) => candidate.id === event?.taskId);
   const command = event?.command;
-  const subsequentFailure = command && events.slice(index + 1).some((later) => later.kind === "command" && later.status !== "pass" &&
-    (later.revision || 1) === (item.revision || 1) && (!later.taskId || later.taskId === event.taskId) &&
-    (!later.taskId || (later.taskAttempt || 1) === (event.taskAttempt || 1)) &&
-    commandEvidenceKey(later.command) === commandEvidenceKey(command));
-  const valid = event?.kind === "command" && event.status === "pass" && command.exitCode === 0 && !command.timedOut && !command.spawnError && !command.signal &&
+  const subsequentFailure = command && laterMatchingCommands(events, event).some(later => later.status !== "pass");
+  const valid = event && isCurrentCommand(event) && event.status === "pass" && command.exitCode === 0 && !command.timedOut && !command.spawnError && !command.signal &&
     (event.revision || 1) === (item.revision || 1) && (!task || (event.taskAttempt || 1) === (task.attempt || 1)) &&
     (!options.taskId || event.taskId === options.taskId) && command.planDigest === planDigest(item, plan) &&
     command.source?.digest === current.digest && command.sourceAfter?.digest === current.digest && !subsequentFailure &&

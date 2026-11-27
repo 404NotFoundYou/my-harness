@@ -9,7 +9,7 @@ import { runRecordedCommand } from "../src/evidence.mjs";
 import { exists } from "../src/filesystem.mjs";
 import { getWorkGuide } from "../src/guide.mjs";
 import { loadBeginSpec } from "../src/input.mjs";
-import { assertCommandEvidence, planDigest, verificationReport } from "../src/verification.mjs";
+import { assertCommandEvidence, planDigest, readEvidence, verificationReport } from "../src/verification.mjs";
 import { approvePlan, editTask, loadPlan, loadWorkItem, reopenWorkItem, transitionWorkItem, updateTaskStatus } from "../src/workflow.mjs";
 import { cleanup, createInstalledProject } from "./helpers.mjs";
 
@@ -175,16 +175,19 @@ test("explicit budget evidence must agree with the actual timeout while historic
     const legacy = await run(root, "V1");
     const planned = await run(root, "V2");
     assert.deepEqual(legacy.command.checkIds, [{ taskId: "T1", checkId: "V1" }]);
-    for (const change of [{ timeoutMs: 8000 }, { timeoutMs: undefined }, { checkTimeoutMs: 0 }, { checkTimeoutMs: null }, { checkTimeoutMs: "5000" }]) {
-      const invalid = { ...planned, command: { ...planned.command, ...change } };
-      await assert.rejects(() => report(root, [legacy, invalid]), { code: "INVALID_COMMAND_TIMEOUT_EVIDENCE" });
-    }
     const old = structuredClone(legacy);
     delete old.command.timeoutMs;
-    assert.equal((await report(root, [old, planned])).ok, true);
+    delete old.command.startRef;
+    const start = (await readEvidence(root, id)).find(event => event.id === planned.command.startRef);
+    await assert.rejects(() => report(root, [old, planned]), { code: "INVALID_COMMAND_START" });
+    for (const change of [{ timeoutMs: 8000 }, { timeoutMs: undefined }, { checkTimeoutMs: 0 }, { checkTimeoutMs: null }, { checkTimeoutMs: "5000" }]) {
+      const invalid = { ...planned, command: { ...planned.command, ...change } };
+      await assert.rejects(() => report(root, [old, start, invalid]), { code: "INVALID_COMMAND_TIMEOUT_EVIDENCE" });
+    }
+    assert.equal((await report(root, [old, start, planned])).ok, true);
     const unclaimed = structuredClone(planned);
     delete unclaimed.command.checkTimeoutMs;
-    assert.deepEqual((await report(root, [old, unclaimed])).missing.map(check => check.id), ["V2"]);
+    assert.deepEqual((await report(root, [old, start, unclaimed])).missing.map(check => check.id), ["V2"]);
   } finally { await cleanup(root); }
 });
 

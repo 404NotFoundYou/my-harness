@@ -236,7 +236,7 @@ test("compatible Claude and Gemini imports remain byte-identical", async () => {
   }
 });
 
-test("installed contract keeps trivial work outside the state machine without weakening side-effect approval", async () => {
+test("quality-contract: installed contract keeps trivial work outside the state machine without weakening side-effect approval", async () => {
   const target = await temporaryTarget("ai-harness-trivial-contract-");
   try {
     await installRuntime(sourceRoot, target);
@@ -245,6 +245,10 @@ test("installed contract keeps trivial work outside the state machine without we
 
     assert.ok(block.body.includes("`TRIVIAL_READONLY`"));
     assert.ok(block.body.includes("`TRIVIAL_EDIT`"));
+    for (const text of [block.body, await readFile(path.join(target, ".ai-harness/policies/core.md"), "utf8")]) {
+      const rule = text.split("\n").find(line => line.includes("`TRIVIAL_EDIT`"));
+      for (const term of ["README.md", "docs/", "Harness-Trivial-Doc"]) assert.ok(rule.includes(term), rule);
+    }
     assert.ok(block.body.includes("不运行 Runtime 命令、不创建工作项"));
     assert.ok(block.body.includes("分类不确定时也选择此类"));
     assert.ok(block.body.includes("部署、发布、生产数据"));

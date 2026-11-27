@@ -12,7 +12,7 @@ Runtime 已定义 `TRIVIAL_READONLY` 和 `TRIVIAL_EDIT`，但启动协议与最�
 任务开始时先做一次规模判定，并选择且只选择一条路径：
 
 - `TRIVIAL_READONLY`：直接执行必要的只读检查并报告结果；不运行 Runtime 命令，不创建工作项。
-- `TRIVIAL_EDIT`：读取目标上下文，完成单文件机械修改，执行一个与改动直接相关的最窄验证并报告；不运行 Runtime 命令，不创建工作项。
+- `TRIVIAL_EDIT`：整个变更范围只机械编辑一个已有的普通文档（根 `README.md` 或 `docs/` 下的非指令 Markdown）。读取目标上下文，完成最窄验证，提交尾注写 `Harness-Trivial-Doc: <实际路径>`。
 - `NON_TRIVIAL`：按现有 `doctor -> policies -> work item` 协议执行完整门禁。
 
 所有 BUG、业务行为变化、API/Schema/依赖/配置/安全/发布变化、多文件协同修改，以及需要持续调查或方案裁量的工作均为 `NON_TRIVIAL`。分类不确定时也使用 `NON_TRIVIAL`。若轻量任务在写入前发现超出边界，必须停止快速路径并升级，不能拆成多个轻量任务规避门禁。

@@ -1,3 +1,4 @@
+import path from "node:path";
 import { SCHEMA_VERSION, nowIso } from "./constants.mjs";
 import { compileChecks } from "./commands.mjs";
 import { normalizeDocumentation } from "./input.mjs";
@@ -20,9 +21,14 @@ function pendingResult(extra = {}) {
   };
 }
 
+export function workItemPlanPath(id, directory = ".ai-harness/work-items") {
+  return path.posix.join(directory.replaceAll("\\", "/"), id, "plan.json");
+}
+
 export function createWorkItem({
   id,
   type,
+  planPath = workItemPlanPath(id),
   title,
   references,
   acceptance,
@@ -67,7 +73,7 @@ export function createWorkItem({
     solution: pendingGate(),
     database: pendingGate({ impact: "unknown" }),
     plan: {
-      path: `.ai-harness/work-items/${id}/plan.json`,
+      path: planPath,
       approved: false,
       approvalRef: null,
     },
