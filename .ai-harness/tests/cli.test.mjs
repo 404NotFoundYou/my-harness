@@ -31,6 +31,29 @@ function jsonOutput(result, stream = "stdout") {
   return JSON.parse(result[stream]);
 }
 
+test("audit-contract: missing text options cannot create a work item with invented input", async () => {
+  const root = await createInstalledProject();
+  try {
+    const entry = path.join(root, ".ai-harness/bin/harness.mjs"), id = "TEXT-OPTIONS";
+    const base = ["begin", "--id", id, "--type", "ITERATION", "--title", "Check text options",
+      "--input", "user request", "--acceptance", "preserve user intent", "--authorization-source", "local test",
+      "--risk", "low", "--approach", "check argument values", "--database-evidence", "no persistence",
+      "--writes", "feature.test.mjs", "--verify", "node --test feature.test.mjs", "--docs", "N/A: test only"];
+    const item = path.join(root, ".ai-harness/work-items", id);
+    for (const [key, args] of [["acceptance", ["--acceptance"]], ["input", ["--input", "  "]],
+      ["verify", ["--verify", "--verify", "node --test feature.test.mjs"]], ["version", ["--version="]],
+      ["title", ["--title", "--title", "later valid title"]]]) {
+      const error = jsonOutput(runCli(entry, root, [...base, ...args, "--json"], 1), "stderr");
+      assert.equal(error.code, "OPTION_REQUIRED");
+      assert.ok(error.message.includes("--" + key));
+      assert.equal(await exists(item), false);
+    }
+    runCli(entry, root, [...base, "--acceptance", "true", "--json"]);
+    const state = JSON.parse(await readFile(path.join(item, "state.json"), "utf8"));
+    assert.deepEqual(state.input.acceptance, ["preserve user intent", "true"]);
+  } finally { await cleanup(root); }
+});
+
 test("finish command help is side-effect free and does not require a project", async () => {
   const root = await mkdtemp(path.join(tmpdir(), "ai-harness-finish-help-"));
   try {

@@ -17,8 +17,9 @@ function percentile(values, fraction) {
   return sorted[Math.floor(index)] + (sorted[Math.ceil(index)] - sorted[Math.floor(index)]) * (index % 1);
 }
 
-export function sharedDeliveryPassed({ run, scope, grade, extraTest }) {
+export function sharedDeliveryPassed({ run, scope, grade, publicTest, extraTest }) {
   return Boolean(run.completed && scope.ok && grade.ok &&
+    (publicTest === undefined || publicTest.status === "passed") &&
     (extraTest === undefined || extraTest.status === "not-added" || extraTest.status === "passed"));
 }
 

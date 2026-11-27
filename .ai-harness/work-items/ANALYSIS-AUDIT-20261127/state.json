@@ -1,0 +1,189 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 1,
+  "id": "ANALYSIS-AUDIT-20261127",
+  "type": "ANALYSIS",
+  "title": "审计当前 Runtime 与评测框架的剩余问题",
+  "status": "ANSWERED",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/analysis.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户在当前会话中请求检查项目问题"
+  },
+  "input": {
+    "references": [
+      "当前 main 提交及其 Runtime、评测框架、安装与文档契约"
+    ],
+    "acceptance": [
+      "输出按优先级排序的已证实问题、风险和未检查范围"
+    ],
+    "nonGoals": [],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": null,
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "当前 main 分支与提交 dbdc6580e10a0fcc124dc3f963a0c56f9211a097，工作树含历史分析记录但产品代码未再修改"
+    ],
+    "completedAt": "2026-11-27T06:37:53.016Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "dbdc6580e10a0fcc124dc3f963a0c56f9211a097",
+      "dirty": false,
+      "changedFiles": [],
+      "fingerprints": {},
+      "source": {
+        "digest": "275cabb0b8129ebd25ea62978865d038539732e16ce34d66195896d046078f02",
+        "document": ".ai-harness/work-items/ANALYSIS-AUDIT-20261127/snapshots/275cabb0b8129ebd25ea62978865d038539732e16ce34d66195896d046078f02.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "pending",
+    "document": null,
+    "evidence": [],
+    "completedAt": null
+  },
+  "database": {
+    "status": "pending",
+    "document": null,
+    "evidence": [],
+    "completedAt": null,
+    "impact": "unknown"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/ANALYSIS-AUDIT-20261127/plan.json",
+    "approved": false,
+    "approvalRef": null
+  },
+  "verification": {
+    "status": "pending",
+    "evidence": [],
+    "stages": []
+  },
+  "review": {
+    "status": "pending",
+    "evidence": [],
+    "independent": false
+  },
+  "acceptance": {
+    "status": "pending",
+    "evidence": []
+  },
+  "analysis": {
+    "status": "pass",
+    "evidence": [
+      "18395d4c-756b-4469-83ae-fba3ec8e89e9"
+    ],
+    "conclusions": [
+      {
+        "id": "56538a16-9105-4476-bae3-71c0525635d9",
+        "status": "PROVEN",
+        "text": "本次基线为 main@dbdc658，Runtime 健康检查成功，产品文件没有未提交变更。上次五项修复包括迟到命令处理。",
+        "evidence": [
+          "当前 doctor 显示 productChangedFileCount=0。evidence.mjs 第179、188至189行会将过期结果登记后返回，reliability.test.mjs 第388至414行有对应的交付与验收回归断言。本次只查阅用例。"
+        ],
+        "commands": [
+          "cb7b26aa-2e0a-4c11-9aa8-606205f5e3a7"
+        ]
+      },
+      {
+        "id": "08caf560-201f-41c8-87ae-5cc35d15dd66",
+        "status": "PROVEN",
+        "text": "当前 Git 作者邮箱的值形似敏感信息，匹配 main 历史77个提交中的69个，包括已推送的 dbdc658。是否实际用作凭据需要本人核对。",
+        "evidence": [
+          "对 git show -s --format=%ae HEAD、当前生效的 user.email 以及 git log --format=%ae HEAD 的值进行本地等值计数。仅记录数量，不记录具体值。若曾用作凭据应立即轮换并修正后续提交身份。"
+        ]
+      },
+      {
+        "id": "10e19359-46c1-4311-b225-c729ddd90cd9",
+        "status": "INFERRED",
+        "text": "卸载合并过的项目指令文件时，如果写回用户正文失败，该文件会在原路径缺失，自动回滚也会因找不到目标而停止。",
+        "evidence": [
+          "managed-block.mjs:194 区分 remove-managed。installer.mjs:867-871 先登记操作并删除整个文件，再原子写入剩余正文。出错后第880行调用回滚前检查，第487行要求该文件存在。第900-905行保留备份。可直接对原文件执行原子替换，并按实际成功步骤回滚。本次未执行卸载或故障注入。"
+        ]
+      },
+      {
+        "id": "a12eb690-27e4-4920-b917-6a52bd5d8814",
+        "status": "PROVEN",
+        "text": "core 基准的共同交付判定没有公共测试结果，非 Harness 组在没有运行公共测试时仍可获评完整交付。",
+        "evidence": [
+          "tasks.mjs:7-8 指定公共测试，statistics.mjs:20-23、runner.mjs:309-311 只依据完成标志、范围、隐藏评分和新增自测。spec-guidance.test.mjs:267-279 的 baseline 驱动仅写候选，未新增自测时断言 success=true。CSV 公共样例 tasks.mjs:17 检查行尾连续空字段，隐藏用例 19-30 没有该样例。建议各组用同一份冻结公共测试验证最终候选，隐藏功能分单独计。"
+        ]
+      },
+      {
+        "id": "1566383d-d1ab-4c50-a313-4bbb26c2aa4b",
+        "status": "PROVEN",
+        "text": "CLI 中需要文本的重复选项缺值时，会把布尔标志转换为字符串 true，start 可因此保存一个无效的验收条件。",
+        "evidence": [
+          "cli.mjs:66-71、83-86 先将缺值设为布尔 true，再 map(String)。第291-292行经同一读取器传入 references、acceptance，validator.mjs:80-81 仅要求非空字符串。只读 policies 探针的未赋值 --flag 被报为未知策略标志 true。未让 start 创建错误工作项。建议在重复选项读取器中拒绝缺值、空白值。"
+        ]
+      },
+      {
+        "id": "c425ce73-b036-4767-91bc-ec42c452742c",
+        "status": "PROVEN",
+        "text": "本次修复与前一提交均标为 Runtime 1.13.0，安装清单内11个文件的内容已经不同，版本号不能识别下游是否含修复。",
+        "evidence": [
+          "读取 dbdc658 和 27ffcc5 的 manifest.json 并与 git diff 求交，清单文件内容变化共11项。installer.mjs:732-735、759-762 先比对版本再逐项比对安装收据，前一载荷安装的下游需定位原收据源提交。下一次分发应有可区分的补丁版本。"
+        ],
+        "commands": [
+          "f553c618-6c17-4b20-b309-5bc91978df22"
+        ]
+      }
+    ],
+    "unknowns": [],
+    "source": {
+      "digest": "275cabb0b8129ebd25ea62978865d038539732e16ce34d66195896d046078f02",
+      "document": ".ai-harness/work-items/ANALYSIS-AUDIT-20261127/snapshots/275cabb0b8129ebd25ea62978865d038539732e16ce34d66195896d046078f02.json"
+    }
+  },
+  "documentation": {
+    "status": "pending",
+    "evidence": []
+  },
+  "blocked": null,
+  "delivery": null,
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-11-27T06:36:11.134Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-11-27T06:37:52.812Z",
+      "reason": "已确认当前仓库、分支和审计范围"
+    },
+    {
+      "from": "BASELINING",
+      "to": "ANALYZING",
+      "at": "2026-11-27T06:37:53.197Z",
+      "reason": "基线已记录，开始当前源码审计"
+    },
+    {
+      "from": "ANALYZING",
+      "to": "ANSWERED",
+      "at": "2026-11-27T06:57:47.729Z",
+      "reason": "已登记五项新发现及证据、处理优先级和验证边界。"
+    }
+  ],
+  "createdAt": "2026-11-27T06:36:11.134Z",
+  "updatedAt": "2026-11-27T06:57:47.729Z"
+}

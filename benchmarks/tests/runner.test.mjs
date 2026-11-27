@@ -11,7 +11,8 @@ import { tasks } from "../tasks.mjs";
 import { budget, cleanupSandbox, createParticipant, gradeCandidate, groups, hash, inspectChanges, parseGrade, participantPrompt, runCase, summarize } from "../runner.mjs";
 import { createToolTiming, toolCategory } from "../timing.mjs";
 import { clientArguments, clientDriver, createClientEventReader, readProtocolTranscript } from "../client-drivers.mjs";
-import { experimentPlan, runExperiment } from "../experiment.mjs";
+import { experimentPlan, runExperiment, validateExperimentProtocol } from "../experiment.mjs";
+import { auditTrial } from "../audit-trial.mjs";
 import { auditExperiment } from "../audit.mjs";
 const sourceRoot=path.resolve(path.dirname(fileURLToPath(import.meta.url)),"../..");
 
@@ -297,12 +298,29 @@ test("repeated paired trials preserve independent outputs and remain explicitly 
     await writeFile(archivedTest, originalTest);
     // 只在此临时单元夹具中构造 real 协议形状，验证审计不信任自报字段；没有模型调用。
     const protocolPath=path.join(outputDirectory,"protocol.json"),originalProtocolBytes=await readFile(protocolPath),protocol = JSON.parse(originalProtocolBytes);
+    assert.equal(protocol.publicTestVersion, 1);
+    const first = plan.schedule[0], task = tasks.find(task => task.id === first.taskId);
+    const group = plan.groups.find(group => group.id === first.group);
+    const original = JSON.parse(await readFile(path.join(outputDirectory, first.directory, "result.json"), "utf8"));
+    const replay = (frozen, row) => auditTrial(outputDirectory, frozen, task, group, first.trial, JSON.stringify(row));
+    assert.equal(original.publicTest.status, "passed");
+    assert.equal(original.publicTest.sha256, hash(task.files["test/public.test.mjs"]));
+    const { publicTest, ...olderRow } = original;
+    await assert.rejects(() => replay(protocol, olderRow), /Missing test result/);
+    await assert.rejects(() => replay(protocol, { ...original, publicTest: { ...publicTest, sha256: hash("") } }), /digest differs/);
+    await assert.rejects(() => replay(protocol, { ...original, publicTest: { ...publicTest, exitCode: 1 } }));
+    const olderV4 = { ...protocol };
+    delete olderV4.publicTestVersion;
+    validateExperimentProtocol(olderV4);
+    await replay(olderV4, olderRow);
+    await assert.rejects(() => replay(olderV4, original), /Unexpected public test/);
     const brokenV4={...protocol,mode:"real"};delete brokenV4.driverIdentity;await writeFile(protocolPath,JSON.stringify(brokenV4));
     await assert.rejects(()=>auditExperiment(outputDirectory),/identity/i);
     await writeFile(protocolPath,originalProtocolBytes);
     // Preserve explicit v2 compatibility coverage; v4 ledger checks have their own tests.
     protocol.schemaVersion=2;
     delete protocol.extraTestVersion;
+    delete protocol.publicTestVersion;
     delete protocol.summaryVersion;
     delete protocol.suite;
     delete protocol.driverIdentity;
@@ -317,6 +335,7 @@ test("repeated paired trials preserve independent outputs and remain explicitly 
       const row = JSON.parse(await readFile(path.join(folder, "result.json"), "utf8"));
       row.mode = "real";
       delete row.extraTest;
+      delete row.publicTest;
       Object.assign(row.run, { mode: "real", exitCode: 0, error: null, errors: [], warnings: [], unparsedLines: 0, turnCompleted: true, protocolSuccess: true });
       await writeFile(path.join(folder, "result.json"), JSON.stringify(row));
       await writeFile(path.join(folder, "final.json"), JSON.stringify(row.run.final));

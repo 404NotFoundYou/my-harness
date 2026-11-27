@@ -449,6 +449,43 @@ test("uninstall revalidates target snapshots after backup before deleting", asyn
   }
 });
 
+for (const fault of ["apply", "later", "rollback"]) {
+  test(`audit-contract: merged project instructions survive ${fault} failure`, async context => {
+    const root = await temporaryTarget("ai-harness-merged-uninstall-"), file = path.join(root, "AGENTS.md");
+    const projectText = "# Project rules\r\n\r\nKeep this text.\r\n";
+    try {
+      await writeFile(file, projectText);
+      await installRuntime(sourceRoot, root);
+      const installed = await readFile(file, "utf8"), backups = path.join(root, ".ai-harness/backups");
+      const before = await readdir(backups);
+      let rollingBack = false, seenAtFailure;
+      const rename = fsPromises.rename;
+      context.mock.method(fsPromises, "rename", async (from, to) => {
+        if (to === file && (fault === "apply" && !rollingBack || fault === "rollback" && rollingBack)) {
+          seenAtFailure = await readFile(file, "utf8").catch(error => { if (error.code !== "ENOENT") throw error; return null; });
+          throw Object.assign(new Error("injected atomic replacement failure"), { code: "EIO" });
+        }
+        return rename(from, to);
+      });
+      syncBuiltinESMExports();
+      const hooks = {
+        beforeApply({ index }) { if (index === 1 && fault !== "apply") throw new Error("injected later failure"); },
+        beforeRollback() { rollingBack = true; },
+      };
+      await assert.rejects(() => uninstallRuntime(sourceRoot, root, { confirm: true, hooks }), {
+        code: fault === "rollback" ? "UNINSTALL_ROLLBACK_FAILED" : "UNINSTALL_ROLLED_BACK",
+      });
+      if (fault !== "later") assert.equal(seenAtFailure, fault === "apply" ? installed : projectText);
+      assert.equal(await readFile(file, "utf8"), fault === "rollback" ? projectText : installed);
+      const remaining = (await readdir(backups)).filter(entry => !before.includes(entry));
+      if (fault === "rollback") {
+        assert.equal(remaining.length, 1);
+        assert.equal(await readFile(path.join(backups, remaining[0], "AGENTS.md"), "utf8"), installed);
+      } else assert.deepEqual(remaining, []);
+    } finally { context.mock.restoreAll(); syncBuiltinESMExports(); await cleanup(root); }
+  });
+}
+
 test("uninstall rolls back partial application and retains backup if rollback fails", async () => {
   const rollbackTarget = await temporaryTarget("ai-harness-uninstall-rollback-");
   try {

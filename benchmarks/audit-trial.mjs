@@ -16,6 +16,16 @@ export async function readExperimentFile(root, relative) {
   return readFile(absolute);
 }
 
+function auditTestRun(test, entry, sha256) {
+  assert.ok(test, `Missing test result: ${entry}`);
+  assert.equal(test.entry, entry);
+  assert.equal(test.sha256, sha256, `Test digest differs: ${entry}`);
+  assert.ok(test.exitCode === null || Number.isInteger(test.exitCode));
+  assert.ok(test.signal === null || typeof test.signal === "string");
+  assert.ok(test.error === null || typeof test.error === "string");
+  assert.equal(test.status, test.exitCode === 0 && test.signal === null && test.error === null ? "passed" : "failed");
+}
+
 export async function auditTrial(directory, protocol, task, group, trial, resultText, readEvidence, protocolSha256) {
   const extended=protocol.schemaVersion>=2;
   const project=protocol.schemaVersion===3||(protocol.schemaVersion===4&&["project","project-v2"].includes(protocol.suite));
@@ -74,19 +84,17 @@ export async function auditTrial(directory, protocol, task, group, trial, result
   assert.deepEqual(row.budget, protocol.budget);
   if (row.grade.complete) assert.deepEqual(row.grade.cases.map(entry=>entry.id), task.cases.map(([id])=>id));
   assert.equal(row.grade.ok, row.grade.complete && row.grade.exitCode===0 && row.grade.cases.every(entry=>entry.pass));
+  if (protocol.publicTestVersion === 1) {
+    const entry = "test/public.test.mjs";
+    auditTestRun(row.publicTest, entry, hash(task.files[entry]));
+  } else assert.equal(row.publicTest, undefined, "Unexpected public test result in legacy or project protocol");
   if (protocol.extraTestVersion === 1) {
     const file = "test/extra.test.mjs", change = row.scope.changes.find(entry => entry.path === file);
     if (!change) assert.deepEqual(row.extraTest, { status: "not-added" });
     else if (!/^[0-9a-f]{64}$/.test(change.after)) assert.deepEqual(row.extraTest, { status: "invalid" });
     else {
-      const test = row.extraTest;
-      assert.equal(test.entry, file);
-      assert.equal(test.sha256, change.after);
-      assert.equal(test.sha256, hash(await raw(`${folder}/extra.test.mjs`)), "Extra test differs from the executed file");
-      assert.ok(test.exitCode === null || Number.isInteger(test.exitCode));
-      assert.ok(test.signal === null || typeof test.signal === "string");
-      assert.ok(test.error === null || typeof test.error === "string");
-      assert.equal(test.status, test.exitCode === 0 && !test.signal && !test.error ? "passed" : "failed");
+      assert.equal(change.after, hash(await raw(`${folder}/extra.test.mjs`)), "Extra test differs from the executed file");
+      auditTestRun(row.extraTest, file, change.after);
     }
   } else assert.equal(row.extraTest, undefined, "Unexpected extra test result in legacy or project protocol");
   assert.equal(row.success, Boolean(sharedDeliveryPassed(row) && (!group.harness || row.workflow?.ok)));

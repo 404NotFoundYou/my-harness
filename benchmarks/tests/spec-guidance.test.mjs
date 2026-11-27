@@ -12,6 +12,7 @@ import { groups, participantPrompt, runCase } from "../runner.mjs";
 import { taskManifest } from "../task-contract.mjs";
 import { experimentPlan, runExperiment } from "../experiment.mjs";
 import { auditExperiment } from "../audit.mjs";
+import { createComparisonReport } from "../report.mjs";
 import fsPromises from "node:fs/promises";
 import { syncBuiltinESMExports } from "node:module";
 import { loadBeginSpec } from "../../.ai-harness/src/input.mjs";
@@ -263,6 +264,38 @@ for (const mutation of ["edit", "delete", "linked-type"]) {
     } finally { context.mock.restoreAll(); syncBuiltinESMExports(); await cleanup(directory); }
   });
 }
+
+test("audit-contract: the frozen public CSV contract gates delivery even when hidden cases pass", async () => {
+  const directory = await temporary(), outputDirectory = path.join(directory, "experiment");
+  const task = tasks[0], file = "test/public.test.mjs";
+  const plan = experimentPlan({ weak: "fixture", comparison: "paired" });
+  // Simulate a CSV repair that loses the last empty field at EOF.
+  const candidate = task.reference.replace("if (!ended) { row.push(field);", "if (!ended) { if (field || !text.endsWith(',')) row.push(field);");
+  try {
+    let index = 0;
+    await runExperiment({ plan, sourceRoot, outputDirectory, mode: "simulated", driver: async ({root, outputDirectory: trialDir}) => {
+      const entry = plan.schedule[index++], current = tasks.find(item => item.id === entry.taskId);
+      await writeFile(path.join(root, current.entry), current === task ? candidate : current.reference);
+      if (current === task && entry.group === "weak-harness") await writeFile(path.join(root, file), "// changed participant copy\n");
+      await writeFile(path.join(trialDir, "events.jsonl"), '{"type":"synthetic"}\n');
+      return synthetic();
+    }});
+    const report = await createComparisonReport({ outputDirectory });
+    assert.equal(report.ok, true);
+    const pair = report.pairs.find(pair => pair.taskId === task.id);
+    for (const side of [pair.baseline, pair.harness]) {
+      assert.equal(side.functional, true);
+      assert.equal(side.sharedDelivery, false);
+      assert.equal(side.fullDelivery, false);
+      assert.ok(side.failures.includes("public-test-failed"));
+      const row = await read(path.join(outputDirectory, side.resultFile));
+      assert.equal(row.scope.ok, side === pair.baseline);
+      assert.equal(row.falseCompletion, true);
+      assert.equal(row.publicTest.entry, file);
+      assert.equal(row.publicTest.exitCode, 1);
+    }
+  } finally { await cleanup(directory); }
+});
 
 test("quality-contract: failing optional core tests prevent delivery while hidden scoring stays independent", async () => {
   const directory = await temporary(), task = tasks[0], group = groups("fixture", "reference")[0];

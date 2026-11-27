@@ -74,16 +74,17 @@ export function parseArgs(argv) {
 }
 
 function one(parsed, key, { required = false, defaultValue = null } = {}) {
-  const value = parsed.options[key];
-  const selected = Array.isArray(value) ? value.at(-1) : value;
-  if (required) invariant(typeof selected === "string" && selected.trim(), "OPTION_REQUIRED", `缺少 --${key}。`);
+  const selected = many(parsed, key).at(-1);
+  if (required) invariant(selected !== undefined, "OPTION_REQUIRED", `缺少 --${key}。`);
   return selected ?? defaultValue;
 }
 
 function many(parsed, key) {
   const value = parsed.options[key];
   if (value === undefined) return [];
-  return (Array.isArray(value) ? value : [value]).map(String);
+  const values = Array.isArray(value) ? value : [value];
+  invariant(values.every(item => typeof item === "string" && item.trim()), "OPTION_REQUIRED", `--${key} 需要非空文本。`);
+  return values;
 }
 
 function flag(parsed, key) {

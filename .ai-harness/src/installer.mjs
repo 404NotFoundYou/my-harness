@@ -865,11 +865,12 @@ export async function uninstallRuntime(sourceRoot, target, { dryRun = false, con
     for (const [index, operation] of mutations.entries()) {
       await callUninstallHook(hooks, "beforeApply", { operation, index, backupRoot });
       await assertUninstallOperationUnchanged(targetRoot, operation);
-      applied.push(operation);
-      await rm(operation.targetPath, { force: true });
       if (operation.action === "remove-managed") {
         await writeFileAtomic(operation.targetPath, operation.content);
+      } else {
+        await rm(operation.targetPath);
       }
+      applied.push(operation);
     }
     await removeEmptyOperationDirectories(targetRoot, mutations);
   } catch (error) {
@@ -891,8 +892,7 @@ export async function uninstallRuntime(sourceRoot, target, { dryRun = false, con
           "UNINSTALL_BACKUP_INVALID",
           `卸载备份哈希无效：${operation.relative}`,
         );
-        await rm(operation.targetPath, { force: true });
-        await writeFileAtomic(operation.targetPath, backupContent);
+        await writeFileAtomic(operation.targetPath, backupContent, { exclusive: operation.action !== "remove-managed" });
       } catch (rollbackError) {
         rollbackErrors.push({ relative: operation.relative, cause: rollbackError.message });
       }

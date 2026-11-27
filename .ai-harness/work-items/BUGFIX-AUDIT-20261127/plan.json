@@ -1,0 +1,131 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "BUGFIX-AUDIT-20261127",
+  "mode": "single",
+  "rationale": "单一实现负责人按同一审计交付，独立审查 R1。",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "修复五项审计发现并保留兼容与回归证据",
+      "module": "runtime-benchmarks",
+      "status": "COMPLETED",
+      "attempt": 1,
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        ".ai-harness/src/installer.mjs",
+        ".ai-harness/src/cli.mjs",
+        ".ai-harness/tests/installer.test.mjs",
+        ".ai-harness/tests/cli.test.mjs",
+        ".ai-harness/manifest.json",
+        "README.md",
+        "docs/versions/history.md",
+        "benchmarks/README.md",
+        "benchmarks/runner.mjs",
+        "benchmarks/statistics.mjs",
+        "benchmarks/experiment.mjs",
+        "benchmarks/audit-trial.mjs",
+        "benchmarks/report.mjs",
+        "benchmarks/tests/runner.test.mjs",
+        "benchmarks/tests/spec-guidance.test.mjs",
+        "benchmarks/tests/report.test.mjs"
+      ],
+      "verification": [
+        "{\"command\":\"node\",\"timeoutMs\":900000,\"args\":[\"--test\",\"--test-name-pattern\",\"audit-contract\",\".ai-harness/tests/installer.test.mjs\",\".ai-harness/tests/cli.test.mjs\",\"benchmarks/tests/spec-guidance.test.mjs\"]}",
+        "{\"command\":\"node\",\"timeoutMs\":900000,\"args\":[\".ai-harness/tests/run.mjs\"]}",
+        "{\"command\":\"node\",\"timeoutMs\":900000,\"args\":[\"--test\",\"benchmarks/tests/ci-matrix.test.mjs\",\"benchmarks/tests/container-driver.test.mjs\",\"benchmarks/tests/driver-diagnostics.test.mjs\",\"benchmarks/tests/driver-process.test.mjs\",\"benchmarks/tests/driver-timing.test.mjs\",\"benchmarks/tests/memory-control.test.mjs\",\"benchmarks/tests/multifile.test.mjs\",\"benchmarks/tests/preflight.test.mjs\",\"benchmarks/tests/project-v2.test.mjs\",\"benchmarks/tests/report.test.mjs\",\"benchmarks/tests/resume.test.mjs\",\"benchmarks/tests/runner.test.mjs\",\"benchmarks/tests/spec-guidance.test.mjs\",\"benchmarks/tests/status.test.mjs\"]}",
+        "{\"command\":\"node\",\"timeoutMs\":900000,\"args\":[\"--test\",\"benchmarks/tests/installed-runtime.mjs\"]}"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            "--test",
+            "--test-name-pattern",
+            "audit-contract",
+            ".ai-harness/tests/installer.test.mjs",
+            ".ai-harness/tests/cli.test.mjs",
+            "benchmarks/tests/spec-guidance.test.mjs"
+          ],
+          "timeoutMs": 900000
+        },
+        {
+          "id": "V2",
+          "command": "node",
+          "args": [
+            ".ai-harness/tests/run.mjs"
+          ],
+          "timeoutMs": 900000
+        },
+        {
+          "id": "V3",
+          "command": "node",
+          "args": [
+            "--test",
+            "benchmarks/tests/ci-matrix.test.mjs",
+            "benchmarks/tests/container-driver.test.mjs",
+            "benchmarks/tests/driver-diagnostics.test.mjs",
+            "benchmarks/tests/driver-process.test.mjs",
+            "benchmarks/tests/driver-timing.test.mjs",
+            "benchmarks/tests/memory-control.test.mjs",
+            "benchmarks/tests/multifile.test.mjs",
+            "benchmarks/tests/preflight.test.mjs",
+            "benchmarks/tests/project-v2.test.mjs",
+            "benchmarks/tests/report.test.mjs",
+            "benchmarks/tests/resume.test.mjs",
+            "benchmarks/tests/runner.test.mjs",
+            "benchmarks/tests/spec-guidance.test.mjs",
+            "benchmarks/tests/status.test.mjs"
+          ],
+          "timeoutMs": 900000
+        },
+        {
+          "id": "V4",
+          "command": "node",
+          "args": [
+            "--test",
+            "benchmarks/tests/installed-runtime.mjs"
+          ],
+          "timeoutMs": 900000
+        }
+      ],
+      "docsImpact": [
+        "README.md",
+        "docs/versions/history.md",
+        "benchmarks/README.md"
+      ],
+      "reviewBatch": "R1",
+      "risk": "high",
+      "owner": "primary-ai",
+      "verificationStatus": "pass",
+      "reviewStatus": "pass",
+      "evidence": [
+        "ff4e78b5-a101-4aa9-98ab-653717382868",
+        "07d9f5c2-48d9-45ec-8ceb-f428a1313c6d"
+      ],
+      "deferralApproval": null,
+      "verificationSource": {
+        "digest": "a4a4106000dc6feb9d03f3806241fe25f8097f6253f1036939b5ab9884619ba7",
+        "document": ".ai-harness/work-items/BUGFIX-AUDIT-20261127/snapshots/a4a4106000dc6feb9d03f3806241fe25f8097f6253f1036939b5ab9884619ba7.json"
+      },
+      "reviewSource": {
+        "digest": "a4a4106000dc6feb9d03f3806241fe25f8097f6253f1036939b5ab9884619ba7",
+        "document": ".ai-harness/work-items/BUGFIX-AUDIT-20261127/snapshots/a4a4106000dc6feb9d03f3806241fe25f8097f6253f1036939b5ab9884619ba7.json"
+      }
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "卸载、评测、CLI 及安装版本",
+      "risk": "high",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": true
+    }
+  ],
+  "createdAt": "2026-11-27T08:44:19.989Z",
+  "updatedAt": "2026-11-27T09:10:46.421Z"
+}

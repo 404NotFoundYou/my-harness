@@ -77,6 +77,7 @@ function trial(row,entry){
   const failures=[];
   if(!row.grade.ok)failures.push("functional-failed");
   if(!row.scope.ok)failures.push("scope-failed");
+  if(row.publicTest?.status === "failed")failures.push("public-test-failed");
   if(["failed", "invalid"].includes(row.extraTest?.status))failures.push("extra-test-failed");
   if(row.run.timedOut)failures.push("timeout");
   if(row.run.toolLimit)failures.push("tool-limit");

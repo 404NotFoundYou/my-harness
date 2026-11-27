@@ -1,0 +1,346 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 1,
+  "id": "BUGFIX-AUDIT-20261127",
+  "type": "BUGFIX",
+  "title": "修复卸载原子性、公共评测、CLI 缺值及发布标识",
+  "status": "DONE",
+  "flags": [],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/bugfix.md",
+    ".ai-harness/policies/verification.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户要求修改上一轮审计列出的五项问题"
+  },
+  "input": {
+    "references": [
+      "本轮用户请求及 ANALYSIS-AUDIT-20261127 审计结论"
+    ],
+    "acceptance": [
+      "卸载写回失败保留原文，后续失败可回滚已应用步骤",
+      "新 core 试次统一执行冻结公共测试并用结果判定交付，既有协议可审计",
+      "明示但缺值的文本参数在持久化前报错，有效重复文本及布尔开关兼容",
+      "安装清单标记 1.13.1，后续 Git 身份在仓库本地核对"
+    ],
+    "nonGoals": [],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": {
+    "actual": "卸载先删规则文件，core 交付缺少独立公共测试结果，CLI 可保存无值选项，同版本载荷不一致，Git 作者邮箱需修正",
+    "expected": "卸载原子替换并准确回滚，按公开样例判定最终交付，缺值及时失败，安装版本和本地提交身份可区分",
+    "reproduction": "受控文件替换失败、仅通过隐藏样例的基准候选、缺值 CLI 参数分别建立回归，核对清单及局部 Git 配置"
+  },
+  "baseline": {
+    "status": "complete",
+    "document": ".ai-harness/work-items/ANALYSIS-AUDIT-20261127/state.json",
+    "evidence": [
+      "main@dbdc658，doctor 成功，未跟踪的历史分析归属已区分，变更前产品树干净。"
+    ],
+    "completedAt": "2026-11-27T08:42:40.065Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "dbdc6580e10a0fcc124dc3f963a0c56f9211a097",
+      "dirty": false,
+      "changedFiles": [],
+      "fingerprints": {},
+      "source": {
+        "digest": "275cabb0b8129ebd25ea62978865d038539732e16ce34d66195896d046078f02",
+        "document": ".ai-harness/work-items/BUGFIX-AUDIT-20261127/snapshots/275cabb0b8129ebd25ea62978865d038539732e16ce34d66195896d046078f02.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": ".ai-harness/work-items/ANALYSIS-AUDIT-20261127/state.json",
+    "evidence": [
+      "卸载成功后登记操作，冻结公开测试结果并复用现有评分进程、保留旧实验的审计规则，在 CLI 文本读取处校验每次赋值，更新补丁号与本地 Git 配置。"
+    ],
+    "completedAt": "2026-11-27T08:42:40.396Z"
+  },
+  "database": {
+    "impact": "none",
+    "status": "not-applicable",
+    "document": null,
+    "evidence": [
+      "涉及本地文件、CLI 和实验结果 JSON，项目没有数据库调用或迁移。"
+    ],
+    "completedAt": "2026-11-27T08:42:40.502Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/BUGFIX-AUDIT-20261127/plan.json",
+    "approved": true,
+    "approvalRef": "用户授权修改已审计的五项问题，完整流程与本地验证"
+  },
+  "verification": {
+    "status": "pass",
+    "evidence": [
+      "6a46aef3-2bb2-401b-8374-dae7aeeac662",
+      "63d6b31c-9f58-4f34-ae4e-406b78005e78",
+      "8e673df2-5872-41f3-868a-3be0d94fa314",
+      "01f4aad4-4301-4c22-99c7-0e6372472d6a"
+    ],
+    "stages": [
+      {
+        "stage": "static",
+        "status": "pass",
+        "evidence": [
+          "6a46aef3-2bb2-401b-8374-dae7aeeac662"
+        ],
+        "command": null,
+        "revision": 1,
+        "source": {
+          "digest": "a4a4106000dc6feb9d03f3806241fe25f8097f6253f1036939b5ab9884619ba7",
+          "document": ".ai-harness/work-items/BUGFIX-AUDIT-20261127/snapshots/a4a4106000dc6feb9d03f3806241fe25f8097f6253f1036939b5ab9884619ba7.json"
+        },
+        "planDigest": "1efbe9c0c300f9ebd8ee1e503466e3abef9c4a5077e56b3e3770d0aab4d6c04c"
+      },
+      {
+        "stage": "sandbox",
+        "status": "pass",
+        "evidence": [
+          "63d6b31c-9f58-4f34-ae4e-406b78005e78"
+        ],
+        "command": null,
+        "revision": 1,
+        "source": {
+          "digest": "a4a4106000dc6feb9d03f3806241fe25f8097f6253f1036939b5ab9884619ba7",
+          "document": ".ai-harness/work-items/BUGFIX-AUDIT-20261127/snapshots/a4a4106000dc6feb9d03f3806241fe25f8097f6253f1036939b5ab9884619ba7.json"
+        },
+        "planDigest": "1efbe9c0c300f9ebd8ee1e503466e3abef9c4a5077e56b3e3770d0aab4d6c04c"
+      },
+      {
+        "stage": "reproduction",
+        "status": "pass",
+        "evidence": [
+          "8e673df2-5872-41f3-868a-3be0d94fa314"
+        ],
+        "command": "efd16299-2c0d-4260-9176-304e2ca4c77c",
+        "revision": 1,
+        "source": {
+          "digest": "a4a4106000dc6feb9d03f3806241fe25f8097f6253f1036939b5ab9884619ba7",
+          "document": ".ai-harness/work-items/BUGFIX-AUDIT-20261127/snapshots/a4a4106000dc6feb9d03f3806241fe25f8097f6253f1036939b5ab9884619ba7.json"
+        },
+        "planDigest": "1efbe9c0c300f9ebd8ee1e503466e3abef9c4a5077e56b3e3770d0aab4d6c04c"
+      },
+      {
+        "stage": "regression",
+        "status": "pass",
+        "evidence": [
+          "01f4aad4-4301-4c22-99c7-0e6372472d6a"
+        ],
+        "command": "4023165e-6c08-4fd2-822d-f6e202cc4da7",
+        "revision": 1,
+        "source": {
+          "digest": "a4a4106000dc6feb9d03f3806241fe25f8097f6253f1036939b5ab9884619ba7",
+          "document": ".ai-harness/work-items/BUGFIX-AUDIT-20261127/snapshots/a4a4106000dc6feb9d03f3806241fe25f8097f6253f1036939b5ab9884619ba7.json"
+        },
+        "planDigest": "1efbe9c0c300f9ebd8ee1e503466e3abef9c4a5077e56b3e3770d0aab4d6c04c"
+      }
+    ],
+    "source": {
+      "digest": "a4a4106000dc6feb9d03f3806241fe25f8097f6253f1036939b5ab9884619ba7",
+      "document": ".ai-harness/work-items/BUGFIX-AUDIT-20261127/snapshots/a4a4106000dc6feb9d03f3806241fe25f8097f6253f1036939b5ab9884619ba7.json"
+    }
+  },
+  "review": {
+    "status": "pass",
+    "evidence": [
+      "abce022e-6885-4fe8-94f3-fe7f73ee0006"
+    ],
+    "independent": true,
+    "source": {
+      "digest": "a4a4106000dc6feb9d03f3806241fe25f8097f6253f1036939b5ab9884619ba7",
+      "document": ".ai-harness/work-items/BUGFIX-AUDIT-20261127/snapshots/a4a4106000dc6feb9d03f3806241fe25f8097f6253f1036939b5ab9884619ba7.json"
+    }
+  },
+  "acceptance": {
+    "status": "pass",
+    "evidence": [
+      "b0be3136-131b-48e8-ba3e-a9b904a5cf93"
+    ],
+    "cleanup": [
+      "cleaned=独立测试清理了本轮拥有的安装夹具、公共和隐藏评测目录以及下游升级仓库，均无活动依赖",
+      "released=测试退出后按本工作项创建 UTC 时间和测试前缀扫描系统临时目录，本轮匹配残留为零",
+      "retained=当前工作项证据用于审计，原有分析目录和早于本轮的夹具不属于本次清理范围"
+    ],
+    "source": {
+      "digest": "a4a4106000dc6feb9d03f3806241fe25f8097f6253f1036939b5ab9884619ba7",
+      "document": ".ai-harness/work-items/BUGFIX-AUDIT-20261127/snapshots/a4a4106000dc6feb9d03f3806241fe25f8097f6253f1036939b5ab9884619ba7.json"
+    }
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "pass",
+    "evidence": [
+      "1b03c5a2-ff8e-4f2f-a7e3-dfad8044279f"
+    ]
+  },
+  "blocked": null,
+  "delivery": {
+    "cleanupVersion": 1,
+    "source": {
+      "digest": "a4a4106000dc6feb9d03f3806241fe25f8097f6253f1036939b5ab9884619ba7",
+      "document": ".ai-harness/work-items/BUGFIX-AUDIT-20261127/snapshots/a4a4106000dc6feb9d03f3806241fe25f8097f6253f1036939b5ab9884619ba7.json"
+    },
+    "baseline": {
+      "digest": "275cabb0b8129ebd25ea62978865d038539732e16ce34d66195896d046078f02",
+      "document": ".ai-harness/work-items/BUGFIX-AUDIT-20261127/snapshots/275cabb0b8129ebd25ea62978865d038539732e16ce34d66195896d046078f02.json"
+    },
+    "baselineAt": "2026-11-27T08:42:40.065Z",
+    "ownedChanges": [
+      {
+        "path": ".ai-harness/manifest.json",
+        "before": "100644:ba9352b3f812cc9d089b3c731dcb98aca0a76b6f",
+        "after": "100644:2e4e650d589ce68eeaeeb07e84486329ce5b316c"
+      },
+      {
+        "path": ".ai-harness/src/cli.mjs",
+        "before": "100644:a8b21664616b308790113a976ee57a1d0afdac44",
+        "after": "100644:d8d1f3f3ba2cc201e64b79b01735748597b1c983"
+      },
+      {
+        "path": ".ai-harness/src/installer.mjs",
+        "before": "100644:c56434c2bf6b5bb2c2fa8082295ef5cc379e189c",
+        "after": "100644:e6387e65add50336fc3f79d0612bc9adeadd30f3"
+      },
+      {
+        "path": ".ai-harness/tests/cli.test.mjs",
+        "before": "100644:d9e42b1b7d8df3b4cdbc6b4fe185c95479881921",
+        "after": "100644:36c950b7b68c10e2a04533c177b4014afe9b0f4b"
+      },
+      {
+        "path": ".ai-harness/tests/installer.test.mjs",
+        "before": "100644:90c0a31e219c2bbd114ff5fdeee8ac09c3c5683f",
+        "after": "100644:754bcde82dbc93d499e790f5e0816f41dee0a496"
+      },
+      {
+        "path": "README.md",
+        "before": "100644:da3acdcac5d987c89f2618f7758a35a1ae18f62f",
+        "after": "100644:adb6fcb0e8820f3b3d58cc3b2bfa3a5b13a767dc"
+      },
+      {
+        "path": "benchmarks/README.md",
+        "before": "100644:46f0b39c9bd8f36e741d9aba3728a037db32a532",
+        "after": "100644:b3fee75932ed71f383ef791cc0e505df46276378"
+      },
+      {
+        "path": "benchmarks/audit-trial.mjs",
+        "before": "100644:44389ac94db2814d341ce0c43a5e723795e4611d",
+        "after": "100644:571c5d82cefae09b1c621ffc778fad8df8198849"
+      },
+      {
+        "path": "benchmarks/experiment.mjs",
+        "before": "100644:198387ea2f725c22ae4deeb70888b1b4eadfeb2c",
+        "after": "100644:43bc12115b1ab1483f4007e433bdcdaad7d98cec"
+      },
+      {
+        "path": "benchmarks/report.mjs",
+        "before": "100644:6f676c7d2beff2b7b8f94fcf7575e0a0206cc0a7",
+        "after": "100644:29eb72a22330deeb5e281320bd721abcbfc41bdd"
+      },
+      {
+        "path": "benchmarks/runner.mjs",
+        "before": "100644:e43d93703cfe5d0877e96f3ed77253093164a27d",
+        "after": "100644:7e573bbbbb28a0f782faf2e30121378f211b2ddd"
+      },
+      {
+        "path": "benchmarks/statistics.mjs",
+        "before": "100644:d199cb1c3cfebbf8d4cab255cc56ae310065b25c",
+        "after": "100644:8d459ba7d07f75bc55dc4457f78024b9db6e448d"
+      },
+      {
+        "path": "benchmarks/tests/runner.test.mjs",
+        "before": "100644:fc2810c9bce17f17cd0588941fd4591d32b95a68",
+        "after": "100644:3be231e5e35a8bdd76240ed1c9c3858a9e01b790"
+      },
+      {
+        "path": "benchmarks/tests/spec-guidance.test.mjs",
+        "before": "100644:cb197e1b917c8afd4c65ad7d0e4b2ca6fd9d5c44",
+        "after": "100644:2605cd57985f589b0a979f5383c122ccd58ff508"
+      },
+      {
+        "path": "docs/versions/history.md",
+        "before": "100644:8b4844e63c059008d5770661f82b85c7e5b5e7bb",
+        "after": "100644:053cc1d1177042c609a8883a2916b0118a012568"
+      }
+    ],
+    "planDigest": "1efbe9c0c300f9ebd8ee1e503466e3abef9c4a5077e56b3e3770d0aab4d6c04c",
+    "at": "2026-11-27T09:10:53.081Z",
+    "head": "dbdc6580e10a0fcc124dc3f963a0c56f9211a097"
+  },
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-11-27T08:42:39.668Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-11-27T08:42:39.836Z",
+      "reason": "已核对当前产品文件与上轮审计基线"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-11-27T08:42:40.286Z",
+      "reason": "审计已记录实际行为、影响范围和复现条件"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-11-27T08:44:20.516Z",
+      "reason": "验证和独立审查范围已登记"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-11-27T08:44:20.631Z",
+      "reason": "开始使用冻结计划建立回归"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "VERIFYING",
+      "at": "2026-11-27T09:10:46.536Z",
+      "reason": "T1 的计划检查和独立差异审查通过"
+    },
+    {
+      "from": "VERIFYING",
+      "to": "CODE_REVIEW",
+      "at": "2026-11-27T09:10:49.038Z",
+      "reason": "有序验证及文档同步均通过"
+    },
+    {
+      "from": "CODE_REVIEW",
+      "to": "READY_FOR_ACCEPTANCE",
+      "at": "2026-11-27T09:10:50.210Z",
+      "reason": "R1 对当前工作树的独立审查通过"
+    },
+    {
+      "from": "READY_FOR_ACCEPTANCE",
+      "to": "DONE",
+      "at": "2026-11-27T09:10:53.208Z",
+      "reason": "已对照审计范围验收并检查本轮临时资源"
+    }
+  ],
+  "createdAt": "2026-11-27T08:42:39.668Z",
+  "updatedAt": "2026-11-27T09:10:53.208Z"
+}

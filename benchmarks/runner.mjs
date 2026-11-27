@@ -138,6 +138,7 @@ export function parseGrade(output, marker, expectedIds, exitCode) {
   return { complete, ok: exitCode === 0 && complete && cases.every(row => row.pass), cases, expectedCases: expectedIds.length };
 }
 
+const publicTestPath = "test/public.test.mjs";
 const extraTestPath = "test/extra.test.mjs";
 
 function runGradingProcess(root, entry) {
@@ -147,16 +148,16 @@ function runGradingProcess(root, entry) {
   });
 }
 
-async function runCoreExtraTest(task, implementation, bytes) {
-  const root = await temporary("ai-harness-extra-test-");
+async function runCoreTest(task, implementation, entry, bytes = task.files[entry]) {
+  const root = await temporary("ai-harness-core-test-");
   try {
-    for (const [file, content] of Object.entries(task.files)) {
+    const files = { ...task.files, [task.entry]: implementation, [entry]: bytes };
+    for (const [file, content] of Object.entries(files)) {
       await mkdir(path.dirname(path.join(root, file)), { recursive: true });
-      await writeFile(path.join(root, file), file === task.entry ? implementation : content);
+      await writeFile(path.join(root, file), content);
     }
-    await writeFile(path.join(root, extraTestPath), bytes);
-    const run = runGradingProcess(root, extraTestPath);
-    return { status: run.status === 0 && !run.error && !run.signal ? "passed" : "failed", entry: extraTestPath,
+    const run = runGradingProcess(root, entry);
+    return { status: run.status === 0 && !run.error && !run.signal ? "passed" : "failed", entry,
       sha256: hash(bytes), exitCode: run.status, signal: run.signal, error: run.error?.code ?? null };
   } finally { await cleanupSandbox(root); }
 }
@@ -284,7 +285,7 @@ export async function runCase({ task, group, sourceRoot, outputDirectory, driver
       const bytes = await readFile(file);
       if (hash(bytes) !== extra.after) throw new Error("Extra test changed during collection");
       await writeFile(path.join(outputDirectory, "extra.test.mjs"), bytes);
-      if (task.writableFiles === undefined) extraTest = await runCoreExtraTest(task, implementation, bytes);
+      if (task.writableFiles === undefined) extraTest = await runCoreTest(task, implementation, extraTestPath, bytes);
     }
     let workflow = null;
     if (group.harness) {
@@ -307,7 +308,11 @@ export async function runCase({ task, group, sourceRoot, outputDirectory, driver
       } catch (error) { workflow = { ok: false, errors: [redact(error.message)] }; }
     }
     const grade = await gradeCandidate(task, implementation);
-    const delivery = { run, scope, grade, ...(task.writableFiles === undefined ? { extraTest } : {}) };
+    const delivery = { run, scope, grade };
+    if (task.writableFiles === undefined) {
+      delivery.publicTest = await runCoreTest(task, implementation, publicTestPath);
+      delivery.extraTest = extraTest;
+    }
     const success = Boolean(sharedDeliveryPassed(delivery) && (!group.harness || workflow?.ok));
     const result = { schemaVersion: task.writableFiles === undefined ? 1 : 2, trial, mode: run.mode, client: run.client || "codex", taskId: task.id, split: task.split, group: group.id, model: group.model,
       taskDigest: hash(JSON.stringify(task.files)), judgeDigest: hash(JSON.stringify(task.cases)), candidateDigest: task.writableFiles === undefined ? hash(implementation) : candidateDigest(task,implementation), budget: runBudget,
