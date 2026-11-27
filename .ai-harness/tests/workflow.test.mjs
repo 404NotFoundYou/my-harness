@@ -74,7 +74,7 @@ test("iteration completes only through solution, database, plan, task, review an
     await transitionWorkItem(root, "ITER-1", "CODE_REVIEW");
     await recordResult(root, "ITER-1", { kind: "review", status: "pass", summary: "final diff reviewed" });
     await transitionWorkItem(root, "ITER-1", "READY_FOR_ACCEPTANCE");
-    await recordResult(root, "ITER-1", { kind: "acceptance", status: "pass", summary: "authorized test acceptance" });
+    await recordResult(root, "ITER-1", { kind: "acceptance", status: "pass", summary: "authorized test acceptance", cleanup: ["none=isolated source fixture produced no obsolete build or test packages"] });
     const done = await transitionWorkItem(root, "ITER-1", "DONE");
     assert.equal(done.status, "DONE");
     const check = await checkProject(root, { ci: true });
@@ -354,4 +354,27 @@ test("review fixes: rejected and interrupted plan additions leave the plan and a
     await add();
     assert.equal((await readFile(paths.events, "utf8")).split('"batchId":"R2"').length - 1, 1);
   } finally { t.mock.restoreAll(); syncBuiltinESMExports(); await cleanup(root); }
+});
+
+for (const partial of [false, true]) test("state transition retries exactly once after " + (partial ? "partial" : "failed") + " audit append", async context => {
+  const root = await createInstalledProject();
+  const id = "TRANSITION-IO";
+  try {
+    await createWorkItemState(root, { id, type: "ITERATION", title: "transition", references: ["request"], acceptance: ["consistent on retry"], authorizationMode: "autonomous", authorizationSource: "fixture" });
+    const paths = await workItemPaths(root, id);
+    const before = await Promise.all([paths.state, paths.events].map(file => readFile(file)));
+    const append = fsPromises.appendFile;
+    const fault = context.mock.method(fsPromises, "appendFile", async (file, data, ...rest) => {
+      if (file !== paths.events) return append(file, data, ...rest);
+      if (partial) await append(file, data.slice(0, 19));
+      throw Object.assign(new Error("injected audit failure"), { code: "EIO" });
+    });
+    syncBuiltinESMExports();
+    await assert.rejects(() => transitionWorkItem(root, id, "BASELINING"), { code: "EIO" });
+    fault.mock.restore(); syncBuiltinESMExports();
+    assert.deepEqual(await Promise.all([paths.state, paths.events].map(file => readFile(file))), before);
+    assert.equal((await transitionWorkItem(root, id, "BASELINING")).history.length, 2);
+    assert.equal((await readFile(paths.events, "utf8")).trim().split("\n").map(JSON.parse).filter(event => event.action === "state-transition").length, 1);
+    assert.deepEqual((await checkProject(root)).errors, []);
+  } finally { context.mock.restoreAll(); syncBuiltinESMExports(); await cleanup(root); }
 });

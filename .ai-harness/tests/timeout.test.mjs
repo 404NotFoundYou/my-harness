@@ -24,7 +24,7 @@ const options = verification => ({
   writeScopes: [runner, ".ai-harness/config.json"], verification: verification.map(value => JSON.stringify(value)),
   docsImpact: ["N/A: isolated fixture"],
 });
-const verdict = { verification: "declared checks passed", review: "fixture assertions checked", documentation: "N/A: isolated fixture", acceptance: "budget and evidence contract verified" };
+const verdict = { verification: "declared checks passed", review: "fixture assertions checked", documentation: "N/A: isolated fixture", acceptance: "budget and evidence contract verified", cleanup: ["none=isolated source fixture produced no obsolete build or test packages"] };
 const run = (root, checkId) => runRecordedCommand(root, { id, taskId: "T1", checkId });
 const direct = (root, args) => runRecordedCommand(root, { id, taskId: "T1", command: "node", args });
 async function report(root, events) {

@@ -15,6 +15,7 @@
     "taskId": {"type": ["string", "null"]},
     "kind": {"enum": ["command", "verification", "review", "acceptance", "analysis", "documentation", "checkpoint"]},
     "status": {"type": ["string", "null"]},
+    "cleanup": {"$ref": "work-item.schema.json#/$defs/cleanup"},
     "summary": {"type": ["string", "null"]},
     "timestamp": {"type": "string", "format": "date-time"},
     "command": {"type": ["object", "null"]},

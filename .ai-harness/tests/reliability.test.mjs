@@ -21,7 +21,7 @@ const options = (id, file = "sample.mjs") => ({
   approach: "preserve the existing behavior", databaseEvidence: "no persistence", writeScopes: [file],
   verification: [`node --check ${file}`], docsImpact: ["N/A: unchanged contract"],
 });
-const verdict = (id) => ({ commandIds: [id], verification: "actual declared check passed", review: "actual diff reviewed", documentation: "N/A: unchanged contract", acceptance: "acceptance checked" });
+const verdict = (id) => ({ commandIds: [id], verification: "actual declared check passed", review: "actual diff reviewed", documentation: "N/A: unchanged contract", acceptance: "acceptance checked", cleanup: ["none=isolated source fixture produced no obsolete build or test packages"] });
 const run = (root, id, file = "sample.mjs", taskId = "T1") => runRecordedCommand(root, { id, taskId, command: process.execPath, args: ["--check", file] });
 
 async function verifying(root, id, command, { aggregate = true } = {}) {
@@ -139,7 +139,7 @@ test("deleted files outside a task scope are rejected even when the declared che
     await transitionWorkItem(root, "DELETE", "CODE_REVIEW");
     await recordResult(root, "DELETE", { kind: "review", status: "pass", summary: "fixture review" });
     await transitionWorkItem(root, "DELETE", "READY_FOR_ACCEPTANCE");
-    await recordResult(root, "DELETE", { kind: "acceptance", status: "pass", summary: "fixture acceptance" });
+    await recordResult(root, "DELETE", { kind: "acceptance", status: "pass", summary: "fixture acceptance", cleanup: ["none=isolated source fixture produced no obsolete build or test packages"] });
     await assert.rejects(() => transitionWorkItem(root, "DELETE", "DONE"), { code: "CHECK_FAILED" });
     assert.equal((await loadWorkItem(root, "DELETE")).status, "READY_FOR_ACCEPTANCE");
   } finally { await cleanup(root); }

@@ -89,7 +89,7 @@ test("BUGFIX 走 static→sandbox→reproduction→regression 真跑流水线并
     await transitionWorkItem(root, "BUG-1", "CODE_REVIEW");
     await recordResult(root, "BUG-1", { kind: "review", status: "pass", summary: "final diff reviewed" });
     await transitionWorkItem(root, "BUG-1", "READY_FOR_ACCEPTANCE");
-    await recordResult(root, "BUG-1", { kind: "acceptance", status: "pass", summary: "authorized acceptance" });
+    await recordResult(root, "BUG-1", { kind: "acceptance", status: "pass", summary: "authorized acceptance", cleanup: ["none=isolated source fixture produced no obsolete build or test packages"] });
     const done = await transitionWorkItem(root, "BUG-1", "DONE");
     assert.equal(done.status, "DONE");
     const check = await checkProject(root, { ci: true });

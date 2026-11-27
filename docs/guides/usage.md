@@ -91,7 +91,8 @@ node .ai-harness/bin/harness.mjs run --id ITER-001 --task T1 --json -- node --te
 node .ai-harness/bin/harness.mjs finish --id ITER-001 `
   --command "<成功命令证据ID>" --verification "目标回归和兼容输入验证通过" `
   --review "已检查根因、调用方与完整差异，未发现需要返工的问题" `
-  --documentation "N/A: 原有约定仍正确" --acceptance "用户请求的验收条件均已验证" --json
+  --documentation "N/A: 原有约定仍正确" --acceptance "用户请求的验收条件均已验证" `
+  --cleanup "none=本次仅改源码，已核对构建目录和测试进程，无遗留资源" --json
 
 node .ai-harness/bin/harness.mjs check --ci --json
 ```
@@ -270,6 +271,10 @@ node .ai-harness/bin/harness.mjs task-update --id <ID> --task T1 --status COMPLE
 
 ### 工作项完成
 
+通过验收前按实际情况重复传 `--cleanup`。删除资源用 `cleaned=对象、归属及无活动依赖的依据` 并附 `released=清理后磁盘、目录或进程的核对结果`。兼容、回滚、审计或发布仍需的资源用 `retained=对象及理由`。没有清理项时单用 `none=核查范围及依据`。Runtime 校验登记内容和证据关联，实际资源盘点由执行方完成。
+
+升级前已完成的交付沿用冻结证据。进行中工作项在新版验收时补登记。旧版已记录通过、尚未进入 `DONE` 的普通工作项可只向 `finish` 补交清理结论。
+
 ```text
 node .ai-harness/bin/harness.mjs transition --id <ID> --to VERIFYING --json
 node .ai-harness/bin/harness.mjs record --id <ID> --kind verification --status pass --evidence "完整验证结果" --json
@@ -277,7 +282,7 @@ node .ai-harness/bin/harness.mjs record --id <ID> --kind documentation --status 
 node .ai-harness/bin/harness.mjs transition --id <ID> --to CODE_REVIEW --json
 node .ai-harness/bin/harness.mjs record --id <ID> --kind review --status pass --evidence "最终差异审查" --json
 node .ai-harness/bin/harness.mjs transition --id <ID> --to READY_FOR_ACCEPTANCE --json
-node .ai-harness/bin/harness.mjs record --id <ID> --kind acceptance --status pass --evidence "有权验收记录" --json
+node .ai-harness/bin/harness.mjs record --id <ID> --kind acceptance --status pass --evidence "有权验收记录" --cleanup "retained=上一发行包仍在回滚窗口内" --json
 node .ai-harness/bin/harness.mjs transition --id <ID> --to DONE --json
 node .ai-harness/bin/harness.mjs check --ci --json
 ```

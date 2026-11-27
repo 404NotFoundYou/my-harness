@@ -1,0 +1,110 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "ITERATION-FIX-20261127",
+  "mode": "single",
+  "rationale": "单一实现所有者贯穿工作流和验证，独立审查整个差异",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "修复五个可复现问题并验证兼容性",
+      "module": "runtime",
+      "status": "COMPLETED",
+      "attempt": 1,
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        ".ai-harness/src/**",
+        ".ai-harness/tests/**",
+        ".ai-harness/schemas/**",
+        ".ai-harness/templates/instructions/**",
+        ".ai-harness/policies/**",
+        ".ai-harness/manifest.json",
+        "benchmarks/**",
+        "AGENTS.md",
+        "README.md",
+        "docs/**"
+      ],
+      "verification": [
+        "{\"timeoutMs\":660000,\"args\":[\".ai-harness/tests/run.mjs\"],\"command\":\"node\"}",
+        "{\"timeoutMs\":660000,\"args\":[\"--test\",\"benchmarks/tests/ci-matrix.test.mjs\",\"benchmarks/tests/container-driver.test.mjs\",\"benchmarks/tests/driver-diagnostics.test.mjs\",\"benchmarks/tests/driver-process.test.mjs\",\"benchmarks/tests/driver-timing.test.mjs\",\"benchmarks/tests/memory-control.test.mjs\",\"benchmarks/tests/multifile.test.mjs\",\"benchmarks/tests/preflight.test.mjs\",\"benchmarks/tests/project-v2.test.mjs\",\"benchmarks/tests/report.test.mjs\",\"benchmarks/tests/resume.test.mjs\",\"benchmarks/tests/runner.test.mjs\",\"benchmarks/tests/spec-guidance.test.mjs\",\"benchmarks/tests/status.test.mjs\"],\"command\":\"node\"}",
+        "{\"timeoutMs\":900000,\"args\":[\"--test\",\"benchmarks/tests/installed-runtime.mjs\"],\"command\":\"node\"}"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            ".ai-harness/tests/run.mjs"
+          ],
+          "timeoutMs": 660000
+        },
+        {
+          "id": "V2",
+          "command": "node",
+          "args": [
+            "--test",
+            "benchmarks/tests/ci-matrix.test.mjs",
+            "benchmarks/tests/container-driver.test.mjs",
+            "benchmarks/tests/driver-diagnostics.test.mjs",
+            "benchmarks/tests/driver-process.test.mjs",
+            "benchmarks/tests/driver-timing.test.mjs",
+            "benchmarks/tests/memory-control.test.mjs",
+            "benchmarks/tests/multifile.test.mjs",
+            "benchmarks/tests/preflight.test.mjs",
+            "benchmarks/tests/project-v2.test.mjs",
+            "benchmarks/tests/report.test.mjs",
+            "benchmarks/tests/resume.test.mjs",
+            "benchmarks/tests/runner.test.mjs",
+            "benchmarks/tests/spec-guidance.test.mjs",
+            "benchmarks/tests/status.test.mjs"
+          ],
+          "timeoutMs": 660000
+        },
+        {
+          "id": "V3",
+          "command": "node",
+          "args": [
+            "--test",
+            "benchmarks/tests/installed-runtime.mjs"
+          ],
+          "timeoutMs": 900000
+        }
+      ],
+      "docsImpact": [
+        "docs/guides/usage.md"
+      ],
+      "reviewBatch": "R1",
+      "risk": "high",
+      "owner": "primary-ai",
+      "verificationStatus": "pass",
+      "reviewStatus": "pass",
+      "evidence": [
+        "dcd2cbf0-2a1a-4006-96e0-82ba66b3da94",
+        "b8dc7224-ee47-475c-8672-f155359fabba"
+      ],
+      "deferralApproval": null,
+      "verificationSource": {
+        "digest": "242baf9a791fc516b5c7ea61e08acea7d1e538a39eae2d82c39af1b39b8036af",
+        "document": ".ai-harness/work-items/ITERATION-FIX-20261127/snapshots/242baf9a791fc516b5c7ea61e08acea7d1e538a39eae2d82c39af1b39b8036af.json"
+      },
+      "reviewSource": {
+        "digest": "242baf9a791fc516b5c7ea61e08acea7d1e538a39eae2d82c39af1b39b8036af",
+        "document": ".ai-harness/work-items/ITERATION-FIX-20261127/snapshots/242baf9a791fc516b5c7ea61e08acea7d1e538a39eae2d82c39af1b39b8036af.json"
+      }
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "运行时及评测驱动完整变更",
+      "risk": "high",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": true
+    }
+  ],
+  "createdAt": "2026-11-27T02:06:09.784Z",
+  "updatedAt": "2026-11-27T02:38:10.060Z",
+  "revision": 3
+}

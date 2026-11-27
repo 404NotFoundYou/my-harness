@@ -83,7 +83,7 @@ test("CLI judgments complete core Harness with one begin, run, finish and check 
       await writeFile(path.join(root,"test/extra.test.mjs"),'import assert from "node:assert/strict";\nassert.equal(2 + 2, 4);\n');
       const verified=cli(root,["run","--id",definition.id,"--all","--json"]);
       assert.equal(verified.status,"pass");
-      const completed=cli(root,["finish","--id",definition.id,"--verification","公共测试真实通过","--review","检查代码与公开契约","--documentation","N/A: 固定公开文档没有变化","--acceptance","公开测试和规格均已检查","--json"]);
+      const completed=cli(root,["finish","--id",definition.id,"--verification","公共测试真实通过","--review","检查代码与公开契约","--documentation","N/A: 固定公开文档没有变化","--acceptance","公开测试和规格均已检查", "--cleanup", "none=隔离源码夹具未产生旧包","--json"]);
       assert.equal(completed.status,"DONE");
       const checked=cli(root,["check","--ci","--json"]);
       assert.equal(checked.ok,true);
@@ -110,7 +110,7 @@ test("editing the frozen core spec is a scope violation even when legacy workflo
       await writeFile(path.join(root,task.entry),task.reference);
       const verified=cli(root,["run","--id",started.id,"--all","--json"]);
       assert.equal(verified.status,"pass");
-      assert.equal(cli(root,["finish","--id",started.id,"--verification","公共测试通过","--review","检查固定契约","--documentation","N/A: 固定文档不变","--acceptance","公开验收通过","--json"]).status,"DONE");
+      assert.equal(cli(root,["finish","--id",started.id,"--verification","公共测试通过","--review","检查固定契约","--documentation","N/A: 固定文档不变","--acceptance","公开验收通过", "--cleanup", "none=隔离源码夹具未产生旧包","--json"]).status,"DONE");
       assert.equal(cli(root,["check","--ci","--json"]).ok,true);
       await writeFile(path.join(outputDirectory,"events.jsonl"),'{"type":"synthetic"}\n');
       return synthetic();
@@ -178,7 +178,7 @@ test("project-v2 uses public immutable BUGFIX input and reaches DONE only after 
         assert.deepEqual(guide.verification.commands.map(event => event.id), [command.id]);
         const completed = cli(root, ["finish", "--id", spec.id, "--command", command.id,
           "--verification", "公共修复复现真实通过，原失败保留", "--review", "审查两个模块与调用方契约，测试自查",
-          "--documentation", spec.docsImpact[0], "--acceptance", "公开及隐藏夹具契约由本测试验证",
+          "--documentation", spec.docsImpact[0], "--acceptance", "公开及隐藏夹具契约由本测试验证", "--cleanup", "none=隔离源码夹具未产生旧包",
           "--stage-evidence", "static=Node真实执行公共测试并解析候选模块",
           "--stage-evidence", "sandbox=自有临时Git目录中的实际命令执行，不宣称OS隔离",
           "--stage-evidence", "reproduction=原公共失败复现转绿，失败ID " + red.id,

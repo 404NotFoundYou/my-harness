@@ -54,6 +54,7 @@ export async function runRecordedCommand(root, { id, taskId = null, command, arg
   const plan = await loadPlan(root, id, { optional: analysisItem });
   let checkTimeoutMs;
   if (checkId) {
+    invariant(command === undefined && args.length === 0, "CONFLICTING_CHECK_SELECTION", "--check 不能与透传命令混用。");
     invariant(!analysisItem, "ANALYSIS_CHECK_NOT_ALLOWED", "ANALYSIS 命令不能引用开发计划检查。" );
     const matches = plan.tasks.filter((task) => !taskId || task.id === taskId).flatMap((task) => checksFor(task).filter((check) => check.id === checkId));
     invariant(matches.length === 1, "CHECK_NOT_FOUND", "检查 ID 不存在或不唯一，请同时指定任务。" );

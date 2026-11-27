@@ -1,6 +1,6 @@
 import path from "node:path";
 import { randomUUID } from "node:crypto";
-import { readFile, readdir, realpath, stat, truncate } from "node:fs/promises";
+import { readFile, readdir, realpath, stat, truncate, unlink } from "node:fs/promises";
 import {
   appendJsonLine,
   atomicWriteJson,
@@ -12,6 +12,7 @@ import {
 } from "./filesystem.mjs";
 import { getGitBaseline } from "./git.mjs";
 import { inspectLock, recoverLock } from "./locking.mjs";
+import { validCleanup, cleanupGuidance } from "./completion.mjs";
 import { HarnessError, invariant } from "./errors.mjs";
 import {
   aggregateVerificationStatus,
@@ -114,6 +115,43 @@ async function appendEvent(paths, id, action, details = {}) {
   await appendJsonLine(paths.events, auditEvent(id, action, details));
 }
 
+// Call under the work-item lock. Only undo bytes written by this operation.
+async function commitAudited(paths, event, documents) {
+  const optional = async promise => {
+    try { return await promise; } catch (error) { if (error.code === "ENOENT") return null; throw error; }
+  };
+  const previous = await Promise.all(documents.map(([file]) => optional(readFile(file))));
+  const logStat = await optional(stat(paths.events));
+  let written = 0;
+  try {
+    for (const [file, value] of documents) {
+      await atomicWriteJson(file, value);
+      written++;
+    }
+    await appendJsonLine(paths.events, event);
+  } catch (failure) {
+    try {
+      if (written === documents.length) {
+        const log = await optional(readFile(paths.events));
+        const size = logStat?.size ?? 0;
+        const tail = log?.subarray(size) ?? Buffer.alloc(0);
+        const line = Buffer.from(JSON.stringify(event) + "\n");
+        invariant((log?.length ?? 0) >= size && line.subarray(0, tail.length).equals(tail), "EVENT_LOG_CHANGED", "事件日志在回退前已变化。");
+        if (!logStat && log) await unlink(paths.events);
+        else if (tail.length) await truncate(paths.events, size);
+      }
+      while (written > 0) {
+        const [file] = documents[--written];
+        if (previous[written] === null) await unlink(file);
+        else await writeFileAtomic(file, previous[written]);
+      }
+    } catch (rollback) {
+      throw new HarnessError("AUDIT_ROLLBACK_FAILED", "控制面写入和回退均遇到错误，请核查原始记录。", { failure: failure.message, rollback: rollback.message });
+    }
+    throw failure;
+  }
+}
+
 export async function createWorkItemState(root, options) {
   invariant(WORK_ID_PATTERN.test(options.id || ""), "INVALID_WORK_ID", "工作项 ID 格式无效。" );
   invariant(WORK_TYPES.includes(options.type), "INVALID_WORK_TYPE", `未知工作类型：${options.type}`);
@@ -139,8 +177,7 @@ export async function createWorkItemState(root, options) {
   return withFileLock(paths.lock, async () => {
     await assertDirectoryId(paths.directory, options.id);
     invariant(!(await exists(paths.state)), "WORK_ITEM_EXISTS", `工作项已存在：${options.id}`);
-    await atomicWriteJson(paths.state, item);
-    await appendEvent(paths, item.id, "work-item-created", { status: item.status, type: item.type });
+    await commitAudited(paths, auditEvent(item.id, "work-item-created", { status: item.status, type: item.type }), [[paths.state, item]]);
     return item;
   });
 }
@@ -170,10 +207,10 @@ async function withExistingWorkItem(root, id, action) {
 
 async function mutateWorkItem(root, id, mutator) {
   return withExistingWorkItem(root, id, async (item, paths) => {
-    const result = await mutator(item, paths);
+    const { event, result } = await mutator(item, paths);
     item.updatedAt = nowIso();
     assertValidWorkItem(item);
-    await atomicWriteJson(paths.state, item);
+    await commitAudited(paths, event, [[paths.state, item]]);
     return result ?? item;
   });
 }
@@ -187,30 +224,7 @@ async function mutatePlan(root, id, mutator) {
     item.updatedAt = nowIso();
     assertValidWorkItem(item);
     const event = auditEvent(id, action, details);
-    const previousPlan = await readFile(paths.plan), previousState = await readFile(paths.state);
-    const logSize = (await stat(paths.events)).size;
-    let planWritten = false, stateWritten = false;
-    try {
-      await atomicWriteJson(paths.plan, plan);
-      planWritten = true;
-      await atomicWriteJson(paths.state, item);
-      stateWritten = true;
-      await appendJsonLine(paths.events, event);
-    } catch (failure) {
-      try {
-        if (stateWritten) {
-          const log = await readFile(paths.events);
-          const tail = log.subarray(logSize), line = Buffer.from(JSON.stringify(event) + "\n");
-          invariant(log.length >= logSize && line.subarray(0, tail.length).equals(tail), "EVENT_LOG_CHANGED", "事件日志在回退前已变化。");
-          if (tail.length) await truncate(paths.events, logSize);
-          await writeFileAtomic(paths.state, previousState);
-        }
-        if (planWritten) await writeFileAtomic(paths.plan, previousPlan);
-      } catch (rollback) {
-        throw new HarnessError("PLAN_ROLLBACK_FAILED", "计划写入和回退均遇到错误，请检查控制面。", { failure: failure.message, rollback: rollback.message });
-      }
-      throw failure;
-    }
+    await commitAudited(paths, event, [[paths.plan, plan], [paths.state, item]]);
     return result ?? plan;
   });
 }
@@ -235,7 +249,7 @@ export async function completeBaseline(root, id, { evidence, document = null }) 
       repository,
     };
     item.baseline.repository.source = await saveSnapshot(root, paths.directory, await sourceSnapshot(root));
-    await appendEvent(paths, id, "baseline-completed", { repository, evidence });
+    return { event: auditEvent(id, "baseline-completed", { repository, evidence }) };
   });
 }
 
@@ -251,7 +265,7 @@ export async function completeSolution(root, id, { document, evidence }) {
       evidence,
       completedAt: nowIso(),
     };
-    await appendEvent(paths, id, "solution-completed", { document, evidence });
+    return { event: auditEvent(id, "solution-completed", { document, evidence }) };
   });
 }
 
@@ -281,12 +295,12 @@ export async function setDatabaseDecision(root, id, { impact, document = null, e
       };
     }
     item.policyFiles = itemPolicyFiles(await readJson(path.join(root, ".ai-harness/policies/index.json")), item);
-    await appendEvent(paths, id, "database-decision", {
+    return { event: auditEvent(id, "database-decision", {
       impact,
       status: item.database.status,
       document,
       evidence,
-    });
+    }) };
   });
 }
 
@@ -303,8 +317,7 @@ export async function initializePlan(root, id, { mode, rationale }) {
     }
     invariant(!(await exists(paths.plan)), "PLAN_EXISTS", "计划已经存在。" );
     const plan = createPlan({ workItemId: id, mode, rationale });
-    await atomicWriteJson(paths.plan, plan);
-    await appendEvent(paths, id, "plan-initialized", { mode, rationale });
+    await commitAudited(paths, auditEvent(id, "plan-initialized", { mode, rationale }), [[paths.plan, plan]]);
     return plan;
   });
 }
@@ -361,7 +374,7 @@ export async function transitionWorkItem(root, id, target, reason = null) {
       const baseline = await saveSnapshot(root, paths.directory, delivery.baseline);
       item.integrityVersion = 1;
       item.revision ||= 1;
-      item.delivery = { source: await saveSnapshot(root, paths.directory, current), baseline, baselineAt: delivery.baselineAt, ownedChanges: delivery.ownedChanges, planDigest: planDigest(item, plan), at: nowIso(), head: (await getGitBaseline(root, { includeFingerprints: false })).commit };
+      item.delivery = { cleanupVersion: 1, source: await saveSnapshot(root, paths.directory, current), baseline, baselineAt: delivery.baselineAt, ownedChanges: delivery.ownedChanges, planDigest: planDigest(item, plan), at: nowIso(), head: (await getGitBaseline(root, { includeFingerprints: false })).commit };
     }
     if (target === "ANSWERED") {
       const snapshot = await sourceSnapshot(root);
@@ -387,8 +400,7 @@ export async function transitionWorkItem(root, id, target, reason = null) {
       ...(from === "BLOCKED" ? { unblockedTo: target } : {}),
     });
     assertValidWorkItem(item);
-    await atomicWriteJson(paths.state, item);
-    await appendEvent(paths, id, "state-transition", { from, to: target, reason });
+    await commitAudited(paths, auditEvent(id, "state-transition", { from, to: target, reason, ...(target === "DONE" ? { cleanupVersion: 1 } : {}) }), [[paths.state, item]]);
     return item;
   });
 }
@@ -465,7 +477,7 @@ async function findEvidenceById(paths, evidenceId) {
   return null;
 }
 
-export async function recordResult(root, id, { kind, status, summary, taskId = null, independent = false, stage = null, commandRef = null, artifactPaths = [], artifactSource = null }) {
+export async function recordResult(root, id, { kind, status, summary, taskId = null, independent = false, stage = null, commandRef = null, cleanup = [], artifactPaths = [], artifactSource = null }) {
   invariant(Array.isArray(artifactPaths), "ARTIFACT_INVALID", "artifactPaths 必须是路径数组。" );
   invariant(EVIDENCE_KINDS.filter((value) => value !== "command").includes(kind), "INVALID_EVIDENCE_KIND", `不支持的证据类型：${kind}`);
   invariant(RESULT_STATUSES.includes(status), "INVALID_RESULT_STATUS", `无效结果状态：${status}`);
@@ -497,6 +509,9 @@ export async function recordResult(root, id, { kind, status, summary, taskId = n
     } else if (kind !== "checkpoint") {
       assertResultStage(item, kind);
     }
+
+    if (kind === "acceptance" && status === "pass") invariant(validCleanup(cleanup), "CLEANUP_REQUIRED", cleanupGuidance);
+    else invariant(Array.isArray(cleanup) && !cleanup.length, "CLEANUP_NOT_ALLOWED", "清理结论只能绑定通过的验收证据。");
 
     // codegen 工作项或 BUGFIX 类型的工作项级 verification 必须走子阶段流水线，禁止裸记录绕过。
     if (kind === "verification" && !taskId && usesVerificationPipeline(item)) {
@@ -536,6 +551,7 @@ export async function recordResult(root, id, { kind, status, summary, taskId = n
     }
 
     const event = createEvidenceEvent({ id, taskId, kind, status, summary, independent, stage });
+    if (kind === "acceptance" && status === "pass") event.cleanup = cleanup;
     if (artifactPaths.length || artifactSource !== null) event.artifacts = await captureArtifacts(root, id, artifactPaths, artifactSource);
     event.revision = item.revision || 1;
     event.taskAttempt = task ? task.attempt || 1 : null;
@@ -576,6 +592,10 @@ export async function recordResult(root, id, { kind, status, summary, taskId = n
       item.verification.status = aggregateVerificationStatus(stages, requiredVerificationStages(item));
       if (verificationSource) item.verification.source = verificationSource;
     } else if (kind !== "checkpoint") {
+      if (kind === "acceptance") {
+        if (status === "pass") item.acceptance.cleanup = event.cleanup;
+        else delete item.acceptance.cleanup;
+      }
       item[kind].status = status;
       item[kind].evidence.push(event.id);
       if (kind === "review") item.review.independent = Boolean(independent);
@@ -613,8 +633,7 @@ export async function addAnalysisConclusion(root, id, { status, text, evidence =
     const conclusion = { id: randomUUID(), status, text, evidence, ...(commands.length ? { commands } : {}) };
     item.analysis.conclusions.push(conclusion);
     if (unknown?.trim()) item.analysis.unknowns.push(unknown);
-    await appendEvent(paths, id, "analysis-conclusion-added", { conclusion });
-    return conclusion;
+    return { event: auditEvent(id, "analysis-conclusion-added", { conclusion }), result: conclusion };
   });
 }
 
@@ -702,9 +721,7 @@ export async function reopenWorkItem(root, id, { reason, replan = false, approva
     item.history.push({ from, to: item.status, at: item.updatedAt, reason, action: replan ? "replan" : "reopen", revision: item.revision });
     assertValidWorkItem(item);
     assertValidPlan(plan, id, { requireContent: !replan });
-    await atomicWriteJson(paths.plan, plan);
-    await atomicWriteJson(paths.state, item);
-    await appendEvent(paths, id, replan ? "work-item-replanned" : "work-item-reopened", { from, to: item.status, reason, revision: item.revision, approvalRef: approvalRef || item.authorization.source });
+    await commitAudited(paths, auditEvent(id, replan ? "work-item-replanned" : "work-item-reopened", { from, to: item.status, reason, revision: item.revision, approvalRef: approvalRef || item.authorization.source }), [[paths.plan, plan], [paths.state, item]]);
     return item;
   });
 }

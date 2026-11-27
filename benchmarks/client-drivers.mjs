@@ -1,6 +1,6 @@
 import path from "node:path";
 import assert from "node:assert/strict";
-import { spawn, spawnSync } from "node:child_process";
+import { prepareDriverSpawn, observeDriverExit, stopDriver } from "./driver-process.mjs";
 import { writeFile } from "node:fs/promises";
 import { redact } from "../.ai-harness/src/evidence.mjs";
 import { codexDriver, codexProtocol } from "./codex-driver.mjs";
@@ -70,22 +70,17 @@ export function clientDriver(client, cli, options = {}) {
   return async ({ root, model, prompt, budget, outputDirectory }) => {
     const args = clientArguments(client, model, budget);
     const script = /\.(m?js)$/i.test(cli);
+    const spawnDriver = prepareDriverSpawn();
     const result = await new Promise(resolve => {
       const started = Date.now(), startedAt = new Date(started).toISOString();
       const timing = createToolTiming(), reader = createClientEventReader(client, timing);
-      const child = spawn(script ? process.execPath : cli, script ? [cli, ...args] : args, { cwd: root, shell: false, windowsHide: true, detached: process.platform !== "win32", stdio: ["pipe", "pipe", "pipe"] });
+      const child = spawnDriver(script ? process.execPath : cli, script ? [cli, ...args] : args, { cwd: root, shell: false, windowsHide: true, detached: process.platform !== "win32", stdio: ["pipe", "pipe", "pipe"] });
       child.stdout.setEncoding("utf8"); child.stderr.setEncoding("utf8");
       let stderr = "", pending = "", timedOut = false, toolLimit = false, error = null, unparsedLines = 0;
       const protocolLines = [];
       const stop = () => {
         if (!child.pid) return;
-        if (process.platform === "win32") {
-          if (child.exitCode !== null) return;
-          spawnSync("taskkill", ["/PID", String(child.pid), "/T", "/F"], { windowsHide: true, stdio: "ignore" });
-        } else {
-          try { process.kill(-child.pid, "SIGKILL"); }
-          catch (error) { if (error.code !== "ESRCH") throw error; }
-        }
+        stopDriver(child);
       };
       const timer = setTimeout(() => { timedOut = true; stop(); }, budget.timeoutMs);
       const line = (raw, at = Date.now()-started) => {
@@ -102,7 +97,7 @@ export function clientDriver(client, cli, options = {}) {
       child.stderr.on("data", chunk => { stderr += chunk; });
       child.stdin.on("error", failure => { error ||= redact(failure.message); });
       child.once("error", failure => { error = redact(failure.message); });
-      child.once("exit", () => timing.exited(Date.now()-started));
+      observeDriverExit(child, () => timing.exited(Date.now()-started));
       child.once("close", exitCode => {
         const closedAt = Date.now()-started;
         timing.closed(closedAt);

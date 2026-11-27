@@ -159,7 +159,7 @@ function helpText() {
         --authorization-source SOURCE --risk low|medium --approach TEXT --database-evidence TEXT
         --writes PATH --verify COMMAND --docs PATH_OR_NA [--flag frontend]
   run --id ID --task T1 -- <COMMAND> [ARGS...]
-  finish --id ID --command EVIDENCE_ID --verification TEXT --review TEXT --documentation TEXT --acceptance TEXT
+  finish --id ID --command EVIDENCE_ID --verification TEXT --review TEXT --documentation TEXT --acceptance TEXT --cleanup KIND=TEXT
          [--stage-evidence stage=TEXT] [--stage-command stage=EVIDENCE_ID]
   finish --help                  只显示 finish 参数，不读取工作项或写状态
   finish 可从合法中间状态继续；已通过且仍有效的结论无需重复提交，省略 --command 时匹配本项当前成功检查；不会自动执行未跑的测试
@@ -186,6 +186,7 @@ function finishHelpText() {
   --review TEXT           实际完整差异审查结论
   --documentation TEXT    文档同步结论，或 N/A: 理由
   --acceptance TEXT       按授权验收条件核实的结论
+  --cleanup KIND=TEXT     可重复。none=核查依据，retained=保留理由，或 cleaned=归属及依赖核对 配合 released=释放证据
   --stage-evidence stage=TEXT   BUGFIX 等流水线阶段证据，可重复
   --stage-command stage=ID      reproduction/regression 等阶段命令证据，可重复
   --json                  输出 JSON
@@ -326,6 +327,7 @@ export async function runCli(argv, io = { stdout: console.log, stderr: console.e
       review: one(parsed, "review"),
       documentation: one(parsed, "documentation"),
       acceptance: one(parsed, "acceptance"),
+      cleanup: many(parsed, "cleanup"),
       stageEvidence: many(parsed, "stage-evidence"),
       stageCommands: many(parsed, "stage-command"),
     });
@@ -472,6 +474,7 @@ export async function runCli(argv, io = { stdout: console.log, stderr: console.e
       independent: flag(parsed, "independent"),
       stage: one(parsed, "stage"),
       commandRef: one(parsed, "command"),
+      cleanup: many(parsed, "cleanup"),
       artifactPaths: many(parsed, "artifact"),
       artifactSource: one(parsed, "artifact-source"),
     });
@@ -507,8 +510,9 @@ export async function runCli(argv, io = { stdout: console.log, stderr: console.e
     return result.decision === "allow" ? 0 : result.decision === "ask" ? 2 : 3;
   }
   if (command === "run") {
+    invariant(!(parsed.options.check !== undefined && parsed.hasSeparator), "CONFLICTING_CHECK_SELECTION", "--check 不能与透传命令混用。");
     if (flag(parsed, "all")) {
-      invariant(!one(parsed, "check") && parsed.passthrough.length === 0, "CONFLICTING_CHECK_SELECTION", "--all 不能与 --check 或透传命令混用。" );
+      invariant(!one(parsed, "check") && !parsed.hasSeparator, "CONFLICTING_CHECK_SELECTION", "--all 不能与 --check 或透传命令混用。" );
       const id = one(parsed, "id", { required: true });
       const item = await loadWorkItem(root, id);
       const plan = await loadPlan(root, id);

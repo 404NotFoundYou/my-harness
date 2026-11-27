@@ -162,7 +162,7 @@ test("passing code cannot substitute ITERATION or an unrelated BUGFIX for the pr
         if(scenario === "wrong-type")for(const [file,content]of Object.entries(task.reference))await writeFile(path.join(root,file),content);
         const verified=await runRecordedCommand(root,{id:"UNRELATED",taskId:"T1",checkId:"V1"});
         assert.equal(verified.status,"pass");
-        await finishWorkItem(root,"UNRELATED",{commandIds:[verified.id],verification:"public tests pass",review:"isolated workflow fixture reviewed",documentation:"N/A: fixture",acceptance:"public test result checked",...(type === "BUGFIX" ? {stageEvidence:["static=module parse checked by node test","sandbox=isolated temporary directory execution","reproduction=fixture public checks executed","regression=fixture public checks pass"],stageCommands:[`reproduction=${verified.id}`,`regression=${verified.id}`]} : {})});
+        await finishWorkItem(root,"UNRELATED",{commandIds:[verified.id],verification:"public tests pass",review:"isolated workflow fixture reviewed",documentation:"N/A: fixture",acceptance:"public test result checked", cleanup: ["none=isolated source fixture produced no obsolete build or test packages"],...(type === "BUGFIX" ? {stageEvidence:["static=module parse checked by node test","sandbox=isolated temporary directory execution","reproduction=fixture public checks executed","regression=fixture public checks pass"],stageCommands:[`reproduction=${verified.id}`,`regression=${verified.id}`]} : {})});
         assert.equal((await checkProject(root,{ci:true})).ok,true);
         return synthetic();
       }});
@@ -192,7 +192,7 @@ test("a simulated project experiment completes real BUGFIX gates and audits ever
       if(harness){
         const verified=await runRecordedCommand(root,{id:"PAGING",taskId:"T1",checkId:"V1"});
         assert.equal(verified.status,"pass");
-        const done=await finishWorkItem(root,"PAGING",{commandIds:[verified.id],verification:"public reproduction passed after both module repairs",review:"checked both modules and immutable caller",documentation:"N/A: preserve public contract",acceptance:"public behavior restored",stageEvidence:["static=module parsing and contracts checked","sandbox=isolated temporary repository test passed","reproduction=original public failure now passes","regression=existing public first-page contract also passes"],stageCommands:[`reproduction=${verified.id}`,`regression=${verified.id}`]});
+        const done=await finishWorkItem(root,"PAGING",{commandIds:[verified.id],verification:"public reproduction passed after both module repairs",review:"checked both modules and immutable caller",documentation:"N/A: preserve public contract",acceptance:"public behavior restored", cleanup: ["none=isolated source fixture produced no obsolete build or test packages"],stageEvidence:["static=module parsing and contracts checked","sandbox=isolated temporary repository test passed","reproduction=original public failure now passes","regression=existing public first-page contract also passes"],stageCommands:[`reproduction=${verified.id}`,`regression=${verified.id}`]});
         assert.equal(done.status,"DONE");
         assert.equal((await checkProject(root,{ci:true})).ok,true);
       }else{
@@ -337,7 +337,7 @@ test("1124: grading checks the approved verification even if the input file has 
         await writeFile(file, original);
         for (const [name, content] of Object.entries(task.reference)) await writeFile(path.join(root, name), content);
         const command = await runRecordedCommand(root, { id: spec.id, taskId: "T1", checkId: "V1" });
-        await finishWorkItem(root, spec.id, { commandIds: [command.id], verification: "fixture", review: "fixture", documentation: spec.docsImpact[0], acceptance: "fixture",
+        await finishWorkItem(root, spec.id, { commandIds: [command.id], verification: "fixture", review: "fixture", documentation: spec.docsImpact[0], acceptance: "fixture", cleanup: ["none=isolated source fixture produced no obsolete build or test packages"],
           stageEvidence: ["static=fixture", "sandbox=fixture", "reproduction=fixture", "regression=fixture"],
           stageCommands: ["reproduction=" + command.id, "regression=" + command.id] });
         return synthetic();

@@ -42,7 +42,7 @@ test("root aliases preserve workflow, snapshot and full-output references throug
     const guide = await getWorkGuide(alias, "ALIAS");
     assert.equal(guide.resources.evidence, ".ai-harness/work-items/ALIAS/evidence.jsonl");
     assert.equal(guide.next.code, "finish-iteration");
-    await finishWorkItem(alias, "ALIAS", { commandIds: [command.id], verification: "actual output checked", review: "fixture review", documentation: "N/A: unchanged", acceptance: "fixture output valid" });
+    await finishWorkItem(alias, "ALIAS", { commandIds: [command.id], verification: "actual output checked", review: "fixture review", documentation: "N/A: unchanged", acceptance: "fixture output valid", cleanup: ["none=isolated source fixture produced no obsolete build or test packages"] });
     assert.equal((await checkProject(alias, { ci: true })).ok, true);
   } finally { await dispose(fixture); }
 });

@@ -261,8 +261,10 @@ git diff $Base --stat
 ```powershell
 $review = Read-Host '对安装清单、项目规则及完整差异的实际审查结论'
 $acceptance = Read-Host '对本次升级的实际验收结论'
+# 按本次盘点填写，可重复 --cleanup。清理时同时填写 cleaned 和 released。
+$cleanup = Read-Host '保留回滚件请填 retained=对象及理由，无清理项请填 none=核查范围及依据'
 Invoke-HarnessJson $Local finish --id $Id --command $run.id --verification '已在升级目标运行计划内实装套件' `
-  --review $review --documentation 'N/A: 仅升级标准分发文件' --acceptance $acceptance --json
+  --review $review --documentation 'N/A: 仅升级标准分发文件' --acceptance $acceptance --cleanup $cleanup --json
 Invoke-HarnessJson $Local check --ci --base $Base --json
 ```
 

@@ -47,7 +47,7 @@ for (const scenario of cases) test("original final " + scenario.name + " remains
     context.mock.method(Date, "now", () => now);
     context.mock.method(globalThis, "setTimeout", callback => { timer = callback; return 1; });
     context.mock.method(globalThis, "clearTimeout", () => {});
-    context.mock.method(childProcess, "spawnSync", () => { stop(); return { status: 0 }; });
+    child.kill = stop;
     context.mock.method(process, "kill", () => stop());
     context.mock.method(childProcess, "spawn", (_command, args) => {
       launchArguments = args;

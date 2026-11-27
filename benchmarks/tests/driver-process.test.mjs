@@ -1,12 +1,13 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { EventEmitter } from "node:events";
+import { EventEmitter, once } from "node:events";
 import { PassThrough } from "node:stream";
 import childProcess from "node:child_process";
 import { syncBuiltinESMExports } from "node:module";
 import fsPromises, { mkdtemp, readFile, realpath, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
+import { prepareDriverSpawn, stopDriver } from "../driver-process.mjs";
 import { clientDriver } from "../client-drivers.mjs";
 
 const toolEvent = client => client === "codex"
@@ -80,7 +81,7 @@ for (const client of ["codex", "claude", "gemini"]) {
 
 for (const client of ["codex", "claude", "gemini"]) {
   for (const scenario of ["timeout", "tool-limit", "leader-exit"]) {
-    test(client + " cutoff closes real descendant pipes after " + scenario, { skip: process.platform === "win32", timeout: 10000 }, async (context) => {
+    test(client + " cutoff closes real descendant pipes after " + scenario, { timeout: 12000 }, async (context) => {
       const directory = await mkdtemp(path.join(tmpdir(), "ai-harness-driver-process-"));
       const cli = path.join(directory, "fixture.mjs");
       const tool = 'require("node:fs").writeFileSync("tool.pid", String(process.pid)); process.send("ready"); ' +
@@ -107,12 +108,16 @@ for (const client of ["codex", "claude", "gemini"]) {
       }, 5000);
       try {
         await writeFile(cli, 'import { spawn } from "node:child_process";\n' +
-          'const tool = spawn(process.execPath, ["-e", ' + JSON.stringify(tool) + '], { stdio: ["ignore", "inherit", "inherit", "ipc"] });\n' +
+          'const tool = spawn(process.execPath, ["-e", ' + JSON.stringify(tool) + '], { detached: process.platform === "win32", windowsHide: true, stdio: ["ignore", "inherit", "inherit", "ipc"] });\n' +
           'tool.once("message", () => process.stdout.write(' + JSON.stringify(JSON.stringify(event) + "\n") +
             ', () => { ' + (scenario === "leader-exit" ? 'process.exit(0);' : '') + ' }));\nsetInterval(() => {}, 1000);\n');
         const result = await clientDriver(client, cli)({ root: directory, model: "synthetic", prompt: "No model calls",
           budget: { timeoutMs: 2000, maxToolCalls: scenario === "tool-limit" ? 1 : 10 }, outputDirectory: directory });
         assert.equal(watchdogError, null);
+        if (scenario === "leader-exit") assert.ok(result.timing.lifecycle.processCloseMs - result.timing.lifecycle.processExitMs > 100, "the actual CLI exit must remain distinguishable from closing inherited pipes");
+        const toolPid = Number(await readFile(path.join(directory, "tool.pid"), "utf8"));
+        assert.ok(Number.isSafeInteger(toolPid) && toolPid > 0);
+        if (process.platform === "win32") assert.throws(() => process.kill(toolPid, 0), { code: "ESRCH" }, "owned descendant must be gone when grading starts");
         assert.ok(result.durationMs < 4000, "descendants must close their inherited pipes before the fixture rescue deadline");
         const wroteAfterCutoff = await readFile(path.join(directory, "after-budget.txt"), "utf8")
           .then(() => true, error => { if (error.code === "ENOENT") return false; throw error; });
@@ -127,3 +132,24 @@ for (const client of ["codex", "claude", "gemini"]) {
     });
   }
 }
+
+test("a completed client preserves argv, streams and exit code while releasing a pipe-free Windows helper", { timeout: 10000 }, async () => {
+  const args = ["two words", "", 'a"b', "尾部 \\", "🌱"];
+  const program = 'const helper = process.platform === "win32" && require("node:child_process").spawn(process.execPath, ["-e", "setTimeout(()=>{},7000)"], { stdio: "ignore", detached: true, windowsHide: true }); if (helper) helper.unref(); ' +
+    'let input = ""; process.stdin.setEncoding("utf8").on("data", s => input += s).on("end", () => { console.log(JSON.stringify({ args: process.argv.slice(1), input, pid: helper.pid })); console.error("诊断"); process.exitCode = 17; });';
+  const child = prepareDriverSpawn()(process.execPath, ["-e", program, "--", ...args], { windowsHide: true, stdio: ["pipe", "pipe", "pipe"], detached: process.platform !== "win32" });
+  const timer = setTimeout(() => stopDriver(child), 4000);
+  let stdout = "", stderr = "";
+  child.stdout.setEncoding("utf8").on("data", chunk => { stdout += chunk; });
+  child.stderr.setEncoding("utf8").on("data", chunk => { stderr += chunk; });
+  try {
+    child.stdin.end("input 文本\n");
+    const [code] = await once(child, "close");
+    assert.equal(code, 17, "a helper without output handles must not hold open the trial");
+    const reply = JSON.parse(stdout);
+    assert.deepEqual(reply.args, args);
+    assert.equal(reply.input, "input 文本\n");
+    assert.equal(stderr.trim(), "诊断");
+    if (process.platform === "win32") assert.throws(() => process.kill(reply.pid, 0), { code: "ESRCH" });
+  } finally { clearTimeout(timer); }
+});

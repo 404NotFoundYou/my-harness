@@ -1,6 +1,6 @@
 import path from "node:path";
 import { realpath, writeFile } from "node:fs/promises";
-import { checkProject, doctorProject } from "./checker.mjs";
+import { checkProject, collectEvidenceErrors, doctorProject } from "./checker.mjs";
 import { isRunBackedStage, requiredVerificationStages } from "./constants.mjs";
 import { invariant } from "./errors.mjs";
 import { exists, resolveProjectPath } from "./filesystem.mjs";
@@ -8,7 +8,7 @@ import { createPlan, createReviewBatch, createTask, createWorkItem } from "./mod
 import { assertValidPlan, assertValidWorkItem } from "./validator.mjs";
 import { assertAcceptanceCoverage, assertCommandEvidence, assertVerification, hasFailedReview, matchingChecks, readEvidence, verificationReport } from "./verification.mjs";
 import { loadSnapshot } from "./snapshot.mjs";
-import { assertCompactEligible, completionRequirements, completionSourcesCurrent } from "./completion.mjs";
+import { cleanupGuidance, validCleanup, assertCompactEligible, completionRequirements, completionSourcesCurrent } from "./completion.mjs";
 import { normalizeDocumentation } from "./input.mjs";
 import {
   addReviewBatch, addTask, approvePlan, completeBaseline, completeSolution,
@@ -75,7 +75,7 @@ export async function beginWorkItem(root, options) {
   };
 }
 
-export async function finishWorkItem(root, id, { commandIds = [], verification, review, documentation, acceptance, stageEvidence = [], stageCommands = [] } = {}) {
+export async function finishWorkItem(root, id, { commandIds = [], verification, review, documentation, acceptance, cleanup = [], stageEvidence = [], stageCommands = [] } = {}) {
   let item = await loadWorkItem(root, id);
   let plan = await loadPlan(root, id);
   assertValidPlan(plan, id, { requireContent: true });
@@ -86,13 +86,14 @@ export async function finishWorkItem(root, id, { commandIds = [], verification, 
   const requirements = completionRequirements(item, plan);
   invariant(requirements, "WRONG_TASK_STAGE", "finish 需要已进入实施或合法收尾阶段的任务；先用 guide 确认下一步。" );
   if (item.status === "DONE") {
-    const errors = await validateWorkItem(root, id);
+    const errors = [...await validateWorkItem(root, id), ...await collectEvidenceErrors(root, item, plan)];
     invariant(errors.length === 0, "CHECK_FAILED", "已完成工作项的冻结证据无效。", { errors });
     const report = item.delivery ? await verificationReport(root, item, plan, { snapshot: await loadSnapshot(root, item.delivery.source) }) : null;
     return { id, status: "DONE", taskId: task.id, alreadyDone: true, verificationCommands: report?.successful.filter(event => matchingChecks(plan, event.taskId, event.command.executable, event.command.args, event.command.checkTimeoutMs).length).map(event => event.id) || [] };
   }
   const results = { verification, review, documentation: normalizeDocumentation(documentation), acceptance };
-  for (const name of requirements.fields) invariant(typeof results[name] === "string" && results[name].trim(), "RESULT_REQUIRED", `finish 尚缺 ${name} 的实际结论。已完成的结论无需重复提交。`, { required: requirements.fields });
+  if (requirements.fields.includes("cleanup")) invariant(validCleanup(cleanup), "CLEANUP_REQUIRED", cleanupGuidance);
+  for (const name of requirements.fields.filter(field => field !== "cleanup")) invariant(typeof results[name] === "string" && results[name].trim(), "RESULT_REQUIRED", `finish 尚缺 ${name} 的实际结论。已完成的结论无需重复提交。`, { required: requirements.fields });
   invariant(Array.isArray(commandIds) && commandIds.every(value => typeof value === "string" && value.trim()), "COMMAND_EVIDENCE_REQUIRED", "command 必须是命令证据 ID 数组。" );
   const stages = requiredVerificationStages(item);
   const stageSummaries = parseStageInput(stageEvidence, stages, "--stage-evidence");
@@ -131,8 +132,11 @@ export async function finishWorkItem(root, id, { commandIds = [], verification, 
       if (item.review.status !== "pass") await recordResult(root, id, { kind: "review", status: "pass", summary: results.review });
       else await transitionWorkItem(root, id, "READY_FOR_ACCEPTANCE");
     } else if (item.status === "READY_FOR_ACCEPTANCE") {
-      if (item.acceptance.status !== "pass") await recordResult(root, id, { kind: "acceptance", status: "pass", summary: `${results.acceptance}\n授权来源：${item.authorization.source}` });
-      else await transitionWorkItem(root, id, "DONE");
+      if (item.acceptance.status !== "pass" || !validCleanup(item.acceptance.cleanup)) {
+        const prior = events.find(event => event.id === item.acceptance.evidence.at(-1));
+        const summary = item.acceptance.status === "pass" ? prior?.summary : `${results.acceptance}\n授权来源：${item.authorization.source}`;
+        await recordResult(root, id, { kind: "acceptance", status: "pass", summary, cleanup });
+      } else await transitionWorkItem(root, id, "DONE");
     } else invariant(false, "WRONG_STAGE", "工作项状态已变化，停止收尾并重新读取 guide。" );
     item = await loadWorkItem(root, id);
     plan = await loadPlan(root, id);

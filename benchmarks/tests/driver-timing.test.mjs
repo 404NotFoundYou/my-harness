@@ -39,7 +39,7 @@ for(const client of ["codex","claude","gemini"]){
         context.mock.method(Date,"now",()=>now);
         context.mock.method(globalThis,"setTimeout",callback=>{timer=callback;return 1;});
         context.mock.method(globalThis,"clearTimeout",()=>{});
-        context.mock.method(childProcess,"spawnSync",()=>{stopped();return {status:0};});
+        child.kill = stopped;
         context.mock.method(process,"kill",()=>stopped());
         context.mock.method(childProcess,"spawn",()=>{
           queueMicrotask(()=>{

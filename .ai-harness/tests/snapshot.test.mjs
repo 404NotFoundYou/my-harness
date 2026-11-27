@@ -42,3 +42,21 @@ test("control records do not stale product verification and snapshot tampering f
     await assert.rejects(() => loadSnapshot(root, reference), { code: "SNAPSHOT_HASH_MISMATCH" });
   } finally { await cleanup(root); }
 });
+
+test("replacing a tracked file with a directory has the same delivery identity before and after staging", async () => {
+  const root = await createInstalledProject();
+  try {
+    const widget = path.join(root, "widget");
+    await writeFile(widget, "old");
+    git(root, ["add", "widget"]);
+    git(root, ["commit", "-m", "tracked widget"]);
+    await rm(widget);
+    await mkdir(widget);
+    await writeFile(path.join(widget, "index.mjs"), "export default 42;\n");
+    const before = await sourceSnapshot(root);
+    assert.equal(Object.hasOwn(before.files, "widget"), false);
+    assert.ok(before.files["widget/index.mjs"]);
+    git(root, ["add", "-A", "--", "widget"]);
+    assert.deepEqual(await sourceSnapshot(root), before);
+  } finally { await cleanup(root); }
+});

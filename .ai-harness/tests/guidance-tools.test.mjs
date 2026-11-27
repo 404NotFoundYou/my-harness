@@ -119,7 +119,7 @@ test("brief BUGFIX guidance gives one finish action while preserving actual stag
     assert.ok(JSON.stringify(brief).length < JSON.stringify(full).length);
     assert.ok(brief.next.command.args.includes("reproduction=<MATCHING_COMMAND_ID>"));
     assert.ok(brief.next.command.args.includes("regression=<MATCHING_COMMAND_ID>"));
-    const verdicts = { verification: "fixture check only", review: "fixture review", documentation: "N/A: unchanged", acceptance: "fixture acceptance" };
+    const verdicts = { verification: "fixture check only", review: "fixture review", documentation: "N/A: unchanged", acceptance: "fixture acceptance", cleanup: ["none=isolated source fixture produced no obsolete build or test packages"] };
     await assert.rejects(() => finishWorkItem(root, "BUG-GUIDE", verdicts), { code: "VERIFICATION_STAGE_REQUIRED" });
     await finishWorkItem(root, "BUG-GUIDE", { ...verdicts, stageEvidence: ["static", "sandbox", "reproduction", "regression"].map(stage => `${stage}=fixture evidence`),
       stageCommands: [`reproduction=${command.id}`, `regression=${command.id}`] });

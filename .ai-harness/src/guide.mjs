@@ -11,7 +11,7 @@ import {
 import { loadPlan, loadWorkItem, workItemPaths } from "./workflow.mjs";
 import { acceptanceCoverage, checksFor, commandEvidenceKey, hasFailedReview, verificationReport } from "./verification.mjs";
 import { taskContext } from "./context.mjs";
-import { completionRequirements, completionSourcesCurrent } from "./completion.mjs";
+import { validCleanup, cleanupGuidance, completionRequirements, completionSourcesCurrent } from "./completion.mjs";
 
 async function readEvents(file, id) {
   let raw;
@@ -179,8 +179,8 @@ function nextAction(item, plan, task, commands, verification, reviewFailed) {
   }
   if (item.status === "READY_FOR_ACCEPTANCE") {
     if (!verification.ok || item.review.source?.digest !== verification.current.digest) return reopen();
-    return item.acceptance.status === "pass" ? transition("DONE")
-      : { ...record("acceptance", [], [item.authorization.mode === "autonomous" ? "按已授权验收逐项核实结果；未验证项不能记为通过。" : "需要有权验收人的实际结论。"]), requiresHumanApproval: item.authorization.mode !== "autonomous" };
+    return item.acceptance.status === "pass" && validCleanup(item.acceptance.cleanup) ? transition("DONE")
+      : { ...record("acceptance", ["--cleanup", "<KIND=EVIDENCE>"], [cleanupGuidance, item.authorization.mode === "autonomous" ? "按已授权验收逐项核实结果；未验证项不能记为通过。" : "需要有权验收人的实际结论。"]), requiresHumanApproval: item.authorization.mode !== "autonomous" };
   }
   if (item.status === "ANALYZING") {
     if (item.analysis.conclusions.length === 0) return action("analyze-evidence", "先回答用户问题并区分已证实、推断、建议与未知。", work("analysis-add", "--status", "<PROVEN|INFERRED|PROPOSAL|UNKNOWN>", "--conclusion", "<CONCLUSION>", "--evidence", "<SOURCE>"), ["读取与问题有关的入口、调用方和实际配置；需要命令证据时先用 run --id <ID> 执行 allow 命令，再以 --command <ID> 引用；不能修改产品文件。"]);
@@ -212,9 +212,9 @@ export async function getWorkGuide(root, id, { taskId = null, includeContext = f
     code: item.type === "BUGFIX" ? "finish-bugfix" : "finish-iteration", requiresJudgment: completion.fields.length > 0 || completion.stages.length > 0,
     why: "本项当前代码的计划检查已通过，按已保存状态完成剩余收尾步骤。",
     command: { executable: "node", args: [".ai-harness/bin/harness.mjs", "finish", "--id", id,
-      ...completion.fields.flatMap(field => [`--${field}`, `<ACTUAL_${field.toUpperCase()}>`]),
+      ...completion.fields.flatMap(field => [`--${field}`, field === "cleanup" ? "<KIND=EVIDENCE>" : `<ACTUAL_${field.toUpperCase()}>`]),
       ...completion.stages.flatMap(stage => ["--stage-evidence", `${stage}=<ACTUAL_${stage.toUpperCase()}>`, ...(isRunBackedStage(stage) ? ["--stage-command", `${stage}=<MATCHING_COMMAND_ID>`] : [])]), "--json"] },
-    needs: [...completion.fields.map(field => `${field}: 提交实际结论；已完成且仍有效的记录不会重复登记。`),
+    needs: [...completion.fields.map(field => field === "cleanup" ? cleanupGuidance : `${field}: 提交实际结论；已完成且仍有效的记录不会重复登记。`),
       ...completion.stages.map(stage => `${stage}: 需要真实阶段证据${isRunBackedStage(stage) ? "及 verification.commands 中匹配当前计划且确实覆盖该阶段的命令 ID" : ""}；不得将占位符记为通过。`)],
   };
   if (next.workTarget) {

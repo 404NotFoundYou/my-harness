@@ -47,7 +47,7 @@ test("archived evidence survives regeneration but tampering prevents completion"
     assert.equal((await checkProject(root)).ok, true);
     await writeFile(path.join(root, event.artifacts[0].path), "modified proof");
     assert.ok((await checkProject(root)).errors.some(error => error.includes("ARTIFACT_HASH_MISMATCH")));
-    await assert.rejects(() => finishWorkItem(root, "PROOF", { verification: "checked", review: "reviewed", documentation: "N/A: unchanged", acceptance: "fixture" }), { code: "ARTIFACT_HASH_MISMATCH" });
+    await assert.rejects(() => finishWorkItem(root, "PROOF", { verification: "checked", review: "reviewed", documentation: "N/A: unchanged", acceptance: "fixture", cleanup: ["none=isolated source fixture produced no obsolete build or test packages"] }), { code: "ARTIFACT_HASH_MISMATCH" });
   } finally { await cleanup(root); }
 });
 

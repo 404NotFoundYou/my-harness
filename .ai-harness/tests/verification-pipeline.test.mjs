@@ -86,7 +86,7 @@ test("codegen+frontend 工作项只有五段流水线全部按序通过才能进
     await transitionWorkItem(root, "CG-1", "CODE_REVIEW");
     await recordResult(root, "CG-1", { kind: "review", status: "pass", summary: "final diff reviewed" });
     await transitionWorkItem(root, "CG-1", "READY_FOR_ACCEPTANCE");
-    await recordResult(root, "CG-1", { kind: "acceptance", status: "pass", summary: "authorized acceptance" });
+    await recordResult(root, "CG-1", { kind: "acceptance", status: "pass", summary: "authorized acceptance", cleanup: ["none=isolated source fixture produced no obsolete build or test packages"] });
     const done = await transitionWorkItem(root, "CG-1", "DONE");
     assert.equal(done.status, "DONE");
     const check = await checkProject(root, { ci: true });

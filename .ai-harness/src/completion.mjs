@@ -14,6 +14,20 @@ export function assertCompactEligible(type, flags, authorizationMode, risk) {
   if (error) invariant(false, ...error);
 }
 
+export const cleanupGuidance = "用 --cleanup none=检查范围及无清理项的依据，或 retained=保留对象及用途。已清理时提供 cleaned=对象及归属、依赖核对结果，并另加 --cleanup released=清理后的释放证据；可同时说明保留项。";
+
+export function validCleanup(entries) {
+  if (!Array.isArray(entries) || !entries.length) return false;
+  const kinds = new Set();
+  for (const entry of entries) {
+    const match = typeof entry === "string" && /^(none|retained|cleaned|released)=([\s\S]+)$/.exec(entry);
+    if (!match || !match[2].trim() || kinds.has(match[1])) return false;
+    kinds.add(match[1]);
+  }
+  if (kinds.has("none")) return kinds.size === 1;
+  return kinds.has("cleaned") === kinds.has("released");
+}
+
 export function completionRequirements(item, plan) {
   const task = plan?.tasks?.[0];
   if (!task || compactConstraint(item.type, item.flags, item.authorization.mode, task.risk) ||
@@ -27,6 +41,7 @@ export function completionRequirements(item, plan) {
   if (task.reviewStatus !== "pass" || item.review.status !== "pass") fields.push("review");
   if (!["pass", "not-applicable"].includes(item.documentation.status)) fields.push("documentation");
   if (item.acceptance.status !== "pass") fields.push("acceptance");
+  if (item.acceptance.status !== "pass" || !validCleanup(item.acceptance.cleanup)) fields.push("cleanup");
   return { fields, stages: requiredVerificationStages(item).filter(name => !item.verification.stages?.some(entry => entry.stage === name && entry.status === "pass")) };
 }
 

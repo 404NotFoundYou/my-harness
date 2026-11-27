@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "workItemId": "ITERATION-FIX-20261127",
+  "mode": "single",
+  "rationale": "单一实现所有者贯穿工作流和验证，独立审查整个差异",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "修复五个可复现问题并验证兼容性",
+      "module": "runtime",
+      "status": "IN_PROGRESS",
+      "attempt": 1,
+      "blockedBy": [],
+      "blocks": [],
+      "writeScopes": [
+        ".ai-harness/src/**",
+        ".ai-harness/tests/**",
+        ".ai-harness/schemas/**",
+        ".ai-harness/templates/instructions/**",
+        ".ai-harness/policies/**",
+        ".ai-harness/manifest.json",
+        "benchmarks/**",
+        "AGENTS.md",
+        "README.md",
+        "docs/**"
+      ],
+      "verification": [
+        "{\"command\":\"node\",\"args\":[\".ai-harness/tests/run.mjs\"],\"timeoutMs\":660000}",
+        "{\"command\":\"node\",\"args\":[\"benchmarks/tests/run.mjs\"],\"timeoutMs\":660000}",
+        "{\"command\":\"node\",\"args\":[\"benchmarks/tests/installed-runtime.mjs\"],\"timeoutMs\":900000}"
+      ],
+      "checks": [
+        {
+          "id": "V1",
+          "command": "node",
+          "args": [
+            ".ai-harness/tests/run.mjs"
+          ],
+          "timeoutMs": 660000
+        },
+        {
+          "id": "V2",
+          "command": "node",
+          "args": [
+            "benchmarks/tests/run.mjs"
+          ],
+          "timeoutMs": 660000
+        },
+        {
+          "id": "V3",
+          "command": "node",
+          "args": [
+            "benchmarks/tests/installed-runtime.mjs"
+          ],
+          "timeoutMs": 900000
+        }
+      ],
+      "docsImpact": [
+        "docs/guides/usage.md"
+      ],
+      "reviewBatch": "R1",
+      "risk": "high",
+      "owner": "primary-ai",
+      "verificationStatus": "pending",
+      "reviewStatus": "pending",
+      "evidence": [],
+      "deferralApproval": null
+    }
+  ],
+  "reviewBatches": [
+    {
+      "id": "R1",
+      "title": "运行时及评测驱动完整变更",
+      "risk": "high",
+      "taskIds": [
+        "T1"
+      ],
+      "independentRequired": true
+    }
+  ],
+  "createdAt": "2026-11-27T02:06:09.784Z",
+  "updatedAt": "2026-11-27T02:18:28.296Z",
+  "revision": 2
+}

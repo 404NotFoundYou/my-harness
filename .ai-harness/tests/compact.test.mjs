@@ -27,7 +27,7 @@ function results(commandIds, overrides = {}) {
     commandIds, verification: "The regression command passes.",
     review: "Reviewed the complete diff and affected callers.",
     documentation: "N/A: existing documentation remains correct",
-    acceptance: "The requested behavior and regression meet the acceptance criteria.", ...overrides,
+    acceptance: "The requested behavior and regression meet the acceptance criteria.", cleanup: ["none=isolated source fixture produced no obsolete build or test packages"], ...overrides,
   };
 }
 

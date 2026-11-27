@@ -1,5 +1,5 @@
 import path from "node:path";
-import { spawn, spawnSync } from "node:child_process";
+import { prepareDriverSpawn, observeDriverExit, stopDriver } from "./driver-process.mjs";
 import { readFile, writeFile } from "node:fs/promises";
 import { redact } from "../.ai-harness/src/evidence.mjs";
 import { saveJson } from "./runner.mjs";
@@ -35,11 +35,12 @@ export function codexDriver(cli,{runtime=null}={}) {
     const runtimePaths=runtime?runtime.paths({root,outputDirectory}):{root,outputDirectory};
     const args=codexArguments({...runtimePaths,model,budget,container:Boolean(runtime)});
     const script=/\.(m?js)$/i.test(cli),hostCommand=script?process.execPath:cli;
+    const spawnDriver = prepareDriverSpawn();
     const launch=runtime?await runtime.prepare({root,outputDirectory,args}):{command:hostCommand,args:script?[cli,...args]:args,cwd:root,detached:process.platform!=="win32",stop:null,cleanup:null};
     const startedAt = new Date().toISOString();
     const result = await new Promise(resolve => {
       const started = Date.now();
-      const child = spawn(launch.command, launch.args, { cwd: launch.cwd, shell: false, windowsHide: true, detached: launch.detached, stdio: ["pipe","pipe","pipe"] });
+      const child = spawnDriver(launch.command, launch.args, { cwd: launch.cwd, shell: false, windowsHide: true, detached: launch.detached, stdio: ["pipe","pipe","pipe"] });
       child.stdout.setEncoding("utf8"); child.stderr.setEncoding("utf8");
       let stderr = "", pending = "", timedOut = false, toolLimit = false, spawnError = null, unparsedLines = 0;
       const runtimeErrors=[];
@@ -50,13 +51,7 @@ export function codexDriver(cli,{runtime=null}={}) {
       function stop() {
         if (!child.pid) return;
         runtimeFailure(launch.stop?.() ?? null);
-        if (process.platform === "win32") {
-          if (child.exitCode !== null) return;
-          spawnSync("taskkill", ["/PID",String(child.pid),"/T","/F"], { windowsHide: true, stdio: "ignore" });
-        } else {
-          try { process.kill(-child.pid, "SIGKILL"); }
-          catch (error) { if (error.code !== "ESRCH") throw error; }
-        }
+        stopDriver(child);
       }
       const timer = setTimeout(() => { timedOut = true; stop(); }, budget.timeoutMs);
       function line(raw, at = Date.now()-started) {
@@ -79,7 +74,7 @@ export function codexDriver(cli,{runtime=null}={}) {
       child.stderr.on("data", chunk => { stderr += chunk; });
       child.stdin.on("error", error => { spawnError ||= error.message; });
       child.once("error", error => { spawnError=error.message; });
-      child.once("exit", () => timing.exited(Date.now()-started));
+      observeDriverExit(child, () => timing.exited(Date.now()-started));
       child.once("close", exitCode => {
         const closedAt = Date.now()-started;
         timing.closed(closedAt);

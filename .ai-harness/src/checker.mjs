@@ -7,6 +7,7 @@ import {
   RESULT_STATUSES,
   TERMINAL_STATUSES,
 } from "./constants.mjs";
+import { validCleanup } from "./completion.mjs";
 import { getGitBaseline } from "./git.mjs";
 import { exists, readJson } from "./filesystem.mjs";
 import { inspectManagedBlock, normalizeManagedBody } from "./managed-block.mjs";
@@ -209,6 +210,8 @@ async function collectEventLogErrors(item, paths) {
     const transition = eventTransition(event);
     if (!transition) continue;
     const history = item.history[historyIndex++];
+    if (event.to === "DONE" && item.status === "DONE" && historyIndex === item.history.length &&
+        event.cleanupVersion !== item.delivery?.cleanupVersion) return [`${location} 的清理门禁版本与交付记录不一致。`];
     if (!history || ["from", "to", "reason", "action", "revision"].some(key => history[key] !== transition[key])) {
       return [`${location} 与 history[${historyIndex - 1}] 的状态迁移不一致。`];
     }
@@ -297,6 +300,11 @@ async function inspectEvidence(root, item, plan, paths, config) {
       (event.revision || 1) === (item.revision || 1));
     if (result.status !== "pending" && (!latest || latest.status !== result.status)) {
       errors.push(`工作项 ${kind} 状态与最新证据不一致。`);
+    }
+    if (kind === "acceptance" && result.status === "pass" && (item.delivery?.cleanupVersion !== undefined || result.cleanup !== undefined || latest?.cleanup !== undefined)) {
+      if (!validCleanup(result.cleanup) || !result.evidence.includes(latest?.id) || JSON.stringify(result.cleanup) !== JSON.stringify(latest?.cleanup)) {
+        errors.push("验收清理结论缺失或与引用的最新验收证据不一致。");
+      }
     }
     if (kind === "review" && result.status !== "pending" && latest && Boolean(latest.independent) !== result.independent) {
       errors.push("工作项 review 的独立复核标记与最新证据不一致。");

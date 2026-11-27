@@ -18,6 +18,7 @@ import { HarnessError, invariant } from "./errors.mjs";
 import { resolveProjectPath } from "./filesystem.mjs";
 import { assertAnalysisCommandEvidence, assertVerification, assertVerificationStages, readEvidence } from "./verification.mjs";
 import { snapshotReader, sourceSnapshot } from "./snapshot.mjs";
+import { validCleanup, cleanupGuidance } from "./completion.mjs";
 import { compileChecks } from "./commands.mjs";
 
 function isObject(value) {
@@ -57,6 +58,7 @@ export function collectWorkItemShapeErrors(item) {
   if (item.integrityVersion !== undefined && item.integrityVersion !== 1) errors.push("integrityVersion 无效。");
   if (item.revision !== undefined && (!Number.isInteger(item.revision) || item.revision < 1)) errors.push("revision 必须是正整数。");
   if (item.delivery !== undefined && item.delivery !== null && (!isObject(item.delivery) || !validSource(item.delivery.source) || !validSource(item.delivery.baseline) || !/^[0-9a-f]{64}$/.test(item.delivery.planDigest || "") || typeof item.delivery.at !== "string" || !/^[0-9a-f]{40,64}$/.test(item.delivery.head || ""))) errors.push("delivery 结构无效。");
+  if (item.delivery?.cleanupVersion !== undefined && item.delivery.cleanupVersion !== 1) errors.push("delivery.cleanupVersion 无效。");
   if (item.delivery && (typeof item.delivery.baselineAt !== "string" || !Array.isArray(item.delivery.ownedChanges) || item.delivery.ownedChanges.some((change) =>
     !isObject(change) || typeof change.path !== "string" || !scopeValid(change.path) ||
     ![change.before, change.after].every((value) => value === null || /^\d{6}:[0-9a-f]{40,64}$/.test(value))))) errors.push("delivery.ownedChanges 结构无效。");
@@ -467,6 +469,9 @@ export async function assertTransitionGates(root, item, plan, target, checks = g
     return;
   }
   if (target === "DONE") {
+    if (item.status !== "DONE" || item.delivery?.cleanupVersion !== undefined || item.acceptance.cleanup !== undefined) {
+      invariant(validCleanup(item.acceptance.cleanup), "CLEANUP_REQUIRED", cleanupGuidance);
+    }
     invariant(item.acceptance.status === "pass" && nonEmptyStrings(item.acceptance.evidence), "ACCEPTANCE_REQUIRED", "DONE 前缺少有权验收证据。" );
     if (!(item.status === "DONE" && !item.integrityVersion)) {
       const snapshot = await checks.verifiedSnapshot();

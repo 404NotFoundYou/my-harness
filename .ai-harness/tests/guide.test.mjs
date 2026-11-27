@@ -280,7 +280,7 @@ test("guide keeps final independent review and acceptance explicit", async () =>
     assert.equal(guide.next.workTarget, "READY_FOR_ACCEPTANCE");
     await transitionWorkItem(root, id, guide.next.workTarget);
     assert.equal((await getWorkGuide(root, id)).next.code, "record-acceptance");
-    await recordResult(root, id, { kind: "acceptance", status: "pass", summary: "actual acceptance fixture" });
+    await recordResult(root, id, { kind: "acceptance", status: "pass", summary: "actual acceptance fixture", cleanup: ["none=isolated source fixture produced no obsolete build or test packages"] });
     await transitionWorkItem(root, id, "DONE");
     guide = await getWorkGuide(root, id);
     assert.equal(guide.next.code, "check-delivery");

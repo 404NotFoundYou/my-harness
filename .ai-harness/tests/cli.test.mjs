@@ -70,13 +70,21 @@ for (const type of ["ITERATION", "BUGFIX"]) {
       assert.equal(guide.task.id, started.taskId);
       assert.equal(guide.next.code, "implement-and-verify");
       await writeFile(path.join(root, "feature.test.mjs"), 'import assert from "node:assert/strict";\nassert.equal(2 + 2, 4);\n');
+      const run = ["run", "--id", started.id, "--task", started.taskId, "--json"];
+      const log = path.join(root, ".ai-harness/work-items", started.id, "evidence.jsonl");
+      const logBytes = () => readFile(log).catch(error => { if (error.code !== "ENOENT") throw error; return null; });
+      const before = await logBytes();
+      const conflict = runCli(entrypoint, root, [...run, "--check", "V1", "--", "node", "--version"], 1);
+      assert.equal(jsonOutput(conflict, "stderr").code, "CONFLICTING_CHECK_SELECTION");
+      assert.deepEqual(await logBytes(), before, "ambiguous input must not execute either command or create evidence");
+      assert.equal(jsonOutput(runCli(entrypoint, root, [...run, "--check", "V1"])).status, "pass");
       const command = jsonOutput(runCli(entrypoint, root, [
         "run", "--id", started.id, "--task", started.taskId, "--json", "--", process.execPath, "--test", "feature.test.mjs",
       ]));
       const done = jsonOutput(runCli(entrypoint, root, [
         "finish", "--id", started.id, "--command", command.id,
         "--verification", "local regression passes", "--review", "reviewed the complete diff and affected callers",
-        "--documentation", "N/A: existing behavior documented", "--acceptance", "requested regression passes", "--json",
+        "--documentation", "N/A: existing behavior documented", "--acceptance", "requested regression passes", "--cleanup", "none=isolated fixture only produced source and audit evidence", "--json",
         ...(type === "BUGFIX" ? [
           "--stage-evidence", "static=static-check fixture", "--stage-evidence", "sandbox=isolated-execution fixture",
           "--stage-evidence", "reproduction=local regression executed", "--stage-evidence", "regression=local suite executed",
@@ -281,7 +289,7 @@ test("installed CLI completes an iteration and passes its CI gate", async () => 
     runCli(entrypoint, root, ["transition", "--id", id, "--to", "CODE_REVIEW", "--json"]);
     runCli(entrypoint, root, ["record", "--id", id, "--kind", "review", "--status", "pass", "--evidence", "final diff reviewed", "--json"]);
     runCli(entrypoint, root, ["transition", "--id", id, "--to", "READY_FOR_ACCEPTANCE", "--json"]);
-    runCli(entrypoint, root, ["record", "--id", id, "--kind", "acceptance", "--status", "pass", "--evidence", "authorized acceptance", "--json"]);
+    runCli(entrypoint, root, ["record", "--id", id, "--kind", "acceptance", "--status", "pass", "--evidence", "authorized acceptance", "--cleanup", "none=isolated fixture produced source and audit evidence only", "--json"]);
     runCli(entrypoint, root, ["transition", "--id", id, "--to", "DONE", "--json"]);
 
     const checked = jsonOutput(runCli(entrypoint, root, ["check", "--ci", "--json"]));

@@ -51,7 +51,8 @@ test("a downstream upgrade owns the previewed changes and passes its installed s
     assert.equal(event.status, "pass");
     console.log(event.command.stdout.text.split(/\r?\n/).slice(-10).join("\n"));
     assert.equal(cli(entry, ["finish", ...work, "--command", event.id, "--verification", "Installed suite passed", "--review", "Installed operations matched the preview, including the retired file",
-      "--documentation", "N/A: runtime distribution only", "--acceptance", "Installed runtime and upgrade scope verified"]).status, "DONE");
+      "--documentation", "N/A: runtime distribution only", "--acceptance", "Installed runtime and upgrade scope verified",
+      "--cleanup", "cleaned=installer retired the source-only workflow after matching its receipt", "--cleanup", "released=verified the retired workflow path is absent", "--cleanup", "retained=installer backup used for upgrade rollback"]).status, "DONE");
     git("add", "."); git("commit", "--quiet", "-m", "Deliver runtime upgrade");
     const pure = git("rev-parse", "HEAD");
     assert.equal(cli(entry, ["check", "--ci", "--base", base]).ok, true);

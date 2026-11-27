@@ -1,0 +1,163 @@
+{
+  "schemaVersion": 1,
+  "policyRoutingVersion": 2,
+  "integrityVersion": 1,
+  "revision": 2,
+  "id": "ITERATION-FIX-20261127",
+  "type": "ITERATION",
+  "title": "修正五项运行时与评测问题",
+  "status": "IMPLEMENTING",
+  "flags": [
+    "api"
+  ],
+  "policyFiles": [
+    ".ai-harness/policies/core.md",
+    ".ai-harness/policies/security.md",
+    ".ai-harness/policies/documentation.md",
+    ".ai-harness/policies/iteration.md",
+    ".ai-harness/policies/api.md"
+  ],
+  "authorization": {
+    "mode": "autonomous",
+    "source": "用户要求处理修复全部问题"
+  },
+  "input": {
+    "references": [
+      "用户要求修复 ANALYSIS-CURRENT-20261127 所列五项问题"
+    ],
+    "acceptance": [
+      "状态日志失败回退且重试不重复，清理为验收门禁并兼容旧数据，Windows 三驱动预算能收回后代，文件变目录快照与暂存一致，互斥 run 入参不会执行或留证，完整三套测试和 CI 通过"
+    ],
+    "nonGoals": [
+      "不发布、不改用户已有记录"
+    ],
+    "version": null
+  },
+  "architecture": {
+    "source": null,
+    "approvalRef": null
+  },
+  "bug": null,
+  "baseline": {
+    "status": "complete",
+    "document": null,
+    "evidence": [
+      "main@8917778 和八个既有未跟踪分析记录，五项复现见 ANALYSIS-CURRENT-20261127"
+    ],
+    "completedAt": "2026-11-27T02:06:09.303Z",
+    "repository": {
+      "isGit": true,
+      "branch": "main",
+      "commit": "891777808c34e27c4250a4b2d60db46cb9b4c599",
+      "dirty": false,
+      "changedFiles": [],
+      "fingerprints": {},
+      "source": {
+        "digest": "05e0332d9c63731a8787ba2f6d904ecf2083bece0d36a13ef383d870ef4e3b66",
+        "document": ".ai-harness/work-items/ITERATION-FIX-20261127/snapshots/05e0332d9c63731a8787ba2f6d904ecf2083bece0d36a13ef383d870ef4e3b66.json"
+      }
+    }
+  },
+  "solution": {
+    "status": "complete",
+    "document": "docs/guides/usage.md",
+    "evidence": [
+      "锁内回退状态和部分日志，验收证据携带可验证的清理分类并兼容旧终态，Windows 持有进程树至预算终止，规范化 Git 工作树类型变换，执行前校验检查选择"
+    ],
+    "completedAt": "2026-11-27T02:06:09.592Z"
+  },
+  "database": {
+    "impact": "none",
+    "status": "not-applicable",
+    "document": null,
+    "evidence": [
+      "只修改本地文件工作流和进程管理，无数据库"
+    ],
+    "completedAt": "2026-11-27T02:06:09.687Z"
+  },
+  "plan": {
+    "path": ".ai-harness/work-items/ITERATION-FIX-20261127/plan.json",
+    "approved": true,
+    "approvalRef": "原任务端到端授权，验证仍为相同三套完整测试"
+  },
+  "verification": {
+    "status": "pending",
+    "evidence": [],
+    "stages": []
+  },
+  "review": {
+    "status": "pending",
+    "evidence": [],
+    "independent": false
+  },
+  "acceptance": {
+    "status": "pending",
+    "evidence": []
+  },
+  "analysis": {
+    "status": "pending",
+    "evidence": [],
+    "conclusions": [],
+    "unknowns": []
+  },
+  "documentation": {
+    "status": "pending",
+    "evidence": []
+  },
+  "blocked": null,
+  "delivery": null,
+  "history": [
+    {
+      "from": null,
+      "to": "INTAKE",
+      "at": "2026-11-27T02:05:47.937Z",
+      "reason": "work-item-created"
+    },
+    {
+      "from": "INTAKE",
+      "to": "BASELINING",
+      "at": "2026-11-27T02:06:09.043Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "BASELINING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-11-27T02:06:09.493Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-11-27T02:06:10.185Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-11-27T02:06:10.286Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "IMPLEMENTING",
+      "to": "SOLUTION_DESIGN",
+      "at": "2026-11-27T02:18:27.513Z",
+      "reason": "三套跨平台集成测试的运行器允许 10 分钟。为实装环境按各套显式登记超时，避免默认 120 秒截断测试。",
+      "action": "replan",
+      "revision": 2
+    },
+    {
+      "from": "SOLUTION_DESIGN",
+      "to": "PLANNED",
+      "at": "2026-11-27T02:18:28.063Z",
+      "reason": "gate-passed"
+    },
+    {
+      "from": "PLANNED",
+      "to": "IMPLEMENTING",
+      "at": "2026-11-27T02:18:28.187Z",
+      "reason": "gate-passed"
+    }
+  ],
+  "createdAt": "2026-11-27T02:05:47.937Z",
+  "updatedAt": "2026-11-27T02:18:28.296Z"
+}

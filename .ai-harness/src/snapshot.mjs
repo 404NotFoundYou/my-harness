@@ -42,6 +42,11 @@ export async function sourceSnapshot(root, config) {
       throw error;
     }
     invariant(!files[file]?.startsWith("160000:"), "DIRTY_SUBMODULE", `子模块有未冻结的变更，需先记录其提交：${file}`);
+    if (info.isDirectory() && Object.hasOwn(files, file)) {
+      // Git tracks the old leaf as deleted; its new children are listed separately.
+      delete files[file];
+      continue;
+    }
     if (info.isSymbolicLink()) {
       const oid = gitResult(root, ["hash-object", "--stdin"], { input: await readlink(absolute) }).stdout.trim();
       files[file] = `120000:${oid}`;
